@@ -1,0 +1,70 @@
+package ru.gadjini.reminder.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.bots.AbsSender;
+import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+@Service
+public class CommandRegistry {
+
+    public static final String COMMAND_ARG_SEPARATOR = "_";
+
+    private final Map<String, BotCommand> botCommandRegistryMap = new HashMap<>();
+
+    private CommandNavigator commandNavigator;
+
+    @Autowired
+    public CommandRegistry(Collection<BotCommand> botCommands, CommandNavigator commandNavigator) {
+        this.commandNavigator = commandNavigator;
+
+        botCommands.forEach(botCommand -> botCommandRegistryMap.put(botCommand.getCommandIdentifier(), botCommand));
+    }
+
+    public BotCommand getBotCommand(String startCommandName) {
+        return botCommandRegistryMap.get(startCommandName);
+    }
+
+    public boolean isCommand(Message message) {
+        return message.isCommand();
+    }
+
+    public void processNonCommandUpdate(AbsSender absSender, Message message) {
+        NavigableBotCommand navigableBotCommand = commandNavigator.getCurrentCommand(message.getChatId());
+
+        if (navigableBotCommand != null) {
+            navigableBotCommand.processNonCommandUpdate(absSender, message);
+        }
+    }
+
+    public boolean executeCommand(AbsSender absSender, Message message) {
+        return executeBotCommand(absSender, message);
+    }
+
+    private boolean executeBotCommand(AbsSender absSender, Message message) {
+        String text = message.getText().trim();
+        String[] commandSplit = text.split(COMMAND_ARG_SEPARATOR);
+        BotCommand botCommand = botCommandRegistryMap.get(commandSplit[0].substring(1));
+
+        if (botCommand != null) {
+            String[] parameters = Arrays.copyOfRange(commandSplit, 1, commandSplit.length);
+
+            botCommand.processMessage(absSender, message, parameters);
+
+            if (botCommand instanceof NavigableBotCommand) {
+                commandNavigator.push(absSender, message.getChatId(), (NavigableBotCommand) botCommand);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+}

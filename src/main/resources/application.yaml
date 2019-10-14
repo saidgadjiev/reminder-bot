@@ -1,0 +1,11 @@
+bot:
+  name: mega_reminder_bot
+  token: ${BOT_TOKEN}
+spring:
+  profiles:
+    active: default
+  datasource:
+    url: jdbc:postgresql://localhost:5432/reminder
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
