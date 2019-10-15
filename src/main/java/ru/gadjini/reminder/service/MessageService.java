@@ -9,32 +9,34 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
-import org.telegram.telegrambots.meta.bots.AbsSender;
 
 @Service
 public class MessageService {
 
     private LocalisationService localisationService;
 
+    private TelegramService telegramService;
+
     @Autowired
-    public MessageService(LocalisationService localisationService) {
+    public MessageService(LocalisationService localisationService, TelegramService telegramService) {
         this.localisationService = localisationService;
+        this.telegramService = telegramService;
     }
 
-    public void sendAction(AbsSender absSender, long chatId) {
+    public void sendAction(long chatId) {
         SendChatAction chatAction = new SendChatAction();
 
         chatAction.setAction(ActionType.UPLOADAUDIO);
         chatAction.setChatId(chatId);
 
         try {
-            absSender.execute(chatAction);
+            telegramService.execute(chatAction);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String sendAudio(AbsSender absSender, long chatId, String audio, String fileCaption) {
+    public String sendAudio(long chatId, String audio, String fileCaption) {
         SendAudio sendAudio = new SendAudio();
 
         sendAudio.setAudio(audio);
@@ -43,7 +45,7 @@ public class MessageService {
         sendAudio.setCaption(fileCaption);
 
         try {
-            Message message = absSender.execute(sendAudio);
+            Message message = telegramService.execute(sendAudio);
 
             return message.getAudio().getFileId();
         } catch (Exception e) {
@@ -51,20 +53,20 @@ public class MessageService {
         }
     }
 
-    public void deleteMessage(AbsSender absSender, long chatId, int messageId) {
+    public void deleteMessage(long chatId, int messageId) {
         DeleteMessage deleteMessage = new DeleteMessage();
 
         deleteMessage.setChatId(chatId);
         deleteMessage.setMessageId(messageId);
 
         try {
-            absSender.execute(deleteMessage);
+            telegramService.execute(deleteMessage);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void sendMessage(AbsSender absSender, long chatId, String message, ReplyKeyboard replyKeyboard) {
+    public void sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard) {
         SendMessage sendMessage = new SendMessage();
 
         sendMessage.setChatId(chatId);
@@ -76,17 +78,21 @@ public class MessageService {
         }
 
         try {
-            absSender.execute(sendMessage);
+            telegramService.execute(sendMessage);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    public void sendMessageByCode(AbsSender absSender, long chatId, String messageCode) {
-        sendMessage(absSender, chatId, localisationService.getMessage(messageCode), null);
+    public void sendMessageByCode(long chatId, String messageCode) {
+        sendMessage(chatId, localisationService.getMessage(messageCode), null);
     }
 
-    public void sendMessageByCode(AbsSender absSender, long chatId, String messageCode, Object[] args) {
-        sendMessage(absSender, chatId, localisationService.getMessage(messageCode, args), null);
+    public void sendMessageByCode(long chatId, String messageCode, Object[] args) {
+        sendMessage(chatId, localisationService.getMessage(messageCode, args), null);
+    }
+
+    public void sendMessageByCode(long chatId, String messageCode, Object[] args, ReplyKeyboard replyKeyboard) {
+        sendMessage(chatId, localisationService.getMessage(messageCode, args), replyKeyboard);
     }
 }

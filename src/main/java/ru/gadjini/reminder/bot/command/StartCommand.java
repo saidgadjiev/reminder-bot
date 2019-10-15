@@ -70,7 +70,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] args) {
         tgUserService.createOrUpdateUser(chat.getId(), user);
-        messageService.sendMessageByCode(absSender, chat.getId(), MessagesProperties.MESSAGE_START);
+        messageService.sendMessageByCode(chat.getId(), MessagesProperties.MESSAGE_START);
     }
 
     @Override
@@ -96,9 +96,9 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         TgUser tgUser = tgUserService.getUserByUserName(reminderRequest.getReceiverName());
 
         String reminderText = reminderRequest.getText() + " " + dateTimeFormatter.format(reminderRequest.getRemindAt());
-        messageService.sendMessageByCode(absSender, tgUser.getChatId(), MessagesProperties.MESSAGE_REMINDER_FROM,
+        messageService.sendMessageByCode(tgUser.getChatId(), MessagesProperties.MESSAGE_REMINDER_FROM,
                 new Object[]{ TgUser.USERNAME_START + reminderRequest.getCreatorName(), reminderText});
-        messageService.sendMessageByCode(absSender, message.getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED,
+        messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED,
                 new Object[]{reminderText, TgUser.USERNAME_START + reminderRequest.getReceiverName()});
     }
 }

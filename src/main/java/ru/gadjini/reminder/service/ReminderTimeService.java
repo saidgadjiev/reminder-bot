@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.dao.ReminderTimeDao;
 import ru.gadjini.reminder.domain.ReminderTime;
 
+import java.time.LocalDateTime;
+
 @Service
 public class ReminderTimeService {
 
@@ -17,5 +19,13 @@ public class ReminderTimeService {
 
     public void create(ReminderTime reminderTime) {
         reminderTimeDao.create(reminderTime);
+    }
+
+    public void deleteReminderTime(int id) {
+        reminderTimeDao.delete(id);
+    }
+
+    public void updateLastRemindAt(int id, LocalDateTime lastReminderAt) {
+        reminderTimeDao.updateLastRemindAt(id, lastReminderAt);
     }
 }

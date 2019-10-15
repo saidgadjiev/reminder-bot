@@ -18,6 +18,6 @@ public class HelpCommand extends BotCommand {
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings) {
-        messageService.sendMessageByCode(absSender, chat.getId(), MessagesProperties.MESSAGE_HELP);
+        messageService.sendMessageByCode(chat.getId(), MessagesProperties.MESSAGE_HELP);
     }
 }

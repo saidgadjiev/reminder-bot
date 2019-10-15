@@ -2,12 +2,14 @@ package ru.gadjini.reminder.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.ReminderTime;
 
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.sql.Types;
+import java.time.LocalDateTime;
 
 @Repository
 public class ReminderTimeDao {
@@ -20,22 +22,26 @@ public class ReminderTimeDao {
     }
 
     public void create(ReminderTime reminderTime) {
-        jdbcTemplate.update(
-                "INSERT INTO reminder_time(type, fixed_time, delay_time, reminder_id) VALUES (?, ?, ?, ?)",
-                preparedStatement -> {
-                    preparedStatement.setString(1, reminderTime.getType().name());
+        new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(ReminderTime.TYPE)
+                .execute(new MapSqlParameterSource()
+                        .addValue(ReminderTime.TYPE_COL, reminderTime.getType().name())
+                        .addValue(ReminderTime.FIXED_TIME, reminderTime.getFixedTime() != null ? Timestamp.valueOf(reminderTime.getFixedTime()) : null)
+                        .addValue(ReminderTime.DELAY_TIME, reminderTime.getDelayTime() != null ? Time.valueOf(reminderTime.getDelayTime()) : null)
+                        .addValue(ReminderTime.REMINDER_ID , reminderTime.getReminderId())
+                );
+    }
 
-                    if (reminderTime.getFixedTime() != null) {
-                        preparedStatement.setTimestamp(2, Timestamp.valueOf(reminderTime.getFixedTime()));
-                    } else {
-                        preparedStatement.setNull(2, Types.TIMESTAMP);
-                    }
-                    if (reminderTime.getDelayTime() != null) {
-                        preparedStatement.setTime(3, Time.valueOf(reminderTime.getDelayTime()));
-                    } else {
-                        preparedStatement.setNull(3, Types.TIME);
-                    }
-                    preparedStatement.setInt(4, reminderTime.getReminderId());
+    public void delete(int id) {
+        jdbcTemplate.update("DELETE FROM reminder_time WHERE id = ?", ps -> ps.setInt(1, id));
+    }
+
+    public void updateLastRemindAt(int id, LocalDateTime lastReminderAt) {
+        jdbcTemplate.update(
+                "UPDATE reminder_time SET last_reminder_at = ? WHERE id = ?",
+                ps -> {
+                    ps.setTimestamp(1, Timestamp.valueOf(lastReminderAt));
+                    ps.setInt(2, id);
                 }
         );
     }

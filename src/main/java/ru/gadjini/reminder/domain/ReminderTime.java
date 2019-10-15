@@ -5,6 +5,18 @@ import java.time.LocalTime;
 
 public class ReminderTime {
 
+    public static final String TYPE = "reminder_time";
+
+    public static final String ID = "id";
+
+    public static final String FIXED_TIME = "fixed_time";
+
+    public static final String DELAY_TIME = "delay_time";
+
+    public static final String TYPE_COL = "type";
+
+    public static final String REMINDER_ID = "reminder_id";
+
     private int id;
 
     private LocalDateTime fixedTime;

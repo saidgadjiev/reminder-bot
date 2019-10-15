@@ -41,7 +41,7 @@ public class ReminderBot extends TelegramLongPollingBot {
 
             if (commandRegistry.isCommand(update.getMessage())) {
                 if (!commandRegistry.executeCommand(this, update.getMessage())) {
-                    messageService.sendMessageByCode(this, update.getMessage().getChatId(), MessagesProperties.MESSAGE_UNKNOWN_COMMAND);
+                    messageService.sendMessageByCode(update.getMessage().getChatId(), MessagesProperties.MESSAGE_UNKNOWN_COMMAND);
                 }
             } else {
                 commandRegistry.processNonCommandUpdate(this, update.getMessage());
