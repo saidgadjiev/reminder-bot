@@ -1,14 +1,17 @@
 package ru.gadjini.reminder.service;
 
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ActionType;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
 import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Service
 public class MessageService {
@@ -94,5 +97,26 @@ public class MessageService {
 
     public void sendMessageByCode(long chatId, String messageCode, Object[] args, ReplyKeyboard replyKeyboard) {
         sendMessage(chatId, localisationService.getMessage(messageCode, args), replyKeyboard);
+    }
+
+    public void sendAnswerCallbackQuery(String callbackQueryId, String text) {
+        AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
+
+        answerCallbackQuery.setText(text);
+        answerCallbackQuery.setCallbackQueryId(callbackQueryId);
+
+        try {
+            telegramService.execute(answerCallbackQuery);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void sendAnswerCallbackQueryByMessageCode(String callbackQueryId, String messageCode) {
+        sendAnswerCallbackQuery(callbackQueryId, localisationService.getMessage(messageCode));
+    }
+
+    public void sendAnswerCallbackQueryByMessageCode(String callbackQueryId, String messageCode, Object[] args) {
+        sendAnswerCallbackQuery(callbackQueryId, localisationService.getMessage(messageCode, args));
     }
 }

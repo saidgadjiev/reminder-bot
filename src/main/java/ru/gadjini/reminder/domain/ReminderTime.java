@@ -17,6 +17,8 @@ public class ReminderTime {
 
     public static final String REMINDER_ID = "reminder_id";
 
+    public static final String LAST_REMINDER_AT = "last_reminder_at";
+
     private int id;
 
     private LocalDateTime fixedTime;

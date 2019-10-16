@@ -3,8 +3,10 @@ package ru.gadjini.reminder.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 
 import java.util.Arrays;
@@ -19,13 +21,16 @@ public class CommandRegistry {
 
     private final Map<String, BotCommand> botCommandRegistryMap = new HashMap<>();
 
+    private final Map<String, CallbackBotCommand> callbackBotCommandMap = new HashMap<>();
+
     private CommandNavigator commandNavigator;
 
     @Autowired
-    public CommandRegistry(Collection<BotCommand> botCommands, CommandNavigator commandNavigator) {
+    public CommandRegistry(Collection<BotCommand> botCommands, Collection<CallbackBotCommand> callbackBotCommands, CommandNavigator commandNavigator) {
         this.commandNavigator = commandNavigator;
 
         botCommands.forEach(botCommand -> botCommandRegistryMap.put(botCommand.getCommandIdentifier(), botCommand));
+        callbackBotCommands.forEach(callbackBotCommand -> callbackBotCommandMap.put(callbackBotCommand.getName(), callbackBotCommand));
     }
 
     public BotCommand getBotCommand(String startCommandName) {
@@ -46,6 +51,16 @@ public class CommandRegistry {
 
     public boolean executeCommand(AbsSender absSender, Message message) {
         return executeBotCommand(absSender, message);
+    }
+
+    public void executeCallbackCommand(AbsSender absSender, CallbackQuery callbackQuery) {
+        String text = callbackQuery.getData();
+        String[] commandSplit = text.split(COMMAND_ARG_SEPARATOR);
+        CallbackBotCommand botCommand = callbackBotCommandMap.get(commandSplit[0]);
+
+        String[] parameters = Arrays.copyOfRange(commandSplit, 1, commandSplit.length);
+
+        botCommand.processMessage(absSender, callbackQuery,  parameters);
     }
 
     private boolean executeBotCommand(AbsSender absSender, Message message) {

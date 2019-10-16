@@ -46,6 +46,8 @@ public class ReminderBot extends TelegramLongPollingBot {
             } else {
                 commandRegistry.processNonCommandUpdate(this, update.getMessage());
             }
+        } else if (update.hasCallbackQuery()) {
+            commandRegistry.executeCallbackCommand(this, update.getCallbackQuery());
         }
     }
 

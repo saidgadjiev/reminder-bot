@@ -24,11 +24,13 @@ public class ReminderTimeDao {
     public void create(ReminderTime reminderTime) {
         new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(ReminderTime.TYPE)
+                .usingGeneratedKeyColumns(ReminderTime.ID)
                 .execute(new MapSqlParameterSource()
                         .addValue(ReminderTime.TYPE_COL, reminderTime.getType().name())
                         .addValue(ReminderTime.FIXED_TIME, reminderTime.getFixedTime() != null ? Timestamp.valueOf(reminderTime.getFixedTime()) : null)
                         .addValue(ReminderTime.DELAY_TIME, reminderTime.getDelayTime() != null ? Time.valueOf(reminderTime.getDelayTime()) : null)
-                        .addValue(ReminderTime.REMINDER_ID , reminderTime.getReminderId())
+                        .addValue(ReminderTime.REMINDER_ID, reminderTime.getReminderId())
+                        .addValue(ReminderTime.LAST_REMINDER_AT, reminderTime.getLastReminderAt())
                 );
     }
 

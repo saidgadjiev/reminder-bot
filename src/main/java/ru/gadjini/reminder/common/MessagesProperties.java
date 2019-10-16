@@ -18,11 +18,13 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMIND = "message.remind";
 
-    public static final String MESSAGE_REMINDER_COMPLETE = "message.reminder.complete";
+    public static final String REMINDER_COMPLETE_COMMAND_NAME = "reminder.complete.command.name";
 
     public static final String COMPLETE_REMINDER_COMMAND_NAME = "complete";
 
     public static final String MESSAGE_REMINDER_COMPLETED_FROM = "message.reminder.completed.from";
+
+    public static final String MESSAGE_REMINDER_COMPLETE_ANSWER = "message.reminder.complete.answer";
 
     public static final String MESSAGE_REMINDER_COMPLETED = "message.reminder.completed";
 }

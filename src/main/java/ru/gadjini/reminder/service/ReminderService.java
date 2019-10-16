@@ -6,13 +6,15 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
+import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.ReminderRequest;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ReminderService {
@@ -45,11 +47,13 @@ public class ReminderService {
 
         reminder = reminderDao.create(reminder);
 
-        ReminderTime oneHourFixedTime = new ReminderTime();
-        oneHourFixedTime.setType(ReminderTime.Type.ONCE);
-        oneHourFixedTime.setReminderId(reminder.getId());
-        oneHourFixedTime.setFixedTime(reminder.getRemindAt().minusHours(1));
-        reminderTimeService.create(oneHourFixedTime);
+        if (reminder.getRemindAt().minusHours(1).isAfter(LocalDateTime.now().withSecond(0))) {
+            ReminderTime oneHourFixedTime = new ReminderTime();
+            oneHourFixedTime.setType(ReminderTime.Type.ONCE);
+            oneHourFixedTime.setReminderId(reminder.getId());
+            oneHourFixedTime.setFixedTime(reminder.getRemindAt().minusHours(1));
+            reminderTimeService.create(oneHourFixedTime);
+        }
 
         ReminderTime itsTimeFixedTime = new ReminderTime();
         itsTimeFixedTime.setType(ReminderTime.Type.ONCE);
@@ -61,6 +65,9 @@ public class ReminderService {
         fiveMinuteDelayTime.setType(ReminderTime.Type.REPEAT);
         fiveMinuteDelayTime.setReminderId(reminder.getId());
         fiveMinuteDelayTime.setDelayTime(LocalTime.of(0, 5));
+        if (reminder.getRemindAt().minusMinutes(5).isBefore(LocalDateTime.now().withSecond(0))) {
+            fiveMinuteDelayTime.setLastReminderAt(LocalDateTime.now().withSecond(0));
+        }
         reminderTimeService.create(fiveMinuteDelayTime);
     }
 
@@ -68,7 +75,14 @@ public class ReminderService {
         return reminderDao.getReminders(localDateTime);
     }
 
-    public void deleteReminder(int id) {
-        reminderDao.delete(id);
+    public Reminder deleteReminder(int id) {
+        Reminder reminder = reminderDao.delete(id);
+
+        Map<Integer, TgUser> tgUsers = tgUserService.getUsersByIds(Stream.of(reminder.getCreatorId(), reminder.getReceiverId()).collect(Collectors.toSet()));
+
+        reminder.setReceiver(tgUsers.get(reminder.getReceiverId()));
+        reminder.setCreator(tgUsers.get(reminder.getCreatorId()));
+
+        return reminder;
     }
 }

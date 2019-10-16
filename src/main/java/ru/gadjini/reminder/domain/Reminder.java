@@ -23,6 +23,8 @@ public class Reminder {
 
     private int creatorId;
 
+    private TgUser creator;
+    
     private int receiverId;
 
     private TgUser receiver;
@@ -85,5 +87,13 @@ public class Reminder {
 
     public void setReceiver(TgUser receiver) {
         this.receiver = receiver;
+    }
+
+    public void setCreator(TgUser tgUser) {
+        this.creator = tgUser;
+    }
+
+    public TgUser getCreator() {
+        return creator;
     }
 }

@@ -5,6 +5,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.TgUser;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Repository
 public class TgUserDao {
 
@@ -57,5 +63,25 @@ public class TgUserDao {
                     preparedStatement.setLong(2, tgUser.getChatId());
                 }
         );
+    }
+
+    public Map<Integer, TgUser> getUsersByIds(Set<Integer> ids) {
+        Map<Integer, TgUser> result = new HashMap<>();
+        String inClause = ids.stream().map(String::valueOf).collect(Collectors.joining(","));
+
+        jdbcTemplate.query(
+                "SELECT * FROM tg_user WHERE id IN(" + inClause + ")",
+                rs -> {
+                    int id = rs.getInt(TgUser.ID);
+
+                    result.put(id, new TgUser());
+                    TgUser tgUser = result.get(id);
+
+                    tgUser.setUsername(rs.getString(TgUser.USERNAME));
+                    tgUser.setChatId(rs.getLong(TgUser.CHAT_ID));
+                }
+        );
+
+        return result;
     }
 }
