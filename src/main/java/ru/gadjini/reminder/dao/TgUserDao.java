@@ -5,8 +5,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.TgUser;
 
-import java.util.Collection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,13 +29,7 @@ public class TgUserDao {
                 preparedStatement -> preparedStatement.setString(1, username),
                 resultSet -> {
                     if (resultSet.next()) {
-                        TgUser tgUser = new TgUser();
-
-                        tgUser.setId(resultSet.getInt(TgUser.ID));
-                        tgUser.setChatId(resultSet.getLong(TgUser.CHAT_ID));
-                        tgUser.setUsername(resultSet.getString(TgUser.USERNAME));
-
-                        return tgUser;
+                        return map(resultSet);
                     }
 
                     return null;
@@ -83,5 +79,22 @@ public class TgUserDao {
         );
 
         return result;
+    }
+
+    public List<TgUser> getAll() {
+        return jdbcTemplate.query(
+                "SELECT * FROM tg_user",
+                (rs, rowNum) -> map(rs)
+        );
+    }
+
+    private TgUser map(ResultSet resultSet) throws SQLException {
+        TgUser tgUser = new TgUser();
+
+        tgUser.setId(resultSet.getInt(TgUser.ID));
+        tgUser.setChatId(resultSet.getLong(TgUser.CHAT_ID));
+        tgUser.setUsername(resultSet.getString(TgUser.USERNAME));
+
+        return tgUser;
     }
 }

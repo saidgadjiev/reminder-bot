@@ -5,13 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ActionType;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
 import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResult;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.List;
 
 @Service
 public class MessageService {
@@ -91,6 +95,10 @@ public class MessageService {
         sendMessage(chatId, localisationService.getMessage(messageCode), null);
     }
 
+    public void sendMessageByCode(long chatId, String messageCode, ReplyKeyboard replyKeyboard) {
+        sendMessage(chatId, localisationService.getMessage(messageCode), replyKeyboard);
+    }
+
     public void sendMessageByCode(long chatId, String messageCode, Object[] args) {
         sendMessage(chatId, localisationService.getMessage(messageCode, args), null);
     }
@@ -118,5 +126,19 @@ public class MessageService {
 
     public void sendAnswerCallbackQueryByMessageCode(String callbackQueryId, String messageCode, Object[] args) {
         sendAnswerCallbackQuery(callbackQueryId, localisationService.getMessage(messageCode, args));
+    }
+
+    public void sendAnswerInlineQuery(String queryId, List<InlineQueryResult> inlineQueryResults) {
+        AnswerInlineQuery answerInlineQuery = new AnswerInlineQuery();
+
+        answerInlineQuery.setInlineQueryId(queryId);
+        answerInlineQuery.setResults(inlineQueryResults);
+        answerInlineQuery.setCacheTime(0);
+
+        try {
+            telegramService.execute(answerInlineQuery);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

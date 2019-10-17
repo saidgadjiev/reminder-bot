@@ -26,7 +26,7 @@ public class ReminderTimeDao {
                 .withTableName(ReminderTime.TYPE)
                 .usingGeneratedKeyColumns(ReminderTime.ID)
                 .execute(new MapSqlParameterSource()
-                        .addValue(ReminderTime.TYPE_COL, reminderTime.getType().name())
+                        .addValue(ReminderTime.TYPE_COL, reminderTime.getType().getCode())
                         .addValue(ReminderTime.FIXED_TIME, reminderTime.getFixedTime() != null ? Timestamp.valueOf(reminderTime.getFixedTime()) : null)
                         .addValue(ReminderTime.DELAY_TIME, reminderTime.getDelayTime() != null ? Time.valueOf(reminderTime.getDelayTime()) : null)
                         .addValue(ReminderTime.REMINDER_ID, reminderTime.getReminderId())

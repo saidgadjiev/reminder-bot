@@ -27,4 +27,26 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_COMPLETE_ANSWER = "message.reminder.complete.answer";
 
     public static final String MESSAGE_REMINDER_COMPLETED = "message.reminder.completed";
+
+    public static final String GET_FRIEND_REQUESTS_COMMAND_NAME = "get.friend.requests.command.name";
+
+    public static final String SEND_FRIEND_REQUEST_COMMAND_NAME = "send.friend.request.command.name";
+
+    public static final String ACCEPT_FRIEND_REQUEST_COMMAND_NAME = "accept.friend.request.command.name";
+
+    public static final String ACCEPT_FRIEND_REQUEST_COMMAND_DESCRIPTION = "accept.friend.request.command.description";
+
+    public static final String REJECT_FRIEND_REQUEST_COMMAND_NAME = "reject.friend.request.command.name";
+
+    public static final String REJECT_FRIEND_REQUEST_COMMAND_DESCRIPTION = "reject.friend.request.command.description";
+
+    public static final String MESSAGE_FRIEND_REQUEST_ACCEPTED = "message.friend.request.accepted";
+
+    public static final String MESSAGE_NEW_FRIEND_REQUEST = "message.new.friend.request";
+
+    public static final String GET_FRIENDS_COMMAND_NAME = "get.friends.command.name";
+
+    public static final String CREATE_REMINDER_COMMAND_NAME = "create.reminder.command.name";
+
+    public static final String CREATE_REMINDER_COMMAND_DESCRIPTION = "create.reminder.command.description";
 }

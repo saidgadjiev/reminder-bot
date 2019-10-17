@@ -63,7 +63,7 @@ public class ReminderDao {
                         "               r.remind_at\n" +
                         "        FROM reminder_time rt\n" +
                         "                 INNER JOIN reminder r ON rt.reminder_id = r.id\n" +
-                        "                 INNER JOIN tg_user u on r.creator_id = u.id\n" +
+                        "                 INNER JOIN tg_user u on r.receiver_id = u.id\n" +
                         "        ORDER BY rt.id\n" +
                         "    )\n" +
                         "    SELECT *\n" +
@@ -97,7 +97,7 @@ public class ReminderDao {
 
                     ReminderTime reminderTime = new ReminderTime();
                     reminderTime.setId(rs.getInt(ReminderTime.ID));
-                    reminderTime.setType(ReminderTime.Type.valueOf(rs.getString(ReminderTime.TYPE_COL)));
+                    reminderTime.setType(ReminderTime.Type.fromCode(rs.getInt(ReminderTime.TYPE_COL)));
 
                     Timestamp fixedTime = rs.getTimestamp(ReminderTime.FIXED_TIME);
                     reminderTime.setFixedTime(fixedTime == null ? null : fixedTime.toLocalDateTime());

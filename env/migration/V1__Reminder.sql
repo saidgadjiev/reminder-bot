@@ -2,6 +2,8 @@ CREATE TABLE IF NOT EXISTS tg_user
 (
     id       SERIAL PRIMARY KEY,
     username VARCHAR(128) NOT NULL UNIQUE,
+    first_name VARCHAR(128) NOT NULL,
+    last_name VARCHAR(128),
     chat_id  INTEGER      NOT NULL UNIQUE
 );
 
@@ -17,7 +19,7 @@ CREATE TABLE IF NOT EXISTS reminder
 CREATE TABLE IF NOT EXISTS reminder_time
 (
     id               SERIAL PRIMARY KEY,
-    type             VARCHAR(10) NOT NULL,
+    type             INT NOT NULL,
     fixed_time       TIMESTAMP(0),
     delay_time       TIME(0),
     last_reminder_at TIMESTAMP(0),

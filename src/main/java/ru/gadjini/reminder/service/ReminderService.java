@@ -8,6 +8,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.ReminderRequest;
+import ru.gadjini.reminder.util.DateUtils;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -47,7 +48,7 @@ public class ReminderService {
 
         reminder = reminderDao.create(reminder);
 
-        if (reminder.getRemindAt().minusHours(1).isAfter(LocalDateTime.now().withSecond(0))) {
+        if (reminder.getRemindAt().minusHours(1).isAfter(DateUtils.now())) {
             ReminderTime oneHourFixedTime = new ReminderTime();
             oneHourFixedTime.setType(ReminderTime.Type.ONCE);
             oneHourFixedTime.setReminderId(reminder.getId());
@@ -65,8 +66,8 @@ public class ReminderService {
         fiveMinuteDelayTime.setType(ReminderTime.Type.REPEAT);
         fiveMinuteDelayTime.setReminderId(reminder.getId());
         fiveMinuteDelayTime.setDelayTime(LocalTime.of(0, 5));
-        if (reminder.getRemindAt().minusMinutes(5).isBefore(LocalDateTime.now().withSecond(0))) {
-            fiveMinuteDelayTime.setLastReminderAt(LocalDateTime.now().withSecond(0));
+        if (reminder.getRemindAt().minusMinutes(5).isBefore(DateUtils.now())) {
+            fiveMinuteDelayTime.setLastReminderAt(DateUtils.now());
         }
         reminderTimeService.create(fiveMinuteDelayTime);
     }

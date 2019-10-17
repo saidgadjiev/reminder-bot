@@ -7,12 +7,10 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
+import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CommandRegistry {
@@ -23,12 +21,18 @@ public class CommandRegistry {
 
     private final Map<String, CallbackBotCommand> callbackBotCommandMap = new HashMap<>();
 
+    private Collection<KeyboardBotCommand> keyboardBotCommands = new ArrayList<>();
+
     private CommandNavigator commandNavigator;
 
     @Autowired
-    public CommandRegistry(Collection<BotCommand> botCommands, Collection<CallbackBotCommand> callbackBotCommands, CommandNavigator commandNavigator) {
+    public CommandRegistry(Collection<BotCommand> botCommands,
+                           Collection<CallbackBotCommand> callbackBotCommands,
+                           Collection<KeyboardBotCommand> keyboardBotCommands,
+                           CommandNavigator commandNavigator) {
         this.commandNavigator = commandNavigator;
 
+        this.keyboardBotCommands.addAll(keyboardBotCommands);
         botCommands.forEach(botCommand -> botCommandRegistryMap.put(botCommand.getCommandIdentifier(), botCommand));
         callbackBotCommands.forEach(callbackBotCommand -> callbackBotCommandMap.put(callbackBotCommand.getName(), callbackBotCommand));
     }
@@ -38,7 +42,11 @@ public class CommandRegistry {
     }
 
     public boolean isCommand(Message message) {
-        return message.isCommand();
+        if (message.isCommand()) {
+            return true;
+        }
+
+        return keyboardBotCommands.stream().anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(message.getText()));
     }
 
     public void processNonCommandUpdate(AbsSender absSender, Message message) {
@@ -50,7 +58,11 @@ public class CommandRegistry {
     }
 
     public boolean executeCommand(AbsSender absSender, Message message) {
-        return executeBotCommand(absSender, message);
+        if (message.isCommand()) {
+            return executeBotCommand(absSender, message);
+        } else {
+            return executeKeyBoardCommand(absSender, message);
+        }
     }
 
     public void executeCallbackCommand(AbsSender absSender, CallbackQuery callbackQuery) {
@@ -60,7 +72,7 @@ public class CommandRegistry {
 
         String[] parameters = Arrays.copyOfRange(commandSplit, 1, commandSplit.length);
 
-        botCommand.processMessage(absSender, callbackQuery,  parameters);
+        botCommand.processMessage(absSender, callbackQuery, parameters);
     }
 
     private boolean executeBotCommand(AbsSender absSender, Message message) {
@@ -81,5 +93,21 @@ public class CommandRegistry {
         }
 
         return false;
+    }
+
+    private boolean executeKeyBoardCommand(AbsSender absSender, Message message) {
+        String command = message.getText();
+        KeyboardBotCommand botCommand = keyboardBotCommands.stream()
+                .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(command))
+                .findFirst()
+                .orElseThrow();
+
+        botCommand.processMessage(absSender, message);
+
+        if (botCommand instanceof NavigableBotCommand) {
+            commandNavigator.push(absSender, message.getChatId(), (NavigableBotCommand) botCommand);
+        }
+
+        return true;
     }
 }

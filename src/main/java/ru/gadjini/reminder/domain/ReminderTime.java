@@ -81,8 +81,28 @@ public class ReminderTime {
 
     public enum Type {
 
-        ONCE,
+        ONCE(0),
 
-        REPEAT
+        REPEAT(1);
+
+        private int code;
+
+        Type(int code) {
+            this.code = code;
+        }
+
+        public static Type fromCode(int code) {
+            for (Type type: values()) {
+                if (type.code == code) {
+                    return type;
+                }
+            }
+
+            throw new IllegalArgumentException();
+        }
+
+        public int getCode() {
+            return code;
+        }
     }
 }

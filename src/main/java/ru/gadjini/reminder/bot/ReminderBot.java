@@ -1,16 +1,22 @@
 package ru.gadjini.reminder.bot;
 
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
+import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResult;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.properties.BotProperties;
-import ru.gadjini.reminder.service.CommandNavigator;
-import ru.gadjini.reminder.service.CommandRegistry;
-import ru.gadjini.reminder.service.MessageService;
+import ru.gadjini.reminder.service.*;
+
+import java.util.List;
 
 @Component
 public class ReminderBot extends TelegramLongPollingBot {
@@ -23,15 +29,23 @@ public class ReminderBot extends TelegramLongPollingBot {
 
     private MessageService messageService;
 
+    private TgUserService tgUserService;
+
+    private ModelMapper modelMapper;
+
     @Autowired
     public ReminderBot(BotProperties botProperties,
                        CommandRegistry commandRegistry,
                        CommandNavigator commandNavigator,
-                       MessageService messageService) {
+                       MessageService messageService,
+                       TgUserService tgUserService,
+                       ModelMapper modelMapper) {
         this.botProperties = botProperties;
         this.commandRegistry = commandRegistry;
         this.commandNavigator = commandNavigator;
         this.messageService = messageService;
+        this.tgUserService = tgUserService;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -48,6 +62,8 @@ public class ReminderBot extends TelegramLongPollingBot {
             }
         } else if (update.hasCallbackQuery()) {
             commandRegistry.executeCallbackCommand(this, update.getCallbackQuery());
+        } else if (update.hasInlineQuery()) {
+            handleInlineQuery(update.getInlineQuery());
         }
     }
 
@@ -59,6 +75,13 @@ public class ReminderBot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         return botProperties.getToken();
+    }
+
+    private void handleInlineQuery(InlineQuery inlineQuery) {
+        List<TgUser> users = tgUserService.getAllUsers();
+        List<InlineQueryResult> inlineQueryResults = modelMapper.convert(users);
+
+        messageService.sendAnswerInlineQuery(inlineQuery.getId(), inlineQueryResults);
     }
 
     private void restoreIfNeed(long chatId, String command) {

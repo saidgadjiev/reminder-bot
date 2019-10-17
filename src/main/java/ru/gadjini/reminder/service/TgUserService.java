@@ -7,6 +7,7 @@ import ru.gadjini.reminder.dao.TgUserDao;
 import ru.gadjini.reminder.domain.TgUser;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,5 +40,9 @@ public class TgUserService {
 
     public int getUserId(String username) {
         return tgUserDao.getUserId(username);
+    }
+
+    public List<TgUser> getAllUsers() {
+        return tgUserDao.getAll();
     }
 }

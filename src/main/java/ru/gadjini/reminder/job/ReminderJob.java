@@ -7,6 +7,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.util.DateUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,9 +38,9 @@ public class ReminderJob {
         this.keyboardService = keyboardService;
     }
 
-    @Scheduled(fixedDelay = 60 * 1000)
+    @Scheduled(fixedDelay = 1000)
     public void sendReminders() {
-        List<Reminder> reminders = reminderService.getReminders(LocalDateTime.now().withSecond(0));
+        List<Reminder> reminders = reminderService.getReminders(DateUtils.now());
 
         for (Reminder reminder : reminders) {
             sendReminder(reminder);

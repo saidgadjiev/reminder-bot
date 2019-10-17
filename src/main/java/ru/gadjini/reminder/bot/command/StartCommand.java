@@ -9,10 +9,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.ReminderRequest;
-import ru.gadjini.reminder.service.MessageService;
-import ru.gadjini.reminder.service.ReminderService;
-import ru.gadjini.reminder.service.ReminderTextBuilder;
-import ru.gadjini.reminder.service.TgUserService;
+import ru.gadjini.reminder.service.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -60,18 +57,21 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     private ReminderTextBuilder reminderTextBuilder;
 
-    public StartCommand(MessageService messageService, ReminderService reminderService, TgUserService tgUserService, ReminderTextBuilder reminderTextBuilder) {
+    private KeyboardService keyboardService;
+
+    public StartCommand(MessageService messageService, ReminderService reminderService, TgUserService tgUserService, ReminderTextBuilder reminderTextBuilder, KeyboardService keyboardService) {
         super(MessagesProperties.START_COMMAND_NAME, "");
         this.messageService = messageService;
         this.reminderService = reminderService;
         this.tgUserService = tgUserService;
         this.reminderTextBuilder = reminderTextBuilder;
+        this.keyboardService = keyboardService;
     }
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] args) {
         tgUserService.createOrUpdateUser(chat.getId(), user);
-        messageService.sendMessageByCode(chat.getId(), MessagesProperties.MESSAGE_START);
+        messageService.sendMessageByCode(chat.getId(), MessagesProperties.MESSAGE_START, keyboardService.getMainMenu());
     }
 
     @Override

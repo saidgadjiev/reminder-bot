@@ -43,7 +43,7 @@ public class CompleteCommand implements CallbackBotCommand {
 
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
         messageService.sendMessageByCode(
-                reminder.getCreator().getChatId(),
+                reminder.getReceiver().getChatId(),
                 MessagesProperties.MESSAGE_REMINDER_COMPLETED_FROM,
                 new Object[]{reminderText, TgUser.USERNAME_START + reminder.getCreator().getUsername()}
         );
