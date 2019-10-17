@@ -4,9 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.service.ResultSetMapper;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +17,12 @@ public class TgUserDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    private ResultSetMapper resultSetMapper;
+
     @Autowired
-    public TgUserDao(JdbcTemplate jdbcTemplate) {
+    public TgUserDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.resultSetMapper = resultSetMapper;
     }
 
     public TgUser getByUserName(String username) {
@@ -29,7 +31,7 @@ public class TgUserDao {
                 preparedStatement -> preparedStatement.setString(1, username),
                 resultSet -> {
                     if (resultSet.next()) {
-                        return map(resultSet);
+                        return resultSetMapper.mapUser(resultSet);
                     }
 
                     return null;
@@ -53,7 +55,7 @@ public class TgUserDao {
 
     public void createOrUpdate(TgUser tgUser) {
         jdbcTemplate.update(
-                "INSERT INTO tg_user(username, chat_id) VALUES (?, ?) ON CONFLICT(chat_id) DO UPDATE SET username = excluded.username",
+                "INSERT INTO tg_user(username, chat_id) VALUES (?, ?) ON CONFLICT(chat_id) DO UPDATE SET username = excluded.username, first_name = excluded.first_name, last_name = excluded.last_name",
                 preparedStatement -> {
                     preparedStatement.setString(1, tgUser.getUsername());
                     preparedStatement.setLong(2, tgUser.getChatId());
@@ -84,17 +86,7 @@ public class TgUserDao {
     public List<TgUser> getAll() {
         return jdbcTemplate.query(
                 "SELECT * FROM tg_user",
-                (rs, rowNum) -> map(rs)
+                (rs, rowNum) -> resultSetMapper.mapUser(rs)
         );
-    }
-
-    private TgUser map(ResultSet resultSet) throws SQLException {
-        TgUser tgUser = new TgUser();
-
-        tgUser.setId(resultSet.getInt(TgUser.ID));
-        tgUser.setChatId(resultSet.getLong(TgUser.CHAT_ID));
-        tgUser.setUsername(resultSet.getString(TgUser.USERNAME));
-
-        return tgUser;
     }
 }

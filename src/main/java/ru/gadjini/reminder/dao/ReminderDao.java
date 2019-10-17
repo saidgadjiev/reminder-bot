@@ -68,18 +68,18 @@ public class ReminderDao {
                         "    )\n" +
                         "    SELECT *\n" +
                         "    FROM rem\n" +
-                        "    WHERE type = 'ONCE'\n" +
+                        "    WHERE type = 0\n" +
                         "      AND :curr_date >= fixed_time\n" +
                         "    UNION ALL\n" +
                         "    SELECT *\n" +
                         "    FROM rem\n" +
-                        "    WHERE type = 'REPEAT'\n" +
+                        "    WHERE type = 1\n" +
                         "      AND last_reminder_at IS NULL\n" +
                         "      AND ((remind_at - :curr_date)::time(0) BETWEEN '00:01:00' AND delay_time)\n" +
                         "    UNION ALL\n" +
                         "    SELECT *\n" +
                         "    FROM rem\n" +
-                        "    WHERE type = 'REPEAT'\n" +
+                        "    WHERE type = 1\n" +
                         "      AND :curr_date > last_reminder_at\n" +
                         "      AND :curr_date - remind_at >= delay_time\n" +
                         "      AND (:curr_date - last_reminder_at)::time(0) >= delay_time\n" +

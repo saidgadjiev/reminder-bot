@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.bot.command.keyboard;
 
+import org.apache.commons.lang3.StringUtils;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
@@ -45,8 +46,13 @@ public class GetFriendRequestsCommand implements KeyboardBotCommand {
         for (TgUser friend : friendRequests) {
             StringBuilder friendRequest = new StringBuilder();
 
-            friendRequest.append("<b>").append(friend.getFio()).append("</b>\n");
-            friendRequest.append(TgUser.USERNAME_START).append(friend.getUsername());
+            if (StringUtils.isNotBlank(friend.getLastName())) {
+                friendRequest.append("<b>").append(friend.getFio()).append("</b>\n");
+                friendRequest.append(TgUser.USERNAME_START).append(friend.getUsername());
+            } else {
+                friendRequest.append("<b>").append(friend.getFio()).append("</b> ");
+                friendRequest.append(TgUser.USERNAME_START).append(friend.getUsername());
+            }
 
             messageService.sendMessage(chatId, friendRequest.toString(), keyboardService.getFriendRequestKeyboard(friend.getId()));
         }

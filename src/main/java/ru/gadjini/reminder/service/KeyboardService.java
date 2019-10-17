@@ -44,7 +44,7 @@ public class KeyboardService {
         List<InlineKeyboardButton> row = new ArrayList<>();
 
         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_DESCRIPTION));
-        inlineKeyboardButton.setCallbackData(BotCommand.COMMAND_INIT_CHARACTER + localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendId);
+        inlineKeyboardButton.setCallbackData(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendId);
         row.add(inlineKeyboardButton);
 
         keyboard.add(row);

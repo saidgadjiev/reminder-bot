@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.bot.command.keyboard;
 
+import org.apache.commons.lang3.StringUtils;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
@@ -38,17 +39,22 @@ public class GeFriendsCommand implements KeyboardBotCommand {
     public void processMessage(AbsSender absSender, Message message) {
         List<TgUser> friends = friendshipService.getFriends(message.getFrom().getUserName());
 
-        sendFriends(friends);
+        sendFriends(message.getChatId(), friends);
     }
 
-    private void sendFriends(List<TgUser> friends) {
+    private void sendFriends(long chatId, List<TgUser> friends) {
         for (TgUser tgUser : friends) {
             StringBuilder friendMsg = new StringBuilder();
 
-            friendMsg.append("</b>").append(tgUser.getFio()).append("</b>\n");
-            friendMsg.append("@").append(tgUser.getUsername());
+            if (StringUtils.isNotBlank(tgUser.getLastName())) {
+                friendMsg.append("<b>").append(tgUser.getFio()).append("</b>\n");
+                friendMsg.append("@").append(tgUser.getUsername());
+            } else {
+                friendMsg.append("<b>").append(tgUser.getFio()).append("</b> ");
+                friendMsg.append("@").append(tgUser.getUsername());
+            }
 
-            messageService.sendMessage(tgUser.getChatId(), friendMsg.toString(), keyboardService.getFriendKeyboard(tgUser.getId()));
+            messageService.sendMessage(chatId, friendMsg.toString(), keyboardService.getFriendKeyboard(tgUser.getId()));
         }
     }
 }

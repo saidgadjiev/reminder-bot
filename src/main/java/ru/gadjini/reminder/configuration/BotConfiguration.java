@@ -7,7 +7,9 @@ import ru.gadjini.reminder.bot.command.HelpCommand;
 import ru.gadjini.reminder.bot.command.StartCommand;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
+import ru.gadjini.reminder.bot.command.callback.AcceptFriendRequestCommand;
 import ru.gadjini.reminder.bot.command.callback.CompleteCommand;
+import ru.gadjini.reminder.bot.command.callback.RejectFriendRequestCommand;
 import ru.gadjini.reminder.bot.command.keyboard.GeFriendsCommand;
 import ru.gadjini.reminder.bot.command.keyboard.GetFriendRequestsCommand;
 import ru.gadjini.reminder.service.*;
@@ -27,9 +29,15 @@ public class BotConfiguration {
     }
 
     @Bean
-    public Collection<CallbackBotCommand> callbackBotCommands(ReminderTextBuilder reminderTextBuilder, ReminderService reminderService, MessageService messageService) {
+    public Collection<CallbackBotCommand> callbackBotCommands(LocalisationService localisationService,
+                                                              ReminderTextBuilder reminderTextBuilder,
+                                                              ReminderService reminderService,
+                                                              FriendshipService friendshipService,
+                                                              MessageService messageService) {
         return new ArrayList<>() {{
             add(new CompleteCommand(reminderTextBuilder, reminderService, messageService));
+            add(new AcceptFriendRequestCommand(localisationService, friendshipService, messageService));
+            add(new RejectFriendRequestCommand(localisationService, friendshipService, messageService));
         }};
     }
 

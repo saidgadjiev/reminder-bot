@@ -42,6 +42,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_FRIEND_REQUEST_ACCEPTED = "message.friend.request.accepted";
 
+    public static final String MESSAGE_FRIEND_REQUEST_REJECTED = "message.friend.request.rejected";
+
     public static final String MESSAGE_NEW_FRIEND_REQUEST = "message.new.friend.request";
 
     public static final String GET_FRIENDS_COMMAND_NAME = "get.friends.command.name";
