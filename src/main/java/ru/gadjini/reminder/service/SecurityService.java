@@ -8,14 +8,10 @@ import ru.gadjini.reminder.security.SecurityContextHolder;
 public class SecurityService {
 
     public User getAuthenticatedUser() {
-        return SecurityContextHolder.getAuthenticatedUser();
-    }
-
-    public void login(User user) {
-        SecurityContextHolder.setAuthenticatedUser(user);
+        return SecurityContextHolder.getContext().getUser();
     }
 
     public void logout() {
-        SecurityContextHolder.removeAuthenticatedUser();
+        SecurityContextHolder.clearContext();
     }
 }

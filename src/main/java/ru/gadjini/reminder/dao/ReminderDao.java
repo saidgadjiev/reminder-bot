@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Reminder;
@@ -16,7 +15,10 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class ReminderDao {
@@ -32,17 +34,28 @@ public class ReminderDao {
     }
 
     public Reminder create(Reminder reminder) {
-        int id = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(Reminder.TYPE)
-                .usingGeneratedKeyColumns(Reminder.ID)
-                .executeAndReturnKey(new HashMap<>() {{
-                    put(Reminder.TEXT, reminder.getText());
-                    put(Reminder.CREATOR_ID, reminder.getCreatorId());
-                    put(Reminder.RECEIVER_ID, reminder.getReceiverId());
-                    put(Reminder.REMIND_AT, reminder.getRemindAt());
-                }}).intValue();
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
 
-        reminder.setId(id);
+        jdbcTemplate.update(
+                connection -> {
+                    PreparedStatement preparedStatement = connection.prepareStatement(
+                            "INSERT INTO reminder(text, creator_id, receiver_id, remind_at) " +
+                                    "SELECT ?, ?, user_id , ? FROM tg_user WHERE username = ? RETURNING *",
+                            Statement.RETURN_GENERATED_KEYS
+                    );
+
+                    preparedStatement.setString(1, reminder.getText());
+                    preparedStatement.setInt(2, reminder.getCreatorId());
+                    preparedStatement.setTimestamp(3, Timestamp.valueOf(reminder.getRemindAt()));
+                    preparedStatement.setString(4, reminder.getReceiver().getUsername());
+
+                    return preparedStatement;
+                },
+                generatedKeyHolder
+        );
+        int key = ((Number) generatedKeyHolder.getKeys().get("id")).intValue();
+
+        reminder.setId(key);
 
         return reminder;
     }

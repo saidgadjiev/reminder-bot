@@ -2,10 +2,11 @@ CREATE TABLE IF NOT EXISTS tg_user
 (
     id         SERIAL PRIMARY KEY,
     user_id    INTEGER      NOT NULL UNIQUE,
-    username   VARCHAR(128) UNIQUE,
+    username   VARCHAR(128) NOT NULL UNIQUE,
     first_name VARCHAR(128) NOT NULL,
     last_name  VARCHAR(128),
-    chat_id    INTEGER      NOT NULL UNIQUE
+    chat_id    INTEGER      NOT NULL UNIQUE,
+    UNIQUE (user_id, chat_id)
 );
 
 CREATE TABLE IF NOT EXISTS reminder

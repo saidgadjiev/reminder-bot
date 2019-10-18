@@ -86,7 +86,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
     }
 
     @Override
-    public void processNonCommandUpdate(AbsSender absSender, Message message) {
+    public void processNonCommandUpdate(Message message) {
         String text = message.getText().trim();
         ReminderRequest reminderRequest = null;
 
@@ -100,8 +100,6 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         if (reminderRequest == null) {
             return;
         }
-        reminderRequest.setCreatorId(message.getFrom().getId());
-
         reminderService.createReminder(reminderRequest);
         TgUser tgUser = tgUserService.getUserByUserName(reminderRequest.getReceiverName());
 

@@ -1,17 +1,12 @@
 package ru.gadjini.reminder.bot.command.api;
 
-import org.telegram.telegrambots.meta.bots.AbsSender;
-
 public class DefaultMemento implements CommandMemento {
-
-    private final AbsSender absSender;
 
     private final long chatId;
 
     private NavigableBotCommand botCommand;
 
-    public DefaultMemento(AbsSender absSender, long chatId, NavigableBotCommand botCommand) {
-        this.absSender = absSender;
+    public DefaultMemento(long chatId, NavigableBotCommand botCommand) {
         this.chatId = chatId;
         this.botCommand = botCommand;
     }
@@ -19,10 +14,6 @@ public class DefaultMemento implements CommandMemento {
     @Override
     public NavigableBotCommand getOriginator() {
         return botCommand;
-    }
-
-    public AbsSender getAbsSender() {
-        return absSender;
     }
 
     public long getChatId() {

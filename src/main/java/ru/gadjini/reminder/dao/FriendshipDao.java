@@ -29,7 +29,7 @@ public class FriendshipDao {
 
     public void createFriendship(int userOneUserId, String userTwoUsername, Friendship.Status status) {
         jdbcTemplate.update(
-                "INSERT INTO friendship(user_one_id, user_two_id, status) SELECT ?, user_id, ? FROM tg_user WHERE username = ?",
+                "INSERT INTO friendship(user_one_id, user_two_id, status) SELECT ?, user_id, ? FROM tg_user WHERE username = ? RETURNING tg_user.id, ",
                 ps -> {
                     ps.setInt(1, userOneUserId);
                     ps.setInt(2, status.getCode());
@@ -49,23 +49,30 @@ public class FriendshipDao {
         );
     }
 
-    public void updateFriendshipStatus(int userTwoId, int userOneId, Friendship.Status status) {
+    public void updateFriendshipStatus(int userId, int friendId, Friendship.Status status) {
         jdbcTemplate.update(
                 "UPDATE friendship SET status = ? WHERE user_one_id = ? AND user_two_id = ?",
                 ps -> {
                     ps.setInt(1, status.ordinal());
-                    ps.setInt(2, userOneId);
-                    ps.setInt(3, userTwoId);
+                    ps.setInt(2, friendId);
+                    ps.setInt(3, userId);
                 }
         );
     }
 
-    public void deleteFriendShip(int userTwoId, int userOneId) {
+    public void deleteFriend(int userId, int friendId) {
+        namedParameterJdbcTemplate.update(
+                "DELETE FROM friendship WHERE (user_one_id = :user_id AND user_two_id = :friend_id) OR (user_one_id = :friend_id AND user_two_id = :user_id)",
+                new MapSqlParameterSource().addValue("user_id", userId).addValue("friend_id", friendId)
+        );
+    }
+
+    public void deleteFriendRequest(int userId, int friendId) {
         jdbcTemplate.update(
                 "DELETE FROM friendship WHERE user_one_id = ? AND user_two_id = ?",
                 ps -> {
-                    ps.setInt(1, userOneId);
-                    ps.setInt(2, userTwoId);
+                    ps.setInt(1, userId);
+                    ps.setInt(2, friendId);
                 }
         );
     }

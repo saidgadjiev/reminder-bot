@@ -38,7 +38,7 @@ public class ReminderJob {
         this.keyboardService = keyboardService;
     }
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 60 * 1000)
     public void sendReminders() {
         List<Reminder> reminders = reminderService.getReminders(DateUtils.now());
 

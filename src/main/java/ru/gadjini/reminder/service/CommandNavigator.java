@@ -2,7 +2,6 @@ package ru.gadjini.reminder.service;
 
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.CommandMemento;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 
@@ -16,11 +15,11 @@ public class CommandNavigator {
 
     private ConcurrentHashMap<Long, NavigableBotCommand> currentCommand = new ConcurrentHashMap<>();
 
-    public void push(AbsSender absSender, long chatId, NavigableBotCommand navigableBotCommand) {
+    public void push(long chatId, NavigableBotCommand navigableBotCommand) {
         if (currentCommand.containsKey(chatId)) {
             history.putIfAbsent(chatId, new Stack<>());
 
-            history.get(chatId).add(currentCommand.get(chatId).save(absSender, chatId));
+            history.get(chatId).add(currentCommand.get(chatId).save(chatId));
             currentCommand.put(chatId, navigableBotCommand);
         } else {
             currentCommand.put(chatId, navigableBotCommand);

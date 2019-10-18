@@ -3,6 +3,7 @@ package ru.gadjini.reminder.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.ReminderTime;
@@ -10,6 +11,8 @@ import ru.gadjini.reminder.domain.ReminderTime;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class ReminderTimeDao {
@@ -25,13 +28,7 @@ public class ReminderTimeDao {
         new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(ReminderTime.TYPE)
                 .usingGeneratedKeyColumns(ReminderTime.ID)
-                .execute(new MapSqlParameterSource()
-                        .addValue(ReminderTime.TYPE_COL, reminderTime.getType().getCode())
-                        .addValue(ReminderTime.FIXED_TIME, reminderTime.getFixedTime() != null ? Timestamp.valueOf(reminderTime.getFixedTime()) : null)
-                        .addValue(ReminderTime.DELAY_TIME, reminderTime.getDelayTime() != null ? Time.valueOf(reminderTime.getDelayTime()) : null)
-                        .addValue(ReminderTime.REMINDER_ID, reminderTime.getReminderId())
-                        .addValue(ReminderTime.LAST_REMINDER_AT, reminderTime.getLastReminderAt())
-                );
+                .execute(sqlParameterSource(reminderTime));
     }
 
     public void delete(int id) {
@@ -46,5 +43,31 @@ public class ReminderTimeDao {
                     ps.setInt(2, id);
                 }
         );
+    }
+
+    public void create(List<ReminderTime> reminderTimes) {
+        new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(ReminderTime.TYPE)
+                .usingGeneratedKeyColumns(ReminderTime.ID)
+                .executeBatch(sqlParameterSources(reminderTimes));
+    }
+
+    private SqlParameterSource sqlParameterSource(ReminderTime reminderTime) {
+        return new MapSqlParameterSource()
+                .addValue(ReminderTime.TYPE_COL, reminderTime.getType().getCode())
+                .addValue(ReminderTime.FIXED_TIME, reminderTime.getFixedTime() != null ? Timestamp.valueOf(reminderTime.getFixedTime()) : null)
+                .addValue(ReminderTime.DELAY_TIME, reminderTime.getDelayTime() != null ? Time.valueOf(reminderTime.getDelayTime()) : null)
+                .addValue(ReminderTime.REMINDER_ID, reminderTime.getReminderId())
+                .addValue(ReminderTime.LAST_REMINDER_AT, reminderTime.getLastReminderAt());
+    }
+
+    private SqlParameterSource[] sqlParameterSources(List<ReminderTime> reminderTimes) {
+        List<SqlParameterSource> sqlParameterSources = new ArrayList<>();
+
+        for (ReminderTime reminderTime: reminderTimes) {
+            sqlParameterSources.add(sqlParameterSource(reminderTime));
+        }
+
+        return sqlParameterSources.toArray(new SqlParameterSource[0]);
     }
 }

@@ -1,20 +1,18 @@
 package ru.gadjini.reminder.security;
 
-import org.telegram.telegrambots.meta.api.objects.User;
-
 public class SecurityContextHolder {
 
-    private static final ThreadLocal<User> AUTHENTICATED_USERS = new ThreadLocal<>();
+    private static final ThreadLocal<SecurityContext> SECURITY_CONTEXT_THREAD_LOCAL = new ThreadLocal<>();
 
-    public static User getAuthenticatedUser() {
-        return AUTHENTICATED_USERS.get();
+    public static SecurityContext getContext() {
+        return SECURITY_CONTEXT_THREAD_LOCAL.get();
     }
 
-    public static void setAuthenticatedUser(User user) {
-        AUTHENTICATED_USERS.set(user);
+    public static void setContext(SecurityContext securityContext) {
+        SECURITY_CONTEXT_THREAD_LOCAL.set(securityContext);
     }
 
-    public static void removeAuthenticatedUser() {
-        AUTHENTICATED_USERS.remove();
+    public static void clearContext() {
+        SECURITY_CONTEXT_THREAD_LOCAL.remove();
     }
 }

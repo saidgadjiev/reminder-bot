@@ -34,6 +34,8 @@ public class TgUserService {
         tgUser.setUserId(user.getId());
         tgUser.setChatId(chatId);
         tgUser.setUsername(user.getUserName());
+        tgUser.setFirstName(user.getFirstName());
+        tgUser.setLastName(user.getLastName());
 
         tgUserDao.createOrUpdate(tgUser);
     }

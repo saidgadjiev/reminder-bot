@@ -1,7 +1,6 @@
 package ru.gadjini.reminder.bot.command.callback;
 
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.FriendshipService;
@@ -28,8 +27,8 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(AbsSender absSender, CallbackQuery callbackQuery, String[] arguments) {
-        friendshipService.rejectFriendRequest(callbackQuery.getFrom().getId(), Integer.parseInt(arguments[0]));
+    public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
+        friendshipService.rejectFriendRequest(Integer.parseInt(arguments[0]));
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED);
         messageService.deleteMessage(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
     }

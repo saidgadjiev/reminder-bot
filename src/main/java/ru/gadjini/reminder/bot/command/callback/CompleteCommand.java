@@ -1,7 +1,6 @@
 package ru.gadjini.reminder.bot.command.callback;
 
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
@@ -30,7 +29,7 @@ public class CompleteCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(AbsSender absSender, CallbackQuery callbackQuery, String[] arguments) {
+    public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
         int reminderId = Integer.parseInt(arguments[0]);
         Reminder reminder = reminderService.deleteReminder(reminderId);
         String reminderText = reminderTextBuilder.create(reminder.getText(), reminder.getRemindAt());

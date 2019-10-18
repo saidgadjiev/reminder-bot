@@ -3,6 +3,7 @@ package ru.gadjini.reminder.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
@@ -12,6 +13,7 @@ import ru.gadjini.reminder.util.DateUtils;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,11 +28,14 @@ public class ReminderService {
 
     private ReminderTimeService reminderTimeService;
 
+    private SecurityService securityService;
+
     @Autowired
-    public ReminderService(ReminderDao reminderDao, TgUserService tgUserService, ReminderTimeService reminderTimeService) {
+    public ReminderService(ReminderDao reminderDao, TgUserService tgUserService, ReminderTimeService reminderTimeService, SecurityService securityService) {
         this.reminderDao = reminderDao;
         this.tgUserService = tgUserService;
         this.reminderTimeService = reminderTimeService;
+        this.securityService = securityService;
     }
 
     @Transactional
@@ -40,26 +45,28 @@ public class ReminderService {
         reminder.setRemindAt(reminderRequest.getRemindAt());
         reminder.setText(reminderRequest.getText());
 
-        reminder.setCreatorId(reminderRequest.getCreatorId());
+        User user = securityService.getAuthenticatedUser();
+        reminder.setCreatorId(user.getId());
 
-        int receiverId = tgUserService.getUserId(reminderRequest.getReceiverName());
-        reminder.setReceiverId(receiverId);
-
+        TgUser receiver = new TgUser();
+        receiver.setUsername(reminderRequest.getReceiverName());
+        reminder.setReceiver(receiver);
         reminder = reminderDao.create(reminder);
 
+        List<ReminderTime> reminderTimes = new ArrayList<>();
         if (reminder.getRemindAt().minusHours(1).isAfter(DateUtils.now())) {
             ReminderTime oneHourFixedTime = new ReminderTime();
             oneHourFixedTime.setType(ReminderTime.Type.ONCE);
             oneHourFixedTime.setReminderId(reminder.getId());
             oneHourFixedTime.setFixedTime(reminder.getRemindAt().minusHours(1));
-            reminderTimeService.create(oneHourFixedTime);
+            reminderTimes.add(oneHourFixedTime);
         }
 
         ReminderTime itsTimeFixedTime = new ReminderTime();
         itsTimeFixedTime.setType(ReminderTime.Type.ONCE);
         itsTimeFixedTime.setFixedTime(reminder.getRemindAt());
         itsTimeFixedTime.setReminderId(reminder.getId());
-        reminderTimeService.create(itsTimeFixedTime);
+        reminderTimes.add(itsTimeFixedTime);
 
         ReminderTime fiveMinuteDelayTime = new ReminderTime();
         fiveMinuteDelayTime.setType(ReminderTime.Type.REPEAT);
@@ -68,7 +75,9 @@ public class ReminderService {
         if (reminder.getRemindAt().minusMinutes(5).isBefore(DateUtils.now())) {
             fiveMinuteDelayTime.setLastReminderAt(DateUtils.now());
         }
-        reminderTimeService.create(fiveMinuteDelayTime);
+        reminderTimes.add(fiveMinuteDelayTime);
+
+        reminderTimeService.create(reminderTimes);
     }
 
     public List<Reminder> getReminders(LocalDateTime localDateTime) {

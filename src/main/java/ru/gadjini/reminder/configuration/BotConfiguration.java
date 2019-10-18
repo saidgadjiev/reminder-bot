@@ -9,6 +9,7 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.callback.AcceptFriendRequestCommand;
 import ru.gadjini.reminder.bot.command.callback.CompleteCommand;
+import ru.gadjini.reminder.bot.command.callback.DeleteFriendCommand;
 import ru.gadjini.reminder.bot.command.callback.RejectFriendRequestCommand;
 import ru.gadjini.reminder.bot.command.keyboard.GeFriendsCommand;
 import ru.gadjini.reminder.bot.command.keyboard.GetFriendRequestsCommand;
@@ -40,6 +41,7 @@ public class BotConfiguration {
             add(new CompleteCommand(reminderTextBuilder, reminderService, messageService));
             add(new AcceptFriendRequestCommand(localisationService, friendshipService, messageService));
             add(new RejectFriendRequestCommand(localisationService, friendshipService, messageService));
+            add(new DeleteFriendCommand(messageService, friendshipService, localisationService));
         }};
     }
 

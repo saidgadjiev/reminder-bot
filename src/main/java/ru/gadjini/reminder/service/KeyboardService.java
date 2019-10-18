@@ -46,6 +46,10 @@ public class KeyboardService {
         inlineKeyboardButton.setCallbackData(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendId);
         row.add(inlineKeyboardButton);
 
+        InlineKeyboardButton deleteFriendButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.DELETE_FRIEND_COMMAND_DESCRIPTION));
+        inlineKeyboardButton.setCallbackData(localisationService.getMessage(MessagesProperties.DELETE_FRIEND_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendId);
+        row.add(deleteFriendButton);
+
         keyboard.add(row);
         inlineKeyboardMarkup.setKeyboard(keyboard);
 

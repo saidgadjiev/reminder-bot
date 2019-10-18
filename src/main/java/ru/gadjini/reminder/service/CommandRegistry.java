@@ -53,7 +53,7 @@ public class CommandRegistry {
         NavigableBotCommand navigableBotCommand = commandNavigator.getCurrentCommand(message.getChatId());
 
         if (navigableBotCommand != null) {
-            navigableBotCommand.processNonCommandUpdate(absSender, message);
+            navigableBotCommand.processNonCommandUpdate(message);
         }
     }
 
@@ -72,7 +72,7 @@ public class CommandRegistry {
 
         String[] parameters = Arrays.copyOfRange(commandSplit, 1, commandSplit.length);
 
-        botCommand.processMessage(absSender, callbackQuery, parameters);
+        botCommand.processMessage(callbackQuery, parameters);
     }
 
     private boolean executeBotCommand(AbsSender absSender, Message message) {
@@ -86,7 +86,7 @@ public class CommandRegistry {
             botCommand.processMessage(absSender, message, parameters);
 
             if (botCommand instanceof NavigableBotCommand) {
-                commandNavigator.push(absSender, message.getChatId(), (NavigableBotCommand) botCommand);
+                commandNavigator.push(message.getChatId(), (NavigableBotCommand) botCommand);
             }
 
             return true;
@@ -102,10 +102,10 @@ public class CommandRegistry {
                 .findFirst()
                 .orElseThrow();
 
-        botCommand.processMessage(absSender, message);
+        botCommand.processMessage(message);
 
         if (botCommand instanceof NavigableBotCommand) {
-            commandNavigator.push(absSender, message.getChatId(), (NavigableBotCommand) botCommand);
+            commandNavigator.push(message.getChatId(), (NavigableBotCommand) botCommand);
         }
 
         return true;

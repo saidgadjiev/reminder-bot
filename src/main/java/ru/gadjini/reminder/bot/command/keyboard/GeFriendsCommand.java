@@ -2,7 +2,6 @@ package ru.gadjini.reminder.bot.command.keyboard;
 
 import org.apache.commons.lang3.StringUtils;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
@@ -36,8 +35,8 @@ public class GeFriendsCommand implements KeyboardBotCommand {
     }
 
     @Override
-    public void processMessage(AbsSender absSender, Message message) {
-        List<TgUser> friends = friendshipService.getFriends(message.getFrom().getId());
+    public void processMessage(Message message) {
+        List<TgUser> friends = friendshipService.getFriends();
 
         sendFriends(message.getChatId(), friends);
     }

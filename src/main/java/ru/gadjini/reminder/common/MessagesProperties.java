@@ -57,4 +57,10 @@ public class MessagesProperties {
     public static final String CREATE_REMINDER_COMMAND_DESCRIPTION = "create.reminder.command.description";
 
     public static final String GO_BACK_COMMAND_NAME = "go.back.command.name";
+
+    public static final String DELETE_FRIEND_COMMAND_NAME = "delete.friend.command.name";
+
+    public static final String DELETE_FRIEND_COMMAND_DESCRIPTION = "delete.friend.command.description";
+
+    public static final String MESSAGE_FRIEND_DELETED = "message.friend.deleted";
 }

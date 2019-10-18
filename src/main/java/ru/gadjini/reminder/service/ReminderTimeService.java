@@ -6,6 +6,7 @@ import ru.gadjini.reminder.dao.ReminderTimeDao;
 import ru.gadjini.reminder.domain.ReminderTime;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class ReminderTimeService {
@@ -19,6 +20,10 @@ public class ReminderTimeService {
 
     public void create(ReminderTime reminderTime) {
         reminderTimeDao.create(reminderTime);
+    }
+
+    public void create(List<ReminderTime> reminderTimes) {
+        reminderTimeDao.create(reminderTimes);
     }
 
     public void deleteReminderTime(int id) {

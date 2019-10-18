@@ -1,17 +1,22 @@
 package ru.gadjini.reminder.bot;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.properties.BotProperties;
-import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.service.CommandNavigator;
+import ru.gadjini.reminder.service.CommandRegistry;
+import ru.gadjini.reminder.service.MessageService;
 
 @Component
-public class ReminderBot extends TelegramLongPollingBot {
+public class ReminderBot extends WorkerUpdatesBot {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReminderBot.class);
 
     private BotProperties botProperties;
 
@@ -21,35 +26,21 @@ public class ReminderBot extends TelegramLongPollingBot {
 
     private MessageService messageService;
 
-    private TgUserService tgUserService;
-
-    private ModelMapper modelMapper;
-
-    private SecurityService securityService;
-
     @Autowired
     public ReminderBot(BotProperties botProperties,
                        CommandRegistry commandRegistry,
                        CommandNavigator commandNavigator,
-                       MessageService messageService,
-                       TgUserService tgUserService,
-                       ModelMapper modelMapper,
-                       SecurityService securityService) {
+                       MessageService messageService) {
         this.botProperties = botProperties;
         this.commandRegistry = commandRegistry;
         this.commandNavigator = commandNavigator;
         this.messageService = messageService;
-        this.tgUserService = tgUserService;
-        this.modelMapper = modelMapper;
-        this.securityService = securityService;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
         try {
             if (update.hasMessage()) {
-                securityService.login(update.getMessage().getFrom());
-
                 restoreIfNeed(update.getMessage().getChatId(), update.getMessage().getText().trim());
 
                 if (commandRegistry.isCommand(update.getMessage())) {
@@ -60,12 +51,10 @@ public class ReminderBot extends TelegramLongPollingBot {
                     commandRegistry.processNonCommandUpdate(this, update.getMessage());
                 }
             } else if (update.hasCallbackQuery()) {
-                securityService.login(update.getCallbackQuery().getFrom());
-
                 commandRegistry.executeCallbackCommand(this, update.getCallbackQuery());
             }
-        } finally {
-            securityService.logout();
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
         }
     }
 
