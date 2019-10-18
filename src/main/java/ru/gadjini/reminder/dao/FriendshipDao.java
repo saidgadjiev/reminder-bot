@@ -2,6 +2,8 @@ package ru.gadjini.reminder.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
@@ -14,60 +16,71 @@ public class FriendshipDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private ResultSetMapper resultSetMapper;
 
     @Autowired
-    public FriendshipDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper) {
+    public FriendshipDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, ResultSetMapper resultSetMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.resultSetMapper = resultSetMapper;
     }
 
-    public List<TgUser> getFriendRequests(String username) {
+    public void createFriendship(int userOneUserId, String userTwoUsername, Friendship.Status status) {
+        jdbcTemplate.update(
+                "INSERT INTO friendship(user_one_id, user_two_id, status) SELECT ?, user_id, ? FROM tg_user WHERE username = ?",
+                ps -> {
+                    ps.setInt(1, userOneUserId);
+                    ps.setInt(2, status.getCode());
+                    ps.setString(3, userTwoUsername);
+                }
+        );
+    }
+
+    public List<TgUser> getFriendRequests(int userId) {
         return jdbcTemplate.query(
                 "SELECT tu.*\n" +
                         "FROM friendship f INNER JOIN tg_user tu on f.user_one_id = tu.id\n" +
                         "WHERE status = 0\n" +
-                        "  AND user_two_id = (SELECT id FROM tg_user WHERE username = ?)",
-                ps -> ps.setString(1, username),
+                        "  AND user_two_id = ?",
+                ps -> ps.setInt(1, userId),
                 (rs, rowNum) -> resultSetMapper.mapUser(rs)
         );
     }
 
-    public void updateFriendshipStatus(String userTwoName, int userOneId, Friendship.Status status) {
+    public void updateFriendshipStatus(int userTwoId, int userOneId, Friendship.Status status) {
         jdbcTemplate.update(
-                "UPDATE friendship SET status = ? WHERE user_one_id = ? AND user_two_id = (SELECT id FROM tg_user WHERE username = ?)",
+                "UPDATE friendship SET status = ? WHERE user_one_id = ? AND user_two_id = ?",
                 ps -> {
                     ps.setInt(1, status.ordinal());
                     ps.setInt(2, userOneId);
-                    ps.setString(3, userTwoName);
+                    ps.setInt(3, userTwoId);
                 }
         );
     }
 
-    public void deleteFriendShip(String userTwoName, int userOneId) {
+    public void deleteFriendShip(int userTwoId, int userOneId) {
         jdbcTemplate.update(
-                "DELETE FROM friendship WHERE user_one_id = ? AND user_two_id = (SELECT id FROM tg_user WHERE username = ?)",
+                "DELETE FROM friendship WHERE user_one_id = ? AND user_two_id = ?",
                 ps -> {
                     ps.setInt(1, userOneId);
-                    ps.setString(2, userTwoName);
+                    ps.setInt(2, userTwoId);
                 }
         );
     }
 
-    public List<TgUser> getFriends(String username) {
-        return jdbcTemplate.query(
+    public List<TgUser> getFriends(int userId) {
+        return namedParameterJdbcTemplate.query(
                 "SELECT *\n" +
                         "FROM friendship f,\n" +
-                        "     tg_user tu,\n" +
-                        "     (SELECT id\n" +
-                        "      FROM tg_user\n" +
-                        "      WHERE username = ?) curr_usr\n" +
+                        "     tg_user tu\n" +
                         "WHERE CASE\n" +
-                        "          WHEN f.user_one_id = curr_usr.id THEN f.user_two_id = tu.id\n" +
-                        "          WHEN f.user_two_id = curr_usr.id THEN f.user_one_id = tu.id\n" +
+                        "          WHEN f.user_one_id = :id THEN f.user_two_id = tu.id\n" +
+                        "          WHEN f.user_two_id = :id THEN f.user_one_id = tu.id\n" +
                         "          ELSE false END\n" +
                         "  AND f.status = 1",
-                ps -> ps.setString(1, username),
+                new MapSqlParameterSource().addValue(":id", userId),
                 (rs, rowNum) -> resultSetMapper.mapUser(rs)
         );
     }

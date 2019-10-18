@@ -4,6 +4,7 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -80,6 +81,11 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
     }
 
     @Override
+    public ReplyKeyboardMarkup silentRestore() {
+        return keyboardService.getMainMenu();
+    }
+
+    @Override
     public void processNonCommandUpdate(AbsSender absSender, Message message) {
         String text = message.getText().trim();
         ReminderRequest reminderRequest = null;
@@ -94,14 +100,14 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         if (reminderRequest == null) {
             return;
         }
-        reminderRequest.setCreatorName(message.getFrom().getUserName());
+        reminderRequest.setCreatorId(message.getFrom().getId());
 
         reminderService.createReminder(reminderRequest);
         TgUser tgUser = tgUserService.getUserByUserName(reminderRequest.getReceiverName());
 
         String reminderText = reminderTextBuilder.create(reminderRequest.getText(), reminderRequest.getRemindAt());
         messageService.sendMessageByCode(tgUser.getChatId(), MessagesProperties.MESSAGE_REMINDER_FROM,
-                new Object[]{TgUser.USERNAME_START + reminderRequest.getCreatorName(), reminderText});
+                new Object[]{TgUser.USERNAME_START + message.getFrom().getUserName(), reminderText});
         messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED,
                 new Object[]{reminderText, TgUser.USERNAME_START + reminderRequest.getReceiverName()});
     }

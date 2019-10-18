@@ -6,7 +6,7 @@ public class ReminderRequest {
 
     private String receiverName;
 
-    private String creatorName;
+    private int creatorId;
 
     private String text;
 
@@ -36,19 +36,19 @@ public class ReminderRequest {
         this.remindAt = remindAt;
     }
 
-    public String getCreatorName() {
-        return creatorName;
+    public int getCreatorId() {
+        return creatorId;
     }
 
-    public void setCreatorName(String creatorName) {
-        this.creatorName = creatorName;
+    public void setCreatorId(int creatorId) {
+        this.creatorId = creatorId;
     }
 
     @Override
     public String toString() {
         return "ReminderRequest{" +
                 "receiverName='" + receiverName + '\'' +
-                ", creatorName='" + creatorName + '\'' +
+                ", creatorId='" + creatorId + '\'' +
                 ", text='" + text + '\'' +
                 ", remindAt=" + remindAt +
                 '}';

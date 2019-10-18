@@ -2,7 +2,6 @@ package ru.gadjini.reminder.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -81,6 +80,20 @@ public class KeyboardService {
 
         replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
             add(localisationService.getMessage(MessagesProperties.GET_FRIEND_REQUESTS_COMMAND_NAME));
+        }});
+
+        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
+            add(localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME));
+        }});
+
+        return replyKeyboardMarkup;
+    }
+
+    public ReplyKeyboardMarkup goBackCommand() {
+        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
+
+        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
+            add(MessagesProperties.GO_BACK_COMMAND_NAME);
         }});
 
         return replyKeyboardMarkup;

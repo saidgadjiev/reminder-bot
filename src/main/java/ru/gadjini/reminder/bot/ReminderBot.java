@@ -1,22 +1,14 @@
 package ru.gadjini.reminder.bot;
 
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
-import org.telegram.telegrambots.meta.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.inlinequery.InlineQuery;
-import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResult;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.service.*;
-
-import java.util.List;
 
 @Component
 public class ReminderBot extends TelegramLongPollingBot {
@@ -33,37 +25,47 @@ public class ReminderBot extends TelegramLongPollingBot {
 
     private ModelMapper modelMapper;
 
+    private SecurityService securityService;
+
     @Autowired
     public ReminderBot(BotProperties botProperties,
                        CommandRegistry commandRegistry,
                        CommandNavigator commandNavigator,
                        MessageService messageService,
                        TgUserService tgUserService,
-                       ModelMapper modelMapper) {
+                       ModelMapper modelMapper,
+                       SecurityService securityService) {
         this.botProperties = botProperties;
         this.commandRegistry = commandRegistry;
         this.commandNavigator = commandNavigator;
         this.messageService = messageService;
         this.tgUserService = tgUserService;
         this.modelMapper = modelMapper;
+        this.securityService = securityService;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage()) {
-            restoreIfNeed(update.getMessage().getChatId(), update.getMessage().getText().trim());
+        try {
+            if (update.hasMessage()) {
+                securityService.login(update.getMessage().getFrom());
 
-            if (commandRegistry.isCommand(update.getMessage())) {
-                if (!commandRegistry.executeCommand(this, update.getMessage())) {
-                    messageService.sendMessageByCode(update.getMessage().getChatId(), MessagesProperties.MESSAGE_UNKNOWN_COMMAND);
+                restoreIfNeed(update.getMessage().getChatId(), update.getMessage().getText().trim());
+
+                if (commandRegistry.isCommand(update.getMessage())) {
+                    if (!commandRegistry.executeCommand(this, update.getMessage())) {
+                        messageService.sendMessageByCode(update.getMessage().getChatId(), MessagesProperties.MESSAGE_UNKNOWN_COMMAND);
+                    }
+                } else {
+                    commandRegistry.processNonCommandUpdate(this, update.getMessage());
                 }
-            } else {
-                commandRegistry.processNonCommandUpdate(this, update.getMessage());
+            } else if (update.hasCallbackQuery()) {
+                securityService.login(update.getCallbackQuery().getFrom());
+
+                commandRegistry.executeCallbackCommand(this, update.getCallbackQuery());
             }
-        } else if (update.hasCallbackQuery()) {
-            commandRegistry.executeCallbackCommand(this, update.getCallbackQuery());
-        } else if (update.hasInlineQuery()) {
-            handleInlineQuery(update.getInlineQuery());
+        } finally {
+            securityService.logout();
         }
     }
 
@@ -75,13 +77,6 @@ public class ReminderBot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         return botProperties.getToken();
-    }
-
-    private void handleInlineQuery(InlineQuery inlineQuery) {
-        List<TgUser> users = tgUserService.getAllUsers();
-        List<InlineQueryResult> inlineQueryResults = modelMapper.convert(users);
-
-        messageService.sendAnswerInlineQuery(inlineQuery.getId(), inlineQueryResults);
     }
 
     private void restoreIfNeed(long chatId, String command) {

@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.service;
 
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.CommandMemento;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
@@ -40,6 +41,17 @@ public class CommandNavigator {
 
         originator.restore(commandMemento);
         currentCommand.put(chatId, originator);
+    }
+
+    public ReplyKeyboardMarkup silentPop(long chatId) {
+        CommandMemento commandMemento = history.get(chatId).pop();
+        NavigableBotCommand originator = commandMemento.getOriginator();
+
+        ReplyKeyboardMarkup replyKeyboardMarkup = originator.silentRestore();
+
+        currentCommand.put(chatId, originator);
+
+        return replyKeyboardMarkup;
     }
 
     public NavigableBotCommand getCurrentCommand(long chatId) {

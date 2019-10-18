@@ -18,6 +18,8 @@ public class TgUser {
 
     public static final String LAST_NAME = "last_name";
 
+    public static final String USER_ID = "user_id";
+
     private int id;
 
     private long chatId;
@@ -27,6 +29,8 @@ public class TgUser {
     private String firstName;
 
     private String lastName;
+
+    private int userId;
 
     public int getId() {
         return id;
@@ -66,6 +70,14 @@ public class TgUser {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getFio() {

@@ -37,7 +37,7 @@ public class GeFriendsCommand implements KeyboardBotCommand {
 
     @Override
     public void processMessage(AbsSender absSender, Message message) {
-        List<TgUser> friends = friendshipService.getFriends(message.getFrom().getUserName());
+        List<TgUser> friends = friendshipService.getFriends(message.getFrom().getId());
 
         sendFriends(message.getChatId(), friends);
     }

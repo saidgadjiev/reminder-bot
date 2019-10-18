@@ -2,14 +2,24 @@ package ru.gadjini.reminder.domain;
 
 public class Friendship {
 
-    private TgUser userOne;
+    private int userOneId;
 
-    public TgUser getUserOne() {
-        return userOne;
+    private int userTwoId;
+
+    public int getUserOneId() {
+        return userOneId;
     }
 
-    public void setUserOne(TgUser userOne) {
-        this.userOne = userOne;
+    public void setUserOneId(int userOneId) {
+        this.userOneId = userOneId;
+    }
+
+    public int getUserTwoId() {
+        return userTwoId;
+    }
+
+    public void setUserTwoId(int userTwoId) {
+        this.userTwoId = userTwoId;
     }
 
     public enum Status {

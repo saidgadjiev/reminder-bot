@@ -12,6 +12,8 @@ import ru.gadjini.reminder.bot.command.callback.CompleteCommand;
 import ru.gadjini.reminder.bot.command.callback.RejectFriendRequestCommand;
 import ru.gadjini.reminder.bot.command.keyboard.GeFriendsCommand;
 import ru.gadjini.reminder.bot.command.keyboard.GetFriendRequestsCommand;
+import ru.gadjini.reminder.bot.command.keyboard.GoBackCommand;
+import ru.gadjini.reminder.bot.command.keyboard.SendFriendRequestCommand;
 import ru.gadjini.reminder.service.*;
 
 import java.util.ArrayList;
@@ -42,10 +44,16 @@ public class BotConfiguration {
     }
 
     @Bean
-    public Collection<KeyboardBotCommand> keyboardBotCommands(KeyboardService keyboardService, FriendshipService friendshipService, MessageService messageService, LocalisationService localisationService) {
+    public Collection<KeyboardBotCommand> keyboardBotCommands(KeyboardService keyboardService,
+                                                              FriendshipService friendshipService,
+                                                              MessageService messageService,
+                                                              LocalisationService localisationService,
+                                                              CommandNavigator commandNavigator) {
         return new ArrayList<>() {{
             add(new GeFriendsCommand(keyboardService, friendshipService, messageService, localisationService));
             add(new GetFriendRequestsCommand(keyboardService, localisationService, friendshipService, messageService));
+            add(new SendFriendRequestCommand(localisationService, friendshipService, messageService, keyboardService, commandNavigator));
+            add(new GoBackCommand(localisationService, commandNavigator));
         }};
     }
 }

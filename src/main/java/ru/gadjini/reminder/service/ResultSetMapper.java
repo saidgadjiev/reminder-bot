@@ -17,6 +17,7 @@ public class ResultSetMapper {
         tgUser.setUsername(resultSet.getString(TgUser.USERNAME));
         tgUser.setFirstName(resultSet.getString(TgUser.FIRST_NAME));
         tgUser.setLastName(resultSet.getString(TgUser.LAST_NAME));
+        tgUser.setUserId(resultSet.getInt(TgUser.USER_ID));
 
         return tgUser;
     }

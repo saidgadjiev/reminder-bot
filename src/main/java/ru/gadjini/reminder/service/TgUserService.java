@@ -6,7 +6,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.TgUserDao;
 import ru.gadjini.reminder.domain.TgUser;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,13 +24,14 @@ public class TgUserService {
         return tgUserDao.getByUserName(username);
     }
 
-    public Map<Integer, TgUser> getUsersByIds(Set<Integer> ids) {
-        return tgUserDao.getUsersByIds(ids);
+    public Map<Integer, TgUser> getUsersByUserIds(Set<Integer> userIds) {
+        return tgUserDao.getUsersByUserIds(userIds);
     }
 
     public void createOrUpdateUser(long chatId, User user) {
         TgUser tgUser = new TgUser();
 
+        tgUser.setUserId(user.getId());
         tgUser.setChatId(chatId);
         tgUser.setUsername(user.getUserName());
 

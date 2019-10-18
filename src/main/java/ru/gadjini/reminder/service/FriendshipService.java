@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.dao.FriendshipDao;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.model.SendFriendRequestRequest;
 
 import java.util.List;
 
@@ -18,19 +19,27 @@ public class FriendshipService {
         this.friendshipDao = friendshipDao;
     }
 
-    public List<TgUser> getFriendRequests(String username) {
-        return friendshipDao.getFriendRequests(username);
+    public void deleteFriend(int userOneUserId, int userTwoUserId) {
+        friendshipDao.deleteFriendShip();
     }
 
-    public List<TgUser> getFriends(String username) {
-        return friendshipDao.getFriends(username);
+    public void createFriendRequest(SendFriendRequestRequest sendFriendRequestRequest) {
+        friendshipDao.createFriendship(sendFriendRequestRequest.getInitiatorUserId(), sendFriendRequestRequest.getReceiverUsername(), Friendship.Status.REQUESTED);
     }
 
-    public void acceptFriendRequest(String fromUserName, int senderId) {
-        friendshipDao.updateFriendshipStatus(fromUserName, senderId, Friendship.Status.ACCEPTED);
+    public List<TgUser> getFriendRequests(int userId) {
+        return friendshipDao.getFriendRequests(userId);
     }
 
-    public void rejectFriendRequest(String fromUserName, int senderId) {
-        friendshipDao.deleteFriendShip(fromUserName, senderId);
+    public List<TgUser> getFriends(int currentUserId) {
+        return friendshipDao.getFriends(currentUserId);
+    }
+
+    public void acceptFriendRequest(int currentUserId, int senderUserId) {
+        friendshipDao.updateFriendshipStatus(currentUserId, senderUserId, Friendship.Status.ACCEPTED);
+    }
+
+    public void rejectFriendRequest(int currentUserId, int senderUserId) {
+        friendshipDao.deleteFriendShip(currentUserId, senderUserId);
     }
 }

@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.bot.command.api;
 
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 public interface NavigableBotCommand extends MyBotCommand {
@@ -12,5 +14,9 @@ public interface NavigableBotCommand extends MyBotCommand {
 
     default void restore(CommandMemento commandMemento) {
 
+    }
+
+    default ReplyKeyboardMarkup silentRestore() {
+        throw new UnsupportedOperationException();
     }
 }

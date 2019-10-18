@@ -40,8 +40,7 @@ public class ReminderService {
         reminder.setRemindAt(reminderRequest.getRemindAt());
         reminder.setText(reminderRequest.getText());
 
-        int creatorId = tgUserService.getUserId(reminderRequest.getCreatorName());
-        reminder.setCreatorId(creatorId);
+        reminder.setCreatorId(reminderRequest.getCreatorId());
 
         int receiverId = tgUserService.getUserId(reminderRequest.getReceiverName());
         reminder.setReceiverId(receiverId);
@@ -79,7 +78,7 @@ public class ReminderService {
     public Reminder deleteReminder(int id) {
         Reminder reminder = reminderDao.delete(id);
 
-        Map<Integer, TgUser> tgUsers = tgUserService.getUsersByIds(Stream.of(reminder.getCreatorId(), reminder.getReceiverId()).collect(Collectors.toSet()));
+        Map<Integer, TgUser> tgUsers = tgUserService.getUsersByUserIds(Stream.of(reminder.getCreatorId(), reminder.getReceiverId()).collect(Collectors.toSet()));
 
         reminder.setReceiver(tgUsers.get(reminder.getReceiverId()));
         reminder.setCreator(tgUsers.get(reminder.getCreatorId()));

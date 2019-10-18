@@ -46,9 +46,15 @@ public class MessagesProperties {
 
     public static final String MESSAGE_NEW_FRIEND_REQUEST = "message.new.friend.request";
 
+    public static final String MESSAGE_FRIEND_REQUEST_SENT = "message.friend.request.sent";
+
+    public static final String MESSAGE_SEND_FRIEND_REQUEST_USERNAME = "message.send.friend.request.username";
+
     public static final String GET_FRIENDS_COMMAND_NAME = "get.friends.command.name";
 
     public static final String CREATE_REMINDER_COMMAND_NAME = "create.reminder.command.name";
 
     public static final String CREATE_REMINDER_COMMAND_DESCRIPTION = "create.reminder.command.description";
+
+    public static final String GO_BACK_COMMAND_NAME = "go.back.command.name";
 }

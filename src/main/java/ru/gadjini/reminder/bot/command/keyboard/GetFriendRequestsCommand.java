@@ -37,7 +37,7 @@ public class GetFriendRequestsCommand implements KeyboardBotCommand {
 
     @Override
     public void processMessage(AbsSender absSender, Message message) {
-        List<TgUser> friendRequests = friendshipService.getFriendRequests(message.getFrom().getUserName());
+        List<TgUser> friendRequests = friendshipService.getFriendRequests(message.getFrom().getId());
 
         sendFriendRequests(message.getChatId(), friendRequests);
     }

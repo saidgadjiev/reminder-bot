@@ -63,7 +63,7 @@ public class ReminderDao {
                         "               r.remind_at\n" +
                         "        FROM reminder_time rt\n" +
                         "                 INNER JOIN reminder r ON rt.reminder_id = r.id\n" +
-                        "                 INNER JOIN tg_user u on r.receiver_id = u.id\n" +
+                        "                 INNER JOIN tg_user u on r.receiver_id = u.user_id\n" +
                         "        ORDER BY rt.id\n" +
                         "    )\n" +
                         "    SELECT *\n" +
