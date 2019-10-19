@@ -49,6 +49,7 @@ public class ReminderService {
         reminder.setCreatorId(user.getId());
 
         TgUser receiver = new TgUser();
+        receiver.setId(reminderRequest.getReceiverId());
         receiver.setUsername(reminderRequest.getReceiverName());
         reminder.setReceiver(receiver);
         reminder = reminderDao.create(reminder);

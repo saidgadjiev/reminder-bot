@@ -33,13 +33,15 @@ public class BotConfiguration {
                                                               ReminderTextBuilder reminderTextBuilder,
                                                               ReminderService reminderService,
                                                               FriendshipService friendshipService,
-                                                              MessageService messageService) {
+                                                              MessageService messageService,
+                                                              KeyboardService keyboardService,
+                                                              CommandNavigator commandNavigator) {
         return new ArrayList<>() {{
             add(new CompleteCommand(reminderTextBuilder, reminderService, messageService));
             add(new AcceptFriendRequestCommand(localisationService, friendshipService, messageService));
             add(new RejectFriendRequestCommand(localisationService, friendshipService, messageService));
             add(new DeleteFriendCommand(messageService, friendshipService, localisationService));
-            add(new CreateReminderCommand(localisationService, reminderService, messageService, reminderTextBuilder));
+            add(new CreateReminderCommand(localisationService, reminderService, messageService, reminderTextBuilder, keyboardService, commandNavigator));
         }};
     }
 

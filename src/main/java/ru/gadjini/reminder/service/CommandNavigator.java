@@ -18,8 +18,12 @@ public class CommandNavigator {
     public void push(long chatId, NavigableBotCommand navigableBotCommand) {
         if (currentCommand.containsKey(chatId)) {
             history.putIfAbsent(chatId, new Stack<>());
+            Stack<CommandMemento> historyStack = history.get(chatId);
+            NavigableBotCommand currCommand = currentCommand.get(chatId);
 
-            history.get(chatId).add(currentCommand.get(chatId).save(chatId));
+            if (!currCommand.getHistoryName().equals(navigableBotCommand.getHistoryName())) {
+                historyStack.push(currentCommand.get(chatId).save(chatId));
+            }
             currentCommand.put(chatId, navigableBotCommand);
         } else {
             currentCommand.put(chatId, navigableBotCommand);
@@ -35,11 +39,15 @@ public class CommandNavigator {
     }
 
     public void pop(long chatId) {
-        CommandMemento commandMemento = history.get(chatId).pop();
-        NavigableBotCommand originator = commandMemento.getOriginator();
+        Stack<CommandMemento> historyStack = history.get(chatId);
 
-        originator.restore(commandMemento);
-        currentCommand.put(chatId, originator);
+        if (!historyStack.isEmpty()) {
+            CommandMemento commandMemento = history.get(chatId).pop();
+            NavigableBotCommand originator = commandMemento.getOriginator();
+
+            originator.restore(commandMemento);
+            currentCommand.put(chatId, originator);
+        }
     }
 
     public ReplyKeyboardMarkup silentPop(long chatId) {

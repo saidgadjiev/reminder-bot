@@ -61,11 +61,11 @@ public class CommandRegistry {
         if (message.isCommand()) {
             return executeBotCommand(absSender, message);
         } else {
-            return executeKeyBoardCommand(absSender, message);
+            return executeKeyBoardCommand(message);
         }
     }
 
-    public void executeCallbackCommand(AbsSender absSender, CallbackQuery callbackQuery) {
+    public void executeCallbackCommand(CallbackQuery callbackQuery) {
         String text = callbackQuery.getData();
         String[] commandSplit = text.split(COMMAND_ARG_SEPARATOR);
         CallbackBotCommand botCommand = callbackBotCommandMap.get(commandSplit[0]);
@@ -73,6 +73,10 @@ public class CommandRegistry {
         String[] parameters = Arrays.copyOfRange(commandSplit, 1, commandSplit.length);
 
         botCommand.processMessage(callbackQuery, parameters);
+
+        if (botCommand instanceof NavigableBotCommand) {
+            commandNavigator.push(callbackQuery.getMessage().getChatId(), (NavigableBotCommand) botCommand);
+        }
     }
 
     private boolean executeBotCommand(AbsSender absSender, Message message) {
@@ -95,7 +99,7 @@ public class CommandRegistry {
         return false;
     }
 
-    private boolean executeKeyBoardCommand(AbsSender absSender, Message message) {
+    private boolean executeKeyBoardCommand(Message message) {
         String command = message.getText();
         KeyboardBotCommand botCommand = keyboardBotCommands.stream()
                 .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(command))

@@ -51,7 +51,7 @@ public class ReminderBot extends WorkerUpdatesBot {
                     commandRegistry.processNonCommandUpdate(this, update.getMessage());
                 }
             } else if (update.hasCallbackQuery()) {
-                commandRegistry.executeCallbackCommand(this, update.getCallbackQuery());
+                commandRegistry.executeCallbackCommand(update.getCallbackQuery());
             }
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);

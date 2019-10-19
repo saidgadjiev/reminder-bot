@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.dao;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -34,37 +35,43 @@ public class ReminderDao {
     }
 
     public Reminder create(Reminder reminder) {
-        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+        StringBuilder sql = new StringBuilder();
 
-        jdbcTemplate.update(
-                connection -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(
-                            "WITH reminder AS (INSERT INTO reminder (text, creator_id, receiver_id, remind_at)\n" +
-                                    "    SELECT ?, ?, user_id, ?\n" +
-                                    "    FROM tg_user\n" +
-                                    "    WHERE username = ? RETURNING id, receiver_id)\n" +
-                                    "SELECT tg_user.*, reminder.id as reminder_id\n" +
-                                    "FROm tg_user\n" +
-                                    "WHERE id = reminder.receiver_id",
-                            Statement.RETURN_GENERATED_KEYS
-                    );
+        sql.append("WITH rem AS (INSERT INTO reminder (text, creator_id, receiver_id, remind_at)\n");
+        if (StringUtils.isNotBlank(reminder.getReceiver().getUsername())) {
+            sql.append("SELECT ?, ?, user_id, ?\n").append("FROM tg_user WHERE username = ?\n");
+        } else {
+            sql.append("VALUES (?, ?, ?, ?)\n");
+        }
+        sql.append("RETURNING id, receiver_id)\n")
+                .append("SELECT tu.*, r.id as reminder_id\n")
+                .append("FROM tg_user tu INNER JOIN rem r on tu.user_id = r.receiver_id");
 
-                    preparedStatement.setString(1, reminder.getText());
-                    preparedStatement.setInt(2, reminder.getCreatorId());
-                    preparedStatement.setTimestamp(3, Timestamp.valueOf(reminder.getRemindAt()));
-                    preparedStatement.setString(4, reminder.getReceiver().getUsername());
-
-                    return preparedStatement;
+        jdbcTemplate.query(
+                sql.toString(),
+                preparedStatement -> {
+                    if (StringUtils.isNotBlank(reminder.getReceiver().getUsername())) {
+                        preparedStatement.setString(1, reminder.getText());
+                        preparedStatement.setInt(2, reminder.getCreatorId());
+                        preparedStatement.setTimestamp(3, Timestamp.valueOf(reminder.getRemindAt()));
+                        preparedStatement.setString(4, reminder.getReceiver().getUsername());
+                    } else {
+                        preparedStatement.setString(1, reminder.getText());
+                        preparedStatement.setInt(2, reminder.getCreatorId());
+                        preparedStatement.setInt(3, reminder.getReceiver().getId());
+                        preparedStatement.setTimestamp(4, Timestamp.valueOf(reminder.getRemindAt()));
+                    }
                 },
-                generatedKeyHolder
-        );
-        int reminderId = ((Number) generatedKeyHolder.getKeys().get("reminder_id")).intValue();
-        reminder.setId(reminderId);
+                rs -> {
+                    int reminderId = rs.getInt("reminder_id");
+                    reminder.setId(reminderId);
 
-        reminder.getReceiver().setUsername((String) generatedKeyHolder.getKeys().get("username"));
-        reminder.getReceiver().setChatId(((Number) generatedKeyHolder.getKeys().get("chat_id")).longValue());
-        reminder.getReceiver().setFirstName((String) generatedKeyHolder.getKeys().get("first_name"));
-        reminder.getReceiver().setLastName((String) generatedKeyHolder.getKeys().get("last_name"));
+                    reminder.getReceiver().setUsername(rs.getString("username"));
+                    reminder.getReceiver().setChatId(rs.getLong("chat_id"));
+                    reminder.getReceiver().setFirstName(rs.getString("first_name"));
+                    reminder.getReceiver().setLastName(rs.getString("last_name"));
+                }
+        );
 
         return reminder;
     }
