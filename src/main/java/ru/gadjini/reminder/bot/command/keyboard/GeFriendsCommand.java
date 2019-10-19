@@ -53,7 +53,7 @@ public class GeFriendsCommand implements KeyboardBotCommand {
                 friendMsg.append("@").append(tgUser.getUsername());
             }
 
-            messageService.sendMessage(chatId, friendMsg.toString(), keyboardService.getFriendKeyboard(tgUser.getId()));
+            messageService.sendMessage(chatId, friendMsg.toString(), keyboardService.getFriendKeyboard(tgUser.getUserId()));
         }
     }
 }

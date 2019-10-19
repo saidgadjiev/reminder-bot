@@ -53,7 +53,7 @@ public class GetFriendRequestsCommand implements KeyboardBotCommand {
                 friendRequest.append(TgUser.USERNAME_START).append(friend.getUsername());
             }
 
-            messageService.sendMessage(chatId, friendRequest.toString(), keyboardService.getFriendRequestKeyboard(friend.getId()));
+            messageService.sendMessage(chatId, friendRequest.toString(), keyboardService.getFriendRequestKeyboard(friend.getUserId()));
         }
     }
 }

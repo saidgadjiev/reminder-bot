@@ -29,7 +29,7 @@ public class FriendshipDao {
 
     public void createFriendship(int userOneUserId, String userTwoUsername, Friendship.Status status) {
         jdbcTemplate.update(
-                "INSERT INTO friendship(user_one_id, user_two_id, status) SELECT ?, user_id, ? FROM tg_user WHERE username = ? RETURNING tg_user.id, ",
+                "INSERT INTO friendship(user_one_id, user_two_id, status) SELECT ?, user_id, ? FROM tg_user WHERE username = ?",
                 ps -> {
                     ps.setInt(1, userOneUserId);
                     ps.setInt(2, status.getCode());
@@ -41,7 +41,7 @@ public class FriendshipDao {
     public List<TgUser> getFriendRequests(int userId) {
         return jdbcTemplate.query(
                 "SELECT tu.*\n" +
-                        "FROM friendship f INNER JOIN tg_user tu on f.user_one_id = tu.id\n" +
+                        "FROM friendship f INNER JOIN tg_user tu on f.user_one_id = tu.user_id\n" +
                         "WHERE status = 0\n" +
                         "  AND user_two_id = ?",
                 ps -> ps.setInt(1, userId),
@@ -83,11 +83,11 @@ public class FriendshipDao {
                         "FROM friendship f,\n" +
                         "     tg_user tu\n" +
                         "WHERE CASE\n" +
-                        "          WHEN f.user_one_id = :id THEN f.user_two_id = tu.id\n" +
-                        "          WHEN f.user_two_id = :id THEN f.user_one_id = tu.id\n" +
+                        "          WHEN f.user_one_id = :id THEN f.user_two_id = tu.user_id\n" +
+                        "          WHEN f.user_two_id = :id THEN f.user_one_id = tu.user_id\n" +
                         "          ELSE false END\n" +
                         "  AND f.status = 1",
-                new MapSqlParameterSource().addValue(":id", userId),
+                new MapSqlParameterSource().addValue("id", userId),
                 (rs, rowNum) -> resultSetMapper.mapUser(rs)
         );
     }

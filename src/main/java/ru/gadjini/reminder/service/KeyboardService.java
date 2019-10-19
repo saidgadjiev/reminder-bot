@@ -37,17 +37,17 @@ public class KeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getFriendKeyboard(int friendId) {
+    public InlineKeyboardMarkup getFriendKeyboard(int friendUserId) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
 
         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_DESCRIPTION));
-        inlineKeyboardButton.setCallbackData(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendId);
+        inlineKeyboardButton.setCallbackData(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendUserId);
         row.add(inlineKeyboardButton);
 
         InlineKeyboardButton deleteFriendButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.DELETE_FRIEND_COMMAND_DESCRIPTION));
-        inlineKeyboardButton.setCallbackData(localisationService.getMessage(MessagesProperties.DELETE_FRIEND_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendId);
+        deleteFriendButton.setCallbackData(localisationService.getMessage(MessagesProperties.DELETE_FRIEND_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendUserId);
         row.add(deleteFriendButton);
 
         keyboard.add(row);
@@ -56,17 +56,17 @@ public class KeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getFriendRequestKeyboard(int senderId) {
+    public InlineKeyboardMarkup getFriendRequestKeyboard(int friendUserId) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
 
         InlineKeyboardButton acceptFriendRequestButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.ACCEPT_FRIEND_REQUEST_COMMAND_DESCRIPTION));
-        acceptFriendRequestButton.setCallbackData(localisationService.getMessage(MessagesProperties.ACCEPT_FRIEND_REQUEST_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + senderId);
+        acceptFriendRequestButton.setCallbackData(localisationService.getMessage(MessagesProperties.ACCEPT_FRIEND_REQUEST_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendUserId);
         row.add(acceptFriendRequestButton);
 
         InlineKeyboardButton rejectFriendRequestButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.REJECT_FRIEND_REQUEST_COMMAND_DESCRIPTION));
-        rejectFriendRequestButton.setCallbackData(localisationService.getMessage(MessagesProperties.REJECT_FRIEND_REQUEST_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + senderId);
+        rejectFriendRequestButton.setCallbackData(localisationService.getMessage(MessagesProperties.REJECT_FRIEND_REQUEST_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendUserId);
         row.add(rejectFriendRequestButton);
 
         keyboard.add(row);
