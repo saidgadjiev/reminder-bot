@@ -62,5 +62,9 @@ public class MessagesProperties {
 
     public static final String DELETE_FRIEND_COMMAND_DESCRIPTION = "delete.friend.command.description";
 
+    public static final String MESSAGE_CREATE_REMINDER_TEXT = "message.create.reminder.text";
+
+    public static final String MESSAGE_MAIN_MENU = "message.main.menu";
+
     public static final String MESSAGE_FRIEND_DELETED = "message.friend.deleted";
 }

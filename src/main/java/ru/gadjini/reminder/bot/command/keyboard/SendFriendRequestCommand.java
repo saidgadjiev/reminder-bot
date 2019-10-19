@@ -3,11 +3,12 @@ package ru.gadjini.reminder.bot.command.keyboard;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
+import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.*;
 
-public class SendFriendRequestCommand implements KeyboardBotCommand {
+public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBotCommand {
 
     private FriendshipService friendshipService;
 
@@ -29,6 +30,11 @@ public class SendFriendRequestCommand implements KeyboardBotCommand {
         this.name = localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME);
         this.keyboardService = keyboardService;
         this.commandNavigator = commandNavigator;
+    }
+
+    @Override
+    public String getHistoryName() {
+        return name;
     }
 
     @Override

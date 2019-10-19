@@ -6,6 +6,8 @@ public class ReminderRequest {
 
     private String receiverName;
 
+    private int receiverId;
+
     private String text;
 
     private LocalDateTime remindAt;
@@ -32,6 +34,14 @@ public class ReminderRequest {
 
     public void setRemindAt(LocalDateTime remindAt) {
         this.remindAt = remindAt;
+    }
+
+    public int getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(int receiverId) {
+        this.receiverId = receiverId;
     }
 
     @Override

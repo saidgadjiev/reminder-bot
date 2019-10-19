@@ -39,7 +39,7 @@ public class ReminderService {
     }
 
     @Transactional
-    public void createReminder(ReminderRequest reminderRequest) {
+    public Reminder createReminder(ReminderRequest reminderRequest) {
         Reminder reminder = new Reminder();
 
         reminder.setRemindAt(reminderRequest.getRemindAt());
@@ -78,6 +78,8 @@ public class ReminderService {
         reminderTimes.add(fiveMinuteDelayTime);
 
         reminderTimeService.create(reminderTimes);
+
+        return reminder;
     }
 
     public List<Reminder> getReminders(LocalDateTime localDateTime) {

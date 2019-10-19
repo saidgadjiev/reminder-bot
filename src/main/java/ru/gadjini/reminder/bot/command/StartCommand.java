@@ -6,8 +6,11 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ru.gadjini.reminder.bot.command.api.CommandMemento;
+import ru.gadjini.reminder.bot.command.api.DefaultMemento;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
@@ -86,6 +89,12 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
     }
 
     @Override
+    public void restore(CommandMemento commandMemento) {
+        DefaultMemento defaultMemento = (DefaultMemento) commandMemento;
+        messageService.sendMessageByCode(defaultMemento.getChatId(), MessagesProperties.MESSAGE_MAIN_MENU, keyboardService.getMainMenu());
+    }
+
+    @Override
     public void processNonCommandUpdate(Message message) {
         String text = message.getText().trim();
         ReminderRequest reminderRequest = null;
@@ -100,11 +109,10 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         if (reminderRequest == null) {
             return;
         }
-        reminderService.createReminder(reminderRequest);
-        TgUser tgUser = tgUserService.getUserByUserName(reminderRequest.getReceiverName());
+        Reminder reminder = reminderService.createReminder(reminderRequest);
 
         String reminderText = reminderTextBuilder.create(reminderRequest.getText(), reminderRequest.getRemindAt());
-        messageService.sendMessageByCode(tgUser.getChatId(), MessagesProperties.MESSAGE_REMINDER_FROM,
+        messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_FROM,
                 new Object[]{TgUser.USERNAME_START + message.getFrom().getUserName(), reminderText});
         messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED,
                 new Object[]{reminderText, TgUser.USERNAME_START + reminderRequest.getReceiverName()});

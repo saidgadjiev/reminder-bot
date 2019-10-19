@@ -39,8 +39,13 @@ public class ReminderDao {
         jdbcTemplate.update(
                 connection -> {
                     PreparedStatement preparedStatement = connection.prepareStatement(
-                            "INSERT INTO reminder(text, creator_id, receiver_id, remind_at) " +
-                                    "SELECT ?, ?, user_id , ? FROM tg_user WHERE username = ? RETURNING *",
+                            "WITH reminder AS (INSERT INTO reminder (text, creator_id, receiver_id, remind_at)\n" +
+                                    "    SELECT ?, ?, user_id, ?\n" +
+                                    "    FROM tg_user\n" +
+                                    "    WHERE username = ? RETURNING id, receiver_id)\n" +
+                                    "SELECT tg_user.*, reminder.id as reminder_id\n" +
+                                    "FROm tg_user\n" +
+                                    "WHERE id = reminder.receiver_id",
                             Statement.RETURN_GENERATED_KEYS
                     );
 
@@ -53,9 +58,13 @@ public class ReminderDao {
                 },
                 generatedKeyHolder
         );
-        int key = ((Number) generatedKeyHolder.getKeys().get("id")).intValue();
+        int reminderId = ((Number) generatedKeyHolder.getKeys().get("reminder_id")).intValue();
+        reminder.setId(reminderId);
 
-        reminder.setId(key);
+        reminder.getReceiver().setUsername((String) generatedKeyHolder.getKeys().get("username"));
+        reminder.getReceiver().setChatId(((Number) generatedKeyHolder.getKeys().get("chat_id")).longValue());
+        reminder.getReceiver().setFirstName((String) generatedKeyHolder.getKeys().get("first_name"));
+        reminder.getReceiver().setLastName((String) generatedKeyHolder.getKeys().get("last_name"));
 
         return reminder;
     }

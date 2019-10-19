@@ -7,10 +7,7 @@ import ru.gadjini.reminder.bot.command.HelpCommand;
 import ru.gadjini.reminder.bot.command.StartCommand;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
-import ru.gadjini.reminder.bot.command.callback.AcceptFriendRequestCommand;
-import ru.gadjini.reminder.bot.command.callback.CompleteCommand;
-import ru.gadjini.reminder.bot.command.callback.DeleteFriendCommand;
-import ru.gadjini.reminder.bot.command.callback.RejectFriendRequestCommand;
+import ru.gadjini.reminder.bot.command.callback.*;
 import ru.gadjini.reminder.bot.command.keyboard.GeFriendsCommand;
 import ru.gadjini.reminder.bot.command.keyboard.GetFriendRequestsCommand;
 import ru.gadjini.reminder.bot.command.keyboard.GoBackCommand;
@@ -42,6 +39,7 @@ public class BotConfiguration {
             add(new AcceptFriendRequestCommand(localisationService, friendshipService, messageService));
             add(new RejectFriendRequestCommand(localisationService, friendshipService, messageService));
             add(new DeleteFriendCommand(messageService, friendshipService, localisationService));
+            add(new CreateReminderCommand(localisationService, reminderService, messageService, reminderTextBuilder));
         }};
     }
 

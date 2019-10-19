@@ -97,7 +97,7 @@ public class KeyboardService {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(MessagesProperties.GO_BACK_COMMAND_NAME);
+            add(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME));
         }});
 
         return replyKeyboardMarkup;
