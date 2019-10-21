@@ -30,13 +30,13 @@ public class FriendshipDao {
         this.resultSetMapper = resultSetMapper;
     }
 
-    public CreateFriendRequestResult createFriendRequest(int userId, String friendUsername) {
+    public CreateFriendRequestResult createFriendRequest(int userId, String friendUsername, Friendship.Status status) {
         return namedParameterJdbcTemplate.query(
                 "SELECT * FROM create_friend_request(:userId, :friendUsernme, :state)",
                 new MapSqlParameterSource()
                         .addValue("user_id", userId)
                         .addValue(":friendUsername", friendUsername)
-                        .addValue(":state", Friendship.Status.REQUESTED.getCode()),
+                        .addValue(":state", status.getCode()),
                 rs -> {
                     if (rs.next()) {
                         Friendship friendship = new Friendship();
@@ -66,13 +66,16 @@ public class FriendshipDao {
         );
     }
 
-    public List<TgUser> getFriendRequests(int userId) {
+    public List<TgUser> getFriendRequests(int userId, Friendship.Status status) {
         return jdbcTemplate.query(
                 "SELECT tu.*\n" +
                         "FROM friendship f INNER JOIN tg_user tu on f.user_one_id = tu.user_id\n" +
-                        "WHERE status = 0\n" +
+                        "WHERE status = ?\n" +
                         "  AND user_two_id = ?",
-                ps -> ps.setInt(1, userId),
+                ps -> {
+                    ps.setInt(1, status.getCode());
+                    ps.setInt(2, userId);
+                },
                 (rs, rowNum) -> resultSetMapper.mapUser(rs)
         );
     }
@@ -109,7 +112,7 @@ public class FriendshipDao {
         );
     }
 
-    public List<TgUser> getFriends(int userId) {
+    public List<TgUser> getFriends(int userId, Friendship.Status status) {
         return namedParameterJdbcTemplate.query(
                 "SELECT *\n" +
                         "FROM friendship f,\n" +
@@ -118,8 +121,8 @@ public class FriendshipDao {
                         "          WHEN f.user_one_id = :id THEN f.user_two_id = tu.user_id\n" +
                         "          WHEN f.user_two_id = :id THEN f.user_one_id = tu.user_id\n" +
                         "          ELSE false END\n" +
-                        "  AND f.status = 1",
-                new MapSqlParameterSource().addValue("id", userId),
+                        "  AND f.status = :state",
+                new MapSqlParameterSource().addValue("id", userId).addValue("state", status.getCode()),
                 (rs, rowNum) -> resultSetMapper.mapUser(rs)
         );
     }

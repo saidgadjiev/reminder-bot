@@ -42,13 +42,13 @@ public class FriendshipService {
     public List<TgUser> getFriendRequests() {
         User user = securityService.getAuthenticatedUser();
 
-        return friendshipDao.getFriendRequests(user.getId());
+        return friendshipDao.getFriendRequests(user.getId(), Friendship.Status.REQUESTED);
     }
 
     public List<TgUser> getFriends() {
         User user = securityService.getAuthenticatedUser();
 
-        return friendshipDao.getFriends(user.getId());
+        return friendshipDao.getFriends(user.getId(), Friendship.Status.ACCEPTED);
     }
 
     public void acceptFriendRequest(int friendId) {
