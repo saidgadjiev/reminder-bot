@@ -32,7 +32,17 @@ public class FriendshipService {
     public CreateFriendRequestResult createFriendRequest(String friendUsername) {
         User user = securityService.getAuthenticatedUser();
 
-        CreateFriendRequestResult createFriendRequestResult = friendshipDao.createFriendRequest(user.getId(), friendUsername, Friendship.Status.REQUESTED);
+        CreateFriendRequestResult createFriendRequestResult = friendshipDao.createFriendRequest(user.getId(), friendUsername, null, Friendship.Status.REQUESTED);
+
+        setCreateFriendRequestState(user, createFriendRequestResult);
+
+        return createFriendRequestResult;
+    }
+
+    public CreateFriendRequestResult createFriendRequest(Integer friendUserId) {
+        User user = securityService.getAuthenticatedUser();
+
+        CreateFriendRequestResult createFriendRequestResult = friendshipDao.createFriendRequest(user.getId(), null, friendUserId, Friendship.Status.REQUESTED);
 
         setCreateFriendRequestState(user, createFriendRequestResult);
 
@@ -51,16 +61,16 @@ public class FriendshipService {
         return friendshipDao.getFriends(user.getId(), Friendship.Status.ACCEPTED);
     }
 
-    public void acceptFriendRequest(int friendId) {
+    public Friendship acceptFriendRequest(int friendId) {
         User user = securityService.getAuthenticatedUser();
 
-        friendshipDao.updateFriendshipStatus(user.getId(), friendId, Friendship.Status.ACCEPTED);
+        return friendshipDao.acceptFriendRequest(user.getId(), friendId, Friendship.Status.ACCEPTED);
     }
 
-    public void rejectFriendRequest(int friendId) {
+    public Friendship rejectFriendRequest(int friendId) {
         User user = securityService.getAuthenticatedUser();
 
-        friendshipDao.deleteFriendRequest(user.getId(), friendId);
+        return friendshipDao.rejectFriendRequest(user.getId(), friendId);
     }
 
     private void setCreateFriendRequestState(User currUser, CreateFriendRequestResult createFriendRequestResult) {

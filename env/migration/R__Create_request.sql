@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION create_friend_request(user_id INT, friend_username VARCHAR, state INT)
+CREATE OR REPLACE FUNCTION create_friend_request(user_id INT, friend_username VARCHAR, friend_id INT, state INT)
     RETURNS TABLE
             (
                 collision     BOOLEAN,
@@ -17,9 +17,10 @@ $$
 DECLARE
     var_r          RECORD;
     friendship_row friendship%ROWTYPE;
-    friend_id      INT;
 BEGIN
-    SELECT tg_user.user_id INTO friend_id FROM tg_user WHERE username = friend_username;
+    if friend_id IS NULL THEN
+        SELECT tg_user.user_id INTO friend_id FROM tg_user WHERE username = friend_username;
+    END IF;
 
     SELECT *
     INTO friendship_row

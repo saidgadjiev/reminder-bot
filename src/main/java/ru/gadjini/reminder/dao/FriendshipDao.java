@@ -10,6 +10,8 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
 import ru.gadjini.reminder.service.ResultSetMapper;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -30,13 +32,14 @@ public class FriendshipDao {
         this.resultSetMapper = resultSetMapper;
     }
 
-    public CreateFriendRequestResult createFriendRequest(int userId, String friendUsername, Friendship.Status status) {
+    public CreateFriendRequestResult createFriendRequest(int userId, String friendUsername, Integer friendUserId, Friendship.Status status) {
         return namedParameterJdbcTemplate.query(
-                "SELECT * FROM create_friend_request(:userId, :friendUsernme, :state)",
+                "SELECT * FROM create_friend_request(:userId, :friendUsernme, :friendUserId, :state)",
                 new MapSqlParameterSource()
                         .addValue("user_id", userId)
-                        .addValue(":friendUsername", friendUsername)
-                        .addValue(":state", status.getCode()),
+                        .addValue("friendUsername", friendUsername)
+                        .addValue("friendUserId", friendUserId)
+                        .addValue("state", status.getCode()),
                 rs -> {
                     if (rs.next()) {
                         Friendship friendship = new Friendship();
@@ -80,13 +83,30 @@ public class FriendshipDao {
         );
     }
 
-    public void updateFriendshipStatus(int userId, int friendId, Friendship.Status status) {
-        jdbcTemplate.update(
-                "UPDATE friendship SET status = ? WHERE user_one_id = ? AND user_two_id = ?",
+    public Friendship acceptFriendRequest(int userId, int friendId, Friendship.Status status) {
+        return jdbcTemplate.query(
+                "WITH upd AS (\n" +
+                        "    UPDATE friendship SET status = ? WHERE user_one_id = ? AND user_two_id = ? RETURNING user_one_id, user_two_id\n" +
+                        ")\n" +
+                        "SELECT fu.user_id as fu_user_id,\n" +
+                        "       fu.first_name as fu_first_name,\n" +
+                        "       fu.last_name as fu_last_name,\n" +
+                        "       us.chat_id as us_chat_id\n" +
+                        "FROM tg_user fu,\n" +
+                        "     tg_user us,\n" +
+                        "     upd\n" +
+                        "WHERE fu.user_id = upd.user_two_id AND us.user_id = upd.user_one_id",
                 ps -> {
                     ps.setInt(1, status.ordinal());
                     ps.setInt(2, friendId);
                     ps.setInt(3, userId);
+                },
+                rs -> {
+                    if (rs.next()) {
+                        return mapAcceptRejectFriendRequestResult(rs);
+                    }
+
+                    return null;
                 }
         );
     }
@@ -102,12 +122,28 @@ public class FriendshipDao {
         );
     }
 
-    public void deleteFriendRequest(int userId, int friendId) {
-        jdbcTemplate.update(
-                "DELETE FROM friendship WHERE user_one_id = ? AND user_two_id = ?",
+    public Friendship rejectFriendRequest(int userId, int friendId) {
+        return jdbcTemplate.query(
+                "WITH upd AS (\n" +
+                        "    DELETE FROM friendship WHERE user_one_id = ? AND user_two_id = ? RETURNING user_one_id, user_two_id\n" +
+                        ")\n" +
+                        "SELECT fu.user_id as fu_user_id,\n" +
+                        "       fu.first_name as fu_first_name,\n" +
+                        "       fu.last_name as fu_last_name,\n" +
+                        "       us.chat_id as us_chat_id\n" +
+                        "FROM tg_user fu,\n" +
+                        "     tg_user us,\n" +
+                        "     upd\n" +
+                        "WHERE fu.user_id = upd.user_two_id AND us.user_id = upd.user_one_id",
                 ps -> {
                     ps.setInt(1, userId);
                     ps.setInt(2, friendId);
+                },
+                rs -> {
+                    if (rs.next()) {
+                        return mapAcceptRejectFriendRequestResult(rs);
+                    }
+                    return null;
                 }
         );
     }
@@ -125,5 +161,21 @@ public class FriendshipDao {
                 new MapSqlParameterSource().addValue("id", userId).addValue("state", status.getCode()),
                 (rs, rowNum) -> resultSetMapper.mapUser(rs)
         );
+    }
+
+    private Friendship mapAcceptRejectFriendRequestResult(ResultSet rs) throws SQLException {
+        Friendship friendship = new Friendship();
+
+        TgUser me = new TgUser();
+        me.setUserId(rs.getInt("fu_user_id"));
+        me.setFirstName(rs.getString("fu_first_name"));
+        me.setLastName(rs.getString("fu_last_name"));
+        friendship.setUserTwo(me);
+
+        TgUser friend = new TgUser();
+        friend.setChatId(rs.getInt("us_chat_id"));
+        friendship.setUserOne(friend);
+
+        return friendship;
     }
 }

@@ -1,10 +1,12 @@
 package ru.gadjini.reminder.bot.command.keyboard;
 
+import org.telegram.telegrambots.meta.api.objects.Contact;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
 import ru.gadjini.reminder.service.*;
@@ -51,9 +53,17 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
 
     @Override
     public void processNonCommandUpdate(Message message) {
-        String receiverName = removeUsernameStart(message.getText().trim());
+        CreateFriendRequestResult createFriendRequestResult;
 
-        CreateFriendRequestResult createFriendRequestResult = friendshipService.createFriendRequest(receiverName);
+        if (message.hasContact()) {
+            Contact contact = message.getContact();
+
+            createFriendRequestResult = friendshipService.createFriendRequest(contact.getUserID());
+        } else {
+            String receiverName = removeUsernameStart(message.getText().trim());
+
+            createFriendRequestResult = friendshipService.createFriendRequest(receiverName);
+        }
 
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
@@ -68,11 +78,19 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
                 messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_ALREADY_FRIEND);
                 break;
             case NONE:
+                Friendship friendship = createFriendRequestResult.getFriendship();
+
                 messageService.sendMessageByCode(
                         message.getChatId(),
                         MessagesProperties.MESSAGE_FRIEND_REQUEST_SENT,
-                        new Object[]{UserUtils.userLink(createFriendRequestResult.getFriendship().getUserTwo())},
+                        new Object[]{UserUtils.userLink(friendship.getUserTwo())},
                         replyKeyboardMarkup
+                );
+                messageService.sendMessageByCode(
+                        friendship.getUserTwo().getChatId(),
+                        MessagesProperties.MESSAGE_NEW_FRIEND_REQUEST,
+                        new Object[]{UserUtils.userLink(friendship.getUserOne())},
+                        keyboardService.getFriendRequestKeyboard(friendship.getUserOne().getUserId())
                 );
                 break;
         }
