@@ -1,7 +1,5 @@
 package ru.gadjini.reminder.domain;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class TgUser {
 
     public static final String TYPE = "tg_user";
@@ -78,17 +76,5 @@ public class TgUser {
 
     public void setUserId(int userId) {
         this.userId = userId;
-    }
-
-    public String getFio() {
-        StringBuilder fio = new StringBuilder();
-
-        fio.append(firstName);
-
-        if (StringUtils.isNotBlank(lastName)) {
-            fio.append(" ").append(lastName);
-        }
-
-        return fio.toString();
     }
 }

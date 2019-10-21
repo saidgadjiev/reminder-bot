@@ -9,6 +9,7 @@ import ru.gadjini.reminder.service.FriendshipService;
 import ru.gadjini.reminder.service.KeyboardService;
 import ru.gadjini.reminder.service.LocalisationService;
 import ru.gadjini.reminder.service.MessageService;
+import ru.gadjini.reminder.util.UserUtils;
 
 import java.util.List;
 
@@ -46,10 +47,10 @@ public class GetFriendRequestsCommand implements KeyboardBotCommand {
             StringBuilder friendRequest = new StringBuilder();
 
             if (StringUtils.isNotBlank(friend.getLastName())) {
-                friendRequest.append("<b>").append(friend.getFio()).append("</b>\n");
+                friendRequest.append("<b>").append(UserUtils.fio(friend)).append("</b>\n");
                 friendRequest.append(TgUser.USERNAME_START).append(friend.getUsername());
             } else {
-                friendRequest.append("<b>").append(friend.getFio()).append("</b> ");
+                friendRequest.append("<b>").append(UserUtils.fio(friend)).append("</b> ");
                 friendRequest.append(TgUser.USERNAME_START).append(friend.getUsername());
             }
 

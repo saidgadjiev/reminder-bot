@@ -48,6 +48,12 @@ public class MessagesProperties {
 
     public static final String MESSAGE_FRIEND_REQUEST_SENT = "message.friend.request.sent";
 
+    public static final String MESSAGE_FRIEND_REQUEST_ALREADY_SENT = "message.friend.request.already.sent";
+
+    public static final String MESSAGE_FRIEND_REQUEST_ALREADY_SENT_ME = "message.friend.request.already.sent.me";
+
+    public static final String MESSAGE_ALREADY_FRIEND = "message.already.friend";
+
     public static final String MESSAGE_SEND_FRIEND_REQUEST_USERNAME = "message.send.friend.request.username";
 
     public static final String GET_FRIENDS_COMMAND_NAME = "get.friends.command.name";

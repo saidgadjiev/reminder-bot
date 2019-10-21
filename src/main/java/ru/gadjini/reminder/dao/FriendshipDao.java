@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.model.CreateFriendRequestResult;
 import ru.gadjini.reminder.service.ResultSetMapper;
 
 import java.util.List;
@@ -21,19 +22,46 @@ public class FriendshipDao {
     private ResultSetMapper resultSetMapper;
 
     @Autowired
-    public FriendshipDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, ResultSetMapper resultSetMapper) {
+    public FriendshipDao(JdbcTemplate jdbcTemplate,
+                         NamedParameterJdbcTemplate namedParameterJdbcTemplate,
+                         ResultSetMapper resultSetMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.resultSetMapper = resultSetMapper;
     }
 
-    public void createFriendship(int userOneUserId, String userTwoUsername, Friendship.Status status) {
-        jdbcTemplate.update(
-                "INSERT INTO friendship(user_one_id, user_two_id, status) SELECT ?, user_id, ? FROM tg_user WHERE username = ?",
-                ps -> {
-                    ps.setInt(1, userOneUserId);
-                    ps.setInt(2, status.getCode());
-                    ps.setString(3, userTwoUsername);
+    public CreateFriendRequestResult createFriendRequest(int userId, String friendUsername) {
+        return namedParameterJdbcTemplate.query(
+                "SELECT * FROM create_friend_request(:userId, :friendUsernme, :state)",
+                new MapSqlParameterSource()
+                        .addValue("user_id", userId)
+                        .addValue(":friendUsername", friendUsername)
+                        .addValue(":state", Friendship.Status.REQUESTED.getCode()),
+                rs -> {
+                    if (rs.next()) {
+                        Friendship friendship = new Friendship();
+
+                        friendship.setStatus(Friendship.Status.fromCode(rs.getInt("status")));
+                        friendship.setUserOneId(rs.getInt("user_one_id"));
+                        friendship.setUserTwoId(rs.getInt("user_two_id"));
+
+                        boolean conflict = rs.getBoolean("collision");
+                        if (!conflict) {
+                            TgUser usr = new TgUser();
+                            usr.setFirstName(rs.getString("usr_first_name"));
+                            usr.setLastName(rs.getString("usr_last_name"));
+                            friendship.setUserTwo(usr);
+
+                            TgUser friend = new TgUser();
+                            friend.setFirstName(rs.getString("fusr_first_name"));
+                            friend.setLastName(rs.getString("fusr_last_name"));
+                            friendship.setUserOne(friend);
+                        }
+
+                        return new CreateFriendRequestResult(friendship, conflict);
+                    }
+
+                    return null;
                 }
         );
     }
@@ -62,8 +90,12 @@ public class FriendshipDao {
 
     public void deleteFriend(int userId, int friendId) {
         namedParameterJdbcTemplate.update(
-                "DELETE FROM friendship WHERE (user_one_id = :user_id AND user_two_id = :friend_id) OR (user_one_id = :friend_id AND user_two_id = :user_id)",
-                new MapSqlParameterSource().addValue("user_id", userId).addValue("friend_id", friendId)
+                "DELETE FROM friendship " +
+                        "WHERE (user_one_id = :user_id AND user_two_id = :friend_id) " +
+                        "OR (user_one_id = :friend_id AND user_two_id = :user_id)",
+                new MapSqlParameterSource()
+                        .addValue("user_id", userId)
+                        .addValue("friend_id", friendId)
         );
     }
 

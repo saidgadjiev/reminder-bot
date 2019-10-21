@@ -3,23 +3,17 @@ package ru.gadjini.reminder.dao;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.domain.TgUser;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class ReminderDao {
@@ -37,39 +31,64 @@ public class ReminderDao {
     public Reminder create(Reminder reminder) {
         StringBuilder sql = new StringBuilder();
 
-        sql.append("WITH rem AS (INSERT INTO reminder (text, creator_id, receiver_id, remind_at)\n");
-        if (StringUtils.isNotBlank(reminder.getReceiver().getUsername())) {
-            sql.append("SELECT ?, ?, user_id, ?\n").append("FROM tg_user WHERE username = ?\n");
-        } else {
-            sql.append("VALUES (?, ?, ?, ?)\n");
+        sql.append("SELECT * FROM create_reminder(?, ?, ?, ?, ?, ARRAY[");
+
+        for (Iterator<ReminderTime> iterator = reminder.getReminderTimes().iterator(); iterator.hasNext(); ) {
+            sql.append("(?, ?, ?, ?, ?, ?)");
+
+            if (iterator.hasNext()) {
+                sql.append(", ");
+            }
         }
-        sql.append("RETURNING id, receiver_id)\n")
-                .append("SELECT tu.*, r.id as reminder_id\n")
-                .append("FROM tg_user tu INNER JOIN rem r on tu.user_id = r.receiver_id");
 
         jdbcTemplate.query(
                 sql.toString(),
                 preparedStatement -> {
+                    preparedStatement.setString(1, reminder.getText());
+                    preparedStatement.setInt(2, reminder.getCreatorId());
+
                     if (StringUtils.isNotBlank(reminder.getReceiver().getUsername())) {
-                        preparedStatement.setString(1, reminder.getText());
-                        preparedStatement.setInt(2, reminder.getCreatorId());
-                        preparedStatement.setTimestamp(3, Timestamp.valueOf(reminder.getRemindAt()));
+                        preparedStatement.setNull(3, Types.INTEGER);
                         preparedStatement.setString(4, reminder.getReceiver().getUsername());
                     } else {
-                        preparedStatement.setString(1, reminder.getText());
-                        preparedStatement.setInt(2, reminder.getCreatorId());
-                        preparedStatement.setInt(3, reminder.getReceiver().getId());
-                        preparedStatement.setTimestamp(4, Timestamp.valueOf(reminder.getRemindAt()));
+                        preparedStatement.setInt(3, reminder.getReceiver().getUserId());
+                        preparedStatement.setNull(4, Types.VARCHAR);
+                    }
+                    preparedStatement.setTimestamp(5, Timestamp.valueOf(reminder.getRemindAt()));
+
+                    int i = 6;
+                    for (ReminderTime reminderTime : reminder.getReminderTimes()) {
+                        preparedStatement.setNull(i++, Types.INTEGER);
+                        preparedStatement.setInt(i++, reminderTime.getType().getCode());
+
+                        if (reminderTime.getFixedTime() != null) {
+                            preparedStatement.setTimestamp(i++, Timestamp.valueOf(reminderTime.getFixedTime()));
+                            preparedStatement.setNull(i++, Types.TIME);
+                        } else {
+                            preparedStatement.setNull(i++, Types.TIMESTAMP);
+                            preparedStatement.setTime(i++, Time.valueOf(reminderTime.getDelayTime()));
+                        }
+                        preparedStatement.setNull(i++, Types.TIMESTAMP);
+                        preparedStatement.setNull(i++, Types.INTEGER);
                     }
                 },
                 rs -> {
                     int reminderId = rs.getInt("reminder_id");
                     reminder.setId(reminderId);
 
-                    reminder.getReceiver().setUsername(rs.getString("username"));
-                    reminder.getReceiver().setChatId(rs.getLong("chat_id"));
-                    reminder.getReceiver().setFirstName(rs.getString("first_name"));
-                    reminder.getReceiver().setLastName(rs.getString("last_name"));
+                    TgUser receiver = new TgUser();
+                    receiver.setUserId(rs.getInt("rc_user_id"));
+                    receiver.setChatId(rs.getLong("rc_chat_id"));
+                    receiver.setFirstName(rs.getString("rc_first_name"));
+                    receiver.setLastName(rs.getString("rc_last_name"));
+                    reminder.setReceiver(receiver);
+
+                    TgUser creator = new TgUser();
+                    creator.setUserId(rs.getInt("cr_user_id"));
+                    creator.setChatId(rs.getLong("cr_chat_id"));
+                    creator.setFirstName(rs.getString("cr_first_name"));
+                    creator.setLastName(rs.getString("cr_last_name"));
+                    reminder.setCreator(creator);
                 }
         );
 
@@ -83,12 +102,12 @@ public class ReminderDao {
                 "WITH rem AS (\n" +
                         "        SELECT r.id as reminder_id," +
                         "               rt.id,\n" +
-                        "               r.text,\n" +
+                        "               r.reminder_text,\n" +
                         "               u.chat_id,\n" +
                         "               rt.last_reminder_at,\n" +
                         "               rt.fixed_time,\n" +
                         "               rt.delay_time,\n" +
-                        "               rt.type,\n" +
+                        "               rt.time_type,\n" +
                         "               r.remind_at\n" +
                         "        FROM reminder_time rt\n" +
                         "                 INNER JOIN reminder r ON rt.reminder_id = r.id\n" +
@@ -97,18 +116,18 @@ public class ReminderDao {
                         "    )\n" +
                         "    SELECT *\n" +
                         "    FROM rem\n" +
-                        "    WHERE type = 0\n" +
+                        "    WHERE time_type = 0\n" +
                         "      AND :curr_date >= fixed_time\n" +
                         "    UNION ALL\n" +
                         "    SELECT *\n" +
                         "    FROM rem\n" +
-                        "    WHERE type = 1\n" +
+                        "    WHERE time_type = 1\n" +
                         "      AND last_reminder_at IS NULL\n" +
                         "      AND ((remind_at - :curr_date)::time(0) BETWEEN '00:01:00' AND delay_time)\n" +
                         "    UNION ALL\n" +
                         "    SELECT *\n" +
                         "    FROM rem\n" +
-                        "    WHERE type = 1\n" +
+                        "    WHERE time_type = 1\n" +
                         "      AND :curr_date > last_reminder_at\n" +
                         "      AND :curr_date - remind_at >= delay_time\n" +
                         "      AND (:curr_date - last_reminder_at)::time(0) >= delay_time\n" +
@@ -147,25 +166,48 @@ public class ReminderDao {
     }
 
     public Reminder delete(int id) {
-        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-
-        jdbcTemplate.update(
-                con -> {
-                    PreparedStatement preparedStatement = con.prepareStatement("DELETE FROM reminder WHERE id = ? RETURNING *", Statement.RETURN_GENERATED_KEYS);
-
-                    preparedStatement.setInt(1, id);
-
-                    return preparedStatement;
-                },
-                generatedKeyHolder
-        );
         Reminder reminder = new Reminder();
 
-        reminder.setId(((Number) generatedKeyHolder.getKeys().get(Reminder.ID)).intValue());
-        reminder.setText((String) generatedKeyHolder.getKeys().get(Reminder.TEXT));
-        reminder.setRemindAt(((Timestamp) generatedKeyHolder.getKeys().get(Reminder.REMIND_AT)).toLocalDateTime());
-        reminder.setCreatorId((Integer) generatedKeyHolder.getKeys().get(Reminder.CREATOR_ID));
-        reminder.setReceiverId((Integer) generatedKeyHolder.getKeys().get(Reminder.RECEIVER_ID));
+        jdbcTemplate.query(
+                "WITH deleted_reminder AS (\n" +
+                        "    DELETE FROM reminder WHERE id = 12 RETURNING id, creator_id, receiver_id\n" +
+                        ")\n" +
+                        "select dr.*,\n" +
+                        "       cr.user_id    as cr_user_id,\n" +
+                        "       cr.first_name as cr_first_name,\n" +
+                        "       cr.last_name  as cr_last_name,\n" +
+                        "       rec.user_id   as rec_user_id,\n" +
+                        "       rec.first_name as rec_first_name,\n" +
+                        "       rec.last_name as rec_last_name\n" +
+                        "FROM deleted_reminder dr\n" +
+                        "         INNER JOIN tg_user cr ON dr.creator_id = cr.user_id\n" +
+                        "         INNER JOIN tg_user rec ON dr.receiver_id = rec.user_id",
+                ps -> {
+                    ps.setInt(1, id);
+                },
+                new RowCallbackHandler() {
+                    @Override
+                    public void processRow(ResultSet rs) throws SQLException {
+                        reminder.setId(rs.getInt(Reminder.ID));
+                        reminder.setText(rs.getString(Reminder.TEXT));
+                        reminder.setRemindAt(rs.getTimestamp(Reminder.REMIND_AT).toLocalDateTime());
+                        reminder.setCreatorId(rs.getInt(Reminder.CREATOR_ID));
+                        reminder.setReceiverId(rs.getInt(Reminder.RECEIVER_ID));
+
+                        TgUser creator = new TgUser();
+                        creator.setUserId(rs.getInt("cr_user_id"));
+                        creator.setFirstName(rs.getString("cr_first_name"));
+                        creator.setLastName(rs.getString("cr_last_name"));
+                        reminder.setCreator(creator);
+
+                        TgUser receiver = new TgUser();
+                        receiver.setUserId(rs.getInt("rec_user_id"));
+                        receiver.setFirstName(rs.getString("rec_first_name"));
+                        receiver.setLastName(rs.getString("rec_last_name"));
+                        reminder.setReceiver(receiver);
+                    }
+                }
+        );
 
         return reminder;
     }

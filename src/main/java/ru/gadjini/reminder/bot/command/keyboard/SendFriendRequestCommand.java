@@ -6,7 +6,9 @@ import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.model.CreateFriendRequestResult;
 import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.util.UserUtils;
 
 public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBotCommand {
 
@@ -51,11 +53,29 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
     public void processNonCommandUpdate(Message message) {
         String receiverName = removeUsernameStart(message.getText().trim());
 
-        friendshipService.createFriendRequest(receiverName);
+        CreateFriendRequestResult createFriendRequestResult = friendshipService.createFriendRequest(receiverName);
 
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
-        messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_SENT, new Object[]{message.getText().trim()}, replyKeyboardMarkup);
+        switch (createFriendRequestResult.getState()) {
+            case ALREADY_REQUESTED:
+                messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT);
+                break;
+            case ALREADY_REQUESTED_TO_ME:
+                messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT_ME);
+                break;
+            case ALREADY_FRIEND:
+                messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_ALREADY_FRIEND);
+                break;
+            case NONE:
+                messageService.sendMessageByCode(
+                        message.getChatId(),
+                        MessagesProperties.MESSAGE_FRIEND_REQUEST_SENT,
+                        new Object[]{UserUtils.userLink(createFriendRequestResult.getFriendship().getUserTwo())},
+                        replyKeyboardMarkup
+                );
+                break;
+        }
     }
 
     private String removeUsernameStart(String username) {

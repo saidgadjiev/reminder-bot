@@ -7,9 +7,10 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.util.RequestHelper;
+import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -93,17 +94,14 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
     }
 
     @Override
+    public String getHistoryName() {
+        return name;
+    }
+
+    @Override
     public void processNonCommandUpdate(Message message) {
-        String text = message.getText();
-        ReminderRequest candidate = null;
+        ReminderRequest candidate = RequestHelper.findCandidate(REQUEST_EXTRACTORS, message.getText().trim());
 
-        for (Function<String, ReminderRequest> requestExtractor : REQUEST_EXTRACTORS) {
-            candidate = requestExtractor.apply(text);
-
-            if (candidate != null) {
-                break;
-            }
-        }
         if (candidate == null) {
             return;
         }
@@ -115,17 +113,16 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
         reminderRequests.remove(message.getChatId());
 
         String reminderText = reminderTextBuilder.create(reminderRequest.getText(), reminderRequest.getRemindAt());
-        messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_FROM,
-                new Object[]{TgUser.USERNAME_START + message.getFrom().getUserName(), reminderText});
-
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
-        messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED,
-                new Object[]{reminderText, TgUser.USERNAME_START + reminder.getReceiver().getUsername()}, replyKeyboardMarkup);
+        sendMessages(reminder, replyKeyboardMarkup, reminderText);
     }
 
-    @Override
-    public String getHistoryName() {
-        return name;
+    private void sendMessages(Reminder reminder, ReplyKeyboardMarkup replyKeyboardMarkup, String reminderText) {
+        messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_FROM,
+                new Object[]{UserUtils.userLink(reminder.getCreator()), reminderText});
+
+        messageService.sendMessageByCode(reminder.getCreator().getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED,
+                new Object[]{reminderText, UserUtils.userLink(reminder.getReceiver())}, replyKeyboardMarkup);
     }
 }

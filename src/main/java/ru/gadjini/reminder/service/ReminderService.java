@@ -15,26 +15,17 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class ReminderService {
 
     private ReminderDao reminderDao;
 
-    private TgUserService tgUserService;
-
-    private ReminderTimeService reminderTimeService;
-
     private SecurityService securityService;
 
     @Autowired
-    public ReminderService(ReminderDao reminderDao, TgUserService tgUserService, ReminderTimeService reminderTimeService, SecurityService securityService) {
+    public ReminderService(ReminderDao reminderDao, SecurityService securityService) {
         this.reminderDao = reminderDao;
-        this.tgUserService = tgUserService;
-        this.reminderTimeService = reminderTimeService;
         this.securityService = securityService;
     }
 
@@ -52,7 +43,6 @@ public class ReminderService {
         receiver.setId(reminderRequest.getReceiverId());
         receiver.setUsername(reminderRequest.getReceiverName());
         reminder.setReceiver(receiver);
-        reminder = reminderDao.create(reminder);
 
         List<ReminderTime> reminderTimes = new ArrayList<>();
         if (reminder.getRemindAt().minusHours(1).isAfter(DateUtils.now())) {
@@ -78,7 +68,9 @@ public class ReminderService {
         }
         reminderTimes.add(fiveMinuteDelayTime);
 
-        reminderTimeService.create(reminderTimes);
+        reminder.setReminderTimes(reminderTimes);
+
+        reminder = reminderDao.create(reminder);
 
         return reminder;
     }
@@ -88,13 +80,6 @@ public class ReminderService {
     }
 
     public Reminder deleteReminder(int id) {
-        Reminder reminder = reminderDao.delete(id);
-
-        Map<Integer, TgUser> tgUsers = tgUserService.getUsersByUserIds(Stream.of(reminder.getCreatorId(), reminder.getReceiverId()).collect(Collectors.toSet()));
-
-        reminder.setReceiver(tgUsers.get(reminder.getReceiverId()));
-        reminder.setCreator(tgUsers.get(reminder.getCreatorId()));
-
-        return reminder;
+        return reminderDao.delete(id);
     }
 }

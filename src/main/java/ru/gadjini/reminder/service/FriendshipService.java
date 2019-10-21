@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.FriendshipDao;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.model.CreateFriendRequestResult;
 
 import java.util.List;
 
@@ -28,10 +29,14 @@ public class FriendshipService {
         friendshipDao.deleteFriend(user.getId(), friendId);
     }
 
-    public void createFriendRequest(String friendUsername) {
+    public CreateFriendRequestResult createFriendRequest(String friendUsername) {
         User user = securityService.getAuthenticatedUser();
 
-        friendshipDao.createFriendship(user.getId(), friendUsername, Friendship.Status.REQUESTED);
+        CreateFriendRequestResult createFriendRequestResult = friendshipDao.createFriendRequest(user.getId(), friendUsername, Friendship.Status.REQUESTED);
+
+        setCreateFriendRequestState(user, createFriendRequestResult);
+
+        return createFriendRequestResult;
     }
 
     public List<TgUser> getFriendRequests() {
@@ -56,5 +61,19 @@ public class FriendshipService {
         User user = securityService.getAuthenticatedUser();
 
         friendshipDao.deleteFriendRequest(user.getId(), friendId);
+    }
+
+    private void setCreateFriendRequestState(User currUser, CreateFriendRequestResult createFriendRequestResult) {
+        if (createFriendRequestResult.isConflict()) {
+            if (createFriendRequestResult.getFriendship().getStatus() == Friendship.Status.REQUESTED) {
+                if (createFriendRequestResult.getFriendship().getUserOneId() == currUser.getId()) {
+                    createFriendRequestResult.setState(CreateFriendRequestResult.State.ALREADY_REQUESTED);
+                } else {
+                    createFriendRequestResult.setState(CreateFriendRequestResult.State.ALREADY_REQUESTED_TO_ME);
+                }
+            } else {
+                createFriendRequestResult.setState(CreateFriendRequestResult.State.ALREADY_FRIEND);
+            }
+        }
     }
 }

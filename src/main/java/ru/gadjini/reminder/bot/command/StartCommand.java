@@ -11,9 +11,10 @@ import ru.gadjini.reminder.bot.command.api.DefaultMemento;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.util.RequestHelper;
+import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -96,25 +97,21 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     @Override
     public void processNonCommandUpdate(Message message) {
-        String text = message.getText().trim();
-        ReminderRequest reminderRequest = null;
+        ReminderRequest reminderRequest = RequestHelper.findCandidate(REQUEST_EXTRACTORS, message.getText().trim());
 
-        for (Function<String, ReminderRequest> requestFunction : REQUEST_EXTRACTORS) {
-            reminderRequest = requestFunction.apply(text);
-
-            if (reminderRequest != null) {
-                break;
-            }
-        }
         if (reminderRequest == null) {
             return;
         }
         Reminder reminder = reminderService.createReminder(reminderRequest);
-
         String reminderText = reminderTextBuilder.create(reminderRequest.getText(), reminderRequest.getRemindAt());
+
+        sendMessages(reminder, reminderText);
+    }
+
+    private void sendMessages(Reminder reminder, String reminderText) {
         messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_FROM,
-                new Object[]{TgUser.USERNAME_START + message.getFrom().getUserName(), reminderText});
-        messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED,
-                new Object[]{reminderText, TgUser.USERNAME_START + reminderRequest.getReceiverName()});
+                new Object[]{UserUtils.userLink(reminder.getCreator()), reminderText});
+        messageService.sendMessageByCode(reminder.getCreator().getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED,
+                new Object[]{reminderText, UserUtils.userLink(reminder.getReceiver())});
     }
 }
