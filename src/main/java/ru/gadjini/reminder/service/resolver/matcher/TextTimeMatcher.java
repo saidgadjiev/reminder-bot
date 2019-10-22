@@ -26,6 +26,8 @@ public class TextTimeMatcher implements Function<String, ReminderRequest> {
             LocalDateTime localDateTime = LocalDateTime.of(LocalDate.now(), localTime);
             reminderRequest.setRemindAt(localDateTime);
 
+            reminderRequest.setMatchType(MatchType.TEXT_TIME);
+
             return reminderRequest;
         }
 

@@ -28,6 +28,10 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_COMPLETE_ANSWER = "message.reminder.complete.answer";
 
+    public static final String MESSAGE_BAD_REMIND_AT = "message.bad.remind.at";
+
+    public static final String MESSAGE_REMIND_NOT_FRIEND = "message.remind.not.friend";
+
     public static final String MESSAGE_REMINDER_COMPLETED = "message.reminder.completed";
 
     public static final String MESSAGE_REMINDER_ME_COMPLETED = "message.reminder.me.completed";

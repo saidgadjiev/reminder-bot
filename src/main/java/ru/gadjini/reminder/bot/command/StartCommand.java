@@ -14,6 +14,8 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.resolver.ReminderRequestResolver;
+import ru.gadjini.reminder.service.validation.ErrorBag;
+import ru.gadjini.reminder.service.validation.ValidationService;
 import ru.gadjini.reminder.util.UserUtils;
 
 public class StartCommand extends BotCommand implements NavigableBotCommand {
@@ -30,12 +32,15 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     private KeyboardService keyboardService;
 
+    private ValidationService validationService;
+
     public StartCommand(MessageService messageService,
                         ReminderService reminderService,
                         TgUserService tgUserService,
                         ReminderTextBuilder reminderTextBuilder,
                         ReminderRequestResolver reminderRequestResolver,
-                        KeyboardService keyboardService) {
+                        KeyboardService keyboardService,
+                        ValidationService validationService) {
         super(MessagesProperties.START_COMMAND_NAME, "");
         this.messageService = messageService;
         this.reminderService = reminderService;
@@ -43,6 +48,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         this.reminderTextBuilder = reminderTextBuilder;
         this.reminderRequestResolver = reminderRequestResolver;
         this.keyboardService = keyboardService;
+        this.validationService = validationService;
     }
 
     @Override
@@ -74,6 +80,15 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         if (reminderRequest == null) {
             return;
         }
+        ErrorBag errorBag = validationService.validate(reminderRequest);
+
+        if (errorBag.hasErrors()) {
+            String firstError = errorBag.firstErrorMessage();
+
+            messageService.sendMessage(message.getChatId(), firstError, null);
+            return;
+        }
+
         Reminder reminder = reminderService.createReminder(reminderRequest);
         String reminderText = reminderTextBuilder.create(reminderRequest.getText(), reminderRequest.getRemindAt());
 

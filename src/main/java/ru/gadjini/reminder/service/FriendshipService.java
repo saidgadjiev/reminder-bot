@@ -73,6 +73,12 @@ public class FriendshipService {
         return friendshipDao.rejectFriendRequest(user.getId(), friendId);
     }
 
+    public boolean isFriend(String receiverName) {
+        User user = securityService.getAuthenticatedUser();
+
+        return friendshipDao.existsFriendship(user.getId(), receiverName, Friendship.Status.ACCEPTED);
+    }
+
     private void setCreateFriendRequestState(User currUser, CreateFriendRequestResult createFriendRequestResult) {
         if (createFriendRequestResult.isConflict()) {
             if (createFriendRequestResult.getFriendship().getStatus() == Friendship.Status.REQUESTED) {

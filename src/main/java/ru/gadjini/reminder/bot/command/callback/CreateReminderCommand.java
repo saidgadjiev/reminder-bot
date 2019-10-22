@@ -10,6 +10,8 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.resolver.ReminderRequestResolver;
+import ru.gadjini.reminder.service.validation.ErrorBag;
+import ru.gadjini.reminder.service.validation.ValidationService;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,13 +34,16 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     private ReminderRequestResolver reminderRequestResolver;
 
+    private ValidationService validationService;
+
     public CreateReminderCommand(LocalisationService localisationService,
                                  ReminderService reminderService,
                                  MessageService messageService,
                                  ReminderTextBuilder reminderTextBuilder,
                                  KeyboardService keyboardService,
                                  CommandNavigator commandNavigator,
-                                 ReminderRequestResolver reminderRequestResolver) {
+                                 ReminderRequestResolver reminderRequestResolver,
+                                 ValidationService validationService) {
         this.reminderService = reminderService;
         this.name = localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME);
         this.messageService = messageService;
@@ -46,6 +51,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
         this.keyboardService = keyboardService;
         this.commandNavigator = commandNavigator;
         this.reminderRequestResolver = reminderRequestResolver;
+        this.validationService = validationService;
     }
 
     @Override
@@ -78,6 +84,15 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
         ReminderRequest reminderRequest = reminderRequests.get(message.getChatId());
         reminderRequest.setText(candidate.getText());
         reminderRequest.setRemindAt(candidate.getRemindAt());
+
+        ErrorBag errorBag = validationService.validate(reminderRequest);
+
+        if (errorBag.hasErrors()) {
+            String firstError = errorBag.firstErrorMessage();
+
+            messageService.sendMessage(message.getChatId(), firstError, null);
+            return;
+        }
 
         Reminder reminder = reminderService.createReminder(reminderRequest);
         reminderRequests.remove(message.getChatId());

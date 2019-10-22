@@ -44,17 +44,7 @@ public class GeFriendsCommand implements KeyboardBotCommand {
 
     private void sendFriends(long chatId, List<TgUser> friends) {
         for (TgUser tgUser : friends) {
-            StringBuilder friendMsg = new StringBuilder();
-
-            if (StringUtils.isNotBlank(tgUser.getLastName())) {
-                friendMsg.append("<b>").append(UserUtils.fio(tgUser)).append("</b>\n");
-                friendMsg.append("@").append(tgUser.getUsername());
-            } else {
-                friendMsg.append("<b>").append(UserUtils.fio(tgUser)).append("</b> ");
-                friendMsg.append("@").append(tgUser.getUsername());
-            }
-
-            messageService.sendMessage(chatId, friendMsg.toString(), keyboardService.getFriendKeyboard(tgUser.getUserId()));
+            messageService.sendMessage(chatId, UserUtils.userLink(tgUser), keyboardService.getFriendKeyboard(tgUser.getUserId()));
         }
     }
 }
