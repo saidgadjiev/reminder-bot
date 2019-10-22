@@ -16,7 +16,6 @@ import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.resolver.ReminderRequestResolver;
 import ru.gadjini.reminder.service.validation.ErrorBag;
 import ru.gadjini.reminder.service.validation.ValidationService;
-import ru.gadjini.reminder.util.UserUtils;
 
 public class StartCommand extends BotCommand implements NavigableBotCommand {
 
@@ -26,29 +25,29 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     private TgUserService tgUserService;
 
-    private ReminderTextBuilder reminderTextBuilder;
-
     private ReminderRequestResolver reminderRequestResolver;
 
     private KeyboardService keyboardService;
 
     private ValidationService validationService;
 
+    private ReminderMessageSender reminderMessageSender;
+
     public StartCommand(MessageService messageService,
                         ReminderService reminderService,
                         TgUserService tgUserService,
-                        ReminderTextBuilder reminderTextBuilder,
                         ReminderRequestResolver reminderRequestResolver,
                         KeyboardService keyboardService,
-                        ValidationService validationService) {
+                        ValidationService validationService,
+                        ReminderMessageSender reminderMessageSender) {
         super(MessagesProperties.START_COMMAND_NAME, "");
         this.messageService = messageService;
         this.reminderService = reminderService;
         this.tgUserService = tgUserService;
-        this.reminderTextBuilder = reminderTextBuilder;
         this.reminderRequestResolver = reminderRequestResolver;
         this.keyboardService = keyboardService;
         this.validationService = validationService;
+        this.reminderMessageSender = reminderMessageSender;
     }
 
     @Override
@@ -78,6 +77,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         ReminderRequest reminderRequest = reminderRequestResolver.resolve(message.getText().trim());
 
         if (reminderRequest == null) {
+            messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_REMINDER_FORMAT);
             return;
         }
         ErrorBag errorBag = validationService.validate(reminderRequest);
@@ -90,15 +90,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         }
 
         Reminder reminder = reminderService.createReminder(reminderRequest);
-        String reminderText = reminderTextBuilder.create(reminderRequest.getText(), reminderRequest.getRemindAt());
 
-        sendMessages(reminder, reminderText);
-    }
-
-    private void sendMessages(Reminder reminder, String reminderText) {
-        messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_FROM,
-                new Object[]{UserUtils.userLink(reminder.getCreator()), reminderText});
-        messageService.sendMessageByCode(reminder.getCreator().getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED,
-                new Object[]{reminderText, UserUtils.userLink(reminder.getReceiver())});
+        reminderMessageSender.sendReminderCreated(reminder, null);
     }
 }

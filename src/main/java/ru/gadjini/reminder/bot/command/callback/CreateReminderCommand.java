@@ -10,9 +10,9 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.resolver.ReminderRequestResolver;
+import ru.gadjini.reminder.service.resolver.matcher.MatchType;
 import ru.gadjini.reminder.service.validation.ErrorBag;
 import ru.gadjini.reminder.service.validation.ValidationService;
-import ru.gadjini.reminder.util.UserUtils;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,8 +24,6 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     private MessageService messageService;
 
-    private ReminderTextBuilder reminderTextBuilder;
-
     private String name;
 
     private KeyboardService keyboardService;
@@ -36,22 +34,24 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     private ValidationService validationService;
 
+    private ReminderMessageSender reminderMessageSender;
+
     public CreateReminderCommand(LocalisationService localisationService,
                                  ReminderService reminderService,
                                  MessageService messageService,
-                                 ReminderTextBuilder reminderTextBuilder,
                                  KeyboardService keyboardService,
                                  CommandNavigator commandNavigator,
                                  ReminderRequestResolver reminderRequestResolver,
-                                 ValidationService validationService) {
+                                 ValidationService validationService,
+                                 ReminderMessageSender reminderMessageSender) {
         this.reminderService = reminderService;
         this.name = localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME);
         this.messageService = messageService;
-        this.reminderTextBuilder = reminderTextBuilder;
         this.keyboardService = keyboardService;
         this.commandNavigator = commandNavigator;
         this.reminderRequestResolver = reminderRequestResolver;
         this.validationService = validationService;
+        this.reminderMessageSender = reminderMessageSender;
     }
 
     @Override
@@ -76,9 +76,10 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     @Override
     public void processNonCommandUpdate(Message message) {
-        ReminderRequest candidate = reminderRequestResolver.resolve(message.getText().trim());
+        ReminderRequest candidate = reminderRequestResolver.resolve(message.getText().trim(), MatchType.TEXT_TIME);
 
         if (candidate == null) {
+            messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT, keyboardService.goBackCommand());
             return;
         }
         ReminderRequest reminderRequest = reminderRequests.get(message.getChatId());
@@ -97,17 +98,8 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
         Reminder reminder = reminderService.createReminder(reminderRequest);
         reminderRequests.remove(message.getChatId());
 
-        String reminderText = reminderTextBuilder.create(reminderRequest.getText(), reminderRequest.getRemindAt());
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
-        sendMessages(reminder, replyKeyboardMarkup, reminderText);
-    }
-
-    private void sendMessages(Reminder reminder, ReplyKeyboardMarkup replyKeyboardMarkup, String reminderText) {
-        messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_FROM,
-                new Object[]{UserUtils.userLink(reminder.getCreator()), reminderText});
-
-        messageService.sendMessageByCode(reminder.getCreator().getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED,
-                new Object[]{reminderText, UserUtils.userLink(reminder.getReceiver())}, replyKeyboardMarkup);
+        reminderMessageSender.sendReminderCreated(reminder, replyKeyboardMarkup);
     }
 }

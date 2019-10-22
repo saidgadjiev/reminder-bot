@@ -28,6 +28,6 @@ public class CompleteCommand implements CallbackBotCommand {
         int reminderId = Integer.parseInt(arguments[0]);
         Reminder reminder = reminderService.deleteReminder(reminderId);
 
-        reminderMessageSender.sendReminderComplete(callbackQuery.getId(), reminder);
+        reminderMessageSender.sendReminderComplete(callbackQuery, reminder);
     }
 }

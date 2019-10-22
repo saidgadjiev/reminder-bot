@@ -9,7 +9,7 @@ public class Reminder {
 
     public static final String ID = "id";
 
-    public static final String TEXT = "text";
+    public static final String TEXT = "reminder_text";
 
     public static final String CREATOR_ID = "creator_id";
 

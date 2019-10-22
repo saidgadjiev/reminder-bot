@@ -1,7 +1,6 @@
 package ru.gadjini.reminder.model;
 
 import ru.gadjini.reminder.service.resolver.matcher.MatchType;
-import ru.gadjini.reminder.validator.annotation.After;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +12,6 @@ public class ReminderRequest {
 
     private String text;
 
-    @After("now()")
     private LocalDateTime remindAt;
 
     private MatchType matchType;

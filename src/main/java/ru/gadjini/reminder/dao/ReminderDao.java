@@ -3,7 +3,6 @@ package ru.gadjini.reminder.dao;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -11,7 +10,9 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.domain.TgUser;
 
-import java.sql.*;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -34,12 +35,16 @@ public class ReminderDao {
         sql.append("SELECT * FROM create_reminder(?, ?, ?, ?, ?, ARRAY[");
 
         for (Iterator<ReminderTime> iterator = reminder.getReminderTimes().iterator(); iterator.hasNext(); ) {
+            iterator.next();
+
             sql.append("(?, ?, ?, ?, ?, ?)");
 
             if (iterator.hasNext()) {
                 sql.append(", ");
             }
         }
+
+        sql.append("]::reminder_time[])");
 
         jdbcTemplate.query(
                 sql.toString(),
@@ -68,12 +73,16 @@ public class ReminderDao {
                             preparedStatement.setNull(i++, Types.TIMESTAMP);
                             preparedStatement.setTime(i++, Time.valueOf(reminderTime.getDelayTime()));
                         }
-                        preparedStatement.setNull(i++, Types.TIMESTAMP);
+                        if (reminderTime.getLastReminderAt() != null) {
+                            preparedStatement.setTimestamp(i++, Timestamp.valueOf(reminderTime.getLastReminderAt()));
+                        } else {
+                            preparedStatement.setNull(i++, Types.TIMESTAMP);
+                        }
                         preparedStatement.setNull(i++, Types.INTEGER);
                     }
                 },
                 rs -> {
-                    int reminderId = rs.getInt("reminder_id");
+                    int reminderId = rs.getInt("r_id");
                     reminder.setId(reminderId);
 
                     TgUser receiver = new TgUser();
@@ -101,12 +110,13 @@ public class ReminderDao {
         namedParameterJdbcTemplate.query(
                 "WITH rem AS (\n" +
                         "        SELECT r.id as reminder_id," +
+                        "               r.receiver_id as r_receiver_id,\n" +
+                        "               r.creator_id as r_creator_id,\n" +
                         "               rt.id,\n" +
                         "               r.reminder_text,\n" +
-                        "               u.chat_id,\n" +
+                        "               u.chat_id as u_chat_id,\n" +
                         "               c.first_name as c_first_name,\n" +
                         "               c.last_name as c_last_name,\n" +
-                        "               c.user_id as c_user_id,\n" +
                         "               rt.last_reminder_at,\n" +
                         "               rt.fixed_time,\n" +
                         "               rt.delay_time,\n" +
@@ -127,13 +137,12 @@ public class ReminderDao {
                         "    FROM rem\n" +
                         "    WHERE time_type = 1\n" +
                         "      AND last_reminder_at IS NULL\n" +
-                        "      AND ((remind_at - :curr_date)::time(0) BETWEEN '00:01:00' AND delay_time)\n" +
+                        "      AND ((:curr_date - remind_at)::time(0) >= delay_time OR (remind_at - :curr_date)::time(0) BETWEEN '00:01:00' AND delay_time)\n" +
                         "    UNION ALL\n" +
                         "    SELECT *\n" +
                         "    FROM rem\n" +
                         "    WHERE time_type = 1\n" +
-                        "      AND :curr_date > last_reminder_at\n" +
-                        "      AND :curr_date - remind_at >= delay_time\n" +
+                        "      AND last_reminder_at IS NOT NULL\n" +
                         "      AND (:curr_date - last_reminder_at)::time(0) >= delay_time\n" +
                         "    ORDER BY id",
                 new MapSqlParameterSource().addValue("curr_date", Timestamp.valueOf(localDateTime)),
@@ -143,6 +152,8 @@ public class ReminderDao {
                     reminders.putIfAbsent(id, new Reminder());
                     Reminder reminder = reminders.get(id);
                     reminder.setId(id);
+                    reminder.setCreatorId(rs.getInt("r_creator_id"));
+                    reminder.setReceiverId(rs.getInt("r_receiver_id"));
                     reminder.setText(rs.getString(Reminder.TEXT));
                     reminder.setReminderTimes(new ArrayList<>());
                     reminder.setRemindAt(rs.getTimestamp(Reminder.REMIND_AT).toLocalDateTime());
@@ -150,6 +161,8 @@ public class ReminderDao {
                     ReminderTime reminderTime = new ReminderTime();
                     reminderTime.setId(rs.getInt(ReminderTime.ID));
                     reminderTime.setType(ReminderTime.Type.fromCode(rs.getInt(ReminderTime.TYPE_COL)));
+                    Timestamp lastRemindAt = rs.getTimestamp(ReminderTime.LAST_REMINDER_AT);
+                    reminderTime.setLastReminderAt(lastRemindAt == null ? null : lastRemindAt.toLocalDateTime());
 
                     Timestamp fixedTime = rs.getTimestamp(ReminderTime.FIXED_TIME);
                     reminderTime.setFixedTime(fixedTime == null ? null : fixedTime.toLocalDateTime());
@@ -160,14 +173,15 @@ public class ReminderDao {
                     reminder.getReminderTimes().add(reminderTime);
 
                     TgUser receiver = new TgUser();
-                    receiver.setChatId(rs.getLong(TgUser.CHAT_ID));
+                    receiver.setUserId(reminder.getReceiverId());
+                    receiver.setChatId(rs.getLong("u_chat_id"));
                     reminder.setReceiver(receiver);
 
                     TgUser creator = new TgUser();
-                    creator.setUserId(rs.getInt("c_user_id"));
+                    creator.setUserId(reminder.getCreatorId());
                     creator.setFirstName(rs.getString("c_first_name"));
                     creator.setLastName(rs.getString("c_last_name"));
-                    reminder.setReceiver(creator);
+                    reminder.setCreator(creator);
                 }
         );
 
@@ -175,11 +189,9 @@ public class ReminderDao {
     }
 
     public Reminder delete(int id) {
-        Reminder reminder = new Reminder();
-
-        jdbcTemplate.query(
+        return jdbcTemplate.query(
                 "WITH deleted_reminder AS (\n" +
-                        "    DELETE FROM reminder WHERE id = 12 RETURNING id, creator_id, receiver_id\n" +
+                        "    DELETE FROM reminder WHERE id = ? RETURNING id, creator_id, receiver_id, remind_at, reminder_text\n" +
                         ")\n" +
                         "select dr.*,\n" +
                         "       cr.user_id    as cr_user_id,\n" +
@@ -194,9 +206,10 @@ public class ReminderDao {
                 ps -> {
                     ps.setInt(1, id);
                 },
-                new RowCallbackHandler() {
-                    @Override
-                    public void processRow(ResultSet rs) throws SQLException {
+                rs -> {
+                    if (rs.next()) {
+                        Reminder reminder = new Reminder();
+
                         reminder.setId(rs.getInt(Reminder.ID));
                         reminder.setText(rs.getString(Reminder.TEXT));
                         reminder.setRemindAt(rs.getTimestamp(Reminder.REMIND_AT).toLocalDateTime());
@@ -214,10 +227,12 @@ public class ReminderDao {
                         receiver.setFirstName(rs.getString("rec_first_name"));
                         receiver.setLastName(rs.getString("rec_last_name"));
                         reminder.setReceiver(receiver);
+
+                        return reminder;
                     }
+
+                    return null;
                 }
         );
-
-        return reminder;
     }
 }

@@ -3,6 +3,8 @@ package ru.gadjini.reminder.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.RemindMessage;
 import ru.gadjini.reminder.domain.Reminder;
@@ -59,7 +61,14 @@ public class ReminderMessageSender {
     }
 
     @Transactional
-    public void sendReminderComplete(String queryId, Reminder reminder) {
+    public void sendReminderComplete(CallbackQuery callbackQuery, Reminder reminder) {
+        String queryId = callbackQuery.getId();
+        if (reminder == null) {
+            messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
+            messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
+            messageService.deleteMessage(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
+            return;
+        }
         RemindMessage remindMessage = remindMessageService.getByReminderId(reminder.getId());
 
         if (remindMessage != null) {
@@ -87,6 +96,20 @@ public class ReminderMessageSender {
                     MessagesProperties.MESSAGE_REMINDER_ME_COMPLETED,
                     new Object[]{reminderText}
             );
+        }
+    }
+
+    public void sendReminderCreated(Reminder reminder, ReplyKeyboardMarkup replyKeyboardMarkup) {
+        String reminderText = reminderTextBuilder.create(reminder.getText(), reminder.getRemindAt());
+
+        if (reminder.getCreatorId() != reminder.getReceiverId()) {
+            messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_FROM,
+                    new Object[]{UserUtils.userLink(reminder.getCreator()), reminderText});
+            messageService.sendMessageByCode(reminder.getCreator().getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED,
+                    new Object[]{reminderText, UserUtils.userLink(reminder.getReceiver())}, replyKeyboardMarkup);
+        } else {
+            messageService.sendMessageByCode(reminder.getCreator().getChatId(), MessagesProperties.MESSAGE_REMINDER_ME_CREATED,
+                    new Object[]{reminderText});
         }
     }
 }

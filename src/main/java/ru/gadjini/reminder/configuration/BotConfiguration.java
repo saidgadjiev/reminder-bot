@@ -27,34 +27,33 @@ public class BotConfiguration {
                                               MessageService messageService,
                                               ReminderService reminderService,
                                               TgUserService tgUserService,
-                                              ReminderTextBuilder reminderTextBuilder,
                                               ReminderRequestResolver reminderRequestResolver,
-                                              ValidationService validationService) {
+                                              ValidationService validationService,
+                                              ReminderMessageSender reminderMessageSender) {
         return new ArrayList<>() {{
-            add(new StartCommand(messageService, reminderService, tgUserService, reminderTextBuilder,
-                    reminderRequestResolver, keyboardService, validationService));
+            add(new StartCommand(messageService, reminderService, tgUserService,
+                    reminderRequestResolver, keyboardService, validationService, reminderMessageSender));
             add(new HelpCommand(messageService));
         }};
     }
 
     @Bean
     public Collection<CallbackBotCommand> callbackBotCommands(LocalisationService localisationService,
-                                                              ReminderTextBuilder reminderTextBuilder,
                                                               ReminderService reminderService,
                                                               FriendshipService friendshipService,
                                                               MessageService messageService,
                                                               KeyboardService keyboardService,
                                                               CommandNavigator commandNavigator,
-                                                              ReminderMessageSender reminderMessageSender,
                                                               ReminderRequestResolver reminderRequestResolver,
-                                                              ValidationService validationService) {
+                                                              ValidationService validationService,
+                                                              ReminderMessageSender reminderMessageSender) {
         return new ArrayList<>() {{
             add(new CompleteCommand(reminderService, reminderMessageSender));
             add(new AcceptFriendRequestCommand(localisationService, friendshipService, messageService));
             add(new RejectFriendRequestCommand(localisationService, friendshipService, messageService));
             add(new DeleteFriendCommand(messageService, friendshipService, localisationService));
-            add(new CreateReminderCommand(localisationService, reminderService, messageService, reminderTextBuilder,
-                    keyboardService, commandNavigator, reminderRequestResolver, validationService));
+            add(new CreateReminderCommand(localisationService, reminderService, messageService,
+                    keyboardService, commandNavigator, reminderRequestResolver, validationService, reminderMessageSender));
         }};
     }
 

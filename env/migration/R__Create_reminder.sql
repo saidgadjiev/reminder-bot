@@ -46,17 +46,17 @@ BEGIN
                             FROM (SELECT reminder_id) AS r,
                                  tg_user cr,
                                  tg_user rc
-                            WHERE cr.user_id = 369691036
-                              AND rc.user_id = 171271164)
+                            WHERE cr.user_id = in_creator_id
+                              AND rc.user_id = in_receiver_id)
         LOOP
             r_id := result_iterator.reminder_id;
+            cr_chat_id := result_iterator.cr_chat_id;
             cr_user_id := result_iterator.cr_user_id;
             cr_first_name := result_iterator.cr_first_name;
             cr_last_name := result_iterator.cr_last_name;
             rc_user_id := result_iterator.rc_user_id;
             rc_first_name := result_iterator.rc_first_name;
             rc_last_name := result_iterator.rc_last_name;
-            cr_chat_id := result_iterator.cr_chat_id;
             rc_chat_id := result_iterator.rc_chat_id;
 
             RETURN NEXT;

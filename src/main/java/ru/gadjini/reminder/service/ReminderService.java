@@ -47,6 +47,7 @@ public class ReminderService {
                 break;
             case TEXT_TIME:
                 prepareReminderForMe(reminder);
+                break;
         }
 
         return reminderDao.create(reminder);
@@ -56,6 +57,7 @@ public class ReminderService {
         return reminderDao.getReminders(localDateTime);
     }
 
+    @Transactional
     public Reminder deleteReminder(int id) {
         return reminderDao.delete(id);
     }
@@ -93,13 +95,13 @@ public class ReminderService {
         itsTimeFixedTime.setFixedTime(remindAt);
         reminderTimes.add(itsTimeFixedTime);
 
-        ReminderTime fiveMinuteDelayTime = new ReminderTime();
-        fiveMinuteDelayTime.setType(ReminderTime.Type.REPEAT);
-        fiveMinuteDelayTime.setDelayTime(LocalTime.of(0, 5));
-        if (remindAt.minusMinutes(5).isBefore(DateUtils.now())) {
-            fiveMinuteDelayTime.setLastReminderAt(DateUtils.now());
+        ReminderTime delayTime = new ReminderTime();
+        delayTime.setType(ReminderTime.Type.REPEAT);
+        delayTime.setDelayTime(LocalTime.of(0, 10));
+        if (remindAt.minusMinutes(10).isBefore(DateUtils.now())) {
+            delayTime.setLastReminderAt(remindAt);
         }
-        reminderTimes.add(fiveMinuteDelayTime);
+        reminderTimes.add(delayTime);
 
         return reminderTimes;
     }

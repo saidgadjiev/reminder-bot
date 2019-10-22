@@ -13,7 +13,7 @@ public class ReminderTime {
 
     public static final String DELAY_TIME = "delay_time";
 
-    public static final String TYPE_COL = "type";
+    public static final String TYPE_COL = "time_type";
 
     public static final String REMINDER_ID = "reminder_id";
 
