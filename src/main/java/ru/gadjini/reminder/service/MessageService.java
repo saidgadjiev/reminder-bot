@@ -73,7 +73,7 @@ public class MessageService {
         }
     }
 
-    public void sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard) {
+    public Message sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard) {
         SendMessage sendMessage = new SendMessage();
 
         sendMessage.setChatId(chatId);
@@ -85,7 +85,7 @@ public class MessageService {
         }
 
         try {
-            telegramService.execute(sendMessage);
+            return telegramService.execute(sendMessage);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -103,8 +103,8 @@ public class MessageService {
         sendMessage(chatId, localisationService.getMessage(messageCode, args), null);
     }
 
-    public void sendMessageByCode(long chatId, String messageCode, Object[] args, ReplyKeyboard replyKeyboard) {
-        sendMessage(chatId, localisationService.getMessage(messageCode, args), replyKeyboard);
+    public Message sendMessageByCode(long chatId, String messageCode, Object[] args, ReplyKeyboard replyKeyboard) {
+        return sendMessage(chatId, localisationService.getMessage(messageCode, args), replyKeyboard);
     }
 
     public void sendAnswerCallbackQuery(String callbackQueryId, String text) {

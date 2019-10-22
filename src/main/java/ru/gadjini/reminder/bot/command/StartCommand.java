@@ -13,46 +13,10 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
-import ru.gadjini.reminder.util.RequestHelper;
+import ru.gadjini.reminder.service.resolver.ReminderRequestResolver;
 import ru.gadjini.reminder.util.UserUtils;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class StartCommand extends BotCommand implements NavigableBotCommand {
-
-    private static final List<Function<String, ReminderRequest>> REQUEST_EXTRACTORS = new ArrayList<>() {{
-        add(new Function<>() {
-
-            Pattern PATTERN = Pattern.compile("^@([0-9a-zA-Z_]+) (.*) ((2[0-3]|[01]?[0-9]):([0-5]?[0-9]))");
-
-            @Override
-            public ReminderRequest apply(String s) {
-                Matcher matcher = PATTERN.matcher(s);
-
-                if (matcher.matches()) {
-                    ReminderRequest reminderRequest = new ReminderRequest();
-
-                    reminderRequest.setReceiverName(matcher.group(1));
-                    reminderRequest.setText(matcher.group(2));
-
-                    LocalTime localTime = LocalTime.parse(matcher.group(3));
-                    LocalDateTime localDateTime = LocalDateTime.of(LocalDate.now(), localTime);
-                    reminderRequest.setRemindAt(localDateTime);
-
-                    return reminderRequest;
-                }
-
-                return null;
-            }
-        });
-    }};
 
     private final MessageService messageService;
 
@@ -62,14 +26,22 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     private ReminderTextBuilder reminderTextBuilder;
 
+    private ReminderRequestResolver reminderRequestResolver;
+
     private KeyboardService keyboardService;
 
-    public StartCommand(MessageService messageService, ReminderService reminderService, TgUserService tgUserService, ReminderTextBuilder reminderTextBuilder, KeyboardService keyboardService) {
+    public StartCommand(MessageService messageService,
+                        ReminderService reminderService,
+                        TgUserService tgUserService,
+                        ReminderTextBuilder reminderTextBuilder,
+                        ReminderRequestResolver reminderRequestResolver,
+                        KeyboardService keyboardService) {
         super(MessagesProperties.START_COMMAND_NAME, "");
         this.messageService = messageService;
         this.reminderService = reminderService;
         this.tgUserService = tgUserService;
         this.reminderTextBuilder = reminderTextBuilder;
+        this.reminderRequestResolver = reminderRequestResolver;
         this.keyboardService = keyboardService;
     }
 
@@ -97,7 +69,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     @Override
     public void processNonCommandUpdate(Message message) {
-        ReminderRequest reminderRequest = RequestHelper.findCandidate(REQUEST_EXTRACTORS, message.getText().trim());
+        ReminderRequest reminderRequest = reminderRequestResolver.resolve(message.getText().trim());
 
         if (reminderRequest == null) {
             return;

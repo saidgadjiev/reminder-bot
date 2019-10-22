@@ -9,46 +9,12 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
-import ru.gadjini.reminder.util.RequestHelper;
+import ru.gadjini.reminder.service.resolver.ReminderRequestResolver;
 import ru.gadjini.reminder.util.UserUtils;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCommand {
-
-    private static final List<Function<String, ReminderRequest>> REQUEST_EXTRACTORS = new ArrayList<>() {{
-        add(new Function<>() {
-
-            Pattern pattern = Pattern.compile("(.*) ((2[0-3]|[01]?[0-9]):([0-5]?[0-9]))");
-
-            @Override
-            public ReminderRequest apply(String s) {
-                Matcher matcher = pattern.matcher(s);
-
-                if (matcher.matches()) {
-                    ReminderRequest reminderRequest = new ReminderRequest();
-
-                    reminderRequest.setText(matcher.group(1).trim());
-
-                    LocalTime localTime = LocalTime.parse(matcher.group(2));
-                    LocalDateTime localDateTime = LocalDateTime.of(LocalDate.now(), localTime);
-                    reminderRequest.setRemindAt(localDateTime);
-
-                    return reminderRequest;
-                }
-
-                return null;
-            }
-        });
-    }};
 
     private final ConcurrentHashMap<Long, ReminderRequest> reminderRequests = new ConcurrentHashMap<>();
 
@@ -64,18 +30,22 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     private CommandNavigator commandNavigator;
 
+    private ReminderRequestResolver reminderRequestResolver;
+
     public CreateReminderCommand(LocalisationService localisationService,
                                  ReminderService reminderService,
                                  MessageService messageService,
                                  ReminderTextBuilder reminderTextBuilder,
                                  KeyboardService keyboardService,
-                                 CommandNavigator commandNavigator) {
+                                 CommandNavigator commandNavigator,
+                                 ReminderRequestResolver reminderRequestResolver) {
         this.reminderService = reminderService;
         this.name = localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME);
         this.messageService = messageService;
         this.reminderTextBuilder = reminderTextBuilder;
         this.keyboardService = keyboardService;
         this.commandNavigator = commandNavigator;
+        this.reminderRequestResolver = reminderRequestResolver;
     }
 
     @Override
@@ -100,7 +70,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     @Override
     public void processNonCommandUpdate(Message message) {
-        ReminderRequest candidate = RequestHelper.findCandidate(REQUEST_EXTRACTORS, message.getText().trim());
+        ReminderRequest candidate = reminderRequestResolver.resolve(message.getText().trim());
 
         if (candidate == null) {
             return;

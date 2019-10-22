@@ -13,6 +13,7 @@ import ru.gadjini.reminder.bot.command.keyboard.GetFriendRequestsCommand;
 import ru.gadjini.reminder.bot.command.keyboard.GoBackCommand;
 import ru.gadjini.reminder.bot.command.keyboard.SendFriendRequestCommand;
 import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.service.resolver.ReminderRequestResolver;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,9 +22,15 @@ import java.util.Collection;
 public class BotConfiguration {
 
     @Bean
-    public Collection<BotCommand> botCommands(KeyboardService keyboardService, MessageService messageService, ReminderService reminderService, TgUserService tgUserService, ReminderTextBuilder reminderTextBuilder) {
+    public Collection<BotCommand> botCommands(KeyboardService keyboardService,
+                                              MessageService messageService,
+                                              ReminderService reminderService,
+                                              TgUserService tgUserService,
+                                              ReminderTextBuilder reminderTextBuilder,
+                                              ReminderRequestResolver reminderRequestResolver) {
         return new ArrayList<>() {{
-            add(new StartCommand(messageService, reminderService, tgUserService, reminderTextBuilder, keyboardService));
+            add(new StartCommand(messageService, reminderService, tgUserService, reminderTextBuilder,
+                    reminderRequestResolver, keyboardService));
             add(new HelpCommand(messageService));
         }};
     }
@@ -35,13 +42,15 @@ public class BotConfiguration {
                                                               FriendshipService friendshipService,
                                                               MessageService messageService,
                                                               KeyboardService keyboardService,
-                                                              CommandNavigator commandNavigator) {
+                                                              CommandNavigator commandNavigator,
+                                                              ReminderMessageSender reminderMessageSender,
+                                                              ReminderRequestResolver reminderRequestResolver) {
         return new ArrayList<>() {{
-            add(new CompleteCommand(reminderTextBuilder, reminderService, messageService));
+            add(new CompleteCommand(reminderService, reminderMessageSender));
             add(new AcceptFriendRequestCommand(localisationService, friendshipService, messageService));
             add(new RejectFriendRequestCommand(localisationService, friendshipService, messageService));
             add(new DeleteFriendCommand(messageService, friendshipService, localisationService));
-            add(new CreateReminderCommand(localisationService, reminderService, messageService, reminderTextBuilder, keyboardService, commandNavigator));
+            add(new CreateReminderCommand(localisationService, reminderService, messageService, reminderTextBuilder, keyboardService, commandNavigator, reminderRequestResolver));
         }};
     }
 

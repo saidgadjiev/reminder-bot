@@ -104,6 +104,9 @@ public class ReminderDao {
                         "               rt.id,\n" +
                         "               r.reminder_text,\n" +
                         "               u.chat_id,\n" +
+                        "               c.first_name as c_first_name,\n" +
+                        "               c.last_name as c_last_name,\n" +
+                        "               c.user_id as c_user_id,\n" +
                         "               rt.last_reminder_at,\n" +
                         "               rt.fixed_time,\n" +
                         "               rt.delay_time,\n" +
@@ -111,7 +114,8 @@ public class ReminderDao {
                         "               r.remind_at\n" +
                         "        FROM reminder_time rt\n" +
                         "                 INNER JOIN reminder r ON rt.reminder_id = r.id\n" +
-                        "                 INNER JOIN tg_user u on r.receiver_id = u.user_id\n" +
+                        "                 INNER JOIN tg_user u ON r.receiver_id = u.user_id\n" +
+                        "                 INNER JOIN tg_user c ON r.creator_id = c.user_id\n" +
                         "        ORDER BY rt.id\n" +
                         "    )\n" +
                         "    SELECT *\n" +
@@ -156,9 +160,14 @@ public class ReminderDao {
                     reminder.getReminderTimes().add(reminderTime);
 
                     TgUser receiver = new TgUser();
-
                     receiver.setChatId(rs.getLong(TgUser.CHAT_ID));
                     reminder.setReceiver(receiver);
+
+                    TgUser creator = new TgUser();
+                    creator.setUserId(rs.getInt("c_user_id"));
+                    creator.setFirstName(rs.getString("c_first_name"));
+                    creator.setLastName(rs.getString("c_last_name"));
+                    reminder.setReceiver(creator);
                 }
         );
 

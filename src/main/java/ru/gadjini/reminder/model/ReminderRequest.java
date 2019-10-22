@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.model;
 
+import ru.gadjini.reminder.service.resolver.matcher.MatchType;
+
 import java.time.LocalDateTime;
 
 public class ReminderRequest {
@@ -11,6 +13,8 @@ public class ReminderRequest {
     private String text;
 
     private LocalDateTime remindAt;
+
+    private MatchType matchType;
 
     public String getReceiverName() {
         return receiverName;
@@ -42,6 +46,10 @@ public class ReminderRequest {
 
     public void setReceiverId(int receiverId) {
         this.receiverId = receiverId;
+    }
+
+    public MatchType getMatchType() {
+        return matchType;
     }
 
     @Override

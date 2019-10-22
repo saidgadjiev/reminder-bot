@@ -1,6 +1,9 @@
 package ru.gadjini.reminder.service;
 
 import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.events.Event;
+import ru.gadjini.reminder.domain.RemindMessage;
+import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.domain.TgUser;
 
 import java.sql.ResultSet;
@@ -20,5 +23,15 @@ public class ResultSetMapper {
         tgUser.setUserId(resultSet.getInt(TgUser.USER_ID));
 
         return tgUser;
+    }
+
+    public RemindMessage mapRemindMessage(ResultSet resultSet) throws SQLException {
+        RemindMessage remindMessage = new RemindMessage();
+
+        remindMessage.setId(resultSet.getInt(RemindMessage.ID));
+        remindMessage.setMessageId(resultSet.getInt(RemindMessage.MESSAGE_ID));
+        remindMessage.setReminderId(resultSet.getInt(RemindMessage.REMINDER_ID));
+
+        return remindMessage;
     }
 }

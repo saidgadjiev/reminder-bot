@@ -18,6 +18,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMIND = "message.remind";
 
+    public static final String MESSAGE_REMIND_ME = "message.remind.me";
+
     public static final String REMINDER_COMPLETE_COMMAND_NAME = "reminder.complete.command.name";
 
     public static final String COMPLETE_REMINDER_COMMAND_NAME = "complete";
@@ -27,6 +29,8 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_COMPLETE_ANSWER = "message.reminder.complete.answer";
 
     public static final String MESSAGE_REMINDER_COMPLETED = "message.reminder.completed";
+
+    public static final String MESSAGE_REMINDER_ME_COMPLETED = "message.reminder.me.completed";
 
     public static final String GET_FRIEND_REQUESTS_COMMAND_NAME = "get.friend.requests.command.name";
 

@@ -3,10 +3,11 @@ package ru.gadjini.reminder.job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
-import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.service.ReminderMessageSender;
+import ru.gadjini.reminder.service.ReminderService;
+import ru.gadjini.reminder.service.ReminderTimeService;
 import ru.gadjini.reminder.util.DateUtils;
 
 import java.time.LocalDateTime;
@@ -15,27 +16,19 @@ import java.util.List;
 @Component
 public class ReminderJob {
 
-    private ReminderTextBuilder reminderTextBuilder;
-
     private ReminderService reminderService;
 
     private ReminderTimeService reminderTimeService;
 
-    private MessageService messageService;
-
-    private KeyboardService keyboardService;
+    private ReminderMessageSender reminderMessageSender;
 
     @Autowired
-    public ReminderJob(ReminderTextBuilder reminderTextBuilder,
-                       ReminderService reminderService,
+    public ReminderJob(ReminderService reminderService,
                        ReminderTimeService reminderTimeService,
-                       MessageService messageService,
-                       KeyboardService keyboardService) {
-        this.reminderTextBuilder = reminderTextBuilder;
+                       ReminderMessageSender reminderMessageSender) {
         this.reminderService = reminderService;
         this.reminderTimeService = reminderTimeService;
-        this.messageService = messageService;
-        this.keyboardService = keyboardService;
+        this.reminderMessageSender = reminderMessageSender;
     }
 
     @Scheduled(fixedDelay = 60 * 1000)
@@ -61,16 +54,14 @@ public class ReminderJob {
     }
 
     private void sendOnceReminder(Reminder reminder, ReminderTime reminderTime) {
-        String remindText = reminderTextBuilder.create(reminder.getText(), reminder.getRemindAt());
+        reminderMessageSender.sendRemindMessage(reminder);
 
-        messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMIND, new Object[]{remindText}, keyboardService.getReminderButtons(reminder.getId()));
         reminderTimeService.deleteReminderTime(reminderTime.getId());
     }
 
     private void sendRepeatReminder(Reminder reminder, ReminderTime reminderTime) {
-        String remindText = reminderTextBuilder.create(reminder.getText(), reminder.getRemindAt());
+        reminderMessageSender.sendRemindMessage(reminder);
 
-        messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMIND, new Object[]{remindText}, keyboardService.getReminderButtons(reminder.getId()));
         reminderTimeService.updateLastRemindAt(reminderTime.getId(), LocalDateTime.now().withSecond(0));
     }
 }

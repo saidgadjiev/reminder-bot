@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,41 +39,17 @@ public class ReminderService {
 
         User user = securityService.getAuthenticatedUser();
         reminder.setCreatorId(user.getId());
+        reminder.setReminderTimes(getReminderTimes(reminder.getRemindAt()));
 
-        TgUser receiver = new TgUser();
-        receiver.setId(reminderRequest.getReceiverId());
-        receiver.setUsername(reminderRequest.getReceiverName());
-        reminder.setReceiver(receiver);
-
-        List<ReminderTime> reminderTimes = new ArrayList<>();
-        if (reminder.getRemindAt().minusHours(1).isAfter(DateUtils.now())) {
-            ReminderTime oneHourFixedTime = new ReminderTime();
-            oneHourFixedTime.setType(ReminderTime.Type.ONCE);
-            oneHourFixedTime.setReminderId(reminder.getId());
-            oneHourFixedTime.setFixedTime(reminder.getRemindAt().minusHours(1));
-            reminderTimes.add(oneHourFixedTime);
+        switch (reminderRequest.getMatchType()) {
+            case LOGIN_TEXT_TIME:
+                prepareReminderForAnother(reminder, reminderRequest);
+                break;
+            case TEXT_TIME:
+                prepareReminderForMe(reminder);
         }
 
-        ReminderTime itsTimeFixedTime = new ReminderTime();
-        itsTimeFixedTime.setType(ReminderTime.Type.ONCE);
-        itsTimeFixedTime.setFixedTime(reminder.getRemindAt());
-        itsTimeFixedTime.setReminderId(reminder.getId());
-        reminderTimes.add(itsTimeFixedTime);
-
-        ReminderTime fiveMinuteDelayTime = new ReminderTime();
-        fiveMinuteDelayTime.setType(ReminderTime.Type.REPEAT);
-        fiveMinuteDelayTime.setReminderId(reminder.getId());
-        fiveMinuteDelayTime.setDelayTime(LocalTime.of(0, 5));
-        if (reminder.getRemindAt().minusMinutes(5).isBefore(DateUtils.now())) {
-            fiveMinuteDelayTime.setLastReminderAt(DateUtils.now());
-        }
-        reminderTimes.add(fiveMinuteDelayTime);
-
-        reminder.setReminderTimes(reminderTimes);
-
-        reminder = reminderDao.create(reminder);
-
-        return reminder;
+        return reminderDao.create(reminder);
     }
 
     public List<Reminder> getReminders(LocalDateTime localDateTime) {
@@ -81,5 +58,49 @@ public class ReminderService {
 
     public Reminder deleteReminder(int id) {
         return reminderDao.delete(id);
+    }
+
+    private void prepareReminderForMe(Reminder reminder) {
+        TgUser receiver = new TgUser();
+
+        receiver.setUserId(reminder.getCreatorId());
+        reminder.setReceiver(receiver);
+        reminder.setReceiverId(reminder.getCreatorId());
+    }
+
+    private void prepareReminderForAnother(Reminder reminder, ReminderRequest reminderRequest) {
+        TgUser receiver = new TgUser();
+
+        if (StringUtils.isNotBlank(reminderRequest.getReceiverName())) {
+            receiver.setUsername(reminderRequest.getReceiverName());
+        } else {
+            receiver.setUserId(reminderRequest.getReceiverId());
+            reminder.setReceiverId(reminderRequest.getReceiverId());
+        }
+    }
+
+    private List<ReminderTime> getReminderTimes(LocalDateTime remindAt) {
+        List<ReminderTime> reminderTimes = new ArrayList<>();
+        if (remindAt.minusHours(1).isAfter(DateUtils.now())) {
+            ReminderTime oneHourFixedTime = new ReminderTime();
+            oneHourFixedTime.setType(ReminderTime.Type.ONCE);
+            oneHourFixedTime.setFixedTime(remindAt.minusHours(1));
+            reminderTimes.add(oneHourFixedTime);
+        }
+
+        ReminderTime itsTimeFixedTime = new ReminderTime();
+        itsTimeFixedTime.setType(ReminderTime.Type.ONCE);
+        itsTimeFixedTime.setFixedTime(remindAt);
+        reminderTimes.add(itsTimeFixedTime);
+
+        ReminderTime fiveMinuteDelayTime = new ReminderTime();
+        fiveMinuteDelayTime.setType(ReminderTime.Type.REPEAT);
+        fiveMinuteDelayTime.setDelayTime(LocalTime.of(0, 5));
+        if (remindAt.minusMinutes(5).isBefore(DateUtils.now())) {
+            fiveMinuteDelayTime.setLastReminderAt(DateUtils.now());
+        }
+        reminderTimes.add(fiveMinuteDelayTime);
+
+        return reminderTimes;
     }
 }
