@@ -34,8 +34,8 @@ public class ReminderMessageSender {
 
     @Transactional
     public void sendRemindMessage(Reminder reminder) {
-        String remindText = reminderTextBuilder.create(reminder.getText(), reminder.getRemindAt());
-        RemindMessage remindMessage = remindMessageService.getByReminderId(reminder.getId());
+        String remindText = reminderTextBuilder.create(reminder.getText(), reminder.getRemindAtInReceiverTimeZone());
+        RemindMessage remindMessage = reminder.getRemindMessage();
 
         if (remindMessage != null) {
             messageService.deleteMessage(reminder.getReceiver().getChatId(), remindMessage.getMessageId());
@@ -69,47 +69,52 @@ public class ReminderMessageSender {
             messageService.deleteMessage(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
             return;
         }
-        RemindMessage remindMessage = remindMessageService.getByReminderId(reminder.getId());
+        RemindMessage remindMessage = reminder.getRemindMessage();
 
         if (remindMessage != null) {
             messageService.deleteMessage(reminder.getReceiver().getChatId(), remindMessage.getMessageId());
         }
 
-        String reminderText = reminderTextBuilder.create(reminder.getText(), reminder.getRemindAt());
+        String creatorReminderText = reminderTextBuilder.create(reminder.getText(), reminder.getRemindAtInCreatorTimeZone());
 
         if (reminder.getCreatorId() != reminder.getReceiverId()) {
             messageService.sendMessageByCode(
                     reminder.getCreator().getChatId(),
                     MessagesProperties.MESSAGE_REMINDER_COMPLETED,
-                    new Object[]{UserUtils.userLink(reminder.getReceiver()), reminderText}
+                    new Object[]{UserUtils.userLink(reminder.getReceiver()), creatorReminderText}
             );
             messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
+
+            String receiverReminderText = reminderTextBuilder.create(reminder.getText(), reminder.getRemindAtInReceiverTimeZone());
+
             messageService.sendMessageByCode(
                     reminder.getReceiver().getChatId(),
                     MessagesProperties.MESSAGE_REMINDER_COMPLETED_FROM,
-                    new Object[]{reminderText, UserUtils.userLink(reminder.getCreator())}
+                    new Object[]{receiverReminderText, UserUtils.userLink(reminder.getCreator())}
             );
         } else {
             messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
             messageService.sendMessageByCode(
                     reminder.getReceiver().getChatId(),
                     MessagesProperties.MESSAGE_REMINDER_ME_COMPLETED,
-                    new Object[]{reminderText}
+                    new Object[]{creatorReminderText}
             );
         }
     }
 
     public void sendReminderCreated(Reminder reminder, ReplyKeyboardMarkup replyKeyboardMarkup) {
-        String reminderText = reminderTextBuilder.create(reminder.getText(), reminder.getRemindAt());
+        String reminderTextForCreator = reminderTextBuilder.create(reminder.getText(), reminder.getRemindAtInCreatorTimeZone());
 
         if (reminder.getCreatorId() != reminder.getReceiverId()) {
+            String reminderTextForReceiver = reminderTextBuilder.create(reminder.getText(), reminder.getRemindAtInReceiverTimeZone());
+
             messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_FROM,
-                    new Object[]{UserUtils.userLink(reminder.getCreator()), reminderText});
+                    new Object[]{UserUtils.userLink(reminder.getCreator()), reminderTextForReceiver});
             messageService.sendMessageByCode(reminder.getCreator().getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED,
-                    new Object[]{reminderText, UserUtils.userLink(reminder.getReceiver())}, replyKeyboardMarkup);
+                    new Object[]{reminderTextForCreator, UserUtils.userLink(reminder.getReceiver())}, replyKeyboardMarkup);
         } else {
             messageService.sendMessageByCode(reminder.getCreator().getChatId(), MessagesProperties.MESSAGE_REMINDER_ME_CREATED,
-                    new Object[]{reminderText});
+                    new Object[]{reminderTextForCreator});
         }
     }
 }

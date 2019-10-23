@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.TgUserDao;
 import ru.gadjini.reminder.domain.TgUser;
 
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,5 +47,9 @@ public class TgUserService {
 
     public List<TgUser> getAllUsers() {
         return tgUserDao.getAll();
+    }
+
+    public ZoneId getTimeZone(int userId) {
+        return ZoneId.of("Europe/Moscow");
     }
 }

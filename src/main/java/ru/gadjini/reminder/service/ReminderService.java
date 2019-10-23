@@ -24,10 +24,13 @@ public class ReminderService {
 
     private SecurityService securityService;
 
+    private DateService dateService;
+
     @Autowired
-    public ReminderService(ReminderDao reminderDao, SecurityService securityService) {
+    public ReminderService(ReminderDao reminderDao, SecurityService securityService, DateService dateService) {
         this.reminderDao = reminderDao;
         this.securityService = securityService;
+        this.dateService = dateService;
     }
 
     @Transactional
@@ -82,8 +85,10 @@ public class ReminderService {
     }
 
     private List<ReminderTime> getReminderTimes(LocalDateTime remindAt) {
+        LocalDateTime now = DateUtils.now();
+
         List<ReminderTime> reminderTimes = new ArrayList<>();
-        if (remindAt.minusHours(1).isAfter(DateUtils.now())) {
+        if (remindAt.minusHours(1).isAfter(now)) {
             ReminderTime oneHourFixedTime = new ReminderTime();
             oneHourFixedTime.setType(ReminderTime.Type.ONCE);
             oneHourFixedTime.setFixedTime(remindAt.minusHours(1));
@@ -98,7 +103,7 @@ public class ReminderService {
         ReminderTime delayTime = new ReminderTime();
         delayTime.setType(ReminderTime.Type.REPEAT);
         delayTime.setDelayTime(LocalTime.of(0, 10));
-        if (remindAt.minusMinutes(10).isBefore(DateUtils.now())) {
+        if (remindAt.minusMinutes(10).isBefore(now)) {
             delayTime.setLastReminderAt(remindAt);
         }
         reminderTimes.add(delayTime);

@@ -31,7 +31,13 @@ public class Reminder {
 
     private LocalDateTime remindAt;
 
+    private LocalDateTime remindAtInCreatorTimeZone;
+
+    private LocalDateTime remindAtInReceiverTimeZone;
+
     private List<ReminderTime> reminderTimes;
+
+    private RemindMessage remindMessage;
 
     public int getId() {
         return id;
@@ -95,5 +101,29 @@ public class Reminder {
 
     public TgUser getCreator() {
         return creator;
+    }
+
+    public LocalDateTime getRemindAtInCreatorTimeZone() {
+        return remindAtInCreatorTimeZone;
+    }
+
+    public void setRemindAtInCreatorTimeZone(LocalDateTime remindAtInCreatorTimeZone) {
+        this.remindAtInCreatorTimeZone = remindAtInCreatorTimeZone;
+    }
+
+    public LocalDateTime getRemindAtInReceiverTimeZone() {
+        return remindAtInReceiverTimeZone;
+    }
+
+    public void setRemindAtInReceiverTimeZone(LocalDateTime remindAtInReceiverTimeZone) {
+        this.remindAtInReceiverTimeZone = remindAtInReceiverTimeZone;
+    }
+
+    public RemindMessage getRemindMessage() {
+        return remindMessage;
+    }
+
+    public void setRemindMessage(RemindMessage remindMessage) {
+        this.remindMessage = remindMessage;
     }
 }

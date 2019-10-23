@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.gadjini.reminder.domain.RemindMessage;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.domain.TgUser;
@@ -98,6 +99,10 @@ public class ReminderDao {
                     creator.setFirstName(rs.getString("cr_first_name"));
                     creator.setLastName(rs.getString("cr_last_name"));
                     reminder.setCreator(creator);
+
+                    reminder.setRemindAt(rs.getTimestamp("r_at").toLocalDateTime());
+                    reminder.setRemindAtInCreatorTimeZone(rs.getTimestamp("c_remind_at").toLocalDateTime());
+                    reminder.setRemindAtInReceiverTimeZone(rs.getTimestamp("r_remind_at").toLocalDateTime());
                 }
         );
 
@@ -110,8 +115,10 @@ public class ReminderDao {
         namedParameterJdbcTemplate.query(
                 "WITH rem AS (\n" +
                         "        SELECT r.id as reminder_id," +
+                        "               r.message_id as rm_message_id,\n" +
                         "               r.receiver_id as r_receiver_id,\n" +
                         "               r.creator_id as r_creator_id,\n" +
+                        "               r.remind_at::timestamptz AT TIME ZONE u.zone_id as r_remind_at,\n" +
                         "               rt.id,\n" +
                         "               r.reminder_text,\n" +
                         "               u.chat_id as u_chat_id,\n" +
@@ -123,7 +130,7 @@ public class ReminderDao {
                         "               rt.time_type,\n" +
                         "               r.remind_at\n" +
                         "        FROM reminder_time rt\n" +
-                        "                 INNER JOIN reminder r ON rt.reminder_id = r.id\n" +
+                        "                 INNER JOIN (SELECT r.*, rm.message_id FROM reminder r LEFT JOIN remind_message rm ON r.id = rm.reminder_id) r ON rt.reminder_id = r.id\n" +
                         "                 INNER JOIN tg_user u ON r.receiver_id = u.user_id\n" +
                         "                 INNER JOIN tg_user c ON r.creator_id = c.user_id\n" +
                         "        ORDER BY rt.id\n" +
@@ -182,6 +189,15 @@ public class ReminderDao {
                     creator.setFirstName(rs.getString("c_first_name"));
                     creator.setLastName(rs.getString("c_last_name"));
                     reminder.setCreator(creator);
+
+                    reminder.setRemindAtInReceiverTimeZone(rs.getTimestamp("r_remind_at").toLocalDateTime());
+
+                    int remindMessageId = rs.getInt("rm_message_id");
+                    if (rs.wasNull()) {
+                        RemindMessage remindMessage = new RemindMessage();
+                        remindMessage.setMessageId(remindMessageId);
+                        reminder.setRemindMessage(remindMessage);
+                    }
                 }
         );
 
@@ -194,6 +210,9 @@ public class ReminderDao {
                         "    DELETE FROM reminder WHERE id = ? RETURNING id, creator_id, receiver_id, remind_at, reminder_text\n" +
                         ")\n" +
                         "select dr.*,\n" +
+                        "       dr.remind_at::timestamptz AT TIME ZONE cr.zone_id as c_remind_at,\n" +
+                        "       dr.remind_at::timestamptz AT TIME ZONE rec.zone_id as r_remind_at,\n" +
+                        "       rm.message_id as rm_message_id,\n" +
                         "       cr.user_id    as cr_user_id,\n" +
                         "       cr.first_name as cr_first_name,\n" +
                         "       cr.last_name  as cr_last_name,\n" +
@@ -201,6 +220,7 @@ public class ReminderDao {
                         "       rec.first_name as rec_first_name,\n" +
                         "       rec.last_name as rec_last_name\n" +
                         "FROM deleted_reminder dr\n" +
+                        "         LEFT JOIN remind_message rm ON dr.id = rm.reminder_id\n" +
                         "         INNER JOIN tg_user cr ON dr.creator_id = cr.user_id\n" +
                         "         INNER JOIN tg_user rec ON dr.receiver_id = rec.user_id",
                 ps -> {
@@ -227,6 +247,16 @@ public class ReminderDao {
                         receiver.setFirstName(rs.getString("rec_first_name"));
                         receiver.setLastName(rs.getString("rec_last_name"));
                         reminder.setReceiver(receiver);
+
+                        reminder.setRemindAtInCreatorTimeZone(rs.getTimestamp("c_remind_at").toLocalDateTime());
+                        reminder.setRemindAtInReceiverTimeZone(rs.getTimestamp("r_remind_at").toLocalDateTime());
+
+                        int remindMessageId = rs.getInt("rm_message_id");
+                        if (rs.wasNull()) {
+                            RemindMessage remindMessage = new RemindMessage();
+                            remindMessage.setMessageId(remindMessageId);
+                            reminder.setRemindMessage(remindMessage);
+                        }
 
                         return reminder;
                     }

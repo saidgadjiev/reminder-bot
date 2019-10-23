@@ -1,33 +1,33 @@
 package ru.gadjini.reminder.service.resolver;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.model.ReminderRequest;
-import ru.gadjini.reminder.service.resolver.matcher.LoginTextTimeMatcher;
 import ru.gadjini.reminder.service.resolver.matcher.MatchType;
-import ru.gadjini.reminder.service.resolver.matcher.TextTimeMatcher;
+import ru.gadjini.reminder.service.resolver.matcher.RequestMatcher;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 @Service
 public class ReminderRequestResolver {
 
-    private Map<MatchType, List<Function<String, ReminderRequest>>> REQUEST_RESOLVERS = new LinkedHashMap<>() {{
-        put(MatchType.LOGIN_TEXT_TIME, new ArrayList<>() {{
-            add(new LoginTextTimeMatcher());
-        }});
-        put(MatchType.TEXT_TIME, new ArrayList<>() {{
-            add(new TextTimeMatcher());
-        }});
-    }};
+    private Map<MatchType, List<RequestMatcher>> requestMatchers = new LinkedHashMap<>();
+
+    @Autowired
+    public ReminderRequestResolver(List<RequestMatcher> requestMatchers) {
+        requestMatchers.forEach(requestMatcher -> {
+            this.requestMatchers.putIfAbsent(requestMatcher.getType(), new ArrayList<>());
+            this.requestMatchers.get(requestMatcher.getType()).add(requestMatcher);
+        });
+    }
 
     public ReminderRequest resolve(String text) {
-        for (Map.Entry<MatchType, List<Function<String, ReminderRequest>>> entry : REQUEST_RESOLVERS.entrySet()) {
-            for (Function<String, ReminderRequest> matcher : entry.getValue()) {
-                ReminderRequest candidate = matcher.apply(text);
+        for (Map.Entry<MatchType, List<RequestMatcher>> entry : requestMatchers.entrySet()) {
+            for (RequestMatcher matcher : entry.getValue()) {
+                ReminderRequest candidate = matcher.match(text);
 
                 if (candidate != null) {
                     return candidate;
@@ -39,8 +39,8 @@ public class ReminderRequestResolver {
     }
 
     public ReminderRequest resolve(String text, MatchType matchType) {
-        for (Function<String, ReminderRequest> matcher : REQUEST_RESOLVERS.get(matchType)) {
-            ReminderRequest candidate = matcher.apply(text);
+        for (RequestMatcher matcher : requestMatchers.get(matchType)) {
+            ReminderRequest candidate = matcher.match(text);
 
             if (candidate != null) {
                 return candidate;

@@ -12,12 +12,18 @@ import ru.gadjini.reminder.bot.command.keyboard.GeFriendsCommand;
 import ru.gadjini.reminder.bot.command.keyboard.GetFriendRequestsCommand;
 import ru.gadjini.reminder.bot.command.keyboard.GoBackCommand;
 import ru.gadjini.reminder.bot.command.keyboard.SendFriendRequestCommand;
+import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.resolver.ReminderRequestResolver;
+import ru.gadjini.reminder.service.resolver.matcher.LoginTextTimeMatcher;
+import ru.gadjini.reminder.service.resolver.matcher.RequestMatcher;
+import ru.gadjini.reminder.service.resolver.matcher.TextTimeRequestMatcher;
 import ru.gadjini.reminder.service.validation.ValidationService;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
 
 @Configuration
 public class BotConfiguration {
@@ -69,6 +75,14 @@ public class BotConfiguration {
             add(new SendFriendRequestCommand(localisationService, friendshipService, messageService,
                     keyboardService, commandNavigator));
             add(new GoBackCommand(localisationService, commandNavigator));
+        }};
+    }
+
+    @Bean
+    public List<RequestMatcher> requestParsers(DateService dateService) {
+        return new ArrayList<>() {{
+            add(new LoginTextTimeMatcher(dateService));
+            add(new TextTimeRequestMatcher(dateService));
         }};
     }
 }

@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS tg_user
     first_name VARCHAR(128) NOT NULL,
     last_name  VARCHAR(128),
     chat_id    INTEGER      NOT NULL UNIQUE,
+    zone_id    VARCHAR(128) NOT NULL DEFAULT 'Europe/Moscow',
     UNIQUE (user_id, chat_id)
 );
 
