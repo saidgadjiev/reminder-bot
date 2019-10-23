@@ -56,8 +56,8 @@ public class ReminderService {
         return reminderDao.create(reminder);
     }
 
-    public List<Reminder> getReminders(LocalDateTime localDateTime) {
-        return reminderDao.getReminders(localDateTime);
+    public List<Reminder> getReminders(LocalDateTime localDateTime, int limit) {
+        return reminderDao.getReminders(localDateTime, limit);
     }
 
     @Transactional

@@ -109,12 +109,12 @@ public class ReminderDao {
         return reminder;
     }
 
-    public List<Reminder> getReminders(LocalDateTime localDateTime) {
+    public List<Reminder> getReminders(LocalDateTime localDateTime, int limit) {
         Map<Integer, Reminder> reminders = new LinkedHashMap<>();
 
         namedParameterJdbcTemplate.query(
-                "SELECT r.id                                             as reminder_id,\n" +
-                        "       r.message_id                                     as rm_message_id,\n" +
+                "SELECT r.id                                         as reminder_id,\n" +
+                        "       rm.message_id                                    as rm_message_id,\n" +
                         "       r.receiver_id                                    as r_receiver_id,\n" +
                         "       r.creator_id                                     as r_creator_id,\n" +
                         "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id as r_remind_at,\n" +
@@ -129,9 +129,8 @@ public class ReminderDao {
                         "       rt.time_type,\n" +
                         "       r.remind_at\n" +
                         "FROM reminder_time rt\n" +
-                        "         INNER JOIN (SELECT r.id, r.remind_at, r.receiver_id, r.creator_id, r.reminder_text, rm.message_id\n" +
-                        "                     FROM reminder r\n" +
-                        "                              LEFT JOIN remind_message rm ON r.id = rm.reminder_id) r ON rt.reminder_id = r.id\n" +
+                        "         INNER JOIN reminder r ON rt.reminder_id = r.id\n" +
+                        "         LEFT JOIN remind_message rm ON r.id = rm.reminder_id\n" +
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
                         "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
                         "WHERE CASE\n" +
@@ -145,8 +144,11 @@ public class ReminderDao {
                         "                           EXTRACT(MINUTE FROM (:curr_date - last_reminder_at)) >= EXTRACT(MINUTE FROM (delay_time))\n" +
                         "              END\n" +
                         "          END\n" +
-                        "ORDER BY rt.id",
-                new MapSqlParameterSource().addValue("curr_date", Timestamp.valueOf(localDateTime)),
+                        "ORDER BY rt.id\n" +
+                        "LIMIT :lim",
+                new MapSqlParameterSource()
+                        .addValue("curr_date", Timestamp.valueOf(localDateTime))
+                        .addValue("lim", limit),
                 (rs) -> {
                     int id = rs.getInt("reminder_id");
 
