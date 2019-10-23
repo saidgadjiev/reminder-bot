@@ -113,45 +113,39 @@ public class ReminderDao {
         Map<Integer, Reminder> reminders = new LinkedHashMap<>();
 
         namedParameterJdbcTemplate.query(
-                "WITH rem AS (\n" +
-                        "        SELECT r.id as reminder_id," +
-                        "               r.message_id as rm_message_id,\n" +
-                        "               r.receiver_id as r_receiver_id,\n" +
-                        "               r.creator_id as r_creator_id,\n" +
-                        "               r.remind_at::timestamptz AT TIME ZONE u.zone_id as r_remind_at,\n" +
-                        "               rt.id,\n" +
-                        "               r.reminder_text,\n" +
-                        "               u.chat_id as u_chat_id,\n" +
-                        "               c.first_name as c_first_name,\n" +
-                        "               c.last_name as c_last_name,\n" +
-                        "               rt.last_reminder_at,\n" +
-                        "               rt.fixed_time,\n" +
-                        "               rt.delay_time,\n" +
-                        "               rt.time_type,\n" +
-                        "               r.remind_at\n" +
-                        "        FROM reminder_time rt\n" +
-                        "                 INNER JOIN (SELECT r.*, rm.message_id FROM reminder r LEFT JOIN remind_message rm ON r.id = rm.reminder_id) r ON rt.reminder_id = r.id\n" +
-                        "                 INNER JOIN tg_user u ON r.receiver_id = u.user_id\n" +
-                        "                 INNER JOIN tg_user c ON r.creator_id = c.user_id\n" +
-                        "        ORDER BY rt.id\n" +
-                        "    )\n" +
-                        "    SELECT *\n" +
-                        "    FROM rem\n" +
-                        "    WHERE time_type = 0\n" +
-                        "      AND :curr_date >= fixed_time\n" +
-                        "    UNION ALL\n" +
-                        "    SELECT *\n" +
-                        "    FROM rem\n" +
-                        "    WHERE time_type = 1\n" +
-                        "      AND last_reminder_at IS NULL\n" +
-                        "      AND ((:curr_date - remind_at)::time(0) >= delay_time OR (remind_at - :curr_date)::time(0) BETWEEN '00:01:00' AND delay_time)\n" +
-                        "    UNION ALL\n" +
-                        "    SELECT *\n" +
-                        "    FROM rem\n" +
-                        "    WHERE time_type = 1\n" +
-                        "      AND last_reminder_at IS NOT NULL\n" +
-                        "      AND (:curr_date - last_reminder_at)::time(0) >= delay_time\n" +
-                        "    ORDER BY id",
+                "SELECT r.id                                             as reminder_id,\n" +
+                        "       r.message_id                                     as rm_message_id,\n" +
+                        "       r.receiver_id                                    as r_receiver_id,\n" +
+                        "       r.creator_id                                     as r_creator_id,\n" +
+                        "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id as r_remind_at,\n" +
+                        "       rt.id,\n" +
+                        "       r.reminder_text,\n" +
+                        "       rc.chat_id                                       as rc_chat_id,\n" +
+                        "       cr.first_name                                    as cr_first_name,\n" +
+                        "       cr.last_name                                     as cr_last_name,\n" +
+                        "       rt.last_reminder_at,\n" +
+                        "       rt.fixed_time,\n" +
+                        "       rt.delay_time,\n" +
+                        "       rt.time_type,\n" +
+                        "       r.remind_at\n" +
+                        "FROM reminder_time rt\n" +
+                        "         INNER JOIN (SELECT r.id, r.remind_at, r.receiver_id, r.creator_id, r.reminder_text, rm.message_id\n" +
+                        "                     FROM reminder r\n" +
+                        "                              LEFT JOIN remind_message rm ON r.id = rm.reminder_id) r ON rt.reminder_id = r.id\n" +
+                        "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
+                        "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
+                        "WHERE CASE\n" +
+                        "          WHEN time_type = 0 THEN :curr_date >= fixed_time\n" +
+                        "          ELSE CASE\n" +
+                        "                   WHEN last_reminder_at IS NULL THEN\n" +
+                        "                               EXTRACT(MINUTE FROM (:curr_date - r.remind_at)) >= EXTRACT(MINUTE FROM (delay_time))\n" +
+                        "                           OR\n" +
+                        "                               EXTRACT(MINUTE FROM (r.remind_at - :curr_date)) BETWEEN 1 AND EXTRACT(MINUTE FROM (delay_time))\n" +
+                        "                   ELSE\n" +
+                        "                           EXTRACT(MINUTE FROM (:curr_date - last_reminder_at)) >= EXTRACT(MINUTE FROM (delay_time))\n" +
+                        "              END\n" +
+                        "          END\n" +
+                        "ORDER BY rt.id",
                 new MapSqlParameterSource().addValue("curr_date", Timestamp.valueOf(localDateTime)),
                 (rs) -> {
                     int id = rs.getInt("reminder_id");
@@ -181,19 +175,19 @@ public class ReminderDao {
 
                     TgUser receiver = new TgUser();
                     receiver.setUserId(reminder.getReceiverId());
-                    receiver.setChatId(rs.getLong("u_chat_id"));
+                    receiver.setChatId(rs.getLong("rc_chat_id"));
                     reminder.setReceiver(receiver);
 
                     TgUser creator = new TgUser();
                     creator.setUserId(reminder.getCreatorId());
-                    creator.setFirstName(rs.getString("c_first_name"));
-                    creator.setLastName(rs.getString("c_last_name"));
+                    creator.setFirstName(rs.getString("cr_first_name"));
+                    creator.setLastName(rs.getString("cr_last_name"));
                     reminder.setCreator(creator);
 
                     reminder.setRemindAtInReceiverTimeZone(rs.getTimestamp("r_remind_at").toLocalDateTime());
 
                     int remindMessageId = rs.getInt("rm_message_id");
-                    if (rs.wasNull()) {
+                    if (!rs.wasNull()) {
                         RemindMessage remindMessage = new RemindMessage();
                         remindMessage.setMessageId(remindMessageId);
                         reminder.setRemindMessage(remindMessage);
@@ -216,9 +210,11 @@ public class ReminderDao {
                         "       cr.user_id    as cr_user_id,\n" +
                         "       cr.first_name as cr_first_name,\n" +
                         "       cr.last_name  as cr_last_name,\n" +
+                        "       cr.chat_id    as cr_chat_id,\n" +
                         "       rec.user_id   as rec_user_id,\n" +
                         "       rec.first_name as rec_first_name,\n" +
-                        "       rec.last_name as rec_last_name\n" +
+                        "       rec.last_name as rec_last_name,\n" +
+                        "       rec.chat_id   as rec_chat_id\n" +
                         "FROM deleted_reminder dr\n" +
                         "         LEFT JOIN remind_message rm ON dr.id = rm.reminder_id\n" +
                         "         INNER JOIN tg_user cr ON dr.creator_id = cr.user_id\n" +
@@ -240,19 +236,21 @@ public class ReminderDao {
                         creator.setUserId(rs.getInt("cr_user_id"));
                         creator.setFirstName(rs.getString("cr_first_name"));
                         creator.setLastName(rs.getString("cr_last_name"));
+                        creator.setChatId(rs.getInt("cr_chat_id"));
                         reminder.setCreator(creator);
 
                         TgUser receiver = new TgUser();
                         receiver.setUserId(rs.getInt("rec_user_id"));
                         receiver.setFirstName(rs.getString("rec_first_name"));
                         receiver.setLastName(rs.getString("rec_last_name"));
+                        receiver.setChatId(rs.getInt("rec_chat_id"));
                         reminder.setReceiver(receiver);
 
                         reminder.setRemindAtInCreatorTimeZone(rs.getTimestamp("c_remind_at").toLocalDateTime());
                         reminder.setRemindAtInReceiverTimeZone(rs.getTimestamp("r_remind_at").toLocalDateTime());
 
                         int remindMessageId = rs.getInt("rm_message_id");
-                        if (rs.wasNull()) {
+                        if (!rs.wasNull()) {
                             RemindMessage remindMessage = new RemindMessage();
                             remindMessage.setMessageId(remindMessageId);
                             reminder.setRemindMessage(remindMessage);

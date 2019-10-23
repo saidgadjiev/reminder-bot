@@ -30,7 +30,7 @@ public class ReminderJob {
         this.reminderMessageSender = reminderMessageSender;
     }
 
-    @Scheduled(fixedDelay = 60 * 1000)
+    @Scheduled(fixedDelay = 1000)
     public void sendReminders() {
         List<Reminder> reminders = reminderService.getReminders(DateUtils.now());
 
