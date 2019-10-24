@@ -8,7 +8,7 @@ CREATE OR REPLACE FUNCTION create_friend_request(user_id INT, friend_username VA
                 cr_user_id    INT,
                 cr_first_name VARCHAR,
                 cr_last_name  VARCHAR,
-                rc_user_id    INT,
+                rc_chat_id    INT,
                 rc_first_name VARCHAR,
                 rc_last_name  VARCHAR
             )
@@ -24,9 +24,9 @@ BEGIN
 
     SELECT *
     INTO friendship_row
-    FROM friendship
-    WHERE (user_one_id = user_id AND user_two_id = friend_id)
-       OR (user_one_id = friend_id AND user_two_id = user_id);
+    FROM friendship f
+    WHERE (f.user_one_id = user_id AND f.user_two_id = friend_id)
+       OR (f.user_one_id = friend_id AND f.user_two_id = user_id);
 
     IF friendship_row.status IS NULL THEN
         INSERT INTO friendship(user_one_id, user_two_id, status)
@@ -39,6 +39,7 @@ BEGIN
                              f.user_two_id,
                              cr.first_name AS cr_first_name,
                              cr.last_name  AS cr_last_name,
+                             rc.chat_id    AS rc_chat_id,
                              rc.first_name AS rc_first_name,
                              rc.last_name  AS rc_last_name
                       FROM friendship f
@@ -52,6 +53,7 @@ BEGIN
                 user_two_id := var_r.user_two_id;
                 cr_first_name := var_r.cr_first_name;
                 cr_last_name := var_r.cr_last_name;
+                rc_chat_id := var_r.rc_chat_id;
                 rc_first_name := var_r.rc_first_name;
                 rc_last_name := var_r.rc_last_name;
 

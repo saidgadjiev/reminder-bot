@@ -91,4 +91,6 @@ public class MessagesProperties {
     public static final String MESSAGE_CREATE_REMINDER_CALLBACK_ANSWER = "message.create.reminder.callback.answer";
 
     public static final String MESSAGE_FRIEND_DELETED = "message.friend.deleted";
+
+    public static final String MESSAGE_ERROR = "message.error";
 }

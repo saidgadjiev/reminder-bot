@@ -69,7 +69,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
     @Override
     public void restore(CommandMemento commandMemento) {
         DefaultMemento defaultMemento = (DefaultMemento) commandMemento;
-        messageService.sendMessageByCode(defaultMemento.getChatId(), MessagesProperties.MESSAGE_MAIN_MENU, keyboardService.getMainMenu());
+        messageService.sendMessageByCode(defaultMemento.getChatId(), MessagesProperties.MESSAGE_START, keyboardService.getMainMenu());
     }
 
     @Override

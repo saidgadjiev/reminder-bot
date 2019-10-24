@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.service;
 
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ActionType;
@@ -14,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResult;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.gadjini.reminder.common.MessagesProperties;
 
 import java.util.List;
 
@@ -140,5 +140,9 @@ public class MessageService {
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard) {
+        sendMessageByCode(chatId, MessagesProperties.MESSAGE_ERROR, replyKeyboard);
     }
 }

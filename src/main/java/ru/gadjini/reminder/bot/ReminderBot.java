@@ -12,6 +12,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.service.CommandNavigator;
 import ru.gadjini.reminder.service.CommandRegistry;
+import ru.gadjini.reminder.service.KeyboardService;
 import ru.gadjini.reminder.service.MessageService;
 
 @Component
@@ -27,22 +28,31 @@ public class ReminderBot extends WorkerUpdatesBot {
 
     private MessageService messageService;
 
+    private KeyboardService keyboardService;
+
     @Autowired
     public ReminderBot(BotProperties botProperties,
                        CommandRegistry commandRegistry,
                        CommandNavigator commandNavigator,
-                       MessageService messageService) {
+                       MessageService messageService,
+                       KeyboardService keyboardService) {
         this.botProperties = botProperties;
         this.commandRegistry = commandRegistry;
         this.commandNavigator = commandNavigator;
         this.messageService = messageService;
+        this.keyboardService = keyboardService;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
+        Long chatId = -1L;
+
         try {
             if (update.hasMessage()) {
-                restoreIfNeed(update.getMessage().getChatId(), update.getMessage().hasText() ? update.getMessage().getText().trim() : null);
+                chatId = update.getMessage().getChatId();
+                if (restoreIfNeed(update.getMessage().getChatId(), update.getMessage().hasText() ? update.getMessage().getText().trim() : null)) {
+                    return;
+                }
 
                 if (commandRegistry.isCommand(update.getMessage())) {
                     if (!commandRegistry.executeCommand(this, update.getMessage())) {
@@ -52,10 +62,11 @@ public class ReminderBot extends WorkerUpdatesBot {
                     commandRegistry.processNonCommandUpdate(this, update.getMessage());
                 }
             } else if (update.hasCallbackQuery()) {
+                chatId = update.getCallbackQuery().getMessage().getChatId();
                 commandRegistry.executeCallbackCommand(update.getCallbackQuery());
             }
         } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
+            messageService.sendErrorMessage(chatId, null);
         }
     }
 
@@ -69,12 +80,17 @@ public class ReminderBot extends WorkerUpdatesBot {
         return botProperties.getToken();
     }
 
-    private void restoreIfNeed(long chatId, String command) {
+    private boolean restoreIfNeed(long chatId, String command) {
         if (StringUtils.isNotBlank(command) && command.startsWith(BotCommand.COMMAND_INIT_CHARACTER + MessagesProperties.START_COMMAND_NAME)) {
-            return;
+            return false;
         }
         if (commandNavigator.isEmpty(chatId)) {
             commandNavigator.zeroRestore(chatId, (NavigableBotCommand) commandRegistry.getBotCommand(MessagesProperties.START_COMMAND_NAME));
+            messageService.sendErrorMessage(chatId, keyboardService.getMainMenu());
+
+            return true;
         }
+
+        return false;
     }
 }

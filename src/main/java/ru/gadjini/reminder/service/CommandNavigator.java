@@ -85,7 +85,5 @@ public class CommandNavigator {
 
     public void zeroRestore(long chatId, NavigableBotCommand botCommand) {
         currentCommand.put(chatId, botCommand);
-
-        botCommand.restore(new DefaultMemento(chatId, null));
     }
 }

@@ -50,17 +50,18 @@ public class FriendshipDao {
 
                         boolean conflict = rs.getBoolean("collision");
                         if (!conflict) {
-                            TgUser usr = new TgUser();
-                            usr.setFirstName(rs.getString("rc_first_name"));
-                            usr.setLastName(rs.getString("rc_last_name"));
-                            usr.setUserId(friendship.getUserTwoId());
-                            friendship.setUserOne(usr);
-
                             TgUser friend = new TgUser();
-                            friend.setFirstName(rs.getString("cr_first_name"));
-                            friend.setLastName(rs.getString("cr_last_name"));
-                            friend.setUserId(friendship.getUserOneId());
+                            friend.setFirstName(rs.getString("rc_first_name"));
+                            friend.setLastName(rs.getString("rc_last_name"));
+                            friend.setUserId(friendship.getUserTwoId());
+                            friend.setChatId(rs.getLong("rc_chat_id"));
                             friendship.setUserTwo(friend);
+
+                            TgUser me = new TgUser();
+                            me.setFirstName(rs.getString("cr_first_name"));
+                            me.setLastName(rs.getString("cr_last_name"));
+                            me.setUserId(friendship.getUserOneId());
+                            friendship.setUserOne(me);
                         }
 
                         return new CreateFriendRequestResult(friendship, conflict);
