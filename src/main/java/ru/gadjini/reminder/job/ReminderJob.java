@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.job;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -14,6 +16,8 @@ import java.util.List;
 
 @Component
 public class ReminderJob {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReminderJob.class);
 
     private ReminderService reminderService;
 
@@ -56,6 +60,7 @@ public class ReminderJob {
         reminderMessageSender.sendRemindMessage(reminder);
 
         reminderTimeService.deleteReminderTime(reminderTime.getId());
+        LOGGER.debug("Send once reminder");
     }
 
     private void sendRepeatReminder(Reminder reminder, ReminderTime reminderTime) {
@@ -66,5 +71,6 @@ public class ReminderJob {
         } else {
             reminderTimeService.updateLastRemindAt(reminderTime.getId(), DateUtils.now());
         }
+        LOGGER.debug("Send repeat reminder");
     }
 }
