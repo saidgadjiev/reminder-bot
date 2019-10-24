@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.bot;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class ReminderBot extends WorkerUpdatesBot {
     public void onUpdateReceived(Update update) {
         try {
             if (update.hasMessage()) {
-                restoreIfNeed(update.getMessage().getChatId(), update.getMessage().getText().trim());
+                restoreIfNeed(update.getMessage().getChatId(), update.getMessage().hasText() ? update.getMessage().getText().trim() : null);
 
                 if (commandRegistry.isCommand(update.getMessage())) {
                     if (!commandRegistry.executeCommand(this, update.getMessage())) {
@@ -69,7 +70,7 @@ public class ReminderBot extends WorkerUpdatesBot {
     }
 
     private void restoreIfNeed(long chatId, String command) {
-        if (command.startsWith(BotCommand.COMMAND_INIT_CHARACTER + MessagesProperties.START_COMMAND_NAME)) {
+        if (StringUtils.isNotBlank(command) && command.startsWith(BotCommand.COMMAND_INIT_CHARACTER + MessagesProperties.START_COMMAND_NAME)) {
             return;
         }
         if (commandNavigator.isEmpty(chatId)) {

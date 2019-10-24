@@ -2,6 +2,7 @@ package ru.gadjini.reminder.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.FriendshipDao;
 import ru.gadjini.reminder.domain.Friendship;
@@ -29,6 +30,7 @@ public class FriendshipService {
         friendshipDao.deleteFriend(user.getId(), friendId);
     }
 
+    @Transactional
     public CreateFriendRequestResult createFriendRequest(String friendUsername) {
         User user = securityService.getAuthenticatedUser();
 
@@ -61,12 +63,14 @@ public class FriendshipService {
         return friendshipDao.getFriends(user.getId(), Friendship.Status.ACCEPTED);
     }
 
+    @Transactional
     public Friendship acceptFriendRequest(int friendId) {
         User user = securityService.getAuthenticatedUser();
 
         return friendshipDao.acceptFriendRequest(user.getId(), friendId, Friendship.Status.ACCEPTED);
     }
 
+    @Transactional
     public Friendship rejectFriendRequest(int friendId) {
         User user = securityService.getAuthenticatedUser();
 

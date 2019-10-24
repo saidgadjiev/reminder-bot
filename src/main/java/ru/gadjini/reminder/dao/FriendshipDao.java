@@ -34,9 +34,9 @@ public class FriendshipDao {
 
     public CreateFriendRequestResult createFriendRequest(int userId, String friendUsername, Integer friendUserId, Friendship.Status status) {
         return namedParameterJdbcTemplate.query(
-                "SELECT * FROM create_friend_request(:userId, :friendUsernme, :friendUserId, :state)",
+                "SELECT * FROM create_friend_request(:userId, :friendUsername, :friendUserId, :state)",
                 new MapSqlParameterSource()
-                        .addValue("user_id", userId)
+                        .addValue("userId", userId)
                         .addValue("friendUsername", friendUsername)
                         .addValue("friendUserId", friendUserId)
                         .addValue("state", status.getCode()),
@@ -51,14 +51,16 @@ public class FriendshipDao {
                         boolean conflict = rs.getBoolean("collision");
                         if (!conflict) {
                             TgUser usr = new TgUser();
-                            usr.setFirstName(rs.getString("usr_first_name"));
-                            usr.setLastName(rs.getString("usr_last_name"));
-                            friendship.setUserTwo(usr);
+                            usr.setFirstName(rs.getString("rc_first_name"));
+                            usr.setLastName(rs.getString("rc_last_name"));
+                            usr.setUserId(friendship.getUserTwoId());
+                            friendship.setUserOne(usr);
 
                             TgUser friend = new TgUser();
-                            friend.setFirstName(rs.getString("fusr_first_name"));
-                            friend.setLastName(rs.getString("fusr_last_name"));
-                            friendship.setUserOne(friend);
+                            friend.setFirstName(rs.getString("cr_first_name"));
+                            friend.setLastName(rs.getString("cr_last_name"));
+                            friend.setUserId(friendship.getUserOneId());
+                            friendship.setUserTwo(friend);
                         }
 
                         return new CreateFriendRequestResult(friendship, conflict);
@@ -136,8 +138,8 @@ public class FriendshipDao {
                         "     upd\n" +
                         "WHERE fu.user_id = upd.user_two_id AND us.user_id = upd.user_one_id",
                 ps -> {
-                    ps.setInt(1, userId);
-                    ps.setInt(2, friendId);
+                    ps.setInt(1, friendId);
+                    ps.setInt(2, userId);
                 },
                 rs -> {
                     if (rs.next()) {

@@ -3,6 +3,7 @@ package ru.gadjini.reminder.service;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.CommandMemento;
+import ru.gadjini.reminder.bot.command.api.DefaultMemento;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 
 import java.util.Stack;
@@ -41,7 +42,11 @@ public class CommandNavigator {
     public void pop(long chatId) {
         Stack<CommandMemento> historyStack = history.get(chatId);
 
-        if (!historyStack.isEmpty()) {
+        if (historyStack == null || historyStack.isEmpty()) {
+            NavigableBotCommand navigableBotCommand = currentCommand.get(chatId);
+
+            navigableBotCommand.restore(new DefaultMemento(chatId, null));
+        } else {
             CommandMemento commandMemento = history.get(chatId).pop();
             NavigableBotCommand originator = commandMemento.getOriginator();
 
@@ -80,5 +85,7 @@ public class CommandNavigator {
 
     public void zeroRestore(long chatId, NavigableBotCommand botCommand) {
         currentCommand.put(chatId, botCommand);
+
+        botCommand.restore(new DefaultMemento(chatId, null));
     }
 }
