@@ -66,6 +66,7 @@ public class ReminderBot extends WorkerUpdatesBot {
                 commandRegistry.executeCallbackCommand(update.getCallbackQuery());
             }
         } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
             messageService.sendErrorMessage(chatId, null);
         }
     }

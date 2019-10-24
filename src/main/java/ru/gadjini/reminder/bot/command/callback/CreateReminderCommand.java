@@ -85,6 +85,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
         ReminderRequest reminderRequest = reminderRequests.get(message.getChatId());
         reminderRequest.setText(candidate.getText());
         reminderRequest.setRemindAt(candidate.getRemindAt());
+        reminderRequest.setMatchType(candidate.getMatchType());
 
         ErrorBag errorBag = validationService.validate(reminderRequest);
 

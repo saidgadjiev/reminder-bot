@@ -10,6 +10,7 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FriendshipService {
@@ -77,10 +78,17 @@ public class FriendshipService {
         return friendshipDao.rejectFriendRequest(user.getId(), friendId);
     }
 
-    public boolean isFriend(String receiverName) {
+    public boolean isFriend(String friendUsername) {
+        Objects.requireNonNull(friendUsername);
         User user = securityService.getAuthenticatedUser();
 
-        return friendshipDao.existsFriendship(user.getId(), receiverName, Friendship.Status.ACCEPTED);
+        return friendshipDao.existsFriendship(user.getId(), friendUsername, Friendship.Status.ACCEPTED);
+    }
+
+    public boolean isFriend(int friendUserId) {
+        User user = securityService.getAuthenticatedUser();
+
+        return friendshipDao.existsFriendship(user.getId(), friendUserId, Friendship.Status.ACCEPTED);
     }
 
     private void setCreateFriendRequestState(User currUser, CreateFriendRequestResult createFriendRequestResult) {

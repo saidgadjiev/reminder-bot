@@ -1,12 +1,12 @@
 package ru.gadjini.reminder.service.validation;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.FriendshipService;
 import ru.gadjini.reminder.service.LocalisationService;
-import ru.gadjini.reminder.service.resolver.matcher.MatchType;
 
 import java.time.LocalDateTime;
 
@@ -31,9 +31,14 @@ public class ValidationService {
 
             return errorBag;
         }
-        if (reminderRequest.getMatchType().equals(MatchType.LOGIN_TEXT_TIME)) {
+        if (!reminderRequest.isForMe()) {
             String receiverName = reminderRequest.getReceiverName();
-            boolean friend = friendshipService.isFriend(receiverName);
+            boolean friend;
+            if (StringUtils.isNotBlank(receiverName)) {
+                friend = friendshipService.isFriend(receiverName);
+            } else {
+                friend = friendshipService.isFriend(reminderRequest.getReceiverId());
+            }
 
             if (!friend) {
                 errorBag.set("notFriend", localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND));

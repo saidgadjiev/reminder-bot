@@ -185,6 +185,24 @@ public class FriendshipDao {
         );
     }
 
+    public Boolean existsFriendship(int userId, int friendUserId, Friendship.Status status) {
+        return namedParameterJdbcTemplate.query(
+                "SELECT 1\n" +
+                        "FROM friendship \n" +
+                        "WHERE CASE\n" +
+                        "          WHEN user_one_id = :userId THEN user_two_id = :friendUserId\n" +
+                        "          WHEN user_two_id = :userId THEN user_one_id = :friendUserId\n" +
+                        "          ELSE FALSE\n" +
+                        "          END\n" +
+                        "AND status = :state",
+                new MapSqlParameterSource()
+                        .addValue("userId", userId)
+                        .addValue("friendUserId", friendUserId)
+                        .addValue("state", status.getCode()),
+                ResultSet::next
+        );
+    }
+
     private Friendship mapAcceptRejectFriendRequestResult(ResultSet rs) throws SQLException {
         Friendship friendship = new Friendship();
 

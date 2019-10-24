@@ -44,13 +44,10 @@ public class ReminderService {
         reminder.setCreatorId(user.getId());
         reminder.setReminderTimes(getReminderTimes(reminder.getRemindAt()));
 
-        switch (reminderRequest.getMatchType()) {
-            case LOGIN_TEXT_TIME:
-                prepareReminderForAnother(reminder, reminderRequest);
-                break;
-            case TEXT_TIME:
-                prepareReminderForMe(reminder);
-                break;
+        if (reminderRequest.isForMe()) {
+            prepareReminderForMe(reminder);
+        } else {
+            prepareReminderForAnother(reminder, reminderRequest);
         }
 
         return reminderDao.create(reminder);
@@ -80,8 +77,9 @@ public class ReminderService {
             receiver.setUsername(reminderRequest.getReceiverName());
         } else {
             receiver.setUserId(reminderRequest.getReceiverId());
-            reminder.setReceiverId(reminderRequest.getReceiverId());
         }
+
+        reminder.setReceiver(receiver);
     }
 
     private List<ReminderTime> getReminderTimes(LocalDateTime remindAt) {

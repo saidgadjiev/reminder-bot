@@ -16,6 +16,8 @@ public class ReminderRequest {
 
     private MatchType matchType;
 
+    private boolean forMe;
+
     public String getReceiverName() {
         return receiverName;
     }
@@ -54,6 +56,14 @@ public class ReminderRequest {
 
     public void setMatchType(MatchType matchType) {
         this.matchType = matchType;
+    }
+
+    public boolean isForMe() {
+        return forMe;
+    }
+
+    public void setForMe(boolean forMe) {
+        this.forMe = forMe;
     }
 
     @Override

@@ -14,6 +14,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.resolver.ReminderRequestResolver;
+import ru.gadjini.reminder.service.resolver.matcher.MatchType;
 import ru.gadjini.reminder.service.validation.ErrorBag;
 import ru.gadjini.reminder.service.validation.ValidationService;
 
@@ -82,6 +83,9 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         if (reminderRequest == null) {
             messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_REMINDER_FORMAT);
             return;
+        }
+        if (reminderRequest.getMatchType().equals(MatchType.TEXT_TIME)) {
+            reminderRequest.setForMe(true);
         }
         ErrorBag errorBag = validationService.validate(reminderRequest);
 
