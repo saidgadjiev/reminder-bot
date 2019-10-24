@@ -139,7 +139,7 @@ public class ReminderDao {
                         "                   WHEN last_reminder_at IS NULL THEN\n" +
                         "                               date_diff_in_minute(:curr_date, r.remind_at) >= EXTRACT(MINUTE FROM (delay_time))\n" +
                         "                           OR\n" +
-                        "                               date_diff_in_minute(r.remind_at, :curr_date) = EXTRACT(MINUTE FROM (delay_time))\n" +
+                        "                               date_diff_in_minute(r.remind_at, :curr_date) BETWEEN 1 AND EXTRACT(MINUTE FROM (delay_time))\n" +
                         "                   ELSE\n" +
                         "                           date_diff_in_minute(:curr_date, last_reminder_at) >= EXTRACT(MINUTE FROM (delay_time))\n" +
                         "              END\n" +
