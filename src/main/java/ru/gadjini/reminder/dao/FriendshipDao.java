@@ -12,7 +12,8 @@ import ru.gadjini.reminder.domain.mapping.FriendshipMapping;
 import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.service.ResultSetMapper;
 
-import java.util.Collections;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -33,12 +34,14 @@ public class FriendshipDao {
         this.resultSetMapper = resultSetMapper;
     }
 
-    public Friendship createFriendship(Friendship friendship) {
+    public Friendship createFriendRequest(Friendship friendship) {
         if (StringUtils.isNotBlank(friendship.getUserTwo().getUsername())) {
-            return createFriendshipByFriendUsername(friendship);
+            createFriendshipByFriendUsername(friendship);
         } else {
-            return createFriendshipByFriendUserId(friendship);
+            createFriendshipByFriendUserId(friendship);
         }
+
+        return friendship;
     }
 
     public List<TgUser> getFriendRequests(int userId, Friendship.Status status) {
@@ -60,13 +63,8 @@ public class FriendshipDao {
                 "WITH f AS (\n" +
                         "    DELETE FROM friendship WHERE user_one_id = ? AND user_two_id = ? RETURNING user_one_id, user_two_id\n" +
                         ")\n" +
-                        "SELECT f.*,\n" +
-                        "       ut.first_name AS ut_first_name,\n" +
-                        "       ut.last_name AS ut_last_name,\n" +
-                        "       uo.chat_id as uo_chat_id\n" +
-                        "FROM f\n" +
-                        "         INNER JOIN tg_user uo ON f.user_one_id = uo.user_id\n" +
-                        "         INNER JOIN tg_user ut ON f.user_two_id = ut.user_id",
+                        "SELECT uo.chat_id as uo_chat_id\n" +
+                        "FROM f INNER JOIN tg_user uo ON f.user_one_id = uo.user_id",
                 ps -> {
                     ps.setInt(1, friendId);
                     ps.setInt(2, userId);
@@ -88,13 +86,8 @@ public class FriendshipDao {
                 "WITH f AS (\n" +
                         "    UPDATE friendship SET status = ? WHERE user_one_id = ? AND user_two_id = ? RETURNING user_one_id, user_two_id\n" +
                         ")\n" +
-                        "SELECT f.*,\n" +
-                        "       ut.first_name AS ut_first_name,\n" +
-                        "       ut.last_name AS ut_last_name,\n" +
-                        "       uo.chat_id as uo_chat_id\n" +
-                        "FROM f\n" +
-                        "         INNER JOIN tg_user uo ON f.user_one_id = uo.user_id\n" +
-                        "         INNER JOIN tg_user ut ON f.user_two_id = ut.user_id",
+                        "SELECT uo.chat_id as uo_chat_id\n" +
+                        "FROM f INNER JOIN tg_user uo ON f.user_one_id = uo.user_id",
                 ps -> {
                     ps.setInt(1, status.ordinal());
                     ps.setInt(2, friendId);
@@ -175,70 +168,44 @@ public class FriendshipDao {
         );
     }
 
-    private Friendship createFriendshipByFriendUserId(Friendship friendship) {
-        return jdbcTemplate.query(
+    private void createFriendshipByFriendUserId(Friendship friendship) {
+        jdbcTemplate.query(
                 "WITH f AS (\n" +
                         "    INSERT INTO friendship (user_one_id, user_two_id, status) VALUES(?, ?, ?) RETURNING id, user_one_id, user_two_id, status\n" +
                         ")\n" +
-                        "SELECT f.*,\n" +
-                        "       uo.chat_id AS uo_chat_id,\n" +
-                        "       uo.first_name AS uo_first_name,\n" +
-                        "       uo.last_name AS uo_last_name,\n" +
-                        "       ut.first_name AS ut_first_name,\n" +
+                        "SELECT ut.first_name AS ut_first_name,\n" +
                         "       ut.last_name AS ut_last_name\n" +
-                        "FROM f\n" +
-                        "         INNER JOIN tg_user uo ON f.user_one_id = uo.user_id\n" +
-                        "         INNER JOIN tg_user ut ON f.user_two_id = ut.user_id",
+                        "FROM f INNER JOIN tg_user ut ON f.user_two_id = ut.user_id",
                 ps -> {
                     ps.setInt(1, friendship.getUserOneId());
                     ps.setInt(2, friendship.getUserTwoId());
                     ps.setInt(3, friendship.getStatus().getCode());
                 },
                 rs -> {
-                    if (rs.next()) {
-                        return resultSetMapper.mapFriendship(rs, new FriendshipMapping() {{
-                            setUserOneMapping(new Mapping() {{
-                                setFields(Collections.singletonList(FriendshipMapping.UO_FIRST_LAST_NAME));
-                            }});
-                            setUserTwoMapping(new Mapping());
-                        }});
-                    }
-
-                    return null;
+                    friendship.getUserTwo().setFirstName(rs.getString("ut_first_name"));
+                    friendship.getUserTwo().setLastName(rs.getString("ut_last_name"));
                 }
         );
     }
 
-    private Friendship createFriendshipByFriendUsername(Friendship friendship) {
-        return jdbcTemplate.query(
+    private void createFriendshipByFriendUsername(Friendship friendship) {
+        jdbcTemplate.query(
                 "WITH f AS (\n" +
                         "    INSERT INTO friendship (user_one_id, user_two_id, status) SELECT ?, user_id, ? FROM tg_user WHERE username = ? RETURNING id, user_one_id, user_two_id, status\n" +
                         ")\n" +
-                        "SELECT f.*,\n" +
-                        "       uo.chat_id    AS uo_chat_id,\n" +
-                        "       uo.first_name AS uo_first_name,\n" +
-                        "       uo.last_name  AS uo_last_name,\n" +
-                        "       ut.first_name AS ut_first_name,\n" +
+                        "SELECT f.user_two_id, ut.first_name AS ut_first_name,\n" +
                         "       ut.last_name  AS ut_last_name\n" +
-                        "FROM f\n" +
-                        "         INNER JOIN tg_user uo ON f.user_one_id = uo.user_id\n" +
-                        "         INNER JOIN tg_user ut ON f.user_two_id = ut.user_id",
+                        "FROM f INNER JOIN tg_user ut ON f.user_two_id = ut.user_id",
                 ps -> {
                     ps.setInt(1, friendship.getUserOneId());
                     ps.setInt(2, friendship.getStatus().getCode());
                     ps.setString(3, friendship.getUserTwo().getUsername());
                 },
                 rs -> {
-                    if (rs.next()) {
-                        return resultSetMapper.mapFriendship(rs, new FriendshipMapping() {{
-                            setUserOneMapping(new Mapping() {{
-                                setFields(Collections.singletonList(FriendshipMapping.UO_FIRST_LAST_NAME));
-                            }});
-                            setUserTwoMapping(new Mapping());
-                        }});
-                    }
-
-                    return null;
+                    friendship.setUserTwoId(rs.getInt("user_two_id"));
+                    friendship.getUserTwo().setUserId(friendship.getUserTwoId());
+                    friendship.getUserTwo().setFirstName(rs.getString("ut_first_name"));
+                    friendship.getUserTwo().setLastName(rs.getString("ut_last_name"));
                 }
         );
     }

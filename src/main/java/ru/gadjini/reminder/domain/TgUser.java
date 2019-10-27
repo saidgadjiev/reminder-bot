@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.domain;
 
+import org.telegram.telegrambots.meta.api.objects.User;
+
 public class TgUser {
 
     public static final String TYPE = "tg_user";
@@ -88,5 +90,21 @@ public class TgUser {
 
     public void setZoneId(String zoneId) {
         this.zoneId = zoneId;
+    }
+
+    public void setFrom(User user) {
+        this.userId = user.getId();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+    }
+
+    public static TgUser from(User user) {
+        TgUser tgUser = new TgUser();
+
+        tgUser.setFirstName(user.getFirstName());
+        tgUser.setLastName(user.getLastName());
+        tgUser.setUserId(user.getId());
+
+        return tgUser;
     }
 }

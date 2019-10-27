@@ -53,9 +53,13 @@ public class FriendshipService {
         }
 
         friendship = new Friendship();
+
         friendship.setUserOneId(user.getId());
+        friendship.setUserOne(TgUser.from(user));
+
         if (friendUserId != null) {
             friendship.setUserTwoId(friendUserId);
+
             TgUser userTwo = new TgUser();
             userTwo.setUserId(friendUserId);
             friendship.setUserTwo(userTwo);
@@ -66,7 +70,7 @@ public class FriendshipService {
         }
         friendship.setStatus(Friendship.Status.REQUESTED);
 
-        friendship = friendshipDao.createFriendship(friendship);
+        friendship = friendshipDao.createFriendRequest(friendship);
 
         CreateFriendRequestResult createFriendRequestResult = new CreateFriendRequestResult();
 
@@ -93,14 +97,24 @@ public class FriendshipService {
     public Friendship acceptFriendRequest(int friendId) {
         User user = securityService.getAuthenticatedUser();
 
-        return friendshipDao.acceptFriendRequest(user.getId(), friendId, Friendship.Status.ACCEPTED);
+        Friendship friendship = friendshipDao.acceptFriendRequest(user.getId(), friendId, Friendship.Status.ACCEPTED);
+
+        friendship.setUserTwo(TgUser.from(user));
+        friendship.setUserTwoId(user.getId());
+
+        return friendship;
     }
 
     @Transactional
     public Friendship rejectFriendRequest(int friendId) {
         User user = securityService.getAuthenticatedUser();
 
-        return friendshipDao.rejectFriendRequest(user.getId(), friendId);
+        Friendship friendship = friendshipDao.rejectFriendRequest(user.getId(), friendId);
+
+        friendship.setUserTwo(TgUser.from(user));
+        friendship.setUserTwoId(user.getId());
+
+        return friendship;
     }
 
     public Friendship getFriendship(int userId, int friendId) {

@@ -26,7 +26,7 @@ public class CompleteCommand implements CallbackBotCommand {
     @Override
     public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
         int reminderId = Integer.parseInt(arguments[0]);
-        Reminder reminder = reminderService.deleteReminder(reminderId);
+        Reminder reminder = reminderService.completeReminder(reminderId);
 
         reminderMessageSender.sendReminderComplete(callbackQuery, reminder);
     }

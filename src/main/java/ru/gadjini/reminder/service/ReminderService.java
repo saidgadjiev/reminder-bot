@@ -18,6 +18,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service
 public class ReminderService {
@@ -43,12 +44,9 @@ public class ReminderService {
         reminder.setText(reminderRequest.getText());
 
         User user = securityService.getAuthenticatedUser();
-        TgUser creator = new TgUser();
-        creator.setId(user.getId());
-        creator.setFirstName(user.getFirstName());
-        creator.setLastName(user.getLastName());
+        TgUser creator = TgUser.from(user);
         reminder.setCreator(creator);
-        reminder.setCreatorId(user.getId());
+        reminder.setCreatorId(creator.getUserId());
 
         if (reminderRequest.isForMe()) {
             prepareReminderForMe(reminder);
@@ -85,7 +83,14 @@ public class ReminderService {
     public List<Reminder> getReminders() {
         User user = securityService.getAuthenticatedUser();
 
-        return reminderDao.getReminders(user.getId());
+        List<Reminder> reminders = reminderDao.getReminders(user.getId());
+
+        reminders.forEach(reminder -> {
+            reminder.setCreatorId(user.getId());
+            reminder.setCreator(TgUser.from(user));
+        });
+
+        return reminders;
     }
 
     public List<Reminder> getRemindersWithReminderTimes(LocalDateTime localDateTime, int limit) {
@@ -93,8 +98,11 @@ public class ReminderService {
     }
 
     @Transactional
-    public Reminder deleteReminder(int id) {
-        return reminderDao.delete(id);
+    public Reminder completeReminder(int id) {
+        Reminder deleted = reminderDao.complete(id);
+        deleted.getReceiver().setFrom(securityService.getAuthenticatedUser());
+
+        return deleted;
     }
 
     public Reminder getReminder(int reminderId) {

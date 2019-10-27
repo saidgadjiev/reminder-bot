@@ -46,7 +46,6 @@ public class ReminderDao {
         return jdbcTemplate.query(
                 "SELECT r.id,\n" +
                         "       r.reminder_text,\n" +
-                        "       r.creator_id,\n" +
                         "       r.receiver_id,\n" +
                         "       r.remind_at,\n" +
                         "       rc.zone_id as rc_zone_id,\n" +
@@ -151,7 +150,7 @@ public class ReminderDao {
         );
     }
 
-    public Reminder delete(int id) {
+    public Reminder complete(int id) {
         return jdbcTemplate.query(
                 "WITH deleted_reminder AS (\n" +
                         "    DELETE FROM reminder WHERE id = ? RETURNING id, creator_id, receiver_id, remind_at, reminder_text\n" +
@@ -161,10 +160,7 @@ public class ReminderDao {
                         "       rm.message_id as rm_message_id,\n" +
                         "       cr.first_name as cr_first_name,\n" +
                         "       cr.last_name  as cr_last_name,\n" +
-                        "       rc.zone_id   as rc_zone_id,\n" +
-                        "       rc.first_name as rc_first_name,\n" +
-                        "       rc.last_name as rc_last_name,\n" +
-                        "       rc.chat_id   as rc_chat_id\n" +
+                        "       rc.zone_id   as rc_zone_id\n" +
                         "FROM deleted_reminder dr\n" +
                         "         LEFT JOIN remind_message rm ON dr.id = rm.reminder_id\n" +
                         "         INNER JOIN tg_user cr ON dr.creator_id = cr.user_id\n" +
@@ -173,9 +169,7 @@ public class ReminderDao {
                 rs -> {
                     if (rs.next()) {
                         return resultSetMapper.mapReminder(rs, new ReminderMapping() {{
-                            setReceiverMapping(new Mapping() {{
-                                setFields(Arrays.asList(RC_FIRST_LAST_NAME, RC_CHAT_ID));
-                            }});
+                            setReceiverMapping(new Mapping());
                             setCreatorMapping(new Mapping());
                             setFields(Collections.singletonList(RM_MESSAGE));
                         }});
@@ -194,12 +188,9 @@ public class ReminderDao {
                         "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at,\n" +
                         "       rc.chat_id AS rc_chat_id,\n" +
                         "       rc.first_name AS rc_first_name,\n" +
-                        "       rc.last_name AS rc_last_name,\n" +
-                        "       cr.first_name AS cr_first_name,\n" +
-                        "       cr.last_name AS cr_last_name\n" +
+                        "       rc.last_name AS rc_last_name\n" +
                         "FROM reminder r\n" +
-                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
-                        "         INNER JOIN tg_user cr ON cr.user_id = r.creator_id\n" +
+                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id \n" +
                         "WHERE r.id = ?",
                 ps -> ps.setInt(1, reminderId),
                 rs -> {
