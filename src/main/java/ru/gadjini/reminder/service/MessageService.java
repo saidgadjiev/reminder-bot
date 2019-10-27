@@ -9,8 +9,10 @@ import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
 import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.inlinequery.result.InlineQueryResult;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -117,6 +119,23 @@ public class MessageService {
             telegramService.execute(answerCallbackQuery);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void editMessage(long chatId, int messageId, String text, InlineKeyboardMarkup replyKeyboard) {
+        EditMessageText editMessageText = new EditMessageText();
+
+        editMessageText.setMessageId(messageId);
+        editMessageText.setChatId(chatId);
+        editMessageText.setText(text);
+        if (replyKeyboard != null) {
+            editMessageText.setReplyMarkup(replyKeyboard);
+        }
+
+        try {
+            telegramService.execute(editMessageText);
+        } catch (TelegramApiException ex) {
+            throw new RuntimeException(ex);
         }
     }
 

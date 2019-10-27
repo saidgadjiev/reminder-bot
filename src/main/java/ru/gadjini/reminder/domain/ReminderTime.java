@@ -2,6 +2,7 @@ package ru.gadjini.reminder.domain;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 
 public class ReminderTime {
 
@@ -21,11 +22,11 @@ public class ReminderTime {
 
     private int id;
 
-    private LocalDateTime fixedTime;
+    private ZonedDateTime fixedTime;
 
     private LocalTime delayTime;
 
-    private LocalDateTime lastReminderAt;
+    private ZonedDateTime lastReminderAt;
 
     private Type type;
 
@@ -47,11 +48,11 @@ public class ReminderTime {
         this.id = id;
     }
 
-    public LocalDateTime getFixedTime() {
+    public ZonedDateTime getFixedTime() {
         return fixedTime;
     }
 
-    public void setFixedTime(LocalDateTime fixedTime) {
+    public void setFixedTime(ZonedDateTime fixedTime) {
         this.fixedTime = fixedTime;
     }
 
@@ -63,11 +64,11 @@ public class ReminderTime {
         this.delayTime = delayTime;
     }
 
-    public LocalDateTime getLastReminderAt() {
+    public ZonedDateTime getLastReminderAt() {
         return lastReminderAt;
     }
 
-    public void setLastReminderAt(LocalDateTime lastReminderAt) {
+    public void setLastReminderAt(ZonedDateTime lastReminderAt) {
         this.lastReminderAt = lastReminderAt;
     }
 

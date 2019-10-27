@@ -10,8 +10,8 @@ import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.service.ReminderMessageSender;
 import ru.gadjini.reminder.service.ReminderService;
 import ru.gadjini.reminder.service.ReminderTimeService;
-import ru.gadjini.reminder.util.DateUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -36,7 +36,7 @@ public class ReminderJob {
 
     @Scheduled(fixedDelay = 1000)
     public void sendReminders() {
-        List<Reminder> reminders = reminderService.getReminders(DateUtils.now(), 30);
+        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now(), 30);
 
         for (Reminder reminder : reminders) {
             sendReminder(reminder);
@@ -67,9 +67,9 @@ public class ReminderJob {
         reminderMessageSender.sendRemindMessage(reminder);
 
         if (reminderTime.getLastReminderAt() == null) {
-            reminderTimeService.updateLastRemindAt(reminderTime.getId(), reminder.getRemindAt());
+            reminderTimeService.updateLastRemindAt(reminderTime.getId(), reminder.getRemindAt().toLocalDateTime());
         } else {
-            reminderTimeService.updateLastRemindAt(reminderTime.getId(), DateUtils.now());
+            reminderTimeService.updateLastRemindAt(reminderTime.getId(), LocalDateTime.now());
         }
         LOGGER.debug("Send repeat reminder");
     }

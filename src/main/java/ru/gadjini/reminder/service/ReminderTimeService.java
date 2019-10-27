@@ -26,6 +26,10 @@ public class ReminderTimeService {
         reminderTimeDao.create(reminderTimes);
     }
 
+    public void deleteReminderTimes(int reminderId) {
+        reminderTimeDao.deleteByReminderId(reminderId);
+    }
+
     public void deleteReminderTime(int id) {
         reminderTimeDao.delete(id);
     }

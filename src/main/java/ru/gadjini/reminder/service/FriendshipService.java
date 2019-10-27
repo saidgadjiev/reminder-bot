@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +11,6 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class FriendshipService {
@@ -32,20 +32,45 @@ public class FriendshipService {
     }
 
     @Transactional
-    public CreateFriendRequestResult createFriendRequest(String friendUsername) {
+    public CreateFriendRequestResult createFriendRequest(Integer friendUserId, String friendUsername) {
         User user = securityService.getAuthenticatedUser();
+        Friendship friendship;
 
-        CreateFriendRequestResult createFriendRequestResult = friendshipDao.createFriendRequest(user.getId(), friendUsername, null, Friendship.Status.REQUESTED);
+        if (StringUtils.isNotBlank(friendUsername)) {
+            friendship = getFriendship(user.getId(), friendUsername);
+        } else {
+            friendship = getFriendship(user.getId(), friendUserId);
+        }
 
-        setCreateFriendRequestState(user, createFriendRequestResult);
+        if (friendship != null) {
+            CreateFriendRequestResult createFriendRequestResult = new CreateFriendRequestResult();
 
-        return createFriendRequestResult;
-    }
+            createFriendRequestResult.setConflict(true);
+            createFriendRequestResult.setFriendship(friendship);
+            setCreateFriendRequestState(user, createFriendRequestResult);
 
-    public CreateFriendRequestResult createFriendRequest(Integer friendUserId) {
-        User user = securityService.getAuthenticatedUser();
+            return createFriendRequestResult;
+        }
 
-        CreateFriendRequestResult createFriendRequestResult = friendshipDao.createFriendRequest(user.getId(), null, friendUserId, Friendship.Status.REQUESTED);
+        friendship = new Friendship();
+        friendship.setUserOneId(user.getId());
+        if (friendUserId != null) {
+            friendship.setUserTwoId(friendUserId);
+            TgUser userTwo = new TgUser();
+            userTwo.setUserId(friendUserId);
+            friendship.setUserTwo(userTwo);
+        } else {
+            TgUser userTwo = new TgUser();
+            userTwo.setUsername(friendUsername);
+            friendship.setUserTwo(userTwo);
+        }
+        friendship.setStatus(Friendship.Status.REQUESTED);
+
+        friendship = friendshipDao.createFriendship(friendship);
+
+        CreateFriendRequestResult createFriendRequestResult = new CreateFriendRequestResult();
+
+        createFriendRequestResult.setFriendship(friendship);
 
         setCreateFriendRequestState(user, createFriendRequestResult);
 
@@ -78,17 +103,36 @@ public class FriendshipService {
         return friendshipDao.rejectFriendRequest(user.getId(), friendId);
     }
 
-    public boolean isFriend(String friendUsername) {
-        Objects.requireNonNull(friendUsername);
-        User user = securityService.getAuthenticatedUser();
-
-        return friendshipDao.existsFriendship(user.getId(), friendUsername, Friendship.Status.ACCEPTED);
+    public Friendship getFriendship(int userId, int friendId) {
+        return friendshipDao.getFriendship(userId, friendId);
     }
 
-    public boolean isFriend(int friendUserId) {
+    public Friendship getFriendship(int userId, String friendUsername) {
+        return friendshipDao.getFriendship(userId, friendUsername);
+    }
+
+    public boolean existFriendship(int userId, String friendUsername, Friendship.Status status) {
+        Friendship friendship = getFriendship(userId, friendUsername);
+
+        return friendship != null && friendship.getStatus() == status;
+    }
+
+    public boolean existFriendship(int userId, int friendId, Friendship.Status status) {
+        Friendship friendship = getFriendship(userId, friendId);
+
+        return friendship != null && friendship.getStatus() == status;
+    }
+
+    public boolean existFriendship(int friendId, Friendship.Status status) {
         User user = securityService.getAuthenticatedUser();
 
-        return friendshipDao.existsFriendship(user.getId(), friendUserId, Friendship.Status.ACCEPTED);
+        return existFriendship(user.getId(), friendId, status);
+    }
+
+    public boolean existFriendship(String friendUsername, Friendship.Status status) {
+        User user = securityService.getAuthenticatedUser();
+
+        return existFriendship(user.getId(), friendUsername, status);
     }
 
     private void setCreateFriendRequestState(User currUser, CreateFriendRequestResult createFriendRequestResult) {

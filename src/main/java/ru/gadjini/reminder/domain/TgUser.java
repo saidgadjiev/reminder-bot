@@ -18,6 +18,8 @@ public class TgUser {
 
     public static final String USER_ID = "user_id";
 
+    public static final String ZONE_ID = "zone_id";
+
     private int id;
 
     private long chatId;
@@ -29,6 +31,8 @@ public class TgUser {
     private String lastName;
 
     private int userId;
+
+    private String zoneId;
 
     public int getId() {
         return id;
@@ -76,5 +80,13 @@ public class TgUser {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public String getZoneId() {
+        return zoneId;
+    }
+
+    public void setZoneId(String zoneId) {
+        this.zoneId = zoneId;
     }
 }

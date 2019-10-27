@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.util;
 
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 public class DateUtils {
 
@@ -8,7 +9,7 @@ public class DateUtils {
 
     }
 
-    public static LocalDateTime now() {
-        return LocalDateTime.now().withSecond(0).withNano(0);
+    public static ZonedDateTime toUtc(ZonedDateTime zonedDateTime) {
+        return zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
     }
 }

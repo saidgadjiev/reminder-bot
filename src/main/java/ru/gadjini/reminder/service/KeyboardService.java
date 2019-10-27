@@ -79,6 +79,10 @@ public class KeyboardService {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
+            add(localisationService.getMessage(MessagesProperties.COMMAND_GET_REMINDERS_NAME));
+        }});
+
+        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
             add(localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME));
         }});
 
@@ -101,6 +105,31 @@ public class KeyboardService {
         }});
 
         return replyKeyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup reminderKeyboard() {
+        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
+
+        row1.add(new InlineKeyboardButton() {{
+            setText(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TIME_COMMAND_DESCRIPTION));
+            setCallbackData(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TIME_COMMAND_NAME));
+        }});
+        keyboard.add(row1);
+
+        List<InlineKeyboardButton> row2 = new ArrayList<>();
+
+        row2.add(new InlineKeyboardButton() {{
+            setText(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TEXT_COMMAND_DESCRIPTION));
+            setCallbackData(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TEXT_COMMAND_NAME));
+        }});
+        keyboard.add(row2);
+
+        keyboardMarkup.setKeyboard(keyboard);
+
+        return keyboardMarkup;
     }
 
     private ReplyKeyboardMarkup replyKeyboardMarkup() {

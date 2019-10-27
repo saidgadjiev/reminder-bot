@@ -7,9 +7,6 @@ import ru.gadjini.reminder.dao.TgUserDao;
 import ru.gadjini.reminder.domain.TgUser;
 
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Service
 public class TgUserService {
@@ -19,14 +16,6 @@ public class TgUserService {
     @Autowired
     public TgUserService(TgUserDao tgUserDao) {
         this.tgUserDao = tgUserDao;
-    }
-
-    public TgUser getUserByUserName(String username) {
-        return tgUserDao.getByUserName(username);
-    }
-
-    public Map<Integer, TgUser> getUsersByUserIds(Set<Integer> userIds) {
-        return tgUserDao.getUsersByUserIds(userIds);
     }
 
     public void createOrUpdateUser(long chatId, User user) {
@@ -41,15 +30,11 @@ public class TgUserService {
         tgUserDao.createOrUpdate(tgUser);
     }
 
-    public int getUserId(String username) {
-        return tgUserDao.getUserId(username);
-    }
-
-    public List<TgUser> getAllUsers() {
-        return tgUserDao.getAll();
-    }
-
     public ZoneId getTimeZone(int userId) {
+        return ZoneId.of("Europe/Moscow");
+    }
+
+    public ZoneId getTimeZone(String username) {
         return ZoneId.of("Europe/Moscow");
     }
 }

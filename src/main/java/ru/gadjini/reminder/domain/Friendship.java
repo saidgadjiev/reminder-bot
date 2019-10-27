@@ -2,6 +2,10 @@ package ru.gadjini.reminder.domain;
 
 public class Friendship {
 
+    public static final String USER_ONE_ID = "user_one_id";
+
+    public static final String USER_TWO_ID = "user_two_id";
+
     private Status status;
 
     private int userOneId;

@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.bot.command.callback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -9,11 +10,14 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
-import ru.gadjini.reminder.service.resolver.ReminderRequestResolver;
-import ru.gadjini.reminder.service.resolver.matcher.MatchType;
+import ru.gadjini.reminder.service.resolver.ReminderRequestParser;
+import ru.gadjini.reminder.service.resolver.parser.ParseException;
+import ru.gadjini.reminder.service.resolver.parser.ParsedRequest;
 import ru.gadjini.reminder.service.validation.ErrorBag;
 import ru.gadjini.reminder.service.validation.ValidationService;
+import ru.gadjini.reminder.util.ReminderUtils;
 
+import java.time.ZoneId;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCommand {
@@ -30,28 +34,34 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     private CommandNavigator commandNavigator;
 
-    private ReminderRequestResolver reminderRequestResolver;
+    private ReminderRequestParser reminderRequestParser;
 
     private ValidationService validationService;
 
     private ReminderMessageSender reminderMessageSender;
+
+    private LocalisationService localisationService;
+
+    private TgUserService tgUserService;
 
     public CreateReminderCommand(LocalisationService localisationService,
                                  ReminderService reminderService,
                                  MessageService messageService,
                                  KeyboardService keyboardService,
                                  CommandNavigator commandNavigator,
-                                 ReminderRequestResolver reminderRequestResolver,
+                                 ReminderRequestParser reminderRequestParser,
                                  ValidationService validationService,
-                                 ReminderMessageSender reminderMessageSender) {
+                                 ReminderMessageSender reminderMessageSender, TgUserService tgUserService) {
+        this.localisationService = localisationService;
         this.reminderService = reminderService;
         this.name = localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME);
         this.messageService = messageService;
         this.keyboardService = keyboardService;
         this.commandNavigator = commandNavigator;
-        this.reminderRequestResolver = reminderRequestResolver;
+        this.reminderRequestParser = reminderRequestParser;
         this.validationService = validationService;
         this.reminderMessageSender = reminderMessageSender;
+        this.tgUserService = tgUserService;
     }
 
     @Override
@@ -76,23 +86,25 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     @Override
     public void processNonCommandUpdate(Message message) {
-        ReminderRequest candidate = reminderRequestResolver.resolve(message.getText().trim(), MatchType.TEXT_TIME);
+        ReminderRequest reminderRequest = reminderRequests.get(message.getChatId());
 
-        if (candidate == null) {
-            messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT, keyboardService.goBackCommand());
+        try {
+            ParsedRequest parsedRequest = reminderRequestParser.parseRequest(message.getText().trim());
+
+            ErrorBag errorBag = validate(parsedRequest);
+            if (errorBag.hasErrors()) {
+                sendErrors(message.getChatId(), errorBag);
+                return;
+            }
+
+            setFromParsedRequest(reminderRequest, parsedRequest);
+        } catch (ParseException ex) {
+            messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_REMINDER_FORMAT);
             return;
         }
-        ReminderRequest reminderRequest = reminderRequests.get(message.getChatId());
-        reminderRequest.setText(candidate.getText());
-        reminderRequest.setRemindAt(candidate.getRemindAt());
-        reminderRequest.setMatchType(candidate.getMatchType());
-
         ErrorBag errorBag = validationService.validate(reminderRequest);
-
         if (errorBag.hasErrors()) {
-            String firstError = errorBag.firstErrorMessage();
-
-            messageService.sendMessage(message.getChatId(), firstError, null);
+            sendErrors(message.getChatId(), errorBag);
             return;
         }
 
@@ -100,7 +112,28 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
         reminderRequests.remove(message.getChatId());
 
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
-
         reminderMessageSender.sendReminderCreated(reminder, replyKeyboardMarkup);
+    }
+
+    private void sendErrors(long chatId, ErrorBag errorBag) {
+        String firstError = errorBag.firstErrorMessage();
+        messageService.sendMessage(chatId, firstError, null);
+    }
+
+    private ErrorBag validate(ParsedRequest parsedRequest) {
+        ErrorBag errorBag = new ErrorBag();
+
+        if (StringUtils.isNotBlank(parsedRequest.getReceiverName())) {
+            errorBag.set("receiverName", localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+        }
+
+        return errorBag;
+    }
+
+    private void setFromParsedRequest(ReminderRequest reminderRequest, ParsedRequest parsedRequest) {
+        reminderRequest.setText(parsedRequest.getText());
+
+        ZoneId zoneId = tgUserService.getTimeZone(reminderRequest.getReceiverId());
+        reminderRequest.setRemindAt(ReminderUtils.buildRemindAt(parsedRequest.getParsedTime(), zoneId));
     }
 }

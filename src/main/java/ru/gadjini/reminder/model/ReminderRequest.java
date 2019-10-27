@@ -1,8 +1,7 @@
 package ru.gadjini.reminder.model;
 
-import ru.gadjini.reminder.service.resolver.matcher.MatchType;
-
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public class ReminderRequest {
 
@@ -12,9 +11,7 @@ public class ReminderRequest {
 
     private String text;
 
-    private LocalDateTime remindAt;
-
-    private MatchType matchType;
+    private ZonedDateTime remindAt;
 
     private boolean forMe;
 
@@ -34,11 +31,11 @@ public class ReminderRequest {
         this.text = text;
     }
 
-    public LocalDateTime getRemindAt() {
+    public ZonedDateTime getRemindAt() {
         return remindAt;
     }
 
-    public void setRemindAt(LocalDateTime remindAt) {
+    public void setRemindAt(ZonedDateTime remindAt) {
         this.remindAt = remindAt;
     }
 
@@ -48,14 +45,6 @@ public class ReminderRequest {
 
     public void setReceiverId(int receiverId) {
         this.receiverId = receiverId;
-    }
-
-    public MatchType getMatchType() {
-        return matchType;
-    }
-
-    public void setMatchType(MatchType matchType) {
-        this.matchType = matchType;
     }
 
     public boolean isForMe() {

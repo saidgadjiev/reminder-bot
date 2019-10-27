@@ -52,10 +52,17 @@ public class ReminderTimeDao {
                 .executeBatch(sqlParameterSources(reminderTimes));
     }
 
+    public void deleteByReminderId(int reminderId) {
+        jdbcTemplate.update(
+                "DELETE FROM reminder_time WHERE reminder_id = ?",
+                ps -> ps.setInt(1, reminderId)
+        );
+    }
+
     private SqlParameterSource sqlParameterSource(ReminderTime reminderTime) {
         return new MapSqlParameterSource()
                 .addValue(ReminderTime.TYPE_COL, reminderTime.getType().getCode())
-                .addValue(ReminderTime.FIXED_TIME, reminderTime.getFixedTime() != null ? Timestamp.valueOf(reminderTime.getFixedTime()) : null)
+                .addValue(ReminderTime.FIXED_TIME, reminderTime.getFixedTime() != null ? Timestamp.valueOf(reminderTime.getFixedTime().toLocalDateTime()) : null)
                 .addValue(ReminderTime.DELAY_TIME, reminderTime.getDelayTime() != null ? Time.valueOf(reminderTime.getDelayTime()) : null)
                 .addValue(ReminderTime.REMINDER_ID, reminderTime.getReminderId())
                 .addValue(ReminderTime.LAST_REMINDER_AT, reminderTime.getLastReminderAt());

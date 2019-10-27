@@ -10,8 +10,11 @@ public class CreateFriendRequestResult {
 
     private State state = State.NONE;
 
-    public CreateFriendRequestResult(Friendship friendship, boolean conflict) {
+    public void setFriendship(Friendship friendship) {
         this.friendship = friendship;
+    }
+
+    public void setConflict(boolean conflict) {
         this.conflict = conflict;
     }
 

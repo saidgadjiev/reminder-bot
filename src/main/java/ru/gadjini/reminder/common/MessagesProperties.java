@@ -93,4 +93,34 @@ public class MessagesProperties {
     public static final String MESSAGE_FRIEND_DELETED = "message.friend.deleted";
 
     public static final String MESSAGE_ERROR = "message.error";
+
+    public static final String REGEXP_TOMORROW = "regexp.tomorrow";
+
+    public static final String REGEXP_DAY_AFTER_TOMORROW = "regexp.day.after.tomorrow";
+
+    public static final String REGEXP_TIME_ARTICLE = "regexp.time.article";
+
+    public static final String MESSAGE_REMINDER_TODAY = "message.reminder.today";
+
+    public static final String MESSAGE_REMINDER_TOMORROW = "message.reminder.tomorrow";
+
+    public static final String MESSAGE_REMINDER_DAY_AFTER_TOMORROW = "message.reminder.day.after.tomorrow";
+
+    public static final String MESSAGE_REMINDER_FIXED_DAY = "message.reminder.fixed.day";
+
+    public static final String COMMAND_GET_REMINDERS_NAME = "get.reminder.command.name";
+
+    public static final String EDIT_REMINDER_TIME_COMMAND_NAME = "edit.reminder.time.command.name";
+
+    public static final String EDIT_REMINDER_TIME_COMMAND_DESCRIPTION = "edit.reminder.time.command.description";
+
+    public static final String EDIT_REMINDER_TEXT_COMMAND_NAME = "edit.reminder.text.command.name";
+
+    public static final String EDIT_REMINDER_TEXT_COMMAND_DESCRIPTION = "edit.reminder.text.command.description";
+
+    public static final String MESSAGE_REMINDER_TIME = "message.reminder.time";
+
+    public static final String MESSAGE_REMINDER_TIME_EDITED_FROM = "message.reminder.time.edited.from";
+
+    public static final String MESSAGE_REMINDER_TIME_EDITED = "message.reminder.time.edited";
 }

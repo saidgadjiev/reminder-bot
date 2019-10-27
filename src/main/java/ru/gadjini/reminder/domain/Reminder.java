@@ -1,6 +1,8 @@
 package ru.gadjini.reminder.domain;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Reminder {
@@ -29,13 +31,11 @@ public class Reminder {
 
     private TgUser receiver;
 
-    private LocalDateTime remindAt;
+    private ZonedDateTime remindAt;
 
-    private LocalDateTime remindAtInCreatorTimeZone;
+    private ZonedDateTime remindAtInReceiverTimeZone;
 
-    private LocalDateTime remindAtInReceiverTimeZone;
-
-    private List<ReminderTime> reminderTimes;
+    private List<ReminderTime> reminderTimes = new ArrayList<>();
 
     private RemindMessage remindMessage;
 
@@ -47,11 +47,11 @@ public class Reminder {
         this.id = id;
     }
 
-    public LocalDateTime getRemindAt() {
+    public ZonedDateTime getRemindAt() {
         return remindAt;
     }
 
-    public void setRemindAt(LocalDateTime remindAt) {
+    public void setRemindAt(ZonedDateTime remindAt) {
         this.remindAt = remindAt;
     }
 
@@ -103,19 +103,11 @@ public class Reminder {
         return creator;
     }
 
-    public LocalDateTime getRemindAtInCreatorTimeZone() {
-        return remindAtInCreatorTimeZone;
-    }
-
-    public void setRemindAtInCreatorTimeZone(LocalDateTime remindAtInCreatorTimeZone) {
-        this.remindAtInCreatorTimeZone = remindAtInCreatorTimeZone;
-    }
-
-    public LocalDateTime getRemindAtInReceiverTimeZone() {
+    public ZonedDateTime getRemindAtInReceiverTimeZone() {
         return remindAtInReceiverTimeZone;
     }
 
-    public void setRemindAtInReceiverTimeZone(LocalDateTime remindAtInReceiverTimeZone) {
+    public void setRemindAtInReceiverTimeZone(ZonedDateTime remindAtInReceiverTimeZone) {
         this.remindAtInReceiverTimeZone = remindAtInReceiverTimeZone;
     }
 
