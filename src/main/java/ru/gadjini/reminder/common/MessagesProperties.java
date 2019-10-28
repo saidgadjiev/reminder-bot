@@ -129,4 +129,22 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_TEXT_EDITED_FROM = "message.reminder.text.edited.from";
 
     public static final String MESSAGE_REMINDER_TEXT_EDITED = "message.reminder.text.edited";
+
+    public static final String DELETE_REMINDER_COMMAND_NAME = "delete.reminder.command.name";
+
+    public static final String DELETE_REMINDER_COMMAND_DESCRIPTION = "delete.reminder.command.description";
+
+    public static final String MESSAGE_REMINDER_DELETED_FROM = "message.reminder.deleted.from";
+
+    public static final String MESSAGE_REMINDER_DELETED = "message.reminder.deleted";
+
+    public static final String CANCEL_REMINDER_COMMAND_NAME = "cancel.reminder.command.name";
+
+    public static final String CANCEL_REMINDER_COMMAND_DESCRIPTION = "cancel.reminder.command.description";
+
+    public static final String MESSAGE_REMINDER_CANCELED_FROM = "message.reminder.canceled.from";
+
+    public static final String MESSAGE_REMINDER_CANCELED = "message.reminder.canceled";
+
+    public static final String MESSAGE_REMINDER_CANCELED_ANSWER = "message.reminder.canceled.answer";
 }

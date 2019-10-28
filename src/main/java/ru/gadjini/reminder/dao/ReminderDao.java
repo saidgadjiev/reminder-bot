@@ -146,39 +146,6 @@ public class ReminderDao {
         );
     }
 
-    public Reminder complete(int id) {
-        return jdbcTemplate.query(
-                "WITH deleted_reminder AS (\n" +
-                        "    DELETE FROM reminder WHERE id = ? RETURNING id, creator_id, receiver_id, remind_at, reminder_text\n" +
-                        ")\n" +
-                        "select dr.*,\n" +
-                        "       dr.remind_at::timestamptz AT TIME ZONE rc.zone_id as rc_remind_at,\n" +
-                        "       rm.message_id as rm_message_id,\n" +
-                        "       cr.first_name as cr_first_name,\n" +
-                        "       cr.last_name  as cr_last_name,\n" +
-                        "       cr.chat_id  as cr_chat_id,\n" +
-                        "       rc.zone_id   as rc_zone_id\n" +
-                        "FROM deleted_reminder dr\n" +
-                        "         LEFT JOIN remind_message rm ON dr.id = rm.reminder_id\n" +
-                        "         INNER JOIN tg_user cr ON dr.creator_id = cr.user_id\n" +
-                        "         INNER JOIN tg_user rc ON dr.receiver_id = rc.user_id",
-                ps -> ps.setInt(1, id),
-                rs -> {
-                    if (rs.next()) {
-                        return resultSetMapper.mapReminder(rs, new ReminderMapping() {{
-                            setReceiverMapping(new Mapping());
-                            setCreatorMapping(new Mapping() {{
-                                setFields(Collections.singletonList(CR_CHAT_ID));
-                            }});
-                            setFields(Collections.singletonList(RM_MESSAGE));
-                        }});
-                    }
-
-                    return null;
-                }
-        );
-    }
-
     public UpdateReminderResult updateReminderText(int reminderId, String newText) {
         return jdbcTemplate.query(
                 "WITH r AS (\n" +
@@ -237,6 +204,66 @@ public class ReminderDao {
                             setReceiverMapping(new Mapping() {{
                                 setFields(Arrays.asList(RC_CHAT_ID, RC_FIRST_LAST_NAME));
                             }});
+                        }});
+                    }
+
+                    return null;
+                }
+        );
+    }
+
+    public Reminder deleteFromReceiver(int reminderId) {
+        return jdbcTemplate.query(
+                "WITH deleted_reminder AS (\n" +
+                        "    DELETE FROM reminder WHERE id = ? RETURNING id, creator_id, receiver_id, remind_at, reminder_text\n" +
+                        ")\n" +
+                        "select dr.*,\n" +
+                        "       dr.remind_at::timestamptz AT TIME ZONE rc.zone_id as rc_remind_at,\n" +
+                        "       rm.message_id as rm_message_id,\n" +
+                        "       cr.first_name as cr_first_name,\n" +
+                        "       cr.last_name  as cr_last_name,\n" +
+                        "       cr.chat_id  as cr_chat_id,\n" +
+                        "       rc.zone_id   as rc_zone_id\n" +
+                        "FROM deleted_reminder dr\n" +
+                        "         LEFT JOIN remind_message rm ON dr.id = rm.reminder_id\n" +
+                        "         INNER JOIN tg_user cr ON dr.creator_id = cr.user_id\n" +
+                        "         INNER JOIN tg_user rc ON dr.receiver_id = rc.user_id",
+                ps -> ps.setInt(1, reminderId),
+                rs -> {
+                    if (rs.next()) {
+                        return resultSetMapper.mapReminder(rs, new ReminderMapping() {{
+                            setReceiverMapping(new Mapping());
+                            setCreatorMapping(new Mapping() {{
+                                setFields(Collections.singletonList(CR_CHAT_ID));
+                            }});
+                            setFields(Collections.singletonList(RM_MESSAGE));
+                        }});
+                    }
+
+                    return null;
+                }
+        );
+    }
+
+    public Reminder deleteFromCreator(int reminderId) {
+        return jdbcTemplate.query(
+                "WITH deleted_reminder AS (\n" +
+                        "    DELETE FROM reminder WHERE id = ? RETURNING id, creator_id, receiver_id, remind_at, reminder_text\n" +
+                        ")\n" +
+                        "select dr.*,\n" +
+                        "       dr.remind_at::timestamptz AT TIME ZONE rc.zone_id as rc_remind_at,\n" +
+                        "       rm.message_id as rm_message_id,\n" +
+                        "       rc.zone_id   as rc_zone_id\n" +
+                        "FROM deleted_reminder dr\n" +
+                        "         LEFT JOIN remind_message rm ON dr.id = rm.reminder_id\n" +
+                        "         INNER JOIN tg_user cr ON dr.creator_id = cr.user_id\n" +
+                        "         INNER JOIN tg_user rc ON dr.receiver_id = rc.user_id",
+                ps -> ps.setInt(1, reminderId),
+                rs -> {
+                    if (rs.next()) {
+                        return resultSetMapper.mapReminder(rs, new ReminderMapping() {{
+                            setReceiverMapping(new Mapping());
+                            setFields(Collections.singletonList(RM_MESSAGE));
                         }});
                     }
 

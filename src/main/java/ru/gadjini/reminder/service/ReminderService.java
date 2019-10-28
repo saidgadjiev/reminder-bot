@@ -112,7 +112,7 @@ public class ReminderService {
 
     @Transactional
     public Reminder completeReminder(int id) {
-        Reminder deleted = reminderDao.complete(id);
+        Reminder deleted = reminderDao.deleteFromReceiver(id);
         deleted.getReceiver().setFrom(securityService.getAuthenticatedUser());
 
         return deleted;
@@ -122,6 +122,22 @@ public class ReminderService {
         Reminder reminder = reminderDao.getReminder(reminderId);
 
         reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
+
+        return reminder;
+    }
+
+    public Reminder delete(int reminderId) {
+        Reminder reminder = reminderDao.deleteFromCreator(reminderId);
+
+        reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
+
+        return reminder;
+    }
+
+    public Reminder cancel(int reminderId) {
+        Reminder reminder = reminderDao.deleteFromReceiver(reminderId);
+
+        reminder.setReceiver(TgUser.from(securityService.getAuthenticatedUser()));
 
         return reminder;
     }
