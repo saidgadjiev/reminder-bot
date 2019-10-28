@@ -40,6 +40,7 @@ public class ReminderService {
         Reminder reminder = new Reminder();
 
         reminder.setRemindAt(DateUtils.toUtc(reminderRequest.getRemindAt()));
+        reminder.setRemindAtInReceiverTimeZone(reminderRequest.getRemindAt());
         reminder.setText(reminderRequest.getText());
 
         User user = securityService.getAuthenticatedUser();
@@ -73,6 +74,7 @@ public class ReminderService {
         reminderTimeService.deleteReminderTimes(reminderId);
         List<ReminderTime> reminderTimes = getReminderTimes(remindAt);
 
+        reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(reminderId));
         reminderTimeService.deleteReminderTimes(reminderId);
         reminderTimeService.create(reminderTimes);
 

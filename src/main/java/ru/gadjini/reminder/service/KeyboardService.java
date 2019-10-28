@@ -107,7 +107,7 @@ public class KeyboardService {
         return replyKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup reminderKeyboard() {
+    public InlineKeyboardMarkup reminderKeyboard(int reminderId) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
 
@@ -115,7 +115,7 @@ public class KeyboardService {
 
         row1.add(new InlineKeyboardButton() {{
             setText(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TIME_COMMAND_DESCRIPTION));
-            setCallbackData(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TIME_COMMAND_NAME));
+            setCallbackData(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TIME_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
         }});
         keyboard.add(row1);
 
@@ -123,7 +123,7 @@ public class KeyboardService {
 
         row2.add(new InlineKeyboardButton() {{
             setText(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TEXT_COMMAND_DESCRIPTION));
-            setCallbackData(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TEXT_COMMAND_NAME));
+            setCallbackData(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TEXT_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
         }});
         keyboard.add(row2);
 

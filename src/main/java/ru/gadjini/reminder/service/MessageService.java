@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendChatAction;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -48,8 +49,8 @@ public class MessageService {
 
         try {
             telegramService.execute(deleteMessage);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception ignore) {
+
         }
     }
 
@@ -104,6 +105,7 @@ public class MessageService {
         EditMessageText editMessageText = new EditMessageText();
 
         editMessageText.setMessageId(messageId);
+        editMessageText.enableHtml(true);
         editMessageText.setChatId(chatId);
         editMessageText.setText(text);
         if (replyKeyboard != null) {
@@ -112,6 +114,20 @@ public class MessageService {
 
         try {
             telegramService.execute(editMessageText);
+        } catch (TelegramApiException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public void editReplyKeyboard(long chatId, int messageId, InlineKeyboardMarkup replyKeyboard) {
+        EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
+
+        editMessageReplyMarkup.setMessageId(messageId);
+        editMessageReplyMarkup.setChatId(chatId);
+        editMessageReplyMarkup.setReplyMarkup(replyKeyboard);
+
+        try {
+            telegramService.execute(editMessageReplyMarkup);
         } catch (TelegramApiException ex) {
             throw new RuntimeException(ex);
         }

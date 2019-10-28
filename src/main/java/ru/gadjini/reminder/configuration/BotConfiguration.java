@@ -54,7 +54,7 @@ public class BotConfiguration {
             add(new CreateReminderCommand(localisationService, reminderService, messageService, keyboardService,
                     commandNavigator, reminderRequestParser, validationService, reminderMessageSender, tgUserService));
             add(new ChangeReminderTimeCommand(localisationService, reminderRequestParser, reminderMessageSender,
-                    messageService, reminderService, commandNavigator, validationService));
+                    messageService, reminderService, commandNavigator, validationService, keyboardService));
         }};
     }
 

@@ -1,12 +1,12 @@
 CREATE TABLE IF NOT EXISTS tg_user
 (
-    id         SERIAL PRIMARY KEY,
     user_id    INTEGER      NOT NULL UNIQUE,
     username   VARCHAR(128) UNIQUE,
     first_name VARCHAR(128) NOT NULL,
     last_name  VARCHAR(128),
     chat_id    INTEGER      NOT NULL UNIQUE,
     zone_id    VARCHAR(128) NOT NULL DEFAULT 'Europe/Moscow',
+    PRIMARY KEY (user_id),
     UNIQUE (user_id, chat_id)
 );
 

@@ -20,7 +20,6 @@ public class ResultSetMapper {
     public TgUser mapUser(ResultSet resultSet) throws SQLException {
         TgUser tgUser = new TgUser();
 
-        tgUser.setId(resultSet.getInt(TgUser.ID));
         tgUser.setChatId(resultSet.getLong(TgUser.CHAT_ID));
         tgUser.setUsername(resultSet.getString(TgUser.USERNAME));
         tgUser.setFirstName(resultSet.getString(TgUser.FIRST_NAME));

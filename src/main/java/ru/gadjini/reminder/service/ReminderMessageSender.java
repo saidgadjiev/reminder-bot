@@ -122,7 +122,7 @@ public class ReminderMessageSender {
         for (Reminder reminder : reminders) {
             String reminderText = reminderTextBuilder.create(reminder.getText(), reminder.getRemindAtInReceiverTimeZone());
 
-            messageService.sendMessage(chatId, reminderText, keyboardService.reminderKeyboard());
+            messageService.sendMessage(chatId, reminderText, keyboardService.reminderKeyboard(reminder.getId()));
         }
     }
 
@@ -147,8 +147,8 @@ public class ReminderMessageSender {
         }
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_TIME_EDITED);
 
-        String newReminderText = reminderTextBuilder.create(oldReminder.getText(), oldReminder.getRemindAtInReceiverTimeZone());
-        messageService.editMessage(currChatId, messageId, newReminderText, keyboardService.getReminderButtons(oldReminder.getId()));
+        String newReminderText = reminderTextBuilder.create(oldReminder.getText(), updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone());
+        messageService.editMessage(currChatId, messageId, newReminderText, keyboardService.reminderKeyboard(oldReminder.getId()));
         messageService.sendMessageByCode(currChatId, MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, replyKeyboard);
     }
 }

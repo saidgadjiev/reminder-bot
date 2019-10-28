@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.service.resolver.lexer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.parameters.P;
 import ru.gadjini.reminder.service.resolver.parser.ParseException;
 
 import java.util.Arrays;
@@ -11,17 +12,17 @@ import java.util.regex.Pattern;
 
 public class RequestLexer {
 
-    private Pattern timeStartPattern;
+    private Pattern timePattern;
 
-    private Pattern loginStartPattern;
+    private Pattern loginPattern;
 
     private int timeMatcherEnd;
 
     private final String str;
 
-    public RequestLexer(Pattern timeStartPattern, Pattern loginStartPattern, String str) {
-        this.timeStartPattern = timeStartPattern;
-        this.loginStartPattern = loginStartPattern;
+    public RequestLexer(Pattern timePattern, Pattern loginPattern, String str) {
+        this.timePattern = timePattern;
+        this.loginPattern = loginPattern;
         this.str = str;
     }
 
@@ -31,11 +32,11 @@ public class RequestLexer {
 
         tokenizeStr = StringUtils.reverseDelimited(tokenizeStr.substring(timeMatcherEnd).trim(), ' ');
 
-        Matcher loginStartMatcher = loginStartPattern.matcher(tokenizeStr);
+        Matcher loginMatcher = loginPattern.matcher(tokenizeStr);
 
-        if (loginStartMatcher.matches()) {
+        if (loginMatcher.matches()) {
             for (Token token : Arrays.asList(Token.TEXT, Token.LOGIN)) {
-                String found = loginStartMatcher.group(token.name().toLowerCase());
+                String found = loginMatcher.group(token.name().toLowerCase());
 
                 if (found != null) {
                     lexems.addFirst(new Lexem(token, found));
@@ -51,20 +52,20 @@ public class RequestLexer {
     public List<Lexem> tokenizeTime() {
         String tokenizeStr = StringUtils.reverseDelimited(str, ' ');
 
-        Matcher timeStartMatcher = timeStartPattern.matcher(tokenizeStr);
+        Matcher timeMatcher = timePattern.matcher(tokenizeStr);
 
-        if (timeStartMatcher.find()) {
+        if (timeMatcher.find()) {
             LinkedList<Lexem> lexems = new LinkedList<>();
 
             for (Token token : Arrays.asList(Token.MINUTE, Token.HOUR, Token.DAY, Token.DAYWORD)) {
-                String found = timeStartMatcher.group(token.name().toLowerCase());
+                String found = timeMatcher.group(token.name().toLowerCase());
 
                 if (found != null) {
                     lexems.addFirst(new Lexem(token, found));
                 }
             }
 
-            timeMatcherEnd = timeStartMatcher.end();
+            timeMatcherEnd = timeMatcher.end();
 
             return lexems;
         }

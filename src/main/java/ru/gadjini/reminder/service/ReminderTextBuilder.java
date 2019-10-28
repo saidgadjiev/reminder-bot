@@ -24,7 +24,7 @@ public class ReminderTextBuilder {
     }
 
     public String create(String text, ZonedDateTime remindAt) {
-        return text + time(remindAt);
+        return text + " " + time(remindAt);
     }
 
     public String changeReminderTime(String text, TgUser creator, ZonedDateTime newRemindAt, ZonedDateTime oldRemindAt) {

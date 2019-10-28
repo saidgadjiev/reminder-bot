@@ -24,7 +24,9 @@ public class ReminderRequestParser {
 
     private Pattern loginStartPattern = Pattern.compile("^(@(?<login>[0-9a-zA-Z_]+) )?(?<text>[a-zA-Zа-яА-Я ]+)$");
 
-    private Map<String, Pattern> timeStartPatterns = new HashMap<>();
+    private Map<String, Pattern> timeTextPatterns = new HashMap<>();
+
+    private Map<String, Pattern> timePatterns = new HashMap<>();
 
     @Autowired
     public ReminderRequestParser(LocalisationService localisationService) {
@@ -32,19 +34,20 @@ public class ReminderRequestParser {
         this.tomorrow = localisationService.getMessage(MessagesProperties.REGEXP_TOMORROW);
         this.dayAfterTomorrow = localisationService.getMessage(MessagesProperties.REGEXP_DAY_AFTER_TOMORROW);
 
-        timeStartPatterns.put(Locale.getDefault().toString(), buildPatternForLocale());
+        timeTextPatterns.put(Locale.getDefault().toString(), buildPatternForLocale());
+        timePatterns.put(Locale.getDefault().toString(), buildTimePatternForLocale());
     }
 
     public ParsedRequest parseRequest(String text) {
-        Pattern timeStampPattern = timeStartPatterns.get(Locale.getDefault().toString());
+        Pattern timeStampPattern = timeTextPatterns.get(Locale.getDefault().toString());
         List<Lexem> lexems = new RequestLexer(timeStampPattern, loginStartPattern, text).tokenize();
 
         return new RequestParser(tomorrow, dayAfterTomorrow).parse(lexems);
     }
 
     public ParsedTime parseTime(String time) {
-        Pattern timeStampPattern = timeStartPatterns.get(Locale.getDefault().toString());
-        List<Lexem> lexems = new RequestLexer(timeStampPattern, loginStartPattern, time).tokenizeTime();
+        Pattern timePattern = timePatterns.get(Locale.getDefault().toString());
+        List<Lexem> lexems = new RequestLexer(timePattern, null, time).tokenizeTime();
 
         return new RequestParser(tomorrow, dayAfterTomorrow).parseTime(lexems);
     }
@@ -66,6 +69,27 @@ public class ReminderRequestParser {
         }
 
         patternBuilder.append(") )?");
+
+        return Pattern.compile(patternBuilder.toString());
+    }
+
+    private Pattern buildTimePatternForLocale() {
+        String regexpTimeArticle = localisationService.getMessage(MessagesProperties.REGEXP_TIME_ARTICLE);
+
+        StringBuilder patternBuilder = new StringBuilder();
+
+        patternBuilder.append("^((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9])) ?(").append(regexpTimeArticle).append(" )?((?<day>0?[1-9]|[12]\\d|3[01])|(?<dayword>");
+
+        for (Iterator<String> iterator = Arrays.asList(tomorrow, dayAfterTomorrow).iterator(); iterator.hasNext(); ) {
+            String val = iterator.next();
+
+            patternBuilder.append(val);
+            if (iterator.hasNext()) {
+                patternBuilder.append("|");
+            }
+        }
+
+        patternBuilder.append("))?");
 
         return Pattern.compile(patternBuilder.toString());
     }

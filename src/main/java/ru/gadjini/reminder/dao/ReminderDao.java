@@ -221,8 +221,8 @@ public class ReminderDao {
                 ps -> {
                     ps.setString(1, reminder.getText());
                     ps.setInt(2, reminder.getCreatorId());
-                    ps.setTimestamp(3, Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()));
-                    ps.setInt(4, reminder.getReceiverId());
+                    ps.setInt(3, reminder.getReceiverId());
+                    ps.setTimestamp(4, Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()));
                 },
                 rs -> {
                     reminder.setId(rs.getInt(Reminder.ID));
