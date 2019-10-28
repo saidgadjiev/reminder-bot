@@ -18,7 +18,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 @Service
 public class ReminderService {
@@ -85,9 +84,11 @@ public class ReminderService {
 
         List<Reminder> reminders = reminderDao.getReminders(user.getId());
 
+        TgUser creator = TgUser.from(user);
+
         reminders.forEach(reminder -> {
             reminder.setCreatorId(user.getId());
-            reminder.setCreator(TgUser.from(user));
+            reminder.setCreator(creator);
         });
 
         return reminders;
@@ -106,7 +107,11 @@ public class ReminderService {
     }
 
     public Reminder getReminder(int reminderId) {
-        return reminderDao.getReminder(reminderId);
+        Reminder reminder = reminderDao.getReminder(reminderId);
+
+        reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
+
+        return reminder;
     }
 
     private void prepareReminderForMe(Reminder reminder) {

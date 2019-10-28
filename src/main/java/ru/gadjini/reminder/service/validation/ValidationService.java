@@ -24,6 +24,16 @@ public class ValidationService {
         this.friendshipService = friendshipService;
     }
 
+    public ErrorBag validate(ZonedDateTime time) {
+        ErrorBag errorBag = new ErrorBag();
+
+        if (time.isBefore(ZonedDateTime.now(time.getZone()))) {
+            errorBag.set("remindAt", localisationService.getMessage(MessagesProperties.MESSAGE_BAD_REMIND_AT));
+        }
+
+        return errorBag;
+    }
+
     public ErrorBag validate(ReminderRequest reminderRequest) {
         ErrorBag errorBag = new ErrorBag();
 

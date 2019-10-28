@@ -12,7 +12,7 @@ public class ParsedRequest {
         return receiverName;
     }
 
-    public void setReceiverName(String receiverName) {
+    void setReceiverName(String receiverName) {
         this.receiverName = receiverName;
     }
 
@@ -20,7 +20,7 @@ public class ParsedRequest {
         return text;
     }
 
-    public void setText(String text) {
+    void setText(String text) {
         this.text = text;
     }
 
@@ -28,7 +28,7 @@ public class ParsedRequest {
         return parsedTime;
     }
 
-    public void setParsedTime(ParsedTime parsedTime) {
+    void setParsedTime(ParsedTime parsedTime) {
         this.parsedTime = parsedTime;
     }
 }

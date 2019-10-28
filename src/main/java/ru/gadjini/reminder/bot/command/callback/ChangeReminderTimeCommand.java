@@ -13,6 +13,8 @@ import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.resolver.ReminderRequestParser;
 import ru.gadjini.reminder.service.resolver.parser.ParseException;
 import ru.gadjini.reminder.service.resolver.parser.ParsedTime;
+import ru.gadjini.reminder.service.validation.ErrorBag;
+import ru.gadjini.reminder.service.validation.ValidationService;
 import ru.gadjini.reminder.util.ReminderUtils;
 
 import java.time.ZoneId;
@@ -35,18 +37,22 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
 
     private CommandNavigator commandNavigator;
 
+    private ValidationService validationService;
+
     public ChangeReminderTimeCommand(LocalisationService localisationService,
                                      ReminderRequestParser reminderRequestParser,
                                      ReminderMessageSender reminderMessageSender,
                                      MessageService messageService,
                                      ReminderService reminderService,
-                                     CommandNavigator commandNavigator) {
+                                     CommandNavigator commandNavigator,
+                                     ValidationService validationService) {
         this.name = localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TIME_COMMAND_NAME);
         this.reminderRequestParser = reminderRequestParser;
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.reminderService = reminderService;
         this.commandNavigator = commandNavigator;
+        this.validationService = validationService;
     }
 
     @Override
@@ -81,8 +87,15 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
 
             ChangeReminderRequest request = changeReminderTimeRequests.get(message.getChatId());
             Reminder reminder = reminderService.getReminder(request.getReminderId());
+            reminder.getCreator().setChatId(message.getChatId());
 
             ZonedDateTime newRemindAt = ReminderUtils.buildRemindAt(parsedTime, ZoneId.of(reminder.getReceiver().getZoneId()));
+            ErrorBag errorBag = validationService.validate(newRemindAt);
+            if (errorBag.hasErrors()) {
+                messageService.sendMessage(message.getChatId(), errorBag.firstErrorMessage(), null);
+                return;
+            }
+
             Reminder updatedReminder = reminderService.changeReminderTime(request.getReminderId(), newRemindAt);
 
             ReplyKeyboard replyKeyboard = commandNavigator.silentPop(message.getChatId());

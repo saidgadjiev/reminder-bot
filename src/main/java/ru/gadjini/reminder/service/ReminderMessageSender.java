@@ -3,7 +3,6 @@ package ru.gadjini.reminder.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -65,16 +64,15 @@ public class ReminderMessageSender {
     }
 
     @Transactional
-    public void sendReminderComplete(CallbackQuery callbackQuery, Reminder reminder) {
-        String queryId = callbackQuery.getId();
+    public void sendReminderComplete(String queryId, int messageId, Reminder reminder) {
         if (reminder == null) {
             messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
-            messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
-            messageService.deleteMessage(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
+            messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
+            messageService.deleteMessage(reminder.getReceiver().getChatId(), messageId);
             return;
         }
-        RemindMessage remindMessage = reminder.getRemindMessage();
 
+        RemindMessage remindMessage = reminder.getRemindMessage();
         if (remindMessage != null) {
             messageService.deleteMessage(reminder.getReceiver().getChatId(), remindMessage.getMessageId());
         }

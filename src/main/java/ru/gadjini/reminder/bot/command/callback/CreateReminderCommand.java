@@ -109,6 +109,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
         }
 
         Reminder reminder = reminderService.createReminder(reminderRequest);
+        reminder.getCreator().setChatId(message.getChatId());
         reminderRequests.remove(message.getChatId());
 
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());

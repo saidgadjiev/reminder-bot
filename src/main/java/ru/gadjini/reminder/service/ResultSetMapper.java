@@ -30,29 +30,6 @@ public class ResultSetMapper {
         return tgUser;
     }
 
-    public RemindMessage mapRemindMessage(ResultSet resultSet) throws SQLException {
-        RemindMessage remindMessage = new RemindMessage();
-
-        remindMessage.setId(resultSet.getInt(RemindMessage.ID));
-        remindMessage.setMessageId(resultSet.getInt(RemindMessage.MESSAGE_ID));
-        remindMessage.setReminderId(resultSet.getInt(RemindMessage.REMINDER_ID));
-
-        return remindMessage;
-    }
-
-    public Reminder mapReminderForReminderList(ResultSet rs) throws SQLException {
-        Reminder reminder = new Reminder();
-
-        reminder.setId(rs.getInt(Reminder.ID));
-        reminder.setText(rs.getString(Reminder.TEXT));
-        reminder.setRemindAt(ZonedDateTime.of(rs.getTimestamp(Reminder.REMIND_AT).toLocalDateTime(), ZoneOffset.UTC));
-
-        String zoneId = rs.getString("rc_zone_id");
-        reminder.setRemindAtInReceiverTimeZone(ZonedDateTime.of(rs.getTimestamp("rc_remind_at").toLocalDateTime(), ZoneId.of(zoneId)));
-
-        return reminder;
-    }
-
     public Reminder mapReminder(ResultSet rs, ReminderMapping reminderMapping) throws SQLException {
         Reminder reminder = new Reminder();
 
@@ -98,23 +75,27 @@ public class ResultSetMapper {
             cr.setFirstName(rs.getString("cr_first_name"));
             cr.setLastName(rs.getString("cr_last_name"));
 
+            if (reminderMapping.getCreatorMapping().fields().contains(ReminderMapping.CR_CHAT_ID)) {
+                cr.setChatId(rs.getLong("cr_chat_id"));
+            }
+
             reminder.setCreator(cr);
         }
 
         return reminder;
     }
 
-    public ReminderTime mapReminderTime(ResultSet rs) throws SQLException {
+    public ReminderTime mapReminderTime(ResultSet rs, String prefix) throws SQLException {
         ReminderTime reminderTime = new ReminderTime();
-        reminderTime.setId(rs.getInt(ReminderTime.ID));
-        reminderTime.setType(ReminderTime.Type.fromCode(rs.getInt(ReminderTime.TYPE_COL)));
-        Timestamp lastRemindAt = rs.getTimestamp(ReminderTime.LAST_REMINDER_AT);
+        reminderTime.setId(rs.getInt(prefix + ReminderTime.ID));
+        reminderTime.setType(ReminderTime.Type.fromCode(rs.getInt(prefix + ReminderTime.TYPE_COL)));
+        Timestamp lastRemindAt = rs.getTimestamp(prefix + ReminderTime.LAST_REMINDER_AT);
         reminderTime.setLastReminderAt(lastRemindAt == null ? null : ZonedDateTime.of(lastRemindAt.toLocalDateTime(), ZoneOffset.UTC));
 
-        Timestamp fixedTime = rs.getTimestamp(ReminderTime.FIXED_TIME);
+        Timestamp fixedTime = rs.getTimestamp(prefix + ReminderTime.FIXED_TIME);
         reminderTime.setFixedTime(fixedTime == null ? null : ZonedDateTime.of(fixedTime.toLocalDateTime(), ZoneOffset.UTC));
 
-        Time delayTime = rs.getTime(ReminderTime.DELAY_TIME);
+        Time delayTime = rs.getTime(prefix + ReminderTime.DELAY_TIME);
         reminderTime.setDelayTime(delayTime == null ? null : delayTime.toLocalTime());
 
         return reminderTime;
@@ -125,6 +106,7 @@ public class ResultSetMapper {
 
         friendship.setUserOneId(rs.getInt(Friendship.USER_ONE_ID));
         friendship.setUserTwoId(rs.getInt(Friendship.USER_TWO_ID));
+        friendship.setStatus(Friendship.Status.fromCode(rs.getInt(Friendship.STATUS)));
 
         TgUser userOne = new TgUser();
         userOne.setUserId(friendship.getUserOneId());

@@ -11,7 +11,4 @@ public class SecurityService {
         return SecurityContextHolder.getContext().getUser();
     }
 
-    public void logout() {
-        SecurityContextHolder.clearContext();
-    }
 }

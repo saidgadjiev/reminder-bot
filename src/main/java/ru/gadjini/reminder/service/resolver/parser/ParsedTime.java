@@ -14,7 +14,7 @@ public class ParsedTime {
         return time;
     }
 
-    public void setTime(LocalTime time) {
+    void setTime(LocalTime time) {
         this.time = time;
     }
 
@@ -22,7 +22,7 @@ public class ParsedTime {
         return addDays;
     }
 
-    public void setAddDays(Integer addDays) {
+    void setAddDays(Integer addDays) {
         this.addDays = addDays;
     }
 
@@ -30,7 +30,7 @@ public class ParsedTime {
         return day;
     }
 
-    public void setDay(Integer day) {
+    void setDay(Integer day) {
         this.day = day;
     }
 }

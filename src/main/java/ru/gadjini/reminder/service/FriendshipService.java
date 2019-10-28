@@ -97,7 +97,7 @@ public class FriendshipService {
     public Friendship acceptFriendRequest(int friendId) {
         User user = securityService.getAuthenticatedUser();
 
-        Friendship friendship = friendshipDao.acceptFriendRequest(user.getId(), friendId, Friendship.Status.ACCEPTED);
+        Friendship friendship = friendshipDao.updateFriendshipStatus(user.getId(), friendId, Friendship.Status.ACCEPTED);
 
         friendship.setUserTwo(TgUser.from(user));
         friendship.setUserTwoId(user.getId());
@@ -109,7 +109,7 @@ public class FriendshipService {
     public Friendship rejectFriendRequest(int friendId) {
         User user = securityService.getAuthenticatedUser();
 
-        Friendship friendship = friendshipDao.rejectFriendRequest(user.getId(), friendId);
+        Friendship friendship = friendshipDao.updateFriendshipStatus(user.getId(), friendId, Friendship.Status.REJECTED);
 
         friendship.setUserTwo(TgUser.from(user));
         friendship.setUserTwoId(user.getId());

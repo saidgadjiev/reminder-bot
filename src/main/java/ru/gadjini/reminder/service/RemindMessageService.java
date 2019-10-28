@@ -23,8 +23,4 @@ public class RemindMessageService {
 
         remindMessageDao.create(remindMessage);
     }
-
-    public RemindMessage getByReminderId(int reminderId) {
-        return remindMessageDao.getByReminderId(reminderId);
-    }
 }

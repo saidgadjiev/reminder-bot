@@ -58,11 +58,11 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
         if (message.hasContact()) {
             Contact contact = message.getContact();
 
-            createFriendRequestResult = friendshipService.createFriendRequest(contact.getUserID());
+            createFriendRequestResult = friendshipService.createFriendRequest(contact.getUserID(), null);
         } else {
             String receiverName = removeUsernameStart(message.getText().trim());
 
-            createFriendRequestResult = friendshipService.createFriendRequest(receiverName);
+            createFriendRequestResult = friendshipService.createFriendRequest(null, receiverName);
         }
 
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());

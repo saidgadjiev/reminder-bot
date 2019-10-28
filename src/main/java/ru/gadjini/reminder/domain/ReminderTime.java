@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.domain;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 

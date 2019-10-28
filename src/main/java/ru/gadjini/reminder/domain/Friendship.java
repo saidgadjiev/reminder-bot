@@ -6,6 +6,8 @@ public class Friendship {
 
     public static final String USER_TWO_ID = "user_two_id";
 
+    public static final String STATUS = "status";
+
     private Status status;
 
     private int userOneId;
@@ -60,7 +62,9 @@ public class Friendship {
 
         REQUESTED(0),
 
-        ACCEPTED(1);
+        ACCEPTED(1),
+
+        REJECTED(2);
 
         private final int code;
 

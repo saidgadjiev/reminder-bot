@@ -6,7 +6,7 @@ public class Lexem {
 
     private String value;
 
-    public Lexem(Token token, String value) {
+    Lexem(Token token, String value) {
         this.token = token;
         this.value = value;
     }

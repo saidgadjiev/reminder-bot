@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.model;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 public class ReminderRequest {
