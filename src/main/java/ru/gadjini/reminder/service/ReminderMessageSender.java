@@ -126,7 +126,7 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendReminderTimeChanged(long currChatId, int messageId, String queryId, UpdateReminderResult updateReminderResult, ReplyKeyboard replyKeyboard) {
+    public void sendReminderTimeChanged(long currChatId, int messageId, UpdateReminderResult updateReminderResult, ReplyKeyboard replyKeyboard) {
         Reminder oldReminder = updateReminderResult.getOldReminder();
         RemindMessage remindMessage = oldReminder.getRemindMessage();
 
@@ -145,8 +145,6 @@ public class ReminderMessageSender {
                     null
             );
         }
-        messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_TIME_EDITED);
-
         String newReminderText = reminderTextBuilder.create(oldReminder.getText(), updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone());
         messageService.editMessage(currChatId, messageId, newReminderText, keyboardService.reminderKeyboard(oldReminder.getId()));
         messageService.sendMessageByCode(currChatId, MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, replyKeyboard);
