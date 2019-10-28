@@ -21,4 +21,11 @@ public class RemindMessageDao {
                 "INSERT INTO remind_message(reminder_id, message_id) VALUES (" + remindMessage.getReminderId() + ", " + remindMessage.getMessageId() + ")"
         );
     }
+
+    public void delete(int reminderId) {
+        jdbcTemplate.update(
+                "DELETE FROM remind_message WHERE reminder_id = ?",
+                ps -> ps.setInt(1, reminderId)
+        );
+    }
 }

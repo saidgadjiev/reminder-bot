@@ -23,4 +23,8 @@ public class RemindMessageService {
 
         remindMessageDao.create(remindMessage);
     }
+
+    public void delete(int reminderId) {
+        remindMessageDao.delete(reminderId);
+    }
 }

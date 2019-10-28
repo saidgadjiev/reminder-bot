@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
+import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.ResultSetMapper;
 
 import java.sql.SQLException;
@@ -171,6 +172,43 @@ public class ReminderDao {
                             }});
                             setFields(Collections.singletonList(RM_MESSAGE));
                         }});
+                    }
+
+                    return null;
+                }
+        );
+    }
+
+    public UpdateReminderResult updateReminderText(int reminderId, String newText) {
+        return jdbcTemplate.query(
+                "WITH r AS (\n" +
+                        "    UPDATE reminder r SET reminder_text = ? FROM reminder old WHERE r.id = old.id AND r.id = ? RETURNING r.id, r.receiver_id, remind_at, r.creator_id, old.reminder_text AS old_text\n" +
+                        ")\n" +
+                        "SELECT r.*,\n" +
+                        "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at,\n" +
+                        "       rc.zone_id                                       AS rc_zone_id,\n" +
+                        "       rc.chat_id                                       AS rc_chat_id\n" +
+                        "FROM r\n" +
+                        "         INNER JOIN remind_message rm ON r.id = rm.message_id\n" +
+                        "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id",
+                ps -> {
+                    ps.setString(1, newText);
+                    ps.setInt(2, reminderId);
+                },
+                rs -> {
+                    if (rs.next()) {
+                        Reminder oldReminder = resultSetMapper.mapReminder(rs, new ReminderMapping() {{
+                            setReceiverMapping(new Mapping());
+                        }});
+                        Reminder newReminder = new Reminder();
+                        newReminder.setText(oldReminder.getText());
+
+                        oldReminder.setText(rs.getString("old_text"));
+
+                        return new UpdateReminderResult() {{
+                            setOldReminder(oldReminder);
+                            setNewReminder(newReminder);
+                        }};
                     }
 
                     return null;

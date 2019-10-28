@@ -120,7 +120,13 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_TIME = "message.reminder.time";
 
+    public static final String MESSAGE_REMINDER_TEXT = "message.reminder.text";
+
     public static final String MESSAGE_REMINDER_TIME_EDITED_FROM = "message.reminder.time.edited.from";
 
     public static final String MESSAGE_REMINDER_TIME_EDITED = "message.reminder.time.edited";
+
+    public static final String MESSAGE_REMINDER_TEXT_EDITED_FROM = "message.reminder.text.edited.from";
+
+    public static final String MESSAGE_REMINDER_TEXT_EDITED = "message.reminder.text.edited";
 }

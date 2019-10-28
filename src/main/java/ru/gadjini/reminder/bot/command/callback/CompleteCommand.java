@@ -27,8 +27,13 @@ public class CompleteCommand implements CallbackBotCommand {
     public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
         int reminderId = Integer.parseInt(arguments[0]);
         Reminder reminder = reminderService.completeReminder(reminderId);
-        reminder.getReceiver().setChatId(callbackQuery.getMessage().getChatId());
 
-        reminderMessageSender.sendReminderComplete(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
+        if (reminder == null) {
+            reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getId(), callbackQuery.getMessage().getMessageId());
+        } else {
+            reminder.getReceiver().setChatId(callbackQuery.getMessage().getChatId());
+
+            reminderMessageSender.sendReminderComplete(callbackQuery.getId(), reminder);
+        }
     }
 }

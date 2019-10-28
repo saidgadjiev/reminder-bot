@@ -36,6 +36,14 @@ public class ReminderTextBuilder {
         });
     }
 
+    public String changeReminderText(String oldText, String newText, TgUser creator) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TEXT_EDITED_FROM, new Object[] {
+                UserUtils.userLink(creator),
+                oldText,
+                newText
+        });
+    }
+
     private String time(ZonedDateTime remindAt) {
         ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
         String time = DATE_TIME_FORMATTER.format(remindAt);

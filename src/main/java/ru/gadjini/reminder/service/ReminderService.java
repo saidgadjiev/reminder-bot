@@ -10,6 +10,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.ReminderRequest;
+import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.util.DateUtils;
 
 import java.time.LocalDateTime;
@@ -79,6 +80,15 @@ public class ReminderService {
         reminderTimeService.create(reminderTimes);
 
         return reminder;
+    }
+
+    @Transactional
+    public UpdateReminderResult changeReminderText(int reminderId, String newText) {
+        UpdateReminderResult updateReminderResult = reminderDao.updateReminderText(reminderId, newText);
+
+        updateReminderResult.getOldReminder().setCreator(TgUser.from(securityService.getAuthenticatedUser()));
+
+        return updateReminderResult;
     }
 
     public List<Reminder> getReminders() {

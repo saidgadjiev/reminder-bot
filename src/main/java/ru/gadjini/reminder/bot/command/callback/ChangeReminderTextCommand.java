@@ -2,10 +2,12 @@ package ru.gadjini.reminder.bot.command.callback;
 
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.ChangeReminderRequest;
+import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.resolver.ReminderRequestParser;
 
@@ -51,10 +53,9 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableB
         changeReminderTimeRequests.put(callbackQuery.getMessage().getChatId(), new ChangeReminderRequest() {{
             setReminderId(Integer.parseInt(arguments[0]));
             setMessageId(callbackQuery.getMessage().getMessageId());
-            setQueryId(callbackQuery.getId());
         }});
 
-        messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_REMINDER_TIME);
+        messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_REMINDER_TEXT);
     }
 
     @Override
@@ -64,5 +65,17 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableB
 
     @Override
     public void processNonCommandUpdate(Message message) {
+        if (!message.hasText()) {
+            return;
+        }
+        String text = message.getText().trim();
+
+        ChangeReminderRequest request = changeReminderTimeRequests.get(message.getChatId());
+        UpdateReminderResult updateReminderResult = reminderService.changeReminderText(request.getReminderId(), text);
+
+        updateReminderResult.getOldReminder().getCreator().setChatId(message.getChatId());
+
+        ReplyKeyboard replyKeyboard = commandNavigator.silentPop(message.getChatId());
+        reminderMessageSender.sendReminderTextChanged(request.getMessageId(), updateReminderResult, replyKeyboard);
     }
 }
