@@ -8,6 +8,10 @@ public enum Token {
 
     DAY,
 
+    MONTH,
+
+    MONTHWORD,
+
     DAYWORD,
 
     HOUR,

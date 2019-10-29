@@ -1,7 +1,6 @@
 package ru.gadjini.reminder.service.resolver.lexer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.parameters.P;
 import ru.gadjini.reminder.service.resolver.parser.ParseException;
 
 import java.util.Arrays;
@@ -57,7 +56,7 @@ public class RequestLexer {
         if (timeMatcher.find()) {
             LinkedList<Lexem> lexems = new LinkedList<>();
 
-            for (Token token : Arrays.asList(Token.MINUTE, Token.HOUR, Token.DAY, Token.DAYWORD)) {
+            for (Token token : Arrays.asList(Token.MINUTE, Token.HOUR, Token.MONTHWORD, Token.DAY, Token.MONTH, Token.DAYWORD)) {
                 String found = timeMatcher.group(token.name().toLowerCase());
 
                 if (found != null) {

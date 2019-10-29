@@ -1,10 +1,16 @@
 package ru.gadjini.reminder.service.resolver.parser;
 
+import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.service.LocalisationService;
 import ru.gadjini.reminder.service.resolver.lexer.Lexem;
 import ru.gadjini.reminder.service.resolver.lexer.Token;
 
 import java.time.LocalTime;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Stream;
 
 public class RequestParser {
 
@@ -12,15 +18,18 @@ public class RequestParser {
 
     private String dayAfterTomorrow;
 
+    private Locale locale;
+
     private ParsedRequest parsedRequest = new ParsedRequest();
 
     private ParsedTime parsedTime = new ParsedTime();
 
     private int position;
 
-    public RequestParser(String tomorrow, String dayAfterTomorrow) {
-        this.tomorrow = tomorrow;
-        this.dayAfterTomorrow = dayAfterTomorrow;
+    public RequestParser(LocalisationService localisationService, Locale locale) {
+        this.tomorrow = localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TOMORROW);
+        this.dayAfterTomorrow = localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_DAY_AFTER_TOMORROW);
+        this.locale = locale;
     }
 
     public ParsedRequest parse(List<Lexem> lexems) {
@@ -44,7 +53,11 @@ public class RequestParser {
     }
 
     public ParsedTime parseTime(List<Lexem> lexems) {
-        if (check(lexems, Token.DAYWORD)) {
+        if (check(lexems, Token.MONTH)) {
+            consumeMonth(lexems);
+
+            return parsedTime;
+        } else if (check(lexems, Token.DAYWORD)) {
             consumeDayWord(lexems);
 
             return parsedTime;
@@ -62,6 +75,24 @@ public class RequestParser {
         }
 
         throw new ParseException();
+    }
+
+    private void consumeMonth(List<Lexem> lexems) {
+        int month = Integer.parseInt(consume(lexems, Token.MONTH).getValue());
+        int day = Integer.parseInt(consume(lexems, Token.DAY).getValue());
+
+        parsedTime.setMonth(month);
+        parsedTime.setDay(day);
+        parsedTime.setTime(consumeTime(lexems));
+    }
+
+    private void consumeMonthWord(List<Lexem> lexems) {
+        String month = consume(lexems, Token.MONTHWORD).getValue();
+
+        Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, locale).equals(month)).findFirst().orElseThrow(ParseException::new);
+
+        parsedTime.setMonth(m.getValue());
+        parsedTime.setTime(consumeTime(lexems));
     }
 
     private void consumeText(List<Lexem> lexems) {
@@ -92,7 +123,11 @@ public class RequestParser {
         int day = Integer.parseInt(consume(lexems, Token.DAY).getValue());
 
         parsedTime.setDay(day);
-        parsedTime.setTime(consumeTime(lexems));
+        if (check(lexems, Token.MONTHWORD)) {
+            consumeMonthWord(lexems);
+        } else {
+            parsedTime.setTime(consumeTime(lexems));
+        }
     }
 
     private LocalTime consumeTime(List<Lexem> lexems) {
