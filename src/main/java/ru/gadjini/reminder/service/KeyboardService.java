@@ -27,10 +27,15 @@ public class KeyboardService {
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> row = new ArrayList<>();
 
-        InlineKeyboardButton completeReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.REMINDER_COMPLETE_COMMAND_NAME));
-        completeReminderButton.setCallbackData(MessagesProperties.COMPLETE_REMINDER_COMMAND_NAME + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
+        InlineKeyboardButton completeReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.REMINDER_COMPLETE_COMMAND_DESCRIPTION));
+        completeReminderButton.setCallbackData(localisationService.getMessage(MessagesProperties.REMINDER_COMPLETE_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
 
         row.add(completeReminderButton);
+        InlineKeyboardButton cancelReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CANCEL_REMINDER_COMMAND_DESCRIPTION));
+        cancelReminderButton.setCallbackData(localisationService.getMessage(MessagesProperties.CANCEL_REMINDER_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
+
+        row.add(cancelReminderButton);
+
         keyboard.add(row);
         inlineKeyboardMarkup.setKeyboard(keyboard);
 
@@ -126,6 +131,14 @@ public class KeyboardService {
             setCallbackData(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TEXT_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
         }});
         keyboard.add(row2);
+
+        List<InlineKeyboardButton> row3 = new ArrayList<>();
+
+        row3.add(new InlineKeyboardButton() {{
+            setText(localisationService.getMessage(MessagesProperties.DELETE_FRIEND_COMMAND_DESCRIPTION));
+            setCallbackData(localisationService.getMessage(MessagesProperties.DELETE_REMINDER_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
+        }});
+        keyboard.add(row3);
 
         keyboardMarkup.setKeyboard(keyboard);
 

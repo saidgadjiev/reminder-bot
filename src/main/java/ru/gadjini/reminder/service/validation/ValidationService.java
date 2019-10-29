@@ -8,6 +8,7 @@ import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.FriendshipService;
 import ru.gadjini.reminder.service.LocalisationService;
+import ru.gadjini.reminder.util.DateUtils;
 
 import java.time.ZonedDateTime;
 
@@ -37,7 +38,7 @@ public class ValidationService {
     public ErrorBag validate(ReminderRequest reminderRequest) {
         ErrorBag errorBag = new ErrorBag();
 
-        if (reminderRequest.getRemindAt().isBefore(ZonedDateTime.now(reminderRequest.getRemindAt().getZone()))) {
+        if (reminderRequest.getRemindAt().isBefore(DateUtils.now(reminderRequest.getRemindAt().getZone()))) {
             errorBag.set("remindAt", localisationService.getMessage(MessagesProperties.MESSAGE_BAD_REMIND_AT));
 
             return errorBag;

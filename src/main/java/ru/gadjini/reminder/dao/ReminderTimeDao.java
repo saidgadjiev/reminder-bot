@@ -64,14 +64,14 @@ public class ReminderTimeDao {
                 .addValue(ReminderTime.TYPE_COL, reminderTime.getType().getCode())
                 .addValue(ReminderTime.FIXED_TIME, reminderTime.getFixedTime() != null ? Timestamp.valueOf(reminderTime.getFixedTime().toLocalDateTime()) : null)
                 .addValue(ReminderTime.DELAY_TIME, reminderTime.getDelayTime() != null ? Time.valueOf(reminderTime.getDelayTime()) : null)
-                .addValue(ReminderTime.REMINDER_ID, reminderTime.getReminderId())
-                .addValue(ReminderTime.LAST_REMINDER_AT, reminderTime.getLastReminderAt());
+                .addValue(ReminderTime.LAST_REMINDER_AT, reminderTime.getLastReminderAt() != null ? Timestamp.valueOf(reminderTime.getLastReminderAt().toLocalDateTime()) : null)
+                .addValue(ReminderTime.REMINDER_ID, reminderTime.getReminderId());
     }
 
     private SqlParameterSource[] sqlParameterSources(List<ReminderTime> reminderTimes) {
         List<SqlParameterSource> sqlParameterSources = new ArrayList<>();
 
-        for (ReminderTime reminderTime: reminderTimes) {
+        for (ReminderTime reminderTime : reminderTimes) {
             sqlParameterSources.add(sqlParameterSource(reminderTime));
         }
 

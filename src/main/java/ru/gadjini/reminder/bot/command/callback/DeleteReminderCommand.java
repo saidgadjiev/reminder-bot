@@ -32,7 +32,11 @@ public class DeleteReminderCommand implements CallbackBotCommand {
         int reminderId = Integer.parseInt(arguments[0]);
 
         Reminder reminder = reminderService.delete(reminderId);
-        reminder.getCreator().setChatId(callbackQuery.getMessage().getChatId());
-        reminderMessageSender.sendReminderDeleted(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
+        if (reminder == null) {
+            reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getId(), callbackQuery.getMessage().getMessageId());
+        } else {
+            reminder.getCreator().setChatId(callbackQuery.getMessage().getChatId());
+            reminderMessageSender.sendReminderDeleted(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
+        }
     }
 }

@@ -47,7 +47,7 @@ public class BotConfiguration {
                                                               TgUserService tgUserService,
                                                               ReminderMessageSender reminderMessageSender) {
         return new ArrayList<>() {{
-            add(new CompleteCommand(reminderService, reminderMessageSender));
+            add(new CompleteCommand(localisationService, reminderService, reminderMessageSender));
             add(new AcceptFriendRequestCommand(localisationService, friendshipService, messageService));
             add(new RejectFriendRequestCommand(localisationService, friendshipService, messageService));
             add(new DeleteFriendCommand(messageService, friendshipService, localisationService));

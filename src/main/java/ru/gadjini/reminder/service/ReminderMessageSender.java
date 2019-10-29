@@ -3,7 +3,6 @@ package ru.gadjini.reminder.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -172,8 +171,8 @@ public class ReminderMessageSender {
     }
 
     public void sendReminderNotFound(long chatId, String queryId, int messageId) {
-        messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
-        messageService.sendMessageByCode(chatId, MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
+        messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_NOT_FOUND);
+        messageService.sendMessageByCode(chatId, MessagesProperties.MESSAGE_REMINDER_NOT_FOUND);
         messageService.deleteMessage(chatId, messageId);
     }
 
@@ -193,7 +192,6 @@ public class ReminderMessageSender {
         }
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_DELETED);
         messageService.deleteMessage(reminder.getCreator().getChatId(), messageId);
-        messageService.sendMessageByCode(reminder.getCreator().getChatId(), MessagesProperties.MESSAGE_REMINDER_DELETED);
     }
 
     public void sendReminderCanceled(String queryId, int messageId, Reminder reminder) {
@@ -201,20 +199,26 @@ public class ReminderMessageSender {
             messageService.sendMessageByCode(
                     reminder.getReceiver().getChatId(),
                     MessagesProperties.MESSAGE_REMINDER_CANCELED_FROM,
-                    new Object[] {
+                    new Object[]{
                             reminder.getText(),
                             UserUtils.userLink(reminder.getCreator())
                     }
             );
+            messageService.sendMessageByCode(
+                    reminder.getCreator().getChatId(),
+                    MessagesProperties.MESSAGE_REMINDER_CANCELED,
+                    new Object[]{
+                            UserUtils.userLink(reminder.getReceiver()),
+                            reminder.getText()
+                    }
+            );
+        } else {
+            messageService.sendMessageByCode(
+                    reminder.getReceiver().getChatId(),
+                    MessagesProperties.MESSAGE_REMINDER_CANCELED_ME,
+                    new Object[]{reminder.getText()}
+            );
         }
-        messageService.sendMessageByCode(
-                reminder.getCreator().getChatId(),
-                MessagesProperties.MESSAGE_REMINDER_CANCELED,
-                new Object[] {
-                        UserUtils.userLink(reminder.getReceiver()),
-                        reminder.getText()
-                }
-        );
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_CANCELED_ANSWER);
         messageService.deleteMessage(reminder.getReceiver().getChatId(), messageId);
         if (reminder.getRemindMessage() != null) {

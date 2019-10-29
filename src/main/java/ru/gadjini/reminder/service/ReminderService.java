@@ -129,6 +129,9 @@ public class ReminderService {
     public Reminder delete(int reminderId) {
         Reminder reminder = reminderDao.deleteFromCreator(reminderId);
 
+        if (reminder == null) {
+            return null;
+        }
         reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
 
         return reminder;
@@ -137,6 +140,9 @@ public class ReminderService {
     public Reminder cancel(int reminderId) {
         Reminder reminder = reminderDao.deleteFromReceiver(reminderId);
 
+        if (reminder == null) {
+            return null;
+        }
         reminder.setReceiver(TgUser.from(securityService.getAuthenticatedUser()));
 
         return reminder;

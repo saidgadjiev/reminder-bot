@@ -26,7 +26,7 @@ public class MessagesProperties {
 
     public static final String REMINDER_COMPLETE_COMMAND_NAME = "reminder.complete.command.name";
 
-    public static final String COMPLETE_REMINDER_COMMAND_NAME = "complete";
+    public static final String REMINDER_COMPLETE_COMMAND_DESCRIPTION = "reminder.complete.command.description";
 
     public static final String MESSAGE_REMINDER_COMPLETED_FROM = "message.reminder.completed.from";
 
@@ -146,5 +146,9 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_CANCELED = "message.reminder.canceled";
 
+    public static final String MESSAGE_REMINDER_CANCELED_ME = "message.reminder.canceled.me";
+
     public static final String MESSAGE_REMINDER_CANCELED_ANSWER = "message.reminder.canceled.answer";
+
+    public static final String MESSAGE_REMINDER_NOT_FOUND = "message.reminder.not.found";
 }
