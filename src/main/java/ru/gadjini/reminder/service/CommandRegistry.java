@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -35,6 +36,7 @@ public class CommandRegistry {
         this.keyboardBotCommands.addAll(keyboardBotCommands);
         botCommands.forEach(botCommand -> botCommandRegistryMap.put(botCommand.getCommandIdentifier(), botCommand));
         callbackBotCommands.forEach(callbackBotCommand -> callbackBotCommandMap.put(callbackBotCommand.getName(), callbackBotCommand));
+        commandNavigator.setNavigableBotCommands(navigableBotCommands(keyboardBotCommands, botCommands, callbackBotCommands));
     }
 
     public BotCommand getBotCommand(String startCommandName) {
@@ -113,5 +115,25 @@ public class CommandRegistry {
         }
 
         return true;
+    }
+
+    private Collection<NavigableBotCommand> navigableBotCommands(Collection<KeyboardBotCommand> keyboardBotCommands,
+                                                                Collection<BotCommand> botCommands,
+                                                                Collection<CallbackBotCommand> callbackBotCommands) {
+        List<NavigableBotCommand> navigableBotCommands = new ArrayList<>();
+
+        keyboardBotCommands.stream()
+                .filter(botCommand -> botCommand instanceof NavigableBotCommand)
+                .forEach(botCommand -> navigableBotCommands.add((NavigableBotCommand) botCommand));
+
+        botCommands.stream()
+                .filter(botCommand -> botCommand instanceof NavigableBotCommand)
+                .forEach(botCommand -> navigableBotCommands.add((NavigableBotCommand) botCommand));
+
+        callbackBotCommands.stream()
+                .filter(botCommand -> botCommand instanceof NavigableBotCommand)
+                .forEach(botCommand -> navigableBotCommands.add((NavigableBotCommand) botCommand));
+
+        return navigableBotCommands;
     }
 }

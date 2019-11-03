@@ -151,4 +151,28 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_CANCELED_ANSWER = "message.reminder.canceled.answer";
 
     public static final String MESSAGE_REMINDER_NOT_FOUND = "message.reminder.not.found";
+
+    public static final String POSTPONE_REMINDER_COMMAND_NAME = "postpone.reminder.command.name";
+
+    public static final String POSTPONE_REMINDER_COMMAND_DESCRIPTION = "postpone.reminder.command.description";
+
+    public static final String MESSAGE_POSTPONE_TIME = "message.postpone.time";
+
+    public static final String MESSAGE_POSTPONE_TIME_ANSWER = "message.postpone.time.answer";
+
+    public static final String MESSAGE_REMINDER_POSTPONED = "message.reminder.postponed";
+
+    public static final String REGEX_POSTPONE_TYPE_ON = "regex.postpone.type.on";
+
+    public static final String REGEX_POSTPONE_TYPE_AT = "regex.postpone.type.at";
+
+    public static final String REGEX_POSTPONE_DAY = "regex.postpone.day";
+
+    public static final String REGEX_POSTPONE_HOUR = "regex.postpone.hour";
+
+    public static final String REGEX_POSTPONE_MINUTE = "regex.postpone.minute";
+
+    public static final String MESSAGE_REMINDER_POSTPONED_FROM = "message.reminder.postponed.from";
+
+    public static final String MESSAGE_REMINDER_POSTPONE_TIME = "message.reminder.postpone.today";
 }

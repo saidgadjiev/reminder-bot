@@ -9,14 +9,17 @@ import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.domain.mapping.Mapping;
+import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.model.UpdateReminderResult;
+import ru.gadjini.reminder.service.requestresolver.postpone.parser.ParsedPostponeTime;
+import ru.gadjini.reminder.service.requestresolver.reminder.parser.ParsedTime;
+import ru.gadjini.reminder.service.validation.ValidationService;
 import ru.gadjini.reminder.util.DateUtils;
+import ru.gadjini.reminder.util.ReminderUtils;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,18 +32,23 @@ public class ReminderService {
 
     private ReminderTimeService reminderTimeService;
 
+    private ValidationService validationService;
+
     @Autowired
-    public ReminderService(ReminderDao reminderDao, SecurityService securityService, ReminderTimeService reminderTimeService) {
+    public ReminderService(ReminderDao reminderDao, SecurityService securityService, ReminderTimeService reminderTimeService, ValidationService validationService) {
         this.reminderDao = reminderDao;
         this.securityService = securityService;
         this.reminderTimeService = reminderTimeService;
+        this.validationService = validationService;
     }
 
     @Transactional
     public Reminder createReminder(ReminderRequest reminderRequest) {
+        validationService.validate(reminderRequest);
         Reminder reminder = new Reminder();
 
         reminder.setRemindAt(DateUtils.toUtc(reminderRequest.getRemindAt()));
+        reminder.setInitialRemindAt(reminder.getRemindAt());
         reminder.setRemindAtInReceiverTimeZone(reminderRequest.getRemindAt());
         reminder.setText(reminderRequest.getText());
 
@@ -67,19 +75,39 @@ public class ReminderService {
     }
 
     @Transactional
-    public Reminder changeReminderTime(int reminderId, ZonedDateTime remindAtInUserTimeZone) {
-        ZonedDateTime remindAt = remindAtInUserTimeZone.withZoneSameInstant(ZoneOffset.UTC);
+    public UpdateReminderResult changeReminderTime(int reminderId, ParsedTime parsedTime) {
+        Reminder oldReminder = reminderDao.getReminder(reminderId, new ReminderMapping() {{
+            setRemindMessageMapping(new Mapping());
+            setReceiverMapping(new Mapping() {{
+                setFields(List.of(ReminderMapping.RC_CHAT_ID));
+            }});
+        }});
+        oldReminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
 
-        Reminder reminder = reminderDao.updateRemindAt(reminderId, remindAt);
+        ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedTime, ZoneId.of(oldReminder.getReceiver().getZoneId()));
+        validationService.validate(remindAtInReceiverTimeZone);
 
-        reminderTimeService.deleteReminderTimes(reminderId);
+        ZonedDateTime remindAt = remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC);
+        reminderDao.updateInitialRemindAtAndRemindAt(reminderId, remindAt);
+
         List<ReminderTime> reminderTimes = getReminderTimes(remindAt);
-
         reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(reminderId));
         reminderTimeService.deleteReminderTimes(reminderId);
         reminderTimeService.create(reminderTimes);
 
-        return reminder;
+        Reminder reminder = new Reminder();
+
+        reminder.setId(reminderId);
+        reminder.setRemindAtInReceiverTimeZone(remindAtInReceiverTimeZone);
+        reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
+        reminder.setReceiver(new TgUser() {{
+            setZoneId(remindAtInReceiverTimeZone.getZone().getId());
+        }});
+
+        return new UpdateReminderResult() {{
+            setOldReminder(oldReminder);
+            setNewReminder(reminder);
+        }};
     }
 
     @Transactional
@@ -118,14 +146,6 @@ public class ReminderService {
         return deleted;
     }
 
-    public Reminder getReminder(int reminderId) {
-        Reminder reminder = reminderDao.getReminder(reminderId);
-
-        reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
-
-        return reminder;
-    }
-
     public Reminder delete(int reminderId) {
         Reminder reminder = reminderDao.deleteFromCreator(reminderId);
 
@@ -135,6 +155,33 @@ public class ReminderService {
         reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
 
         return reminder;
+    }
+
+    @Transactional
+    public UpdateReminderResult postponeReminder(int reminderId, ParsedPostponeTime parsedPostponeTime) {
+        Reminder oldReminder = reminderDao.getReminder(reminderId, new ReminderMapping() {{
+            setRemindMessageMapping(new Mapping());
+            setCreatorMapping(new Mapping());
+            setReceiverMapping(new Mapping());
+        }});
+        ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedPostponeTime, oldReminder.getRemindAt());
+
+        ZonedDateTime remindAt = remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC);
+
+        reminderDao.updateRemindAt(reminderId, remindAt);
+        Reminder reminder = new Reminder();
+        reminder.setRemindAt(remindAt);
+        reminder.setRemindAtInReceiverTimeZone(remindAtInReceiverTimeZone);
+
+        List<ReminderTime> reminderTimes = getReminderTimes(remindAt);
+        reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(reminderId));
+        reminderTimeService.deleteReminderTimes(reminderId);
+        reminderTimeService.create(reminderTimes);
+
+        return new UpdateReminderResult() {{
+            setOldReminder(oldReminder);
+            setNewReminder(reminder);
+        }};
     }
 
     public Reminder cancel(int reminderId) {

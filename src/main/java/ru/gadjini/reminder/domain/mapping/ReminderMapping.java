@@ -5,8 +5,6 @@ import java.util.List;
 
 public class ReminderMapping {
 
-    public static final String RM_MESSAGE = "rm_message";
-
     public static final String RC_FIRST_LAST_NAME = "rc_first_last_name";
 
     public static final String RC_CHAT_ID = "rc_chat_id";
@@ -16,6 +14,8 @@ public class ReminderMapping {
     private Mapping receiverMapping;
 
     private Mapping creatorMapping;
+
+    private Mapping remindMessageMapping;
 
     private List<String> fields = new ArrayList<>();
 
@@ -41,5 +41,13 @@ public class ReminderMapping {
 
     public void setFields(List<String> fields) {
         this.fields = fields;
+    }
+
+    public Mapping getRemindMessageMapping() {
+        return remindMessageMapping;
+    }
+
+    public void setRemindMessageMapping(Mapping remindMessageMapping) {
+        this.remindMessageMapping = remindMessageMapping;
     }
 }

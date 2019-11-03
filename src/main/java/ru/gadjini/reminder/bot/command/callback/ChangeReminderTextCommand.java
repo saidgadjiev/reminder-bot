@@ -9,7 +9,6 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.ChangeReminderRequest;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.*;
-import ru.gadjini.reminder.service.resolver.ReminderRequestParser;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,8 +17,6 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableB
     private ConcurrentHashMap<Long, ChangeReminderRequest> changeReminderTimeRequests = new ConcurrentHashMap<>();
 
     private String name;
-
-    private ReminderRequestParser reminderRequestParser;
 
     private ReminderMessageSender reminderMessageSender;
 
@@ -30,13 +27,11 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableB
     private CommandNavigator commandNavigator;
 
     public ChangeReminderTextCommand(LocalisationService localisationService,
-                                     ReminderRequestParser reminderRequestParser,
                                      ReminderMessageSender reminderMessageSender,
                                      MessageService messageService,
                                      ReminderService reminderService,
                                      CommandNavigator commandNavigator) {
         this.name = localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TIME_COMMAND_NAME);
-        this.reminderRequestParser = reminderRequestParser;
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.reminderService = reminderService;
@@ -72,7 +67,6 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableB
 
         ChangeReminderRequest request = changeReminderTimeRequests.get(message.getChatId());
         UpdateReminderResult updateReminderResult = reminderService.changeReminderText(request.getReminderId(), text);
-
         updateReminderResult.getOldReminder().getCreator().setChatId(message.getChatId());
 
         ReplyKeyboard replyKeyboard = commandNavigator.silentPop(message.getChatId());

@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service.resolver.parser;
+package ru.gadjini.reminder.service.requestresolver.reminder.parser;
 
 public class ParsedRequest {
 

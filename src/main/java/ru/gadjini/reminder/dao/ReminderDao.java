@@ -106,7 +106,7 @@ public class ReminderDao {
                                 setReceiverMapping(new Mapping() {{
                                     setFields(Collections.singletonList(RC_CHAT_ID));
                                 }});
-                                setFields(Collections.singletonList(RM_MESSAGE));
+                                setRemindMessageMapping(new Mapping());
                                 setCreatorMapping(new Mapping());
                             }});
                         } catch (SQLException e) {
@@ -121,27 +121,23 @@ public class ReminderDao {
         return new ArrayList<>(reminders.values());
     }
 
-    public Reminder updateRemindAt(int reminderId, ZonedDateTime newTime) {
-        return jdbcTemplate.query(
-                "WITH updated AS (\n" +
-                        "    UPDATE reminder SET remind_at = ? WHERE id = ? RETURNING id, reminder_text, remind_at, receiver_id, creator_id\n" +
-                        ")\n" +
-                        "SELECT r.*,\n" +
-                        "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at,\n" +
-                        "       rc.zone_id AS rc_zone_id\n" +
-                        "FROM updated r INNER JOIN tg_user rc ON r.receiver_id = rc.user_id",
+    public void updateInitialRemindAtAndRemindAt(int reminderId, ZonedDateTime newTime) {
+        jdbcTemplate.update(
+                "UPDATE reminder SET remind_at = ?, initial_remind_at = ? WHERE id = ? RETURNING id, reminder_text, remind_at, receiver_id, creator_id",
+                ps -> {
+                    ps.setTimestamp(1, Timestamp.valueOf(newTime.toLocalDateTime()));
+                    ps.setTimestamp(2, Timestamp.valueOf(newTime.toLocalDateTime()));
+                    ps.setInt(3, reminderId);
+                }
+        );
+    }
+
+    public void updateRemindAt(int reminderId, ZonedDateTime newTime) {
+        jdbcTemplate.update(
+                "UPDATE reminder SET remind_at = ? WHERE id = ? RETURNING id, reminder_text, remind_at, receiver_id, creator_id",
                 ps -> {
                     ps.setTimestamp(1, Timestamp.valueOf(newTime.toLocalDateTime()));
                     ps.setInt(2, reminderId);
-                },
-                rs -> {
-                    if (rs.next()) {
-                        return resultSetMapper.mapReminder(rs, new ReminderMapping() {{
-                            setReceiverMapping(new Mapping());
-                        }});
-                    }
-
-                    return null;
                 }
         );
     }
@@ -183,26 +179,75 @@ public class ReminderDao {
         );
     }
 
-    public Reminder getReminder(int reminderId) {
+    public Reminder getReminder(int reminderId, ReminderMapping reminderMapping) {
+        StringBuilder selectList = new StringBuilder();
+        StringBuilder from = new StringBuilder();
+        StringBuilder where = new StringBuilder();
+
+        selectList.append("SELECT r.*, ");
+        from.append("FROM reminder r ");
+        where.append("WHERE r.id = ?");
+        if (reminderMapping.getRemindMessageMapping() != null) {
+            selectList.append("rm.message_id as rm_message_id, ");
+            from.append("LEFT JOIN remind_message rm on r.id = rm.reminder_id ");
+        }
+        if (reminderMapping.getReceiverMapping() != null) {
+            selectList.append("r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at, rc.zone_id AS rc_zone_id, ");
+
+            if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.CR_CHAT_ID)) {
+                selectList.append("rc.chat_id AS rc_chat_id, ");
+            }
+            if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_FIRST_LAST_NAME)) {
+                selectList.append("rc.first_name AS rc_first_name, rc.last_name AS rc_last_name, ");
+            }
+            from.append("INNER JOIN tg_user rc on r.receiver_id = rc.user_id ");
+        }
+        if (reminderMapping.getCreatorMapping() != null) {
+            if (reminderMapping.getCreatorMapping().fields().contains(ReminderMapping.CR_CHAT_ID)) {
+                selectList.append("cr.chat_id AS cr_chat_id, ");
+            }
+            selectList.append("cr.first_name AS cr_first_name, cr.last_name AS cr_last_name, ");
+            from.append("INNER JOIN tg_user cr on r.creator_id = cr.user_id ");
+        }
+        StringBuilder sql = new StringBuilder();
+
+        sql.append(selectList.toString(), 0, selectList.length() - 1).append(" ").append(from.toString()).append(where.toString());
+
+        return jdbcTemplate.query(
+                sql.toString(),
+                ps -> ps.setInt(1, reminderId),
+                rs -> {
+                    if (rs.next()) {
+                        return resultSetMapper.mapReminder(rs, reminderMapping);
+                    }
+
+                    return null;
+                }
+        );
+    }
+
+    public Reminder getReminderWithCreator(int reminderId) {
         return jdbcTemplate.query(
                 "SELECT r.*,\n" +
                         "       rm.message_id as rm_message_id,\n" +
                         "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at,\n" +
                         "       rc.zone_id AS rc_zone_id,\n" +
-                        "       rc.chat_id AS rc_chat_id,\n" +
-                        "       rc.first_name AS rc_first_name,\n" +
-                        "       rc.last_name AS rc_last_name\n" +
+                        "       cr.chat_id AS cr_chat_id,\n" +
+                        "       cr.first_name AS cr_first_name,\n" +
+                        "       cr.last_name AS cr_last_name\n" +
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id \n" +
+                        "         INNER JOIN tg_user cr on r.creator_id = cr.user_id \n" +
                         "         LEFT JOIN remind_message rm on r.id = rm.reminder_id\n" +
                         "WHERE r.id = ?",
                 ps -> ps.setInt(1, reminderId),
                 rs -> {
                     if (rs.next()) {
                         return resultSetMapper.mapReminder(rs, new ReminderMapping() {{
-                            setFields(Collections.singletonList(RM_MESSAGE));
-                            setReceiverMapping(new Mapping() {{
-                                setFields(Arrays.asList(RC_CHAT_ID, RC_FIRST_LAST_NAME));
+                            setRemindMessageMapping(new Mapping());
+                            setReceiverMapping(new Mapping());
+                            setCreatorMapping(new Mapping() {{
+                                setFields(Collections.singletonList(CR_CHAT_ID));
                             }});
                         }});
                     }
@@ -236,7 +281,7 @@ public class ReminderDao {
                             setCreatorMapping(new Mapping() {{
                                 setFields(Collections.singletonList(CR_CHAT_ID));
                             }});
-                            setFields(Collections.singletonList(RM_MESSAGE));
+                            setRemindMessageMapping(new Mapping());
                         }});
                     }
 
@@ -263,7 +308,7 @@ public class ReminderDao {
                     if (rs.next()) {
                         return resultSetMapper.mapReminder(rs, new ReminderMapping() {{
                             setReceiverMapping(new Mapping());
-                            setFields(Collections.singletonList(RM_MESSAGE));
+                            setRemindMessageMapping(new Mapping());
                         }});
                     }
 

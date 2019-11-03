@@ -36,6 +36,22 @@ public class ReminderTextBuilder {
         });
     }
 
+    public String postponeReminderTimeForReceiver(String text, TgUser creator, ZonedDateTime remindAt) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED_FROM, new Object[] {
+                text,
+                UserUtils.userLink(creator),
+                postponeTime(remindAt)
+        });
+    }
+
+    public String postponeReminderTimeForCreator(String text, TgUser receiver, ZonedDateTime remindAt) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED, new Object[] {
+                UserUtils.userLink(receiver),
+                text,
+                postponeTime(remindAt)
+        });
+    }
+
     public String changeReminderText(String oldText, String newText, TgUser creator) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TEXT_EDITED_FROM, new Object[] {
                 UserUtils.userLink(creator),
@@ -51,12 +67,39 @@ public class ReminderTextBuilder {
         if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
             return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TODAY, new Object[] { time });
         } else if (now.getDayOfMonth() - remindAt.getDayOfMonth() == 1) {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TOMORROW, new Object[] { time });
+            return tomorrowTime(time);
         } else if (now.getDayOfMonth() - remindAt.getDayOfMonth() == 2) {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_DAY_AFTER_TOMORROW, new Object[] { time });
+            return dayAfterTomorrowTime(time);
         } else {
-            String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FIXED_DAY, new Object[] { remindAt.getDayOfMonth(), monthName, time });
+            return fixedDay(remindAt, time);
+        }
+    }
+
+    private String fixedDay(ZonedDateTime remindAt, String time) {
+        String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FIXED_DAY, new Object[] { remindAt.getDayOfMonth(), monthName, time });
+    }
+
+    private String tomorrowTime(String time) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_DAY_AFTER_TOMORROW, new Object[] { time });
+    }
+
+    private String dayAfterTomorrowTime(String time) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_DAY_AFTER_TOMORROW, new Object[] { time });
+    }
+
+    private String postponeTime(ZonedDateTime remindAt) {
+        ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
+        String time = DATE_TIME_FORMATTER.format(remindAt);
+
+        if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
+            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[] { time });
+        } else if (now.getDayOfMonth() - remindAt.getDayOfMonth() == 1) {
+            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[] { tomorrowTime(time) });
+        } else if (now.getDayOfMonth() - remindAt.getDayOfMonth() == 2) {
+            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[] { dayAfterTomorrowTime(time) });
+        } else {
+            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[] { fixedDay(remindAt, time) });
         }
     }
 }

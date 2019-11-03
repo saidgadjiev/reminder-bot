@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
+import ru.gadjini.reminder.exception.ValidationException;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.FriendshipService;
 import ru.gadjini.reminder.service.LocalisationService;
@@ -25,25 +26,31 @@ public class ValidationService {
         this.friendshipService = friendshipService;
     }
 
-    public ErrorBag validate(ZonedDateTime time) {
+    public void validate(ZonedDateTime time) {
         ErrorBag errorBag = new ErrorBag();
 
         if (time.isBefore(ZonedDateTime.now(time.getZone()))) {
             errorBag.set("remindAt", localisationService.getMessage(MessagesProperties.MESSAGE_BAD_REMIND_AT));
         }
 
-        return errorBag;
+        if (errorBag.hasErrors()) {
+            throw new ValidationException(errorBag);
+        }
     }
 
-    public ErrorBag validate(ReminderRequest reminderRequest) {
-        ErrorBag errorBag = new ErrorBag();
-
+    public void validate(ReminderRequest reminderRequest) {
         if (reminderRequest.getRemindAt().isBefore(DateUtils.now(reminderRequest.getRemindAt().getZone()))) {
+            ErrorBag errorBag = new ErrorBag();
+
             errorBag.set("remindAt", localisationService.getMessage(MessagesProperties.MESSAGE_BAD_REMIND_AT));
 
-            return errorBag;
+            if (errorBag.hasErrors()) {
+                throw new ValidationException(errorBag);
+            }
         }
         if (!reminderRequest.isForMe()) {
+            ErrorBag errorBag = new ErrorBag();
+
             String receiverName = reminderRequest.getReceiverName();
             boolean friend;
             if (StringUtils.isNotBlank(receiverName)) {
@@ -55,10 +62,10 @@ public class ValidationService {
             if (!friend) {
                 errorBag.set("notFriend", localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND));
 
-                return errorBag;
+                if (errorBag.hasErrors()) {
+                    throw new ValidationException(errorBag);
+                }
             }
         }
-
-        return errorBag;
     }
 }

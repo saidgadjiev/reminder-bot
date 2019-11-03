@@ -34,6 +34,8 @@ public class Reminder {
 
     private ZonedDateTime remindAtInReceiverTimeZone;
 
+    private ZonedDateTime initialRemindAt;
+
     private List<ReminderTime> reminderTimes = new ArrayList<>();
 
     private RemindMessage remindMessage;
@@ -116,5 +118,13 @@ public class Reminder {
 
     public void setRemindMessage(RemindMessage remindMessage) {
         this.remindMessage = remindMessage;
+    }
+
+    public ZonedDateTime getInitialRemindAt() {
+        return initialRemindAt;
+    }
+
+    public void setInitialRemindAt(ZonedDateTime initialRemindAt) {
+        this.initialRemindAt = initialRemindAt;
     }
 }

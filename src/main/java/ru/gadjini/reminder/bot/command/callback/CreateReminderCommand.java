@@ -10,9 +10,9 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
-import ru.gadjini.reminder.service.resolver.ReminderRequestParser;
-import ru.gadjini.reminder.service.resolver.parser.ParseException;
-import ru.gadjini.reminder.service.resolver.parser.ParsedRequest;
+import ru.gadjini.reminder.service.requestresolver.RequestParser;
+import ru.gadjini.reminder.service.requestresolver.reminder.parser.ParseException;
+import ru.gadjini.reminder.service.requestresolver.reminder.parser.ParsedRequest;
 import ru.gadjini.reminder.service.validation.ErrorBag;
 import ru.gadjini.reminder.service.validation.ValidationService;
 import ru.gadjini.reminder.util.ReminderUtils;
@@ -34,7 +34,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     private CommandNavigator commandNavigator;
 
-    private ReminderRequestParser reminderRequestParser;
+    private RequestParser requestParser;
 
     private ValidationService validationService;
 
@@ -49,7 +49,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
                                  MessageService messageService,
                                  KeyboardService keyboardService,
                                  CommandNavigator commandNavigator,
-                                 ReminderRequestParser reminderRequestParser,
+                                 RequestParser requestParser,
                                  ValidationService validationService,
                                  ReminderMessageSender reminderMessageSender, TgUserService tgUserService) {
         this.localisationService = localisationService;
@@ -58,7 +58,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
         this.messageService = messageService;
         this.keyboardService = keyboardService;
         this.commandNavigator = commandNavigator;
-        this.reminderRequestParser = reminderRequestParser;
+        this.requestParser = requestParser;
         this.validationService = validationService;
         this.reminderMessageSender = reminderMessageSender;
         this.tgUserService = tgUserService;
@@ -89,7 +89,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
         ReminderRequest reminderRequest = reminderRequests.get(message.getChatId());
 
         try {
-            ParsedRequest parsedRequest = reminderRequestParser.parseRequest(message.getText().trim());
+            ParsedRequest parsedRequest = requestParser.parseRequest(message.getText().trim());
 
             ErrorBag errorBag = validate(parsedRequest);
             if (errorBag.hasErrors()) {
@@ -102,12 +102,6 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
             messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_REMINDER_FORMAT);
             return;
         }
-        ErrorBag errorBag = validationService.validate(reminderRequest);
-        if (errorBag.hasErrors()) {
-            sendErrors(message.getChatId(), errorBag);
-            return;
-        }
-
         Reminder reminder = reminderService.createReminder(reminderRequest);
         reminder.getCreator().setChatId(message.getChatId());
         reminderRequests.remove(message.getChatId());

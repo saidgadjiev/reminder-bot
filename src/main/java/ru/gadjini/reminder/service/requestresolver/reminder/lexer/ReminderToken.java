@@ -1,6 +1,6 @@
-package ru.gadjini.reminder.service.resolver.lexer;
+package ru.gadjini.reminder.service.requestresolver.reminder.lexer;
 
-public enum Token {
+public enum ReminderToken {
 
     LOGIN,
 

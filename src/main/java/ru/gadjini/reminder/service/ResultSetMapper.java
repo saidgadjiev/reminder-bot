@@ -58,7 +58,7 @@ public class ResultSetMapper {
             reminder.setReceiver(rc);
         }
 
-        if (reminderMapping.fields().contains(ReminderMapping.RM_MESSAGE)) {
+        if (reminderMapping.getRemindMessageMapping() != null) {
             int remindMessageId = rs.getInt("rm_message_id");
 
             if (!rs.wasNull()) {
