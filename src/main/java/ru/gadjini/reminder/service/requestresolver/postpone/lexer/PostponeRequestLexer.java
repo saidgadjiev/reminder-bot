@@ -70,7 +70,7 @@ public class PostponeRequestLexer {
 
         Matcher timeMatcher = pattern.matcher(tokenizeStr);
 
-        if (timeMatcher.find()) {
+        if (timeMatcher.matches()) {
             LinkedList<PostponeLexem> lexems = new LinkedList<>();
 
             for (PostponeToken token : Arrays.asList(PostponeToken.MINUTE, PostponeToken.HOUR, PostponeToken.MONTHWORD, PostponeToken.DAY, PostponeToken.MONTH, PostponeToken.DAYWORD)) {
