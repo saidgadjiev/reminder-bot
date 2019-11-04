@@ -2,6 +2,7 @@ package ru.gadjini.reminder.bot.command.callback;
 
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -29,18 +30,22 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     private ReminderMessageSender reminderMessageSender;
 
+    private CommandNavigator commandNavigator;
+
     public PostponeReminderCommand(LocalisationService localisationService,
                                    MessageService messageService,
                                    KeyboardService keyboardService,
                                    ReminderService reminderService,
                                    RequestParser requestParser,
-                                   ReminderMessageSender reminderMessageSender) {
-        this.name = localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_DAY_AFTER_TOMORROW);
+                                   ReminderMessageSender reminderMessageSender,
+                                   CommandNavigator commandNavigator) {
+        this.name = localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_NAME);
         this.messageService = messageService;
         this.keyboardService = keyboardService;
         this.reminderService = reminderService;
         this.requestParser = requestParser;
         this.reminderMessageSender = reminderMessageSender;
+        this.commandNavigator = commandNavigator;
     }
 
     @Override
@@ -75,6 +80,8 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         updateReminderResult.getOldReminder().getReceiver().setChatId(message.getChatId());
         reminderRequests.remove(message.getChatId());
 
-        reminderMessageSender.sendReminderPostponed(updateReminderResult);
+        ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(message.getChatId());
+
+        reminderMessageSender.sendReminderPostponed(updateReminderResult, replyKeyboard);
     }
 }

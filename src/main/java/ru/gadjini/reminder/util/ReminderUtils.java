@@ -26,13 +26,13 @@ public class ReminderUtils {
             PostponeOn postponeOn = parsedTime.getPostponeOn();
 
             if (postponeOn.getDay() != null) {
-                newZonedTime.plusDays(postponeOn.getDay());
+                newZonedTime = newZonedTime.plusDays(postponeOn.getDay());
             }
             if (postponeOn.getHour() != null) {
-                newZonedTime.plusHours(postponeOn.getHour());
+                newZonedTime = newZonedTime.plusHours(postponeOn.getHour());
             }
             if (postponeOn.getMinute() != null) {
-                newZonedTime.plusMinutes(postponeOn.getMinute());
+                newZonedTime = newZonedTime.plusMinutes(postponeOn.getMinute());
             }
 
             return newZonedTime;

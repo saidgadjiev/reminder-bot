@@ -55,7 +55,7 @@ public class RequestLexerParserFactory {
 
         StringBuilder patternBuilder = new StringBuilder();
 
-        patternBuilder.append("^((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9])) (").append(regexpTimeArticle).append(" )?((?<monthword>");
+        patternBuilder.append("((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9])) (").append(regexpTimeArticle).append(" )?((?<monthword>");
 
         for (Iterator<Month> iterator = Arrays.asList(Month.values()).iterator(); iterator.hasNext(); ) {
             Month month = iterator.next();
@@ -78,13 +78,13 @@ public class RequestLexerParserFactory {
         StringBuilder patternTypeOn = new StringBuilder();
 
         String daySuffix = localisationService.getMessage(MessagesProperties.REGEX_POSTPONE_DAY);
-        patternTypeOn.append("^((?<onday>\\d+)").append(daySuffix).append(")?");
+        patternTypeOn.append("((?<onday>\\d+)").append(daySuffix).append(")?( )?");
 
         String hourSuffix = localisationService.getMessage(MessagesProperties.REGEX_POSTPONE_HOUR);
-        patternTypeOn.append("( ((?<onhour>\\d+)").append(hourSuffix).append("))?");
+        patternTypeOn.append("((?<onhour>\\d+)").append(hourSuffix).append(")?( )?");
 
         String minuteSuffix = localisationService.getMessage(MessagesProperties.REGEX_POSTPONE_MINUTE);
-        patternTypeOn.append("( ((?<onminute>\\d+)").append(minuteSuffix).append("))?");
+        patternTypeOn.append("((?<onminute>\\d+)").append(minuteSuffix).append(")?");
 
         return Map.ofEntries(
                 Map.entry(ParsedPostponeTime.Type.ON, Pattern.compile(patternTypeOn.toString())),

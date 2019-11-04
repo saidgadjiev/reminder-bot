@@ -134,7 +134,7 @@ public class ReminderDao {
 
     public void updateRemindAt(int reminderId, ZonedDateTime newTime) {
         jdbcTemplate.update(
-                "UPDATE reminder SET remind_at = ? WHERE id = ? RETURNING id, reminder_text, remind_at, receiver_id, creator_id",
+                "UPDATE reminder SET remind_at = ? WHERE id = ?",
                 ps -> {
                     ps.setTimestamp(1, Timestamp.valueOf(newTime.toLocalDateTime()));
                     ps.setInt(2, reminderId);
@@ -211,7 +211,7 @@ public class ReminderDao {
         }
         StringBuilder sql = new StringBuilder();
 
-        sql.append(selectList.toString(), 0, selectList.length() - 1).append(" ").append(from.toString()).append(where.toString());
+        sql.append(selectList.toString(), 0, selectList.length() - 2).append(" ").append(from.toString()).append(where.toString());
 
         return jdbcTemplate.query(
                 sql.toString(),
@@ -319,7 +319,7 @@ public class ReminderDao {
 
     private Reminder createByReceiverId(Reminder reminder) {
         jdbcTemplate.query("WITH r AS (\n" +
-                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at) VALUES (?, ?, ?, ?) " +
+                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, initial_remind_at) VALUES (?, ?, ?, ?, ?) " +
                         "RETURNING id, receiver_id\n" +
                         ")\n" +
                         "SELECT r.id,\n" +
@@ -333,6 +333,7 @@ public class ReminderDao {
                     ps.setInt(2, reminder.getCreatorId());
                     ps.setInt(3, reminder.getReceiverId());
                     ps.setTimestamp(4, Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()));
+                    ps.setTimestamp(5, Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()));
                 },
                 rs -> {
                     reminder.setId(rs.getInt(Reminder.ID));

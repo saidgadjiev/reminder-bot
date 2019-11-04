@@ -146,7 +146,7 @@ public class ReminderMessageSender {
     }
 
 
-    public void sendReminderPostponed(UpdateReminderResult updateReminderResult) {
+    public void sendReminderPostponed(UpdateReminderResult updateReminderResult, ReplyKeyboard replyKeyboard) {
         Reminder reminder = updateReminderResult.getOldReminder();
         RemindMessage remindMessage = reminder.getRemindMessage();
 
@@ -160,16 +160,23 @@ public class ReminderMessageSender {
                     reminderTextBuilder.postponeReminderTimeForReceiver(
                             reminder.getText(),
                             reminder.getCreator(),
-                            reminder.getRemindAtInReceiverTimeZone()
+                            updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone()
                     ),
+                    replyKeyboard
+            );
+
+            messageService.sendMessage(
+                    reminder.getCreator().getChatId(),
+                    reminderTextBuilder.postponeReminderTimeForCreator(reminder.getText(), reminder.getReceiver(), updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone()),
                     null
             );
+        } else {
+            messageService.sendMessage(
+                    reminder.getReceiver().getChatId(),
+                    reminderTextBuilder.postponeReminderForMe(reminder.getText(), updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone()),
+                    replyKeyboard
+            );
         }
-        messageService.sendMessage(
-                reminder.getCreator().getChatId(),
-                reminderTextBuilder.postponeReminderTimeForCreator(reminder.getText(), reminder.getReceiver(), reminder.getRemindAt()),
-                null
-        );
     }
 
     public void sendReminderTextChanged(int messageId, UpdateReminderResult updateReminderResult, ReplyKeyboard replyKeyboard) {

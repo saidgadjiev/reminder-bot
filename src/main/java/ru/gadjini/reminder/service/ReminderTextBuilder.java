@@ -52,6 +52,13 @@ public class ReminderTextBuilder {
         });
     }
 
+    public String postponeReminderForMe(String text, ZonedDateTime remindAt) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED_ME, new Object[] {
+                text,
+                postponeTime(remindAt)
+        });
+    }
+
     public String changeReminderText(String oldText, String newText, TgUser creator) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TEXT_EDITED_FROM, new Object[] {
                 UserUtils.userLink(creator),

@@ -161,10 +161,13 @@ public class ReminderService {
     public UpdateReminderResult postponeReminder(int reminderId, ParsedPostponeTime parsedPostponeTime) {
         Reminder oldReminder = reminderDao.getReminder(reminderId, new ReminderMapping() {{
             setRemindMessageMapping(new Mapping());
-            setCreatorMapping(new Mapping());
+            setCreatorMapping(new Mapping() {{
+                setFields(List.of(ReminderMapping.CR_CHAT_ID));
+            }});
             setReceiverMapping(new Mapping());
         }});
-        ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedPostponeTime, oldReminder.getRemindAt());
+        oldReminder.getReceiver().setFrom(securityService.getAuthenticatedUser());
+        ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedPostponeTime, oldReminder.getRemindAtInReceiverTimeZone());
 
         ZonedDateTime remindAt = remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC);
 

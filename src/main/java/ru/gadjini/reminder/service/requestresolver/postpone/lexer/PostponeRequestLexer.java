@@ -16,7 +16,7 @@ public class PostponeRequestLexer {
 
     public PostponeRequestLexer(Map<ParsedPostponeTime.Type, Pattern> patterns, String str) {
         this.patterns = patterns;
-        this.str = str;
+        this.str = str.toLowerCase();
     }
 
     public List<PostponeLexem> tokenize() {

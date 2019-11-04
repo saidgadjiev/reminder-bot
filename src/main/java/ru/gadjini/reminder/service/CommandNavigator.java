@@ -26,7 +26,7 @@ public class CommandNavigator {
     }
 
     public boolean isEmpty(long chatId) {
-        return currentCommand.containsKey(chatId);
+        return !currentCommand.containsKey(chatId);
     }
 
     public void pop(long chatId) {

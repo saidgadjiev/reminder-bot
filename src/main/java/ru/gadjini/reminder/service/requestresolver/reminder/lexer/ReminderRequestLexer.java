@@ -22,7 +22,7 @@ public class ReminderRequestLexer {
     public ReminderRequestLexer(Pattern timePattern, Pattern loginPattern, String str) {
         this.timePattern = timePattern;
         this.loginPattern = loginPattern;
-        this.str = str;
+        this.str = str.toLowerCase();
     }
 
     public List<ReminderLexem> tokenize() {

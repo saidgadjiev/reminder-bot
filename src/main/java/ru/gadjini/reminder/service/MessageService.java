@@ -140,4 +140,8 @@ public class MessageService {
     public void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard) {
         sendMessageByCode(chatId, MessagesProperties.MESSAGE_ERROR, replyKeyboard);
     }
+
+    public void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard) {
+        sendMessageByCode(chatId, MessagesProperties.MESSAGE_BOT_RESTARTED, replyKeyboard);
+    }
 }

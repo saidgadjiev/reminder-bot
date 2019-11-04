@@ -87,7 +87,7 @@ public class ReminderBot extends WorkerUpdatesBot {
         }
         if (commandNavigator.isEmpty(chatId)) {
             commandNavigator.zeroRestore(chatId, (NavigableBotCommand) commandRegistry.getBotCommand(MessagesProperties.START_COMMAND_NAME));
-            messageService.sendErrorMessage(chatId, keyboardService.getMainMenu());
+            messageService.sendBotRestartedMessage(chatId, keyboardService.getMainMenu());
 
             return true;
         }

@@ -94,6 +94,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_ERROR = "message.error";
 
+    public static final String MESSAGE_BOT_RESTARTED = "message.bot.restarted";
+
     public static final String REGEXP_TOMORROW = "regexp.tomorrow";
 
     public static final String REGEXP_DAY_AFTER_TOMORROW = "regexp.day.after.tomorrow";
@@ -162,6 +164,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_POSTPONED = "message.reminder.postponed";
 
+    public static final String MESSAGE_REMINDER_POSTPONED_ME = "message.reminder.postponed.me";
+
     public static final String REGEX_POSTPONE_TYPE_ON = "regex.postpone.type.on";
 
     public static final String REGEX_POSTPONE_TYPE_AT = "regex.postpone.type.at";
@@ -174,5 +178,5 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_POSTPONED_FROM = "message.reminder.postponed.from";
 
-    public static final String MESSAGE_REMINDER_POSTPONE_TIME = "message.reminder.postpone.today";
+    public static final String MESSAGE_REMINDER_POSTPONE_TIME = "message.reminder.postpone.time";
 }
