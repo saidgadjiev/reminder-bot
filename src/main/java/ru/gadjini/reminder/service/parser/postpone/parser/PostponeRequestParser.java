@@ -1,10 +1,10 @@
-package ru.gadjini.reminder.service.requestresolver.postpone.parser;
+package ru.gadjini.reminder.service.parser.postpone.parser;
 
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.LocalisationService;
-import ru.gadjini.reminder.service.requestresolver.postpone.lexer.PostponeLexem;
-import ru.gadjini.reminder.service.requestresolver.postpone.lexer.PostponeToken;
-import ru.gadjini.reminder.service.requestresolver.reminder.parser.ParseException;
+import ru.gadjini.reminder.service.parser.ParseException;
+import ru.gadjini.reminder.service.parser.postpone.lexer.PostponeLexem;
+import ru.gadjini.reminder.service.parser.postpone.lexer.PostponeToken;
 
 import java.time.LocalTime;
 import java.time.Month;
@@ -57,38 +57,38 @@ public class PostponeRequestParser {
     }
 
     private void consumeTypeOn(List<PostponeLexem> lexems) {
-        if (check(lexems, PostponeToken.ONDAY)) {
-            int day = Integer.parseInt(consume(lexems, PostponeToken.ONDAY).getValue());
+        if (check(lexems, PostponeToken.ON_DAY)) {
+            int day = Integer.parseInt(consume(lexems, PostponeToken.ON_DAY).getValue());
 
             postponeTime.getPostponeOn().setDay(day);
         }
-        if (check(lexems, PostponeToken.ONHOUR)) {
-            int hour = Integer.parseInt(consume(lexems, PostponeToken.ONHOUR).getValue());
+        if (check(lexems, PostponeToken.ON_HOUR)) {
+            int hour = Integer.parseInt(consume(lexems, PostponeToken.ON_HOUR).getValue());
 
             postponeTime.getPostponeOn().setHour(hour);
         }
-        if (check(lexems, PostponeToken.ONMINUTE)) {
-            int minute = Integer.parseInt(consume(lexems, PostponeToken.ONMINUTE).getValue());
+        if (check(lexems, PostponeToken.ON_MINUTE)) {
+            int minute = Integer.parseInt(consume(lexems, PostponeToken.ON_MINUTE).getValue());
 
             postponeTime.getPostponeOn().setMinute(minute);
         }
     }
 
     private void consumeTypeAt(List<PostponeLexem> lexems) {
-        if (check(lexems, PostponeToken.MONTH)) {
+        if (check(lexems, PostponeToken.AT_MONTH)) {
             consumeMonth(lexems);
-        } else if (check(lexems, PostponeToken.DAYWORD)) {
+        } else if (check(lexems, PostponeToken.AT_DAY_WORD)) {
             consumeDayWord(lexems);
-        } else if (check(lexems, PostponeToken.DAY)) {
+        } else if (check(lexems, PostponeToken.AT_DAY)) {
             consumeDay(lexems);
-        } else if (check(lexems, PostponeToken.HOUR)) {
+        } else if (check(lexems, PostponeToken.AT_HOUR)) {
             postponeTime.getPostponeAt().setTime(consumeTime(lexems));
         }
     }
 
     private void consumeMonth(List<PostponeLexem> lexems) {
-        int month = Integer.parseInt(consume(lexems, PostponeToken.MONTH).getValue());
-        int day = Integer.parseInt(consume(lexems, PostponeToken.DAY).getValue());
+        int month = Integer.parseInt(consume(lexems, PostponeToken.AT_MONTH).getValue());
+        int day = Integer.parseInt(consume(lexems, PostponeToken.AT_DAY).getValue());
 
         postponeTime.getPostponeAt().setMonth(month);
         postponeTime.getPostponeAt().setDay(day);
@@ -96,7 +96,7 @@ public class PostponeRequestParser {
     }
 
     private void consumeMonthWord(List<PostponeLexem> lexems) {
-        String month = consume(lexems, PostponeToken.MONTHWORD).getValue();
+        String month = consume(lexems, PostponeToken.AT_MONTH_WORD).getValue();
 
         Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, locale).equals(month)).findFirst().orElseThrow(ParseException::new);
 
@@ -105,7 +105,7 @@ public class PostponeRequestParser {
     }
 
     private void consumeDayWord(List<PostponeLexem> lexems) {
-        String dayWord = consume(lexems, PostponeToken.DAYWORD).getValue();
+        String dayWord = consume(lexems, PostponeToken.AT_DAY_WORD).getValue();
 
         if (dayWord.equals(tomorrow)) {
             postponeTime.getPostponeAt().setAddDays(1);
@@ -117,10 +117,10 @@ public class PostponeRequestParser {
     }
 
     private void consumeDay(List<PostponeLexem> lexems) {
-        int day = Integer.parseInt(consume(lexems, PostponeToken.DAY).getValue());
+        int day = Integer.parseInt(consume(lexems, PostponeToken.AT_DAY).getValue());
 
         postponeTime.getPostponeAt().setDay(day);
-        if (check(lexems, PostponeToken.MONTHWORD)) {
+        if (check(lexems, PostponeToken.AT_MONTH_WORD)) {
             consumeMonthWord(lexems);
         } else {
             postponeTime.getPostponeAt().setTime(consumeTime(lexems));
@@ -128,8 +128,8 @@ public class PostponeRequestParser {
     }
 
     private LocalTime consumeTime(List<PostponeLexem> lexems) {
-        int hour = Integer.parseInt(consume(lexems, PostponeToken.HOUR).getValue());
-        int minute = Integer.parseInt(consume(lexems, PostponeToken.MINUTE).getValue());
+        int hour = Integer.parseInt(consume(lexems, PostponeToken.AT_HOUR).getValue());
+        int minute = Integer.parseInt(consume(lexems, PostponeToken.AT_MINUTE).getValue());
 
         return LocalTime.of(hour, minute);
     }

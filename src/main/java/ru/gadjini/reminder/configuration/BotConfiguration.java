@@ -10,8 +10,7 @@ import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.callback.*;
 import ru.gadjini.reminder.bot.command.keyboard.*;
 import ru.gadjini.reminder.service.*;
-import ru.gadjini.reminder.service.requestresolver.RequestParser;
-import ru.gadjini.reminder.service.validation.ValidationService;
+import ru.gadjini.reminder.service.parser.RequestParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,12 +24,11 @@ public class BotConfiguration {
                                               ReminderService reminderService,
                                               TgUserService tgUserService,
                                               RequestParser requestParser,
-                                              ValidationService validationService,
                                               SecurityService securityService,
                                               ReminderMessageSender reminderMessageSender) {
         return new ArrayList<>() {{
             add(new StartCommand(messageService, reminderService, tgUserService,
-                    securityService, requestParser, keyboardService, validationService, reminderMessageSender));
+                    securityService, requestParser, keyboardService, reminderMessageSender));
             add(new HelpCommand(messageService));
         }};
     }
@@ -43,7 +41,6 @@ public class BotConfiguration {
                                                               KeyboardService keyboardService,
                                                               CommandNavigator commandNavigator,
                                                               RequestParser requestParser,
-                                                              ValidationService validationService,
                                                               TgUserService tgUserService,
                                                               ReminderMessageSender reminderMessageSender) {
         return new ArrayList<>() {{
@@ -52,7 +49,7 @@ public class BotConfiguration {
             add(new RejectFriendRequestCommand(localisationService, friendshipService, messageService));
             add(new DeleteFriendCommand(messageService, friendshipService, localisationService));
             add(new CreateReminderCommand(localisationService, reminderService, messageService, keyboardService,
-                    commandNavigator, requestParser, validationService, reminderMessageSender, tgUserService));
+                    commandNavigator, requestParser, reminderMessageSender, tgUserService));
             add(new ChangeReminderTimeCommand(localisationService, requestParser, reminderMessageSender,
                     messageService, reminderService, commandNavigator, keyboardService));
             add(new ChangeReminderTextCommand(localisationService, reminderMessageSender, messageService, reminderService, commandNavigator));

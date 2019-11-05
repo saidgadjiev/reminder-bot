@@ -1,9 +1,10 @@
-package ru.gadjini.reminder.service.requestresolver.reminder.parser;
+package ru.gadjini.reminder.service.parser.reminder.parser;
 
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.LocalisationService;
-import ru.gadjini.reminder.service.requestresolver.reminder.lexer.ReminderLexem;
-import ru.gadjini.reminder.service.requestresolver.reminder.lexer.ReminderToken;
+import ru.gadjini.reminder.service.parser.ParseException;
+import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderLexem;
+import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderToken;
 
 import java.time.LocalTime;
 import java.time.Month;
@@ -57,7 +58,7 @@ public class ReminderRequestParser {
             consumeMonth(lexems);
 
             return parsedTime;
-        } else if (check(lexems, ReminderToken.DAYWORD)) {
+        } else if (check(lexems, ReminderToken.DAY_WORD)) {
             consumeDayWord(lexems);
 
             return parsedTime;
@@ -87,7 +88,7 @@ public class ReminderRequestParser {
     }
 
     private void consumeMonthWord(List<ReminderLexem> lexems) {
-        String month = consume(lexems, ReminderToken.MONTHWORD).getValue();
+        String month = consume(lexems, ReminderToken.MONTH_WORD).getValue();
 
         Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, locale).equals(month)).findFirst().orElseThrow(ParseException::new);
 
@@ -102,7 +103,7 @@ public class ReminderRequestParser {
     }
 
     private void consumeDayWord(List<ReminderLexem> lexems) {
-        String dayWord = consume(lexems, ReminderToken.DAYWORD).getValue();
+        String dayWord = consume(lexems, ReminderToken.DAY_WORD).getValue();
 
         if (dayWord.equals(tomorrow)) {
             parsedTime.setAddDays(1);
@@ -123,7 +124,7 @@ public class ReminderRequestParser {
         int day = Integer.parseInt(consume(lexems, ReminderToken.DAY).getValue());
 
         parsedTime.setDay(day);
-        if (check(lexems, ReminderToken.MONTHWORD)) {
+        if (check(lexems, ReminderToken.MONTH_WORD)) {
             consumeMonthWord(lexems);
         } else {
             parsedTime.setTime(consumeTime(lexems));
@@ -140,7 +141,7 @@ public class ReminderRequestParser {
     private ReminderLexem consume(List<ReminderLexem> lexems, ReminderToken token) {
         ReminderLexem lexem = get(lexems);
 
-        if (lexem.getToken().equals(token)) {
+        if (lexem != null && lexem.getToken().equals(token)) {
             ++position;
 
             return lexem;
@@ -152,10 +153,10 @@ public class ReminderRequestParser {
     private boolean check(List<ReminderLexem> lexems, ReminderToken token) {
         ReminderLexem lexem = get(lexems);
 
-        return lexem.getToken().equals(token);
+        return lexem != null && lexem.getToken().equals(token);
     }
 
     private ReminderLexem get(List<ReminderLexem> lexems) {
-        return lexems.get(position);
+        return position>= lexems.size() ? null : lexems.get(position);
     }
 }

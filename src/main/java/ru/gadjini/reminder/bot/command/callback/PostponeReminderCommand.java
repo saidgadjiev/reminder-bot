@@ -9,8 +9,9 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.ChangeReminderRequest;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.*;
-import ru.gadjini.reminder.service.requestresolver.RequestParser;
-import ru.gadjini.reminder.service.requestresolver.postpone.parser.ParsedPostponeTime;
+import ru.gadjini.reminder.service.parser.ParseException;
+import ru.gadjini.reminder.service.parser.RequestParser;
+import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -73,7 +74,14 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         if (!message.hasText()) {
             return;
         }
-        ParsedPostponeTime parsedPostponeTime = requestParser.parsePostponeTime(message.getText().trim());
+
+        ParsedPostponeTime parsedPostponeTime;
+        try {
+            parsedPostponeTime = requestParser.parsePostponeTime(message.getText().trim());
+        } catch (ParseException ex) {
+            messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_POSTPONE_TIME, keyboardService.goBackCommand());
+            return;
+        }
 
         ChangeReminderRequest changeReminderRequest = reminderRequests.get(message.getChatId());
         UpdateReminderResult updateReminderResult = reminderService.postponeReminder(changeReminderRequest.getReminderId(), parsedPostponeTime);

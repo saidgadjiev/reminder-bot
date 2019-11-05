@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service.requestresolver.postpone.parser;
+package ru.gadjini.reminder.service.parser.postpone.parser;
 
 public class ParsedPostponeTime {
 

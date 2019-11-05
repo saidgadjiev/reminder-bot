@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service.requestresolver.reminder.lexer;
+package ru.gadjini.reminder.service.parser.reminder.lexer;
 
 public enum ReminderToken {
 
@@ -10,9 +10,9 @@ public enum ReminderToken {
 
     MONTH,
 
-    MONTHWORD,
+    MONTH_WORD,
 
-    DAYWORD,
+    DAY_WORD,
 
     HOUR,
 

@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service.requestresolver.reminder.parser;
+package ru.gadjini.reminder.service.parser.reminder.parser;
 
 import java.time.LocalTime;
 

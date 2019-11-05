@@ -1,17 +1,17 @@
-package ru.gadjini.reminder.service.requestresolver.reminder.lexer;
+package ru.gadjini.reminder.service.parser.postpone.lexer;
 
-public class ReminderLexem {
+public class PostponeLexem {
 
-    private ReminderToken token;
+    private PostponeToken token;
 
     private String value;
 
-    ReminderLexem(ReminderToken token, String value) {
+    PostponeLexem(PostponeToken token, String value) {
         this.token = token;
         this.value = value;
     }
 
-    public ReminderToken getToken() {
+    public PostponeToken getToken() {
         return token;
     }
 

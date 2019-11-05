@@ -1,9 +1,9 @@
 package ru.gadjini.reminder.util;
 
-import ru.gadjini.reminder.service.requestresolver.postpone.parser.ParsedPostponeTime;
-import ru.gadjini.reminder.service.requestresolver.postpone.parser.PostponeAt;
-import ru.gadjini.reminder.service.requestresolver.postpone.parser.PostponeOn;
-import ru.gadjini.reminder.service.requestresolver.reminder.parser.ParsedTime;
+import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
+import ru.gadjini.reminder.service.parser.postpone.parser.PostponeAt;
+import ru.gadjini.reminder.service.parser.postpone.parser.PostponeOn;
+import ru.gadjini.reminder.service.parser.reminder.parser.ParsedTime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

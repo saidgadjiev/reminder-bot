@@ -10,11 +10,10 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
-import ru.gadjini.reminder.service.requestresolver.RequestParser;
-import ru.gadjini.reminder.service.requestresolver.reminder.parser.ParseException;
-import ru.gadjini.reminder.service.requestresolver.reminder.parser.ParsedRequest;
+import ru.gadjini.reminder.service.parser.ParseException;
+import ru.gadjini.reminder.service.parser.RequestParser;
+import ru.gadjini.reminder.service.parser.reminder.parser.ParsedRequest;
 import ru.gadjini.reminder.service.validation.ErrorBag;
-import ru.gadjini.reminder.service.validation.ValidationService;
 import ru.gadjini.reminder.util.ReminderUtils;
 
 import java.time.ZoneId;
@@ -36,8 +35,6 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     private RequestParser requestParser;
 
-    private ValidationService validationService;
-
     private ReminderMessageSender reminderMessageSender;
 
     private LocalisationService localisationService;
@@ -50,8 +47,8 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
                                  KeyboardService keyboardService,
                                  CommandNavigator commandNavigator,
                                  RequestParser requestParser,
-                                 ValidationService validationService,
-                                 ReminderMessageSender reminderMessageSender, TgUserService tgUserService) {
+                                 ReminderMessageSender reminderMessageSender,
+                                 TgUserService tgUserService) {
         this.localisationService = localisationService;
         this.reminderService = reminderService;
         this.name = localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME);
@@ -59,7 +56,6 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
         this.keyboardService = keyboardService;
         this.commandNavigator = commandNavigator;
         this.requestParser = requestParser;
-        this.validationService = validationService;
         this.reminderMessageSender = reminderMessageSender;
         this.tgUserService = tgUserService;
     }

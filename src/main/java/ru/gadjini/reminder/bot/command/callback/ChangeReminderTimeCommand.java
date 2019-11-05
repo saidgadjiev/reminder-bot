@@ -9,9 +9,9 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.ChangeReminderRequest;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.*;
-import ru.gadjini.reminder.service.requestresolver.RequestParser;
-import ru.gadjini.reminder.service.requestresolver.reminder.parser.ParseException;
-import ru.gadjini.reminder.service.requestresolver.reminder.parser.ParsedTime;
+import ru.gadjini.reminder.service.parser.ParseException;
+import ru.gadjini.reminder.service.parser.RequestParser;
+import ru.gadjini.reminder.service.parser.reminder.parser.ParsedTime;
 
 import java.util.concurrent.ConcurrentHashMap;
 
