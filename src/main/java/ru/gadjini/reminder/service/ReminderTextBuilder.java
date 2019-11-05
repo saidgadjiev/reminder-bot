@@ -73,9 +73,9 @@ public class ReminderTextBuilder {
 
         if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
             return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TODAY, new Object[] { time });
-        } else if (now.getDayOfMonth() - remindAt.getDayOfMonth() == 1) {
+        } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 1) {
             return tomorrowTime(time);
-        } else if (now.getDayOfMonth() - remindAt.getDayOfMonth() == 2) {
+        } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 2) {
             return dayAfterTomorrowTime(time);
         } else {
             return fixedDay(remindAt, time);
@@ -101,9 +101,9 @@ public class ReminderTextBuilder {
 
         if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
             return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[] { time });
-        } else if (now.getDayOfMonth() - remindAt.getDayOfMonth() == 1) {
+        } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 1) {
             return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[] { tomorrowTime(time) });
-        } else if (now.getDayOfMonth() - remindAt.getDayOfMonth() == 2) {
+        } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 2) {
             return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[] { dayAfterTomorrowTime(time) });
         } else {
             return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[] { fixedDay(remindAt, time) });

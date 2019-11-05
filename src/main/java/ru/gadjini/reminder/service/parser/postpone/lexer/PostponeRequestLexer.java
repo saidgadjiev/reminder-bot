@@ -98,22 +98,21 @@ public class PostponeRequestLexer {
             case AT:
                 List<PostponeLexem> lexems = new ArrayList<>();
 
-                lexems.add(new PostponeLexem(PostponeToken.AT_MINUTE, values.get(PatternBuilder.MINUTE)));
-                lexems.add(new PostponeLexem(PostponeToken.AT_HOUR, values.get(PatternBuilder.HOUR)));
+                if (values.containsKey(PatternBuilder.DAY_WORD)) {
+                    lexems.add(new PostponeLexem(PostponeToken.AT_DAY_WORD, values.get(PatternBuilder.DAY_WORD)));
+                }
+                if (values.containsKey(PatternBuilder.MONTH)) {
+                    lexems.add(new PostponeLexem(PostponeToken.AT_MONTH, values.get(PatternBuilder.MONTH)));
+                }
+                if (values.containsKey(PatternBuilder.DAY)) {
+                    lexems.add(new PostponeLexem(PostponeToken.AT_DAY, values.get(PatternBuilder.DAY)));
+                }
                 if (values.containsKey(PatternBuilder.MONTH_WORD)) {
                     lexems.add(new PostponeLexem(PostponeToken.AT_MONTH_WORD, values.get(PatternBuilder.MONTH_WORD)));
                 }
 
-                if (values.containsKey(PatternBuilder.DAY)) {
-                    lexems.add(new PostponeLexem(PostponeToken.AT_DAY, values.get(PatternBuilder.DAY)));
-                }
-
-                if (values.containsKey(PatternBuilder.MONTH)) {
-                    lexems.add(new PostponeLexem(PostponeToken.AT_MONTH, values.get(PatternBuilder.MONTH)));
-                }
-                if (values.containsKey(PatternBuilder.DAY_WORD)) {
-                    lexems.add(new PostponeLexem(PostponeToken.AT_DAY_WORD, values.get(PatternBuilder.DAY_WORD)));
-                }
+                lexems.add(new PostponeLexem(PostponeToken.AT_HOUR, values.get(PatternBuilder.HOUR)));
+                lexems.add(new PostponeLexem(PostponeToken.AT_MINUTE, values.get(PatternBuilder.MINUTE)));
 
                 return lexems;
             default:

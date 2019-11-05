@@ -22,7 +22,7 @@ public class ReminderRequestLexer {
 
     public ReminderRequestLexer(ReminderRequestLexerConfig lexerConfig, String str) {
         this.lexerConfig = lexerConfig;
-        this.str = str.toLowerCase();
+        this.str = str;
     }
 
     public List<ReminderLexem> tokenize() {
@@ -37,7 +37,9 @@ public class ReminderRequestLexer {
             Map<String, String> values = loginMatcher.values();
 
             lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, values.get(PatternBuilder.TEXT)));
-            lexems.addFirst(new ReminderLexem(ReminderToken.LOGIN, values.get(PatternBuilder.LOGIN)));
+            if (values.containsKey(PatternBuilder.LOGIN)) {
+                lexems.addFirst(new ReminderLexem(ReminderToken.LOGIN, values.get(PatternBuilder.LOGIN)));
+            }
 
             return lexems;
         }
@@ -63,23 +65,21 @@ public class ReminderRequestLexer {
         if (timeMatcher.find()) {
             Map<String, String> values = timeMatcher.values();
 
-            lexems.add(new ReminderLexem(ReminderToken.MINUTE, values.get(PatternBuilder.MINUTE)));
-            lexems.add(new ReminderLexem(ReminderToken.HOUR, values.get(PatternBuilder.HOUR)));
-
+            if (values.containsKey(PatternBuilder.DAY_WORD)) {
+                lexems.add(new ReminderLexem(ReminderToken.DAY_WORD, values.get(PatternBuilder.DAY_WORD)));
+            }
+            if (values.containsKey(PatternBuilder.MONTH)) {
+                lexems.add(new ReminderLexem(ReminderToken.MONTH, values.get(PatternBuilder.MONTH)));
+            }
+            if (values.containsKey(PatternBuilder.DAY)) {
+                lexems.add(new ReminderLexem(ReminderToken.DAY, values.get(PatternBuilder.DAY)));
+            }
             if (values.containsKey(PatternBuilder.MONTH_WORD)) {
                 lexems.add(new ReminderLexem(ReminderToken.MONTH_WORD, values.get(PatternBuilder.MONTH_WORD)));
             }
 
-            if (values.containsKey(PatternBuilder.DAY)) {
-                lexems.add(new ReminderLexem(ReminderToken.DAY, values.get(PatternBuilder.DAY)));
-            }
-
-            if (values.containsKey(PatternBuilder.MONTH)) {
-                lexems.add(new ReminderLexem(ReminderToken.MONTH, values.get(PatternBuilder.MONTH)));
-            }
-            if (values.containsKey(PatternBuilder.DAY_WORD)) {
-                lexems.add(new ReminderLexem(ReminderToken.DAY_WORD, values.get(PatternBuilder.DAY_WORD)));
-            }
+            lexems.add(new ReminderLexem(ReminderToken.HOUR, values.get(PatternBuilder.HOUR)));
+            lexems.add(new ReminderLexem(ReminderToken.MINUTE, values.get(PatternBuilder.MINUTE)));
 
             timeMatcherEnd = timeMatcher.end();
         }

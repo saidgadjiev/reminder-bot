@@ -141,6 +141,10 @@ public class ReminderService {
     @Transactional
     public Reminder completeReminder(int id) {
         Reminder deleted = reminderDao.deleteFromReceiver(id);
+
+        if (deleted == null) {
+            return null;
+        }
         deleted.getReceiver().setFrom(securityService.getAuthenticatedUser());
 
         return deleted;
