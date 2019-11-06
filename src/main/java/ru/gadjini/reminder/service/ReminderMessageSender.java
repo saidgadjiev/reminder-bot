@@ -158,17 +158,17 @@ public class ReminderMessageSender {
         if (reminder.getReceiverId() != reminder.getCreatorId()) {
             messageService.sendMessage(
                     reminder.getCreator().getChatId(),
-                    reminderTextBuilder.postponeReminderTimeForReceiver(
+                    reminderTextBuilder.postponeReminderTimeForCreator(
                             reminder.getText(),
-                            reminder.getCreator(),
+                            reminder.getReceiver(),
                             updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone()
                     ),
                     replyKeyboard
             );
 
             messageService.sendMessage(
-                    reminder.getCreator().getChatId(),
-                    reminderTextBuilder.postponeReminderTimeForCreator(reminder.getText(), reminder.getReceiver(), updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone()),
+                    reminder.getReceiver().getChatId(),
+                    reminderTextBuilder.postponeReminderTimeForReceiver(reminder.getText(), reminder.getCreator(), updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone()),
                     null
             );
         } else {

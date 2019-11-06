@@ -173,7 +173,7 @@ public class ReminderService {
             setReceiverMapping(new Mapping());
         }});
         oldReminder.getReceiver().setFrom(securityService.getAuthenticatedUser());
-        ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedPostponeTime, oldReminder.getRemindAtInReceiverTimeZone());
+        ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedPostponeTime, ZoneId.of(oldReminder.getReceiver().getZoneId()));
 
         ZonedDateTime remindAt = remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC);
 
