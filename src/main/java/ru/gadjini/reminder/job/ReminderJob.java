@@ -36,7 +36,7 @@ public class ReminderJob {
 
     @Scheduled(fixedDelay = 1000)
     public void sendReminders() {
-        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now(), 30);
+        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().withSecond(0).withNano(0), 30);
 
         for (Reminder reminder : reminders) {
             sendReminder(reminder);
@@ -60,7 +60,7 @@ public class ReminderJob {
         reminderMessageSender.sendRemindMessage(reminder);
 
         reminderTimeService.deleteReminderTime(reminderTime.getId());
-        LOGGER.debug("Send once reminder");
+        LOGGER.debug("Send once reminder at " + LocalDateTime.now());
     }
 
     private void sendRepeatReminder(Reminder reminder, ReminderTime reminderTime) {
@@ -71,6 +71,6 @@ public class ReminderJob {
         } else {
             reminderTimeService.updateLastRemindAt(reminderTime.getId(), LocalDateTime.now());
         }
-        LOGGER.debug("Send repeat reminder");
+        LOGGER.debug("Send repeat reminder at " + LocalDateTime.now());
     }
 }

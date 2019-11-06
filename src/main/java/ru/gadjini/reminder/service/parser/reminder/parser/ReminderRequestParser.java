@@ -28,8 +28,8 @@ public class ReminderRequestParser {
     private int position;
 
     public ReminderRequestParser(LocalisationService localisationService, Locale locale) {
-        this.tomorrow = localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TOMORROW);
-        this.dayAfterTomorrow = localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_DAY_AFTER_TOMORROW);
+        this.tomorrow = localisationService.getMessage(MessagesProperties.REGEXP_TOMORROW);
+        this.dayAfterTomorrow = localisationService.getMessage(MessagesProperties.REGEXP_DAY_AFTER_TOMORROW);
         this.locale = locale;
     }
 

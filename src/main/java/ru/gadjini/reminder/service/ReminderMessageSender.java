@@ -103,12 +103,12 @@ public class ReminderMessageSender {
 
         if (reminder.getCreatorId() != reminder.getReceiverId()) {
             messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_FROM,
-                    new Object[]{UserUtils.userLink(reminder.getCreator()), reminderText});
+                    new Object[]{UserUtils.userLink(reminder.getCreator()), reminderText}, keyboardService.getReminderButtons(reminder.getId()));
             messageService.sendMessageByCode(reminder.getCreator().getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED,
                     new Object[]{reminderText, UserUtils.userLink(reminder.getReceiver())}, replyKeyboardMarkup);
         } else {
             messageService.sendMessageByCode(reminder.getCreator().getChatId(), MessagesProperties.MESSAGE_REMINDER_ME_CREATED,
-                    new Object[]{reminderText});
+                    new Object[]{reminderText}, keyboardService.getReminderButtons(reminder.getId()));
         }
     }
 

@@ -298,16 +298,18 @@ public class ReminderDao {
                         "select dr.*,\n" +
                         "       dr.remind_at::timestamptz AT TIME ZONE rc.zone_id as rc_remind_at,\n" +
                         "       rm.message_id as rm_message_id,\n" +
-                        "       rc.zone_id   as rc_zone_id\n" +
+                        "       rc.zone_id   as rc_zone_id,\n" +
+                        "       rc.chat_id   as rc_chat_id\n" +
                         "FROM deleted_reminder dr\n" +
                         "         LEFT JOIN remind_message rm ON dr.id = rm.reminder_id\n" +
-                        "         INNER JOIN tg_user cr ON dr.creator_id = cr.user_id\n" +
                         "         INNER JOIN tg_user rc ON dr.receiver_id = rc.user_id",
                 ps -> ps.setInt(1, reminderId),
                 rs -> {
                     if (rs.next()) {
                         return resultSetMapper.mapReminder(rs, new ReminderMapping() {{
-                            setReceiverMapping(new Mapping());
+                            setReceiverMapping(new Mapping() {{
+                                setFields(List.of(ReminderMapping.RC_CHAT_ID));
+                            }});
                             setRemindMessageMapping(new Mapping());
                         }});
                     }

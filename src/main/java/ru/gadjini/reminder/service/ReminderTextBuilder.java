@@ -88,7 +88,7 @@ public class ReminderTextBuilder {
     }
 
     private String tomorrowTime(String time) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_DAY_AFTER_TOMORROW, new Object[] { time });
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TOMORROW, new Object[] { time });
     }
 
     private String dayAfterTomorrowTime(String time) {

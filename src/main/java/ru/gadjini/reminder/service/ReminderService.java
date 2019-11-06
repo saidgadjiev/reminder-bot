@@ -217,6 +217,7 @@ public class ReminderService {
             receiver.setUsername(reminderRequest.getReceiverName());
         } else {
             receiver.setUserId(reminderRequest.getReceiverId());
+            reminder.setReceiverId(reminderRequest.getReceiverId());
         }
 
         reminder.setReceiver(receiver);
