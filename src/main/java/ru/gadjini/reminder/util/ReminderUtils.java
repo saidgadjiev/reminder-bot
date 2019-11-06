@@ -3,6 +3,7 @@ package ru.gadjini.reminder.util;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 import ru.gadjini.reminder.service.parser.postpone.parser.PostponeAt;
 import ru.gadjini.reminder.service.parser.postpone.parser.PostponeOn;
+import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;
 import ru.gadjini.reminder.service.parser.reminder.parser.ParsedTime;
 
 import java.time.LocalDate;
@@ -40,6 +41,47 @@ public class ReminderUtils {
             PostponeAt postponeAt = parsedTime.getPostponeAt();
 
             return buildDateTime(postponeAt.getDay(), postponeAt.getAddDays(), postponeAt.getTime(), remindAt.getZone());
+        }
+    }
+
+    public static ZonedDateTime buildRemindTime(ParsedCustomRemind customRemind, ZonedDateTime remindAt, ZoneId zoneId) {
+        switch (customRemind.getType()) {
+            case AFTER: {
+                ZonedDateTime now = ZonedDateTime.now(zoneId);
+
+                if (customRemind.getHour() != null) {
+                    now = now.plusHours(customRemind.getHour());
+                }
+                if (customRemind.getMinute() != null) {
+                    now = now.plusMinutes(customRemind.getMinute());
+                }
+
+                return now;
+            }
+            case BEFORE: {
+                ZonedDateTime reminderTime = remindAt;
+
+                if (customRemind.getHour() != null) {
+                    reminderTime = reminderTime.minusHours(customRemind.getHour());
+                }
+                if (customRemind.getMinute() != null) {
+                    reminderTime = reminderTime.minusMinutes(customRemind.getMinute());
+                }
+
+                return reminderTime;
+            }
+            case AT: {
+                ZonedDateTime now = ZonedDateTime.now(zoneId);
+
+                if (now.getHour() > customRemind.getHour()) {
+                    now.plusDays(1);
+                }
+                now.with(LocalTime.of(customRemind.getHour(), customRemind.getMinute()));
+
+                return now;
+            }
+            default:
+                throw new UnsupportedOperationException();
         }
     }
 

@@ -11,6 +11,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.util.UserUtils;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -258,5 +259,9 @@ public class ReminderMessageSender {
         if (reminder.getRemindMessage() != null) {
             remindMessageService.delete(reminder.getId());
         }
+    }
+
+    public void sendCustomRemindCreated(long chatId, ZonedDateTime remindTime, ReplyKeyboardMarkup replyKeyboardMarkup) {
+        messageService.sendMessageByCode(chatId, reminderTextBuilder.customRemindText(remindTime), replyKeyboardMarkup);
     }
 }

@@ -170,13 +170,27 @@ public class MessagesProperties {
 
     public static final String REGEX_POSTPONE_TYPE_AT = "regex.postpone.type.at";
 
-    public static final String REGEX_POSTPONE_DAY = "regex.postpone.day";
+    public static final String REGEX_DAY_PREFIX = "regex.day.prefix";
 
-    public static final String REGEX_POSTPONE_HOUR = "regex.postpone.hour";
+    public static final String REGEX_HOUR_PREFIX = "regex.hour.prefix";
 
-    public static final String REGEX_POSTPONE_MINUTE = "regex.postpone.minute";
+    public static final String REGEX_MINUTE_PREFIX = "regex.minute.prefix";
 
     public static final String MESSAGE_REMINDER_POSTPONED_FROM = "message.reminder.postponed.from";
 
     public static final String MESSAGE_REMINDER_POSTPONE_TIME = "message.reminder.postpone.time";
+
+    public static final String CUSTOM_REMIND_COMMAND_NAME = "customremind";
+
+    public static final String CUSTOM_REMIND_COMMAND_DESCRIPTION = "customremind.command.description";
+
+    public static final String MESSAGE_CUSTOM_REMIND = "message.custom.remind";
+
+    public static final String REGEX_CUSTOM_REMIND_TYPE_AFTER = "regex.custom.remind.type.after";
+
+    public static final String REGEX_CUSTOM_REMIND_TYPE_BEFORE = "regex.custom.remind.type.before";
+
+    public static final String REGEX_CUSTOM_REMIND_TYPE_AT = "regex.custom.remind.type.at";
+
+    public static final String MESSAGE_CUSTOM_REMIND_CREATED = "message.custom.remind.created";
 }

@@ -3,8 +3,8 @@ package ru.gadjini.reminder.service.parser.pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.service.LocalisationService;
 import ru.gadjini.reminder.pattern.GroupPattern;
+import ru.gadjini.reminder.service.LocalisationService;
 
 import java.time.Month;
 import java.time.format.TextStyle;
@@ -38,6 +38,14 @@ public class PatternBuilder {
     public static final String LOGIN = "login";
 
     public static final String TEXT = "text";
+
+    public static final String TYPE = "type";
+
+    public static final String TTYPE = "ttype";
+
+    public static final String THOUR = "hour";
+
+    public static final String TMINUTE = "minute";
 
     private LocalisationService localisationService;
 
@@ -78,15 +86,31 @@ public class PatternBuilder {
     public GroupPattern buildPostponePattern() {
         StringBuilder patternTypeOn = new StringBuilder();
 
-        String daySuffix = localisationService.getMessage(MessagesProperties.REGEX_POSTPONE_DAY);
-        patternTypeOn.append("((?<").append(POSTPONE_DAY).append(">\\d+)").append(daySuffix).append(")?( )?");
+        String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX);
+        patternTypeOn.append("((?<").append(POSTPONE_DAY).append(">\\d+)").append(dayPrefix).append(")?( )?");
 
-        String hourSuffix = localisationService.getMessage(MessagesProperties.REGEX_POSTPONE_HOUR);
-        patternTypeOn.append("((?<").append(POSTPONE_HOUR).append(">\\d+)").append(hourSuffix).append(")?( )?");
+        String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
+        patternTypeOn.append("((?<").append(POSTPONE_HOUR).append(">\\d+)").append(hourPrefix).append(")?( )?");
 
-        String minuteSuffix = localisationService.getMessage(MessagesProperties.REGEX_POSTPONE_MINUTE);
-        patternTypeOn.append("((?<").append(POSTPONE_MINUTE).append(">\\d+)").append(minuteSuffix).append(")?");
+        String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX);
+        patternTypeOn.append("((?<").append(POSTPONE_MINUTE).append(">\\d+)").append(minutePrefix).append(")?");
 
         return new GroupPattern(Pattern.compile(patternTypeOn.toString()), List.of(POSTPONE_DAY, POSTPONE_HOUR, POSTPONE_MINUTE));
+    }
+
+    public GroupPattern buildCustomRemindPattern() {
+        StringBuilder patternBuilder = new StringBuilder();
+
+        String typeAfter = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_AFTER);
+        String typeBefore = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_BEFORE);
+        String at = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_AT);
+        String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
+        String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX);
+        patternBuilder.append("((?<").append(TYPE).append(typeAfter).append("|")
+                .append(typeBefore).append(") ((?<").append(HOUR).append("\\d+)").append(hourPrefix)
+                .append(") ( )?((?<").append(MINUTE).append("\\d+)").append(minutePrefix).append(")?)|")
+                .append("((?<").append(TTYPE).append(">").append(at).append(") (?<").append(THOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(TMINUTE).append(">[0-5]?[0-9]))");
+
+        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, HOUR, MINUTE, TTYPE, THOUR, TMINUTE));
     }
 }

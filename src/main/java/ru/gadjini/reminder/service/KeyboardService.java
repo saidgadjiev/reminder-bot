@@ -25,23 +25,25 @@ public class KeyboardService {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-        List<InlineKeyboardButton> row1 = new ArrayList<>();
 
+        List<InlineKeyboardButton> row1 = new ArrayList<>();
         InlineKeyboardButton completeReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.REMINDER_COMPLETE_COMMAND_DESCRIPTION));
         completeReminderButton.setCallbackData(localisationService.getMessage(MessagesProperties.REMINDER_COMPLETE_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
-
         row1.add(completeReminderButton);
         InlineKeyboardButton cancelReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CANCEL_REMINDER_COMMAND_DESCRIPTION));
         cancelReminderButton.setCallbackData(localisationService.getMessage(MessagesProperties.CANCEL_REMINDER_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
-
         row1.add(cancelReminderButton);
+
         keyboard.add(row1);
 
         List<InlineKeyboardButton> row2 = new ArrayList<>();
-
+        InlineKeyboardButton customRemindButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMIND_COMMAND_DESCRIPTION));
+        customRemindButton.setCallbackData(MessagesProperties.CUSTOM_REMIND_COMMAND_NAME + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
+        row2.add(customRemindButton);
         InlineKeyboardButton postponeButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION));
         postponeButton.setCallbackData(localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
         row2.add(postponeButton);
+
         keyboard.add(row2);
 
         inlineKeyboardMarkup.setKeyboard(keyboard);

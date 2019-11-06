@@ -8,6 +8,11 @@ import ru.gadjini.reminder.service.parser.postpone.lexer.PostponeLexerConfig;
 import ru.gadjini.reminder.service.parser.postpone.lexer.PostponeRequestLexer;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 import ru.gadjini.reminder.service.parser.postpone.parser.PostponeRequestParser;
+import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexem;
+import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexer;
+import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexerConfig;
+import ru.gadjini.reminder.service.parser.remind.parser.CustomRemindParser;
+import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderLexem;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderRequestLexer;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderRequestLexerConfig;
@@ -27,11 +32,17 @@ public class RequestParser {
 
     private final ReminderRequestLexerConfig reminderRequestLexerConfig;
 
+    private final CustomRemindLexerConfig customRemindLexerConfig;
+
     @Autowired
-    public RequestParser(LocalisationService localisationService, PostponeLexerConfig postponeLexerConfig, ReminderRequestLexerConfig reminderRequestLexerConfig) {
+    public RequestParser(LocalisationService localisationService,
+                         PostponeLexerConfig postponeLexerConfig,
+                         ReminderRequestLexerConfig reminderRequestLexerConfig,
+                         CustomRemindLexerConfig customRemindLexerConfig) {
         this.localisationService = localisationService;
         this.postponeLexerConfig = postponeLexerConfig;
         this.reminderRequestLexerConfig = reminderRequestLexerConfig;
+        this.customRemindLexerConfig = customRemindLexerConfig;
     }
 
     public ParsedRequest parseRequest(String text) {
@@ -50,5 +61,11 @@ public class RequestParser {
         List<PostponeLexem> lexems = new PostponeRequestLexer(postponeLexerConfig, time).tokenize();
 
         return new PostponeRequestParser(localisationService, Locale.getDefault()).parse(lexems);
+    }
+
+    public ParsedCustomRemind parseCustomRemind(String text) {
+        List<CustomRemindLexem> lexems = new CustomRemindLexer(customRemindLexerConfig, text).tokenize();
+
+        return new CustomRemindParser(localisationService).parse(lexems);
     }
 }

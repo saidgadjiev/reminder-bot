@@ -69,6 +69,9 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         return name;
     }
 
+    /**
+     * Принимает команды: на 1д 1ч 1мин, до завтра 15:00;
+     */
     @Override
     public void processNonCommandUpdate(Message message) {
         if (!message.hasText()) {

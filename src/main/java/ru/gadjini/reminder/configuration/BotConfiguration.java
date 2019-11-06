@@ -56,6 +56,7 @@ public class BotConfiguration {
             add(new PostponeReminderCommand(localisationService, messageService, keyboardService, reminderService, requestParser, reminderMessageSender, commandNavigator));
             add(new DeleteReminderCommand(localisationService, reminderService, reminderMessageSender));
             add(new CancelReminderCommand(localisationService, reminderService, reminderMessageSender));
+            add(new CustomRemindCommand(messageService, keyboardService, requestParser, reminderService, reminderMessageSender, commandNavigator));
         }};
     }
 

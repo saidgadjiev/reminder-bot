@@ -67,6 +67,12 @@ public class ReminderTextBuilder {
         });
     }
 
+    public String customRemindText(ZonedDateTime remindAt) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND_CREATED, new Object[] {
+                time(remindAt)
+        });
+    }
+
     private String time(ZonedDateTime remindAt) {
         ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
         String time = DATE_TIME_FORMATTER.format(remindAt);

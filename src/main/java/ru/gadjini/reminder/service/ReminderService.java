@@ -14,6 +14,7 @@ import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
+import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;
 import ru.gadjini.reminder.service.parser.reminder.parser.ParsedTime;
 import ru.gadjini.reminder.service.validation.ValidationService;
 import ru.gadjini.reminder.util.DateUtils;
@@ -23,6 +24,7 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO: Не хватает валидации
 @Service
 public class ReminderService {
 
@@ -202,6 +204,21 @@ public class ReminderService {
         return reminder;
     }
 
+    public ZonedDateTime customRemind(int reminderId, ParsedCustomRemind customRemind) {
+        Reminder reminder = reminderDao.getReminder(reminderId, new ReminderMapping() {{
+            setReceiverMapping(new Mapping());
+        }});
+
+        ZonedDateTime remindTime = ReminderUtils.buildRemindTime(customRemind, reminder.getRemindAtInReceiverTimeZone(), ZoneId.of(reminder.getReceiver().getZoneId()));
+        ReminderTime reminderTime = new ReminderTime();
+        reminderTime.setType(ReminderTime.Type.ONCE);
+        reminderTime.setReminderId(reminderId);
+        reminderTime.setFixedTime(remindTime);
+        reminderTimeService.create(reminderTime);
+
+        return remindTime;
+    }
+
     private void prepareReminderForMe(Reminder reminder) {
         TgUser receiver = new TgUser();
 
@@ -227,8 +244,9 @@ public class ReminderService {
         List<ReminderTime> reminderTimes = new ArrayList<>();
 
         addNightBeforeReminderTime(remindAt, reminderTimes);
+        addFixedTime(remindAt, 2, reminderTimes);
         addFixedTime(remindAt, 1, reminderTimes);
-        addDelayTime(remindAt, 10, reminderTimes);
+        addDelayTime(remindAt, 20, reminderTimes);
         addItsTimeFixedTime(remindAt, reminderTimes);
 
         return reminderTimes;
