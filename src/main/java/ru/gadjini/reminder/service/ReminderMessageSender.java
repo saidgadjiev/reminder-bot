@@ -262,6 +262,6 @@ public class ReminderMessageSender {
     }
 
     public void sendCustomRemindCreated(long chatId, ZonedDateTime remindTime, ReplyKeyboardMarkup replyKeyboardMarkup) {
-        messageService.sendMessageByCode(chatId, reminderTextBuilder.customRemindText(remindTime), replyKeyboardMarkup);
+        messageService.sendMessage(chatId, reminderTextBuilder.customRemindText(remindTime), replyKeyboardMarkup);
     }
 }

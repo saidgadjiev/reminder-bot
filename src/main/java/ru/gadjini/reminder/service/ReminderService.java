@@ -213,7 +213,7 @@ public class ReminderService {
         ReminderTime reminderTime = new ReminderTime();
         reminderTime.setType(ReminderTime.Type.ONCE);
         reminderTime.setReminderId(reminderId);
-        reminderTime.setFixedTime(remindTime);
+        reminderTime.setFixedTime(remindTime.withZoneSameInstant(ZoneOffset.UTC));
         reminderTimeService.create(reminderTime);
 
         return remindTime;
