@@ -1,5 +1,6 @@
 target
 *.log
+logs/
 *.iml
 atlassian-ide-plugin.xml
 *.sh
@@ -268,4 +269,4 @@ paket-files/
 
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
-*.pyc
+*.pyc.

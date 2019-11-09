@@ -124,7 +124,7 @@ public class ReminderDao {
         return new ArrayList<>(reminders.values());
     }
 
-    public void update(int reminderId, SqlParameterSource sqlParameterSource) {
+    public Reminder update(int reminderId, SqlParameterSource sqlParameterSource, ReminderMapping reminderMapping) {
         StringBuilder sql = new StringBuilder();
 
         sql.append("UPDATE reminder SET ");
@@ -144,10 +144,33 @@ public class ReminderDao {
         values.add(reminderId);
         types.add(Types.INTEGER);
 
-        jdbcTemplate.update(
-                sql.toString(),
-                new ArgumentTypePreparedStatementSetter(values.toArray(), types.stream().mapToInt(i -> i).toArray())
-        );
+        if (reminderMapping == null) {
+            jdbcTemplate.update(
+                    sql.toString(),
+                    new ArgumentTypePreparedStatementSetter(values.toArray(), types.stream().mapToInt(i -> i).toArray())
+            );
+
+            return null;
+        } else {
+            StringBuilder withMappingSql = new StringBuilder();
+
+            withMappingSql.append("WITH r AS(\n")
+                    .append(sql)
+                    .append(")\n")
+                    .append(buildSelect(reminderMapping));
+
+            return jdbcTemplate.query(
+                    withMappingSql.toString(),
+                    new ArgumentTypePreparedStatementSetter(values.toArray(), types.stream().mapToInt(i -> i).toArray()),
+                    rs -> {
+                        if (rs.next()) {
+                            return resultSetMapper.mapReminder(rs, reminderMapping);
+                        }
+
+                        return null;
+                    }
+            );
+        }
     }
 
     public UpdateReminderResult updateReminderText(int reminderId, String newText) {

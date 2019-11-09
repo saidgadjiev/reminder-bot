@@ -20,6 +20,8 @@ public class Reminder {
 
     public static final String INITIAL_REMIND_AT = "initial_remind_at";
 
+    public static final String STATUS = "status";
+
     private int id;
 
     private String text;
