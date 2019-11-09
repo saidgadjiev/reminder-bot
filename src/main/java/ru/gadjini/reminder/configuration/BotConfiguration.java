@@ -52,7 +52,7 @@ public class BotConfiguration {
                     commandNavigator, requestParser, reminderMessageSender, tgUserService));
             add(new ChangeReminderTimeCommand(localisationService, requestParser, reminderMessageSender,
                     messageService, reminderService, commandNavigator, keyboardService));
-            add(new ChangeReminderTextCommand(localisationService, reminderMessageSender, messageService, reminderService, commandNavigator));
+            add(new ChangeReminderTextCommand(reminderMessageSender, messageService, reminderService, commandNavigator, keyboardService));
             add(new PostponeReminderCommand(localisationService, messageService, keyboardService, reminderService, requestParser, reminderMessageSender, commandNavigator));
             add(new DeleteReminderCommand(localisationService, reminderService, reminderMessageSender));
             add(new CancelReminderCommand(localisationService, reminderService, reminderMessageSender));

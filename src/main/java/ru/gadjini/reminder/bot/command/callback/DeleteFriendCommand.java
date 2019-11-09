@@ -4,7 +4,6 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.FriendshipService;
-import ru.gadjini.reminder.service.LocalisationService;
 import ru.gadjini.reminder.service.MessageService;
 
 public class DeleteFriendCommand implements CallbackBotCommand {
@@ -15,10 +14,10 @@ public class DeleteFriendCommand implements CallbackBotCommand {
 
     private String name;
 
-    public DeleteFriendCommand(MessageService messageService, FriendshipService friendshipService, LocalisationService localisationService) {
+    public DeleteFriendCommand(MessageService messageService, FriendshipService friendshipService) {
         this.messageService = messageService;
         this.friendshipService = friendshipService;
-        name = localisationService.getMessage(MessagesProperties.DELETE_FRIEND_COMMAND_NAME);
+        name = MessagesProperties.DELETE_FRIEND_COMMAND_NAME;
     }
 
     @Override

@@ -12,18 +12,19 @@ CREATE TABLE IF NOT EXISTS tg_user
 
 CREATE TABLE IF NOT EXISTS reminder
 (
-    id          SERIAL PRIMARY KEY,
-    reminder_text        TEXT         NOT NULL,
-    creator_id  INTEGER      NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
-    receiver_id INTEGER      NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
-    remind_at   TIMESTAMP(0) NOT NULL,
-    initial_remind_at TIMESTAMP(0) NOT NULL
+    id                SERIAL PRIMARY KEY,
+    reminder_text     TEXT         NOT NULL,
+    creator_id        INTEGER      NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
+    receiver_id       INTEGER      NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
+    remind_at         TIMESTAMP(0) NOT NULL,
+    initial_remind_at TIMESTAMP(0) NOT NULL,
+    status            INT          NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS reminder_time
 (
     id               SERIAL PRIMARY KEY,
-    time_type             INT     NOT NULL,
+    time_type        INT     NOT NULL,
     fixed_time       TIMESTAMP(0),
     delay_time       TIME(0),
     last_reminder_at TIMESTAMP(0),

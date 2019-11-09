@@ -28,10 +28,10 @@ public class KeyboardService {
 
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         InlineKeyboardButton completeReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.REMINDER_COMPLETE_COMMAND_DESCRIPTION));
-        completeReminderButton.setCallbackData(localisationService.getMessage(MessagesProperties.REMINDER_COMPLETE_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
+        completeReminderButton.setCallbackData(MessagesProperties.REMINDER_COMPLETE_COMMAND_NAME + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
         row1.add(completeReminderButton);
         InlineKeyboardButton cancelReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CANCEL_REMINDER_COMMAND_DESCRIPTION));
-        cancelReminderButton.setCallbackData(localisationService.getMessage(MessagesProperties.CANCEL_REMINDER_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
+        cancelReminderButton.setCallbackData(MessagesProperties.CANCEL_REMINDER_COMMAND_NAME + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
         row1.add(cancelReminderButton);
 
         keyboard.add(row1);
@@ -41,7 +41,7 @@ public class KeyboardService {
         customRemindButton.setCallbackData(MessagesProperties.CUSTOM_REMIND_COMMAND_NAME + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
         row2.add(customRemindButton);
         InlineKeyboardButton postponeButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION));
-        postponeButton.setCallbackData(localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
+        postponeButton.setCallbackData(MessagesProperties.POSTPONE_REMINDER_COMMAND_NAME + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
         row2.add(postponeButton);
 
         keyboard.add(row2);
@@ -57,11 +57,11 @@ public class KeyboardService {
         List<InlineKeyboardButton> row = new ArrayList<>();
 
         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_DESCRIPTION));
-        inlineKeyboardButton.setCallbackData(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendUserId);
+        inlineKeyboardButton.setCallbackData(MessagesProperties.CREATE_REMINDER_COMMAND_NAME + CommandRegistry.COMMAND_ARG_SEPARATOR + friendUserId);
         row.add(inlineKeyboardButton);
 
         InlineKeyboardButton deleteFriendButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.DELETE_FRIEND_COMMAND_DESCRIPTION));
-        deleteFriendButton.setCallbackData(localisationService.getMessage(MessagesProperties.DELETE_FRIEND_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendUserId);
+        deleteFriendButton.setCallbackData(MessagesProperties.DELETE_FRIEND_COMMAND_NAME + CommandRegistry.COMMAND_ARG_SEPARATOR + friendUserId);
         row.add(deleteFriendButton);
 
         keyboard.add(row);
@@ -76,11 +76,11 @@ public class KeyboardService {
         List<InlineKeyboardButton> row = new ArrayList<>();
 
         InlineKeyboardButton acceptFriendRequestButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.ACCEPT_FRIEND_REQUEST_COMMAND_DESCRIPTION));
-        acceptFriendRequestButton.setCallbackData(localisationService.getMessage(MessagesProperties.ACCEPT_FRIEND_REQUEST_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendUserId);
+        acceptFriendRequestButton.setCallbackData(MessagesProperties.ACCEPT_FRIEND_REQUEST_COMMAND_NAME + CommandRegistry.COMMAND_ARG_SEPARATOR + friendUserId);
         row.add(acceptFriendRequestButton);
 
         InlineKeyboardButton rejectFriendRequestButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.REJECT_FRIEND_REQUEST_COMMAND_DESCRIPTION));
-        rejectFriendRequestButton.setCallbackData(localisationService.getMessage(MessagesProperties.REJECT_FRIEND_REQUEST_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + friendUserId);
+        rejectFriendRequestButton.setCallbackData(MessagesProperties.REJECT_FRIEND_REQUEST_COMMAND_NAME + CommandRegistry.COMMAND_ARG_SEPARATOR + friendUserId);
         row.add(rejectFriendRequestButton);
 
         keyboard.add(row);
@@ -129,7 +129,7 @@ public class KeyboardService {
 
         row1.add(new InlineKeyboardButton() {{
             setText(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TIME_COMMAND_DESCRIPTION));
-            setCallbackData(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TIME_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
+            setCallbackData(MessagesProperties.EDIT_REMINDER_TIME_COMMAND_NAME + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
         }});
         keyboard.add(row1);
 
@@ -137,15 +137,15 @@ public class KeyboardService {
 
         row2.add(new InlineKeyboardButton() {{
             setText(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TEXT_COMMAND_DESCRIPTION));
-            setCallbackData(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TEXT_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
+            setCallbackData(MessagesProperties.EDIT_REMINDER_TEXT_COMMAND_NAME + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
         }});
         keyboard.add(row2);
 
         List<InlineKeyboardButton> row3 = new ArrayList<>();
 
         row3.add(new InlineKeyboardButton() {{
-            setText(localisationService.getMessage(MessagesProperties.DELETE_FRIEND_COMMAND_DESCRIPTION));
-            setCallbackData(localisationService.getMessage(MessagesProperties.DELETE_REMINDER_COMMAND_NAME) + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
+            setText(localisationService.getMessage(MessagesProperties.DELETE_REMINDER_COMMAND_DESCRIPTION));
+            setCallbackData(MessagesProperties.DELETE_REMINDER_COMMAND_NAME + CommandRegistry.COMMAND_ARG_SEPARATOR + reminderId);
         }});
         keyboard.add(row3);
 

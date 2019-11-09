@@ -2,6 +2,8 @@ package ru.gadjini.reminder.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.SqlParameterValue;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -20,8 +22,10 @@ import ru.gadjini.reminder.service.validation.ValidationService;
 import ru.gadjini.reminder.util.DateUtils;
 import ru.gadjini.reminder.util.ReminderUtils;
 
+import java.sql.Types;
 import java.time.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 //TODO: Не хватает валидации
@@ -90,7 +94,10 @@ public class ReminderService {
         validationService.validate(remindAtInReceiverTimeZone);
 
         ZonedDateTime remindAt = remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC);
-        reminderDao.updateInitialRemindAtAndRemindAt(reminderId, remindAt);
+        reminderDao.update(reminderId, new MapSqlParameterSource()
+                .addValue(Reminder.INITIAL_REMIND_AT, new SqlParameterValue(Types.TIMESTAMP, remindAt))
+                .addValue(Reminder.REMIND_AT, new SqlParameterValue(Types.TIMESTAMP, remindAt))
+        );
 
         List<ReminderTime> reminderTimes = getReminderTimes(remindAt);
         reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(reminderId));
@@ -142,7 +149,13 @@ public class ReminderService {
 
     @Transactional
     public Reminder completeReminder(int id) {
-        Reminder deleted = reminderDao.deleteFromReceiver(id);
+        Reminder deleted = reminderDao.delete(id, new ReminderMapping() {{
+            setReceiverMapping(new Mapping());
+            setCreatorMapping(new Mapping() {{
+                setFields(Collections.singletonList(CR_CHAT_ID));
+            }});
+            setRemindMessageMapping(new Mapping());
+        }});
 
         if (deleted == null) {
             return null;
@@ -153,7 +166,12 @@ public class ReminderService {
     }
 
     public Reminder delete(int reminderId) {
-        Reminder reminder = reminderDao.deleteFromCreator(reminderId);
+        Reminder reminder = reminderDao.delete(reminderId, new ReminderMapping() {{
+            setReceiverMapping(new Mapping() {{
+                setFields(List.of(ReminderMapping.RC_CHAT_ID));
+            }});
+            setRemindMessageMapping(new Mapping());
+        }});
 
         if (reminder == null) {
             return null;
@@ -177,7 +195,8 @@ public class ReminderService {
 
         ZonedDateTime remindAt = remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC);
 
-        reminderDao.updateRemindAt(reminderId, remindAt);
+        reminderDao.update(reminderId, new MapSqlParameterSource()
+                .addValue(Reminder.REMIND_AT, new SqlParameterValue(Types.TIMESTAMP, remindAt)));
         Reminder reminder = new Reminder();
         reminder.setRemindAt(remindAt);
         reminder.setRemindAtInReceiverTimeZone(remindAtInReceiverTimeZone);
@@ -194,7 +213,13 @@ public class ReminderService {
     }
 
     public Reminder cancel(int reminderId) {
-        Reminder reminder = reminderDao.deleteFromReceiver(reminderId);
+        Reminder reminder = reminderDao.delete(reminderId, new ReminderMapping() {{
+            setReceiverMapping(new Mapping());
+            setCreatorMapping(new Mapping() {{
+                setFields(Collections.singletonList(CR_CHAT_ID));
+            }});
+            setRemindMessageMapping(new Mapping());
+        }});
 
         if (reminder == null) {
             return null;

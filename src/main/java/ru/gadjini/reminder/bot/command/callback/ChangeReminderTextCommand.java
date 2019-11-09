@@ -26,12 +26,15 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableB
 
     private CommandNavigator commandNavigator;
 
-    public ChangeReminderTextCommand(LocalisationService localisationService,
-                                     ReminderMessageSender reminderMessageSender,
+    private KeyboardService keyboardService;
+
+    public ChangeReminderTextCommand(ReminderMessageSender reminderMessageSender,
                                      MessageService messageService,
                                      ReminderService reminderService,
-                                     CommandNavigator commandNavigator) {
-        this.name = localisationService.getMessage(MessagesProperties.EDIT_REMINDER_TIME_COMMAND_NAME);
+                                     CommandNavigator commandNavigator,
+                                     KeyboardService keyboardService) {
+        this.keyboardService = keyboardService;
+        this.name = MessagesProperties.EDIT_REMINDER_TEXT_COMMAND_NAME;
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.reminderService = reminderService;
@@ -50,7 +53,8 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableB
             setMessageId(callbackQuery.getMessage().getMessageId());
         }});
 
-        messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_REMINDER_TEXT);
+        messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_REMINDER_TEXT_ANSWER);
+        messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_REMINDER_TEXT, keyboardService.goBackCommand());
     }
 
     @Override

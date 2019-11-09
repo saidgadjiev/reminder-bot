@@ -33,14 +33,13 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     private CommandNavigator commandNavigator;
 
-    public PostponeReminderCommand(LocalisationService localisationService,
-                                   MessageService messageService,
+    public PostponeReminderCommand(MessageService messageService,
                                    KeyboardService keyboardService,
                                    ReminderService reminderService,
                                    RequestParser requestParser,
                                    ReminderMessageSender reminderMessageSender,
                                    CommandNavigator commandNavigator) {
-        this.name = localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_NAME);
+        this.name = MessagesProperties.POSTPONE_REMINDER_COMMAND_NAME;
         this.messageService = messageService;
         this.keyboardService = keyboardService;
         this.reminderService = reminderService;

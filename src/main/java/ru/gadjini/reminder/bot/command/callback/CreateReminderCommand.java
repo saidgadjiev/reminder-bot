@@ -51,7 +51,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
                                  TgUserService tgUserService) {
         this.localisationService = localisationService;
         this.reminderService = reminderService;
-        this.name = localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME);
+        this.name = MessagesProperties.CREATE_REMINDER_COMMAND_NAME;
         this.messageService = messageService;
         this.keyboardService = keyboardService;
         this.commandNavigator = commandNavigator;

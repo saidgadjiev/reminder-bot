@@ -5,7 +5,6 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.service.FriendshipService;
-import ru.gadjini.reminder.service.LocalisationService;
 import ru.gadjini.reminder.service.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
 
@@ -17,8 +16,8 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
 
     private MessageService messageService;
 
-    public RejectFriendRequestCommand(LocalisationService localisationService, FriendshipService friendshipService, MessageService messageService) {
-        this.name = localisationService.getMessage(MessagesProperties.REJECT_FRIEND_REQUEST_COMMAND_NAME);
+    public RejectFriendRequestCommand(FriendshipService friendshipService, MessageService messageService) {
+        this.name = MessagesProperties.REJECT_FRIEND_REQUEST_COMMAND_NAME;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
     }

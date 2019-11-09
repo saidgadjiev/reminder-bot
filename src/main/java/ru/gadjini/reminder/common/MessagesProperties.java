@@ -24,7 +24,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMIND_ME = "message.remind.me";
 
-    public static final String REMINDER_COMPLETE_COMMAND_NAME = "reminder.complete.command.name";
+    public static final String REMINDER_COMPLETE_COMMAND_NAME = "completereminder";
 
     public static final String REMINDER_COMPLETE_COMMAND_DESCRIPTION = "reminder.complete.command.description";
 
@@ -44,11 +44,11 @@ public class MessagesProperties {
 
     public static final String SEND_FRIEND_REQUEST_COMMAND_NAME = "send.friend.request.command.name";
 
-    public static final String ACCEPT_FRIEND_REQUEST_COMMAND_NAME = "accept.friend.request.command.name";
+    public static final String ACCEPT_FRIEND_REQUEST_COMMAND_NAME = "accept";
 
     public static final String ACCEPT_FRIEND_REQUEST_COMMAND_DESCRIPTION = "accept.friend.request.command.description";
 
-    public static final String REJECT_FRIEND_REQUEST_COMMAND_NAME = "reject.friend.request.command.name";
+    public static final String REJECT_FRIEND_REQUEST_COMMAND_NAME = "reject";
 
     public static final String REJECT_FRIEND_REQUEST_COMMAND_DESCRIPTION = "reject.friend.request.command.description";
 
@@ -74,13 +74,13 @@ public class MessagesProperties {
 
     public static final String GET_FRIENDS_COMMAND_NAME = "get.friends.command.name";
 
-    public static final String CREATE_REMINDER_COMMAND_NAME = "create.reminder.command.name";
+    public static final String CREATE_REMINDER_COMMAND_NAME = "createreminder";
 
     public static final String CREATE_REMINDER_COMMAND_DESCRIPTION = "create.reminder.command.description";
 
     public static final String GO_BACK_COMMAND_NAME = "go.back.command.name";
 
-    public static final String DELETE_FRIEND_COMMAND_NAME = "delete.friend.command.name";
+    public static final String DELETE_FRIEND_COMMAND_NAME = "deletefriend";
 
     public static final String DELETE_FRIEND_COMMAND_DESCRIPTION = "delete.friend.command.description";
 
@@ -112,17 +112,21 @@ public class MessagesProperties {
 
     public static final String COMMAND_GET_REMINDERS_NAME = "get.reminder.command.name";
 
-    public static final String EDIT_REMINDER_TIME_COMMAND_NAME = "edit.reminder.time.command.name";
+    public static final String EDIT_REMINDER_TIME_COMMAND_NAME = "editremindertime";
 
     public static final String EDIT_REMINDER_TIME_COMMAND_DESCRIPTION = "edit.reminder.time.command.description";
 
-    public static final String EDIT_REMINDER_TEXT_COMMAND_NAME = "edit.reminder.text.command.name";
+    public static final String EDIT_REMINDER_TEXT_COMMAND_NAME = "editremindertext";
 
     public static final String EDIT_REMINDER_TEXT_COMMAND_DESCRIPTION = "edit.reminder.text.command.description";
 
     public static final String MESSAGE_REMINDER_TIME = "message.reminder.time";
 
+    public static final String MESSAGE_REMINDER_TIME_ANSWER = "message.reminder.time.answer";
+
     public static final String MESSAGE_REMINDER_TEXT = "message.reminder.text";
+
+    public static final String MESSAGE_REMINDER_TEXT_ANSWER = "message.reminder.text.answer";
 
     public static final String MESSAGE_REMINDER_TIME_EDITED_FROM = "message.reminder.time.edited.from";
 
@@ -132,7 +136,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_TEXT_EDITED = "message.reminder.text.edited";
 
-    public static final String DELETE_REMINDER_COMMAND_NAME = "delete.reminder.command.name";
+    public static final String DELETE_REMINDER_COMMAND_NAME = "deletereminder";
 
     public static final String DELETE_REMINDER_COMMAND_DESCRIPTION = "delete.reminder.command.description";
 
@@ -140,7 +144,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_DELETED = "message.reminder.deleted";
 
-    public static final String CANCEL_REMINDER_COMMAND_NAME = "cancel.reminder.command.name";
+    public static final String CANCEL_REMINDER_COMMAND_NAME = "cancelreminder";
 
     public static final String CANCEL_REMINDER_COMMAND_DESCRIPTION = "cancel.reminder.command.description";
 
@@ -154,7 +158,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_NOT_FOUND = "message.reminder.not.found";
 
-    public static final String POSTPONE_REMINDER_COMMAND_NAME = "postpone.reminder.command.name";
+    public static final String POSTPONE_REMINDER_COMMAND_NAME = "postponereminder";
 
     public static final String POSTPONE_REMINDER_COMMAND_DESCRIPTION = "postpone.reminder.command.description";
 
@@ -181,6 +185,8 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_POSTPONE_TIME = "message.reminder.postpone.time";
 
     public static final String CUSTOM_REMIND_COMMAND_NAME = "customremind";
+
+    public static final String REMOVE_ALL_NON_COMMAND_UPDATE = "remove.all.non.command.update";
 
     public static final String CUSTOM_REMIND_COMMAND_DESCRIPTION = "customremind.command.description";
 

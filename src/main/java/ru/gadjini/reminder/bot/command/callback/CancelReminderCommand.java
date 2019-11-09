@@ -4,7 +4,6 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.service.LocalisationService;
 import ru.gadjini.reminder.service.ReminderMessageSender;
 import ru.gadjini.reminder.service.ReminderService;
 
@@ -16,8 +15,8 @@ public class CancelReminderCommand implements CallbackBotCommand {
 
     private ReminderMessageSender reminderMessageSender;
 
-    public CancelReminderCommand(LocalisationService localisationService, ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
-        this.name = localisationService.getMessage(MessagesProperties.CANCEL_REMINDER_COMMAND_NAME);
+    public CancelReminderCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
+        this.name = MessagesProperties.CANCEL_REMINDER_COMMAND_NAME;
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
     }

@@ -18,6 +18,8 @@ public class Reminder {
 
     public static final String REMIND_AT = "remind_at";
 
+    public static final String INITIAL_REMIND_AT = "initial_remind_at";
+
     private int id;
 
     private String text;
@@ -39,6 +41,8 @@ public class Reminder {
     private List<ReminderTime> reminderTimes = new ArrayList<>();
 
     private RemindMessage remindMessage;
+
+    private Status status;
 
     public int getId() {
         return id;
@@ -126,5 +130,39 @@ public class Reminder {
 
     public void setInitialRemindAt(ZonedDateTime initialRemindAt) {
         this.initialRemindAt = initialRemindAt;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public enum Status {
+
+        ACTIVE(0),
+        COMPLETED(1);
+
+        private final int code;
+
+        Status(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public static Status fromCode(int code) {
+            for (Status status: values()) {
+                if (status.code == code) {
+                    return status;
+                }
+            }
+
+            throw new IllegalArgumentException();
+        }
     }
 }
