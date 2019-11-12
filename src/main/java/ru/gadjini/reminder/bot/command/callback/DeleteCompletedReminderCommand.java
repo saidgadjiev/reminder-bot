@@ -7,18 +7,18 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.service.ReminderMessageSender;
 import ru.gadjini.reminder.service.ReminderService;
 
-public class CompleteCommand implements CallbackBotCommand {
+public class DeleteCompletedReminderCommand implements CallbackBotCommand {
+
+    private String name;
 
     private ReminderService reminderService;
 
     private ReminderMessageSender reminderMessageSender;
 
-    private String name;
-
-    public CompleteCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
+    public DeleteCompletedReminderCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
+        this.name = MessagesProperties.DELETE_REMINDER_COMMAND_NAME;
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
-        this.name = MessagesProperties.REMINDER_COMPLETE_COMMAND_NAME;
     }
 
     @Override
@@ -29,14 +29,13 @@ public class CompleteCommand implements CallbackBotCommand {
     @Override
     public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
         int reminderId = Integer.parseInt(arguments[0]);
-        Reminder reminder = reminderService.completeReminder(reminderId);
 
+        Reminder reminder = reminderService.delete(reminderId);
         if (reminder == null) {
             reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getId(), callbackQuery.getMessage().getMessageId());
         } else {
-            reminder.getReceiver().setChatId(callbackQuery.getMessage().getChatId());
-
-            reminderMessageSender.sendReminderComplete(callbackQuery.getId(), reminder);
+            reminder.getCreator().setChatId(callbackQuery.getMessage().getChatId());
+            reminderMessageSender.sendReminderDeleted(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
         }
     }
 }

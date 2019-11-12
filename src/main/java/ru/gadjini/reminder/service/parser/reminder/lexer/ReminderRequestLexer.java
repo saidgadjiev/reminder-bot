@@ -9,6 +9,7 @@ import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class ReminderRequestLexer {
 
@@ -36,9 +37,9 @@ public class ReminderRequestLexer {
         if (loginMatcher.matches()) {
             Map<String, String> values = loginMatcher.values();
 
-            lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, values.get(PatternBuilder.TEXT)));
+            lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, values.get(PatternBuilder.TEXT).trim()));
             if (values.containsKey(PatternBuilder.LOGIN)) {
-                lexems.addFirst(new ReminderLexem(ReminderToken.LOGIN, values.get(PatternBuilder.LOGIN)));
+                lexems.addFirst(new ReminderLexem(ReminderToken.LOGIN, values.get(PatternBuilder.LOGIN).trim()));
             }
 
             return lexems;
@@ -83,5 +84,11 @@ public class ReminderRequestLexer {
 
             timeMatcherEnd = timeMatcher.end();
         }
+    }
+
+    public static void main(String[] args) {
+        Pattern pattern = Pattern.compile("(@(?<login>[0-9a-zA-Z_]+) )?(?<text>[a-zA-Zа-яА-ЯёЁ1-9 ]+)$");
+
+        System.out.println(pattern.matcher("Самолёт отца").matches());
     }
 }

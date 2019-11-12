@@ -1,7 +1,6 @@
 package ru.gadjini.reminder.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -11,36 +10,25 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 
-import java.util.*;
+import java.util.Arrays;
 
 @Service
-public class CommandRegistry {
+public class CommandExecutor {
 
     public static final String COMMAND_ARG_SEPARATOR = "_";
 
-    private final Map<String, BotCommand> botCommandRegistryMap = new HashMap<>();
-
-    private final Map<String, CallbackBotCommand> callbackBotCommandMap = new HashMap<>();
-
-    private Collection<KeyboardBotCommand> keyboardBotCommands = new ArrayList<>();
+    private CommandContainer commandContainer;
 
     private CommandNavigator commandNavigator;
 
     @Autowired
-    public CommandRegistry(Collection<BotCommand> botCommands,
-                           Collection<CallbackBotCommand> callbackBotCommands,
-                           Collection<KeyboardBotCommand> keyboardBotCommands,
-                           CommandNavigator commandNavigator) {
+    public CommandExecutor(CommandContainer commandContainer, CommandNavigator commandNavigator) {
+        this.commandContainer = commandContainer;
         this.commandNavigator = commandNavigator;
-
-        this.keyboardBotCommands.addAll(keyboardBotCommands);
-        botCommands.forEach(botCommand -> botCommandRegistryMap.put(botCommand.getCommandIdentifier(), botCommand));
-        callbackBotCommands.forEach(callbackBotCommand -> callbackBotCommandMap.put(callbackBotCommand.getName(), callbackBotCommand));
-        commandNavigator.setNavigableBotCommands(navigableBotCommands(keyboardBotCommands, botCommands, callbackBotCommands));
     }
 
     public BotCommand getBotCommand(String startCommandName) {
-        return botCommandRegistryMap.get(startCommandName);
+        return commandContainer.getBotCommandRegistryMap().get(startCommandName);
     }
 
     public boolean isCommand(Message message) {
@@ -48,10 +36,10 @@ public class CommandRegistry {
             return true;
         }
 
-        return keyboardBotCommands.stream().anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(message.getText()));
+        return commandContainer.getKeyboardBotCommands().stream().anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(message.getText()));
     }
 
-    public void processNonCommandUpdate(AbsSender absSender, Message message) {
+    public void processNonCommandUpdate(Message message) {
         NavigableBotCommand navigableBotCommand = commandNavigator.getCurrentCommand(message.getChatId());
 
         if (navigableBotCommand != null) {
@@ -70,7 +58,7 @@ public class CommandRegistry {
     public void executeCallbackCommand(CallbackQuery callbackQuery) {
         String text = callbackQuery.getData();
         String[] commandSplit = text.split(COMMAND_ARG_SEPARATOR);
-        CallbackBotCommand botCommand = callbackBotCommandMap.get(commandSplit[0]);
+        CallbackBotCommand botCommand = commandContainer.getCallbackBotCommandMap().get(commandSplit[0]);
 
         String[] parameters = Arrays.copyOfRange(commandSplit, 1, commandSplit.length);
 
@@ -84,7 +72,7 @@ public class CommandRegistry {
     private boolean executeBotCommand(AbsSender absSender, Message message) {
         String text = message.getText().trim();
         String[] commandSplit = text.split(COMMAND_ARG_SEPARATOR);
-        BotCommand botCommand = botCommandRegistryMap.get(commandSplit[0].substring(1));
+        BotCommand botCommand = commandContainer.getBotCommandRegistryMap().get(commandSplit[0].substring(1));
 
         if (botCommand != null) {
             String[] parameters = Arrays.copyOfRange(commandSplit, 1, commandSplit.length);
@@ -103,7 +91,7 @@ public class CommandRegistry {
 
     private boolean executeKeyBoardCommand(Message message) {
         String command = message.getText();
-        KeyboardBotCommand botCommand = keyboardBotCommands.stream()
+        KeyboardBotCommand botCommand = commandContainer.getKeyboardBotCommands().stream()
                 .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(command))
                 .findFirst()
                 .orElseThrow();
@@ -115,25 +103,5 @@ public class CommandRegistry {
         }
 
         return true;
-    }
-
-    private Collection<NavigableBotCommand> navigableBotCommands(Collection<KeyboardBotCommand> keyboardBotCommands,
-                                                                Collection<BotCommand> botCommands,
-                                                                Collection<CallbackBotCommand> callbackBotCommands) {
-        List<NavigableBotCommand> navigableBotCommands = new ArrayList<>();
-
-        keyboardBotCommands.stream()
-                .filter(botCommand -> botCommand instanceof NavigableBotCommand)
-                .forEach(botCommand -> navigableBotCommands.add((NavigableBotCommand) botCommand));
-
-        botCommands.stream()
-                .filter(botCommand -> botCommand instanceof NavigableBotCommand)
-                .forEach(botCommand -> navigableBotCommands.add((NavigableBotCommand) botCommand));
-
-        callbackBotCommands.stream()
-                .filter(botCommand -> botCommand instanceof NavigableBotCommand)
-                .forEach(botCommand -> navigableBotCommands.add((NavigableBotCommand) botCommand));
-
-        return navigableBotCommands;
     }
 }

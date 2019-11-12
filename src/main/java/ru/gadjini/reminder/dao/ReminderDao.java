@@ -45,21 +45,117 @@ public class ReminderDao {
         }
     }
 
-    public List<Reminder> getReminders(int creatorId) {
-        return jdbcTemplate.query(
-                "SELECT r.*,\n" +
-                        "       rc.zone_id as rc_zone_id,\n" +
-                        "       rc.first_name as rc_first_name,\n" +
-                        "       rc.last_name as rc_last_name,\n" +
-                        "       r.remind_at::TIMESTAMPTZ AT TIME ZONE rc.zone_id AS rc_remind_at\n" +
-                        "FROM reminder r INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
-                        "WHERE creator_id = ?",
-                ps -> ps.setInt(1, creatorId),
+    public List<Reminder> getActiveReminders(int userId) {
+        return namedParameterJdbcTemplate.query(
+                "SELECT r.id,\n" +
+                        "       r.reminder_text,\n" +
+                        "       r.creator_id,\n" +
+                        "       r.receiver_id,\n" +
+                        "       r.remind_at,\n" +
+                        "       r.initial_remind_at,\n" +
+                        "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at,\n" +
+                        "       rc.zone_id                                       AS rc_zone_id,\n" +
+                        "       rc.first_name                                    AS rc_first_name,\n" +
+                        "       rc.last_name                                     AS rc_last_name,\n" +
+                        "       cr.first_name                                    AS cr_first_name,\n" +
+                        "       cr.last_name                                     AS cr_last_name\n" +
+                        "FROM reminder r\n" +
+                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
+                        "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
+                        "WHERE status = 0 AND (creator_id = :user_id OR receiver_id = :user_id)",
+                new MapSqlParameterSource().addValue("user_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs, new ReminderMapping() {{
                     setReceiverMapping(new Mapping() {{
-                        setFields(Collections.singletonList(RC_FIRST_LAST_NAME));
+                        setFields(List.of(ReminderMapping.RC_FIRST_LAST_NAME));
                     }});
+                    setCreatorMapping(new Mapping());
                 }})
+        );
+    }
+
+    public List<Reminder> getCompletedReminders(int userId) {
+        return namedParameterJdbcTemplate.query(
+                "SELECT r.id,\n" +
+                        "       r.reminder_text,\n" +
+                        "       r.creator_id,\n" +
+                        "       r.receiver_id,\n" +
+                        "       r.remind_at,\n" +
+                        "       r.initial_remind_at,\n" +
+                        "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at,\n" +
+                        "       rc.zone_id                                       AS rc_zone_id,\n" +
+                        "       rc.first_name                                    AS rc_first_name,\n" +
+                        "       rc.last_name                                     AS rc_last_name,\n" +
+                        "       cr.first_name                                    AS cr_first_name,\n" +
+                        "       cr.last_name                                     AS cr_last_name\n" +
+                        "FROM reminder r\n" +
+                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
+                        "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
+                        "WHERE creator_id = :creator_id\n" +
+                        "  AND status = 1\n" +
+                        "UNION ALL\n" +
+                        "SELECT r.id,\n" +
+                        "       r.reminder_text,\n" +
+                        "       r.creator_id,\n" +
+                        "       r.receiver_id,\n" +
+                        "       r.remind_at,\n" +
+                        "       r.initial_remind_at,\n" +
+                        "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at,\n" +
+                        "       rc.zone_id                                       AS rc_zone_id,\n" +
+                        "       rc.first_name                                    as rc_first_name,\n" +
+                        "       rc.last_name                                     as rc_last_name,\n" +
+                        "       cr.first_name                                    AS cr_first_name,\n" +
+                        "       cr.last_name                                     AS cr_last_name\n" +
+                        "FROM completed_reminder r\n" +
+                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id " +
+                        "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
+                        "WHERE receiver_id = :creator_id",
+                new MapSqlParameterSource().addValue("creator_id", userId),
+                (rs, rowNum) -> resultSetMapper.mapReminder(rs, new ReminderMapping() {{
+                    setReceiverMapping(new Mapping() {{
+                        setFields(List.of(ReminderMapping.RC_FIRST_LAST_NAME));
+                    }});
+                    setCreatorMapping(new Mapping());
+                }})
+        );
+    }
+
+    public void deleteCompletedReminders(int creatorId) {
+        jdbcTemplate.batchUpdate(
+                "DELETE FROM reminder WHERE creator_id = " + creatorId + " AND status = 1",
+                "DELETE FROM completed_reminder WHERE receiver_id = " + creatorId
+        );
+    }
+
+    public void deleteCompletedReminder(int reminderId) {
+        jdbcTemplate.batchUpdate(
+                "DELETE FROM reminder WHERE id = " + reminderId + " AND status = 1",
+                "DELETE FROM completed_reminder WHERE id = " + reminderId
+        );
+    }
+
+    public List<Reminder> getReminders(ReminderMapping reminderMapping, SqlParameterSource sqlParameterSource) {
+        StringBuilder sql = new StringBuilder();
+        sql.append(buildSelect(reminderMapping)).append(" ");
+
+        StringBuilder where = new StringBuilder();
+        List<Object> values = new ArrayList<>();
+        List<Integer> types = new ArrayList<>();
+        for (Iterator<String> iterator = Arrays.stream(sqlParameterSource.getParameterNames()).iterator(); iterator.hasNext(); ) {
+            String paramName = iterator.next();
+
+            values.add(sqlParameterSource.getValue(paramName));
+            types.add(sqlParameterSource.getSqlType(paramName));
+            where.append("r.").append(paramName).append(" = ?");
+            if (iterator.hasNext()) {
+                where.append(" AND ");
+            }
+        }
+        sql.append("WHERE ").append(where.toString());
+
+        return jdbcTemplate.query(
+                sql.toString(),
+                new ArgumentTypePreparedStatementSetter(values.toArray(), types.stream().mapToInt(i -> i).toArray()),
+                (rs, rowNum) -> resultSetMapper.mapReminder(rs, reminderMapping)
         );
     }
 
@@ -84,7 +180,7 @@ public class ReminderDao {
                         "         LEFT JOIN remind_message rm ON r.id = rm.reminder_id\n" +
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
                         "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
-                        "WHERE CASE\n" +
+                        "WHERE status = 0 AND CASE\n" +
                         "          WHEN time_type = 0 THEN :curr_date >= fixed_time\n" +
                         "          ELSE CASE\n" +
                         "                   WHEN last_reminder_at IS NULL THEN\n" +
@@ -154,10 +250,7 @@ public class ReminderDao {
         } else {
             StringBuilder withMappingSql = new StringBuilder();
 
-            withMappingSql.append("WITH r AS(\n")
-                    .append(sql)
-                    .append(")\n")
-                    .append(buildSelect(reminderMapping));
+            withMappingSql.append("WITH reminder AS(\n").append(sql).append(" RETURNING *").append("\n)\n").append(buildSelect(reminderMapping));
 
             return jdbcTemplate.query(
                     withMappingSql.toString(),
@@ -226,24 +319,39 @@ public class ReminderDao {
         );
     }
 
-    public Reminder delete(int reminderId, ReminderMapping reminderMapping) {
+    public Reminder delete(SqlParameterSource sqlParameterSource, ReminderMapping reminderMapping) {
+        StringBuilder where = new StringBuilder();
+
+        List<Object> values = new ArrayList<>();
+        List<Integer> types = new ArrayList<>();
+        for (Iterator<String> iterator = Arrays.stream(sqlParameterSource.getParameterNames()).iterator(); iterator.hasNext(); ) {
+            String paramName = iterator.next();
+
+            values.add(sqlParameterSource.getValue(paramName));
+            types.add(sqlParameterSource.getSqlType(paramName));
+            where.append(paramName).append(" = ?");
+            if (iterator.hasNext()) {
+                where.append(" AND ");
+            }
+        }
         if (reminderMapping == null) {
             jdbcTemplate.update(
-                    "DELETE FROM reminder WHERE id = " + reminderId
+                    "DELETE FROM reminder WHERE " + where.toString(),
+                    new ArgumentTypePreparedStatementSetter(values.toArray(), types.stream().mapToInt(i -> i).toArray())
             );
 
             return null;
         }
         StringBuilder sql = new StringBuilder();
 
-        sql.append("WITH r AS(\n")
-                .append("DELETE FROM reminder WHERE id = ? RETURNING id, creator_id, receiver_id, remind_at, reminder_text")
-                .append("(\n")
+        sql.append("WITH reminder AS(\n")
+                .append("DELETE FROM reminder WHERE ").append(where.toString()).append(" RETURNING id, creator_id, receiver_id, remind_at, reminder_text\n")
+                .append(")\n")
                 .append(buildSelect(reminderMapping));
 
         return jdbcTemplate.query(
                 sql.toString(),
-                ps -> ps.setInt(1, reminderId),
+                new ArgumentTypePreparedStatementSetter(values.toArray(), types.stream().mapToInt(i -> i).toArray()),
                 rs -> {
                     if (rs.next()) {
                         return resultSetMapper.mapReminder(rs, reminderMapping);

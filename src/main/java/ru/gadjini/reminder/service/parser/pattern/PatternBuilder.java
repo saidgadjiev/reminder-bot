@@ -55,7 +55,7 @@ public class PatternBuilder {
     }
 
     public GroupPattern buildLoginPattern() {
-        return new GroupPattern(Pattern.compile("^(@(?<login>[0-9a-zA-Z_]+) )?(?<text>[a-zA-Zа-яА-Я ]+)$"), List.of(LOGIN, TEXT));
+        return new GroupPattern(Pattern.compile("^(@(?<login>[0-9a-zA-Z_]+) )?(?<text>[a-zA-Zа-яА-ЯёЁ1-9 ]+)$"), List.of(LOGIN, TEXT));
     }
 
     public GroupPattern buildTimePattern(Locale locale) {

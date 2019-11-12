@@ -110,7 +110,9 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_FIXED_DAY = "message.reminder.fixed.day";
 
-    public static final String COMMAND_GET_REMINDERS_NAME = "get.reminder.command.name";
+    public static final String GET_REMINDERS_COMMAND_NAME = "get.reminder.command.name";
+
+    public static final String GET_REMINDERS_COMMAND_HISTORY_NAME = "getreminders";
 
     public static final String EDIT_REMINDER_TIME_COMMAND_NAME = "editremindertime";
 
@@ -164,11 +166,11 @@ public class MessagesProperties {
 
     public static final String MESSAGE_POSTPONE_TIME = "message.postpone.time";
 
-    public static final String MESSAGE_POSTPONE_TIME_ANSWER = "message.postpone.time.answer";
-
     public static final String MESSAGE_REMINDER_POSTPONED = "message.reminder.postponed";
 
-    public static final String MESSAGE_REMINDER_POSTPONED_ME = "message.reminder.postponed.me";
+    public static final String MESSAGE_REMINDER_POSTPONED_CREATOR = "message.reminder.postponed.creator";
+
+    public static final String MESSAGE_REMINDER_POSTPONED_RECEIVER = "message.reminder.postponed.receiver";
 
     public static final String REGEX_POSTPONE_TYPE_ON = "regex.postpone.type.on";
 
@@ -180,13 +182,15 @@ public class MessagesProperties {
 
     public static final String REGEX_MINUTE_PREFIX = "regex.minute.prefix";
 
-    public static final String MESSAGE_REMINDER_POSTPONED_FROM = "message.reminder.postponed.from";
-
     public static final String MESSAGE_REMINDER_POSTPONE_TIME = "message.reminder.postpone.time";
 
     public static final String CUSTOM_REMIND_COMMAND_NAME = "customremind";
 
     public static final String REMOVE_ALL_NON_COMMAND_UPDATE = "remove.all.non.command.update";
+
+    public static final String MESSAGE_COMPLETED_REMINDERS_COUNT = "message.completed.reminders.count";
+
+    public static final String MESSAGE_COMPLETED_DELETED = "message.completed.deleted";
 
     public static final String CUSTOM_REMIND_COMMAND_DESCRIPTION = "customremind.command.description";
 
@@ -199,4 +203,22 @@ public class MessagesProperties {
     public static final String REGEX_CUSTOM_REMIND_TYPE_AT = "regex.custom.remind.type.at";
 
     public static final String MESSAGE_CUSTOM_REMIND_CREATED = "message.custom.remind.created";
+
+    public static final String EDIT_REMINDER_COMMAND_NAME = "editreminder";
+
+    public static final String GET_COMPLETED_REMINDERS_COMMAND_DESCRIPTION = "get.completed.reminders.command.description";
+
+    public static final String GET_COMPLETED_REMINDERS_COMMAND_NAME = "getcompletedreminders";
+
+    public static final String GET_ACTIVE_REMINDERS_COMMAND_DESCRIPTION = "get.active.reminders.command.description";
+
+    public static final String GET_ACTIVE_REMINDERS_COMMAND_NAME = "getactivereminders";
+
+    public static final String MESSAGE_LET_SEE_ON_REMINDERS = "message.let.see.on.reminders";
+
+    public static final String MESSAGE_COMPLETED_REMINDERS_EMPTY_ANSWER = "message.completed.reminders.empty.answer";
+
+    public static final String GO_BACK_CALLBACK_COMMAND_NAME = "goback";
+
+    public static final String GO_BACK_CALLBACK_COMMAND_DESCRIPTION = "go.back.callback.command.description";
 }
