@@ -22,6 +22,8 @@ public class Reminder {
 
     public static final String STATUS = "status";
 
+    public static final String NOTE = "note";
+
     private int id;
 
     private String text;
@@ -45,6 +47,8 @@ public class Reminder {
     private RemindMessage remindMessage;
 
     private Status status;
+
+    private String note;
 
     public int getId() {
         return id;
@@ -140,6 +144,14 @@ public class Reminder {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public enum Status {

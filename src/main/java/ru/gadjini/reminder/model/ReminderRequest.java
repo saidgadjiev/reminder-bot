@@ -14,6 +14,8 @@ public class ReminderRequest {
 
     private boolean forMe;
 
+    private String note;
+
     public String getReceiverName() {
         return receiverName;
     }
@@ -52,6 +54,14 @@ public class ReminderRequest {
 
     public void setForMe(boolean forMe) {
         this.forMe = forMe;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
     @Override

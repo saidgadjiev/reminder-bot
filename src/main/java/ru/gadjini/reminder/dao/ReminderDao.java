@@ -364,7 +364,7 @@ public class ReminderDao {
 
     private Reminder createByReceiverId(Reminder reminder) {
         jdbcTemplate.query("WITH r AS (\n" +
-                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, initial_remind_at) VALUES (?, ?, ?, ?, ?) " +
+                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, initial_remind_at, note) VALUES (?, ?, ?, ?, ?, ?) " +
                         "RETURNING id, receiver_id\n" +
                         ")\n" +
                         "SELECT r.id,\n" +
@@ -379,6 +379,11 @@ public class ReminderDao {
                     ps.setInt(3, reminder.getReceiverId());
                     ps.setTimestamp(4, Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()));
                     ps.setTimestamp(5, Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()));
+                    if (StringUtils.isNotBlank(reminder.getNote())) {
+                        ps.setString(6, reminder.getNote());
+                    } else {
+                        ps.setNull(6, Types.VARCHAR);
+                    }
                 },
                 rs -> {
                     reminder.setId(rs.getInt(Reminder.ID));
@@ -393,7 +398,7 @@ public class ReminderDao {
 
     private Reminder createByReceiverName(Reminder reminder) {
         jdbcTemplate.query("WITH r AS (\n" +
-                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at) SELECT ?, ?, user_id, ? FROM tg_user WHERE username = ? RETURNING id, receiver_id\n" +
+                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, note) SELECT ?, ?, user_id, ?, ? FROM tg_user WHERE username = ? RETURNING id, receiver_id\n" +
                         ")\n" +
                         "SELECT r.id,\n" +
                         "       r.receiver_id,\n" +
@@ -406,6 +411,11 @@ public class ReminderDao {
                     ps.setInt(2, reminder.getCreatorId());
                     ps.setTimestamp(3, Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()));
                     ps.setString(4, reminder.getReceiver().getUsername());
+                    if (StringUtils.isNotBlank(reminder.getNote())) {
+                        ps.setString(5, reminder.getNote());
+                    } else {
+                        ps.setNull(5, Types.VARCHAR);
+                    }
                 },
                 rs -> {
                     reminder.setId(rs.getInt(Reminder.ID));
@@ -433,7 +443,7 @@ public class ReminderDao {
         if (reminderMapping.getReceiverMapping() != null) {
             selectList.append("r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at, rc.zone_id AS rc_zone_id, ");
 
-            if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.CR_CHAT_ID)) {
+            if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_CHAT_ID)) {
                 selectList.append("rc.chat_id AS rc_chat_id, ");
             }
             if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_FIRST_LAST_NAME)) {

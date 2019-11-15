@@ -16,5 +16,7 @@ public enum ReminderToken {
 
     HOUR,
 
-    MINUTE
+    MINUTE,
+
+    NOTE
 }

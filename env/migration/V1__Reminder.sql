@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS reminder
     receiver_id       INTEGER      NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
     remind_at         TIMESTAMP(0) NOT NULL,
     initial_remind_at TIMESTAMP(0) NOT NULL,
-    status            INT          NOT NULL DEFAULT 0
+    status            INT          NOT NULL DEFAULT 0,
+    note              TEXT
 );
 
 CREATE TABLE IF NOT EXISTS reminder_time

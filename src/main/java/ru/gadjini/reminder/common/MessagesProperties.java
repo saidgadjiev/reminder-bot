@@ -24,9 +24,9 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMIND_ME = "message.remind.me";
 
-    public static final String REMINDER_COMPLETE_COMMAND_NAME = "completereminder";
+    public static final String COMPLETE_REMINDER_COMMAND_NAME = "completereminder";
 
-    public static final String REMINDER_COMPLETE_COMMAND_DESCRIPTION = "reminder.complete.command.description";
+    public static final String COMPLETE_REMINDER_COMMAND_DESCRIPTION = "complete.reminder.command.description";
 
     public static final String MESSAGE_REMINDER_COMPLETED_FROM = "message.reminder.completed.from";
 
@@ -184,15 +184,17 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_POSTPONE_TIME = "message.reminder.postpone.time";
 
-    public static final String CUSTOM_REMIND_COMMAND_NAME = "customremind";
+    public static final String CUSTOM_REMINDER_TIME_COMMAND_NAME = "customremindertime";
 
-    public static final String REMOVE_ALL_NON_COMMAND_UPDATE = "remove.all.non.command.update";
+    public static final String DELETE_COMPLETED_REMINDERS_COMMAND_DESCRIPTION = "delete.completed.reminders.command.description";
+
+    public static final String DELETE_COMPLETED_REMINDERS_COMMAND_NAME = "deletecompletedreminders";
 
     public static final String MESSAGE_COMPLETED_REMINDERS_COUNT = "message.completed.reminders.count";
 
     public static final String MESSAGE_COMPLETED_DELETED = "message.completed.deleted";
 
-    public static final String CUSTOM_REMIND_COMMAND_DESCRIPTION = "customremind.command.description";
+    public static final String CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION = "custom.reminder.time.command.description";
 
     public static final String MESSAGE_CUSTOM_REMIND = "message.custom.remind";
 
@@ -216,7 +218,9 @@ public class MessagesProperties {
 
     public static final String MESSAGE_LET_SEE_ON_REMINDERS = "message.let.see.on.reminders";
 
-    public static final String MESSAGE_COMPLETED_REMINDERS_EMPTY_ANSWER = "message.completed.reminders.empty.answer";
+    public static final String MESSAGE_COMPLETED_REMINDERS_EMPTY = "message.completed.reminders.empty";
+
+    public static final String MESSAGE_ACTIVE_REMINDERS_EMPTY = "message.active.reminders.empty";
 
     public static final String GO_BACK_CALLBACK_COMMAND_NAME = "goback";
 

@@ -5,7 +5,7 @@ import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.FriendshipService;
-import ru.gadjini.reminder.service.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.LocalisationService;
 import ru.gadjini.reminder.service.MessageService;
 import ru.gadjini.reminder.util.UserUtils;

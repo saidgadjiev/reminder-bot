@@ -13,7 +13,7 @@ import ru.gadjini.reminder.exception.ValidationException;
 import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.service.CommandNavigator;
 import ru.gadjini.reminder.service.CommandExecutor;
-import ru.gadjini.reminder.service.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.MessageService;
 
 @Component

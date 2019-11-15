@@ -18,7 +18,7 @@ public class CompleteCommand implements CallbackBotCommand {
     public CompleteCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
-        this.name = MessagesProperties.REMINDER_COMPLETE_COMMAND_NAME;
+        this.name = MessagesProperties.COMPLETE_REMINDER_COMMAND_NAME;
     }
 
     @Override

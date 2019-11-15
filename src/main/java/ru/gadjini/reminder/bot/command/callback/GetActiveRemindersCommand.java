@@ -10,7 +10,7 @@ import ru.gadjini.reminder.service.ReminderService;
 
 import java.util.List;
 
-public class GetActiveReminders implements CallbackBotCommand, NavigableCallbackBotCommand {
+public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
     private String name;
 
@@ -18,7 +18,7 @@ public class GetActiveReminders implements CallbackBotCommand, NavigableCallback
 
     private ReminderMessageSender reminderMessageSender;
 
-    public GetActiveReminders(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
+    public GetActiveRemindersCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
         this.name = MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME;
@@ -36,7 +36,6 @@ public class GetActiveReminders implements CallbackBotCommand, NavigableCallback
         reminderMessageSender.sendActiveReminders(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
-                callbackQuery.getId(),
                 reminders
         );
     }
@@ -49,8 +48,8 @@ public class GetActiveReminders implements CallbackBotCommand, NavigableCallback
 
     @Override
     public void restore(long chatId, int messageId, String queryId) {
-        List<Reminder> reminders = reminderService.getCompletedReminders();
+        List<Reminder> reminders = reminderService.getActiveReminders();
 
-        reminderMessageSender.sendCompletedReminders(chatId, messageId, queryId, reminders);
+        reminderMessageSender.sendActiveReminders(chatId, messageId, reminders);
     }
 }

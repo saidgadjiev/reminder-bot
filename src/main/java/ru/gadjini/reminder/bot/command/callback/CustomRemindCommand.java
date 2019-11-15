@@ -8,6 +8,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.ChangeReminderRequest;
 import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.parser.ParseException;
 import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;
@@ -45,7 +46,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
         this.commandNavigator = commandNavigator;
-        this.name = MessagesProperties.CUSTOM_REMIND_COMMAND_NAME;
+        this.name = MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_NAME;
     }
 
     @Override
@@ -64,7 +65,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
             setReminderId(Integer.parseInt(arguments[0]));
             setMessageId(callbackQuery.getMessage().getMessageId());
         }});
-        messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.CUSTOM_REMIND_COMMAND_DESCRIPTION);
+        messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION);
         messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_CUSTOM_REMIND, keyboardService.goBackCommand());
     }
 

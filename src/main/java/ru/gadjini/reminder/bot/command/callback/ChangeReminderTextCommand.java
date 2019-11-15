@@ -9,6 +9,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.ChangeReminderRequest;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.service.keyboard.KeyboardService;
 
 import java.util.concurrent.ConcurrentHashMap;
 

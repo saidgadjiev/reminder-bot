@@ -4,7 +4,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.service.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.LocalisationService;
 import ru.gadjini.reminder.service.MessageService;
 

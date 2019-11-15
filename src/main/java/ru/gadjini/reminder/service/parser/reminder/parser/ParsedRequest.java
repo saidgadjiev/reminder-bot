@@ -6,6 +6,8 @@ public class ParsedRequest {
 
     private String text;
 
+    private String note;
+
     private ParsedTime parsedTime;
 
     public String getReceiverName() {
@@ -30,5 +32,13 @@ public class ParsedRequest {
 
     void setParsedTime(ParsedTime parsedTime) {
         this.parsedTime = parsedTime;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

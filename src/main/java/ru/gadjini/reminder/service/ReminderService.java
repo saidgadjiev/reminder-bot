@@ -58,6 +58,7 @@ public class ReminderService {
         reminder.setInitialRemindAt(reminder.getRemindAt());
         reminder.setRemindAtInReceiverTimeZone(reminderRequest.getRemindAt());
         reminder.setText(reminderRequest.getText());
+        reminder.setNote(reminderRequest.getNote());
 
         User user = securityService.getAuthenticatedUser();
         TgUser creator = TgUser.from(user);
@@ -185,6 +186,7 @@ public class ReminderService {
         return reminderDao.getActiveReminders(user.getId());
     }
 
+    @Transactional
     public Reminder delete(int reminderId) {
         Reminder reminder = reminderDao.delete(new MapSqlParameterSource().addValue(Reminder.ID, reminderId), new ReminderMapping() {{
             setReceiverMapping(new Mapping() {{
@@ -211,7 +213,7 @@ public class ReminderService {
             setReceiverMapping(new Mapping());
         }});
         oldReminder.getReceiver().setFrom(securityService.getAuthenticatedUser());
-        ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedPostponeTime, ZoneId.of(oldReminder.getReceiver().getZoneId()));
+        ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedPostponeTime, oldReminder.getRemindAtInReceiverTimeZone(), ZoneId.of(oldReminder.getReceiver().getZoneId()));
 
         ZonedDateTime remindAt = remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC);
 
@@ -232,6 +234,7 @@ public class ReminderService {
         }};
     }
 
+    @Transactional
     public Reminder cancel(int reminderId) {
         Reminder reminder = reminderDao.delete(new MapSqlParameterSource().addValue(Reminder.ID, new SqlParameterValue(Types.INTEGER, reminderId)), new ReminderMapping() {{
             setReceiverMapping(new Mapping());

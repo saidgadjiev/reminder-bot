@@ -19,7 +19,7 @@ public class ReminderRequestLexer {
 
     private int timeMatcherEnd;
 
-    private final String str;
+    private String str;
 
     public ReminderRequestLexer(ReminderRequestLexerConfig lexerConfig, String str) {
         this.lexerConfig = lexerConfig;
@@ -27,6 +27,9 @@ public class ReminderRequestLexer {
     }
 
     public List<ReminderLexem> tokenize() {
+        String[] parts = str.split(";");
+
+        str = parts[0].trim();
         String tokenizeStr = StringUtils.reverseDelimited(str, ' ' );
         tokenizeTimePart();
         tokenizeStr = StringUtils.reverseDelimited(tokenizeStr.substring(timeMatcherEnd).trim(), ' ' );
@@ -40,6 +43,9 @@ public class ReminderRequestLexer {
             lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, values.get(PatternBuilder.TEXT).trim()));
             if (values.containsKey(PatternBuilder.LOGIN)) {
                 lexems.addFirst(new ReminderLexem(ReminderToken.LOGIN, values.get(PatternBuilder.LOGIN).trim()));
+            }
+            if (parts.length > 1) {
+                lexems.add(new ReminderLexem(ReminderToken.NOTE, parts[1].trim()));
             }
 
             return lexems;

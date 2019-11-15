@@ -21,22 +21,21 @@ public class ReminderUtils {
         return buildDateTime(parsedTime.getDay(), parsedTime.getAddDays(), parsedTime.getTime(), zoneId);
     }
 
-    public static ZonedDateTime buildRemindAt(ParsedPostponeTime parsedTime, ZoneId zoneId) {
+    public static ZonedDateTime buildRemindAt(ParsedPostponeTime parsedTime, ZonedDateTime remindAt, ZoneId zoneId) {
         if (parsedTime.getPostponeOn() != null) {
-            ZonedDateTime now = ZonedDateTime.now(zoneId);
             PostponeOn postponeOn = parsedTime.getPostponeOn();
 
             if (postponeOn.getDay() != null) {
-                now = now.plusDays(postponeOn.getDay());
+                remindAt = remindAt.plusDays(postponeOn.getDay());
             }
             if (postponeOn.getHour() != null) {
-                now = now.plusHours(postponeOn.getHour());
+                remindAt = remindAt.plusHours(postponeOn.getHour());
             }
             if (postponeOn.getMinute() != null) {
-                now = now.plusMinutes(postponeOn.getMinute());
+                remindAt = remindAt.plusMinutes(postponeOn.getMinute());
             }
 
-            return now;
+            return remindAt;
         } else {
             PostponeAt postponeAt = parsedTime.getPostponeAt();
 
