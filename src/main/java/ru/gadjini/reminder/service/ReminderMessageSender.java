@@ -205,6 +205,12 @@ public class ReminderMessageSender {
         messageService.deleteMessage(chatId, messageId);
     }
 
+    public void sendReminderCantBeCompleted(long chatId, String queryId, int messageId) {
+        messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED);
+        messageService.sendMessageByCode(chatId, MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED);
+        messageService.deleteMessage(chatId, messageId);
+    }
+
     public void sendReminderDeleted(String queryId, int messageId, Reminder reminder) {
         RemindMessage remindMessage = reminder.getRemindMessage();
 

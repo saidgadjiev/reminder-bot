@@ -160,6 +160,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_NOT_FOUND = "message.reminder.not.found";
 
+    public static final String MESSAGE_REMINDER_CANT_BE_COMPLETED = "message.reminder.cant.be.completed";
+
     public static final String POSTPONE_REMINDER_COMMAND_NAME = "postponereminder";
 
     public static final String POSTPONE_REMINDER_COMMAND_DESCRIPTION = "postpone.reminder.command.description";

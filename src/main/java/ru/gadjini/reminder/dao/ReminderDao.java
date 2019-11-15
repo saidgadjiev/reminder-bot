@@ -138,31 +138,21 @@ public class ReminderDao {
                 "DELETE FROM completed_reminder WHERE completed_at <= '" + formatted + "'"
         );
 
-        return (int) IntStream.of(updated).sum();
+        return IntStream.of(updated).sum();
     }
 
     public List<Reminder> getReminders(ReminderMapping reminderMapping, SqlParameterSource sqlParameterSource) {
         StringBuilder sql = new StringBuilder();
         sql.append(buildSelect(reminderMapping)).append(" ");
 
-        StringBuilder where = new StringBuilder();
-        List<Object> values = new ArrayList<>();
-        List<Integer> types = new ArrayList<>();
-        for (Iterator<String> iterator = Arrays.stream(sqlParameterSource.getParameterNames()).iterator(); iterator.hasNext(); ) {
-            String paramName = iterator.next();
+        StringBuilder where = new StringBuilder("WHERE ");
+        AppendClause statementSetter = appendClause(sqlParameterSource, where, "r");
 
-            values.add(sqlParameterSource.getValue(paramName));
-            types.add(sqlParameterSource.getSqlType(paramName));
-            where.append("r.").append(paramName).append(" = ?");
-            if (iterator.hasNext()) {
-                where.append(" AND ");
-            }
-        }
-        sql.append("WHERE ").append(where.toString());
+        sql.append(where.toString());
 
         return jdbcTemplate.query(
                 sql.toString(),
-                new ArgumentTypePreparedStatementSetter(values.toArray(), types.stream().mapToInt(i -> i).toArray()),
+                new ArgumentTypePreparedStatementSetter(statementSetter.values.toArray(), statementSetter.types.stream().mapToInt(i -> i).toArray()),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs, reminderMapping)
         );
     }
@@ -228,25 +218,28 @@ public class ReminderDao {
         return new ArrayList<>(reminders.values());
     }
 
-    public Reminder update(int reminderId, SqlParameterSource sqlParameterSource, ReminderMapping reminderMapping) {
+    public Reminder update(SqlParameterSource updateClause, ReminderMapping reminderMapping, SqlParameterSource whereClause) {
         StringBuilder sql = new StringBuilder();
 
         sql.append("UPDATE reminder SET ");
         List<Object> values = new ArrayList<>();
         List<Integer> types = new ArrayList<>();
-        for (Iterator<String> iterator = Stream.of(sqlParameterSource.getParameterNames()).iterator(); iterator.hasNext(); ) {
+        for (Iterator<String> iterator = Stream.of(updateClause.getParameterNames()).iterator(); iterator.hasNext(); ) {
             String paramName = iterator.next();
 
-            values.add(sqlParameterSource.getValue(paramName));
-            types.add(sqlParameterSource.getSqlType(paramName));
+            values.add(updateClause.getValue(paramName));
+            types.add(updateClause.getSqlType(paramName));
             sql.append(paramName).append(" = ?");
             if (iterator.hasNext()) {
                 sql.append(", ");
             }
         }
-        sql.append(" WHERE id = ?");
-        values.add(reminderId);
-        types.add(Types.INTEGER);
+
+        sql.append(" WHERE ");
+        AppendClause statementSetter = appendClause(whereClause, sql, null);
+
+        values.addAll(statementSetter.values);
+        types.addAll(statementSetter.types);
 
         if (reminderMapping == null) {
             jdbcTemplate.update(
@@ -330,22 +323,12 @@ public class ReminderDao {
     public Reminder delete(SqlParameterSource sqlParameterSource, ReminderMapping reminderMapping) {
         StringBuilder where = new StringBuilder();
 
-        List<Object> values = new ArrayList<>();
-        List<Integer> types = new ArrayList<>();
-        for (Iterator<String> iterator = Arrays.stream(sqlParameterSource.getParameterNames()).iterator(); iterator.hasNext(); ) {
-            String paramName = iterator.next();
+        AppendClause statementSetter = appendClause(sqlParameterSource, where, null);
 
-            values.add(sqlParameterSource.getValue(paramName));
-            types.add(sqlParameterSource.getSqlType(paramName));
-            where.append(paramName).append(" = ?");
-            if (iterator.hasNext()) {
-                where.append(" AND ");
-            }
-        }
         if (reminderMapping == null) {
             jdbcTemplate.update(
                     "DELETE FROM reminder WHERE " + where.toString(),
-                    new ArgumentTypePreparedStatementSetter(values.toArray(), types.stream().mapToInt(i -> i).toArray())
+                    statementSetter
             );
 
             return null;
@@ -359,7 +342,7 @@ public class ReminderDao {
 
         return jdbcTemplate.query(
                 sql.toString(),
-                new ArgumentTypePreparedStatementSetter(values.toArray(), types.stream().mapToInt(i -> i).toArray()),
+                new ArgumentTypePreparedStatementSetter(statementSetter.values.toArray(), statementSetter.types.stream().mapToInt(i -> i).toArray()),
                 rs -> {
                     if (rs.next()) {
                         return resultSetMapper.mapReminder(rs, reminderMapping);
@@ -471,5 +454,37 @@ public class ReminderDao {
         sql.append(selectList.toString(), 0, selectList.length() - 2).append(" ").append(from.toString());
 
         return sql.toString();
+    }
+
+    private AppendClause appendClause(SqlParameterSource sqlParameterSource, StringBuilder clause, String alias) {
+        List<Object> values = new ArrayList<>();
+        List<Integer> types = new ArrayList<>();
+        for (Iterator<String> iterator = Arrays.stream(sqlParameterSource.getParameterNames()).iterator(); iterator.hasNext(); ) {
+            String paramName = iterator.next();
+
+            values.add(sqlParameterSource.getValue(paramName));
+            types.add(sqlParameterSource.getSqlType(paramName));
+            if (StringUtils.isBlank(alias)) {
+                clause.append(paramName).append(" = ?");
+            } else {
+                clause.append(alias).append(".").append(paramName).append(" = ?");
+            }
+            if (iterator.hasNext()) {
+                clause.append(" AND ");
+            }
+        }
+
+        return new AppendClause(values, types);
+    }
+
+    private static class AppendClause {
+        private List<Object> values;
+
+        private List<Integer> types;
+
+        public AppendClause(List<Object> values, List<Integer> types) {
+            this.values = values;
+            this.types = types;
+        }
     }
 }

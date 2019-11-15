@@ -2,7 +2,6 @@ package ru.gadjini.reminder.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
@@ -97,10 +96,12 @@ public class ReminderService {
         validationService.validate(remindAtInReceiverTimeZone);
 
         ZonedDateTime remindAt = remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC);
-        reminderDao.update(reminderId, new MapSqlParameterSource()
+        reminderDao.update(new MapSqlParameterSource()
                         .addValue(Reminder.INITIAL_REMIND_AT, new SqlParameterValue(Types.TIMESTAMP, Timestamp.valueOf(remindAt.toLocalDateTime())))
                         .addValue(Reminder.REMIND_AT, new SqlParameterValue(Types.TIMESTAMP, Timestamp.valueOf(remindAt.toLocalDateTime()))),
-                null
+                null,
+                new MapSqlParameterSource()
+                        .addValue(Reminder.ID, new SqlParameterValue(Types.INTEGER, reminderId))
         );
 
         List<ReminderTime> reminderTimes = getReminderTimes(remindAt);
@@ -152,7 +153,7 @@ public class ReminderService {
 
     @Transactional
     public Reminder completeReminder(int id) {
-        Reminder completed = reminderDao.update(id, new MapSqlParameterSource()
+        Reminder completed = reminderDao.update(new MapSqlParameterSource()
                         .addValue(Reminder.STATUS, new SqlParameterValue(Types.INTEGER, Reminder.Status.COMPLETED.getCode())),
                 new ReminderMapping() {{
                     setReceiverMapping(new Mapping());
@@ -160,8 +161,12 @@ public class ReminderService {
                         setFields(Collections.singletonList(CR_CHAT_ID));
                     }});
                     setRemindMessageMapping(new Mapping());
-                }}
+                }},
+                new MapSqlParameterSource()
+                        .addValue(Reminder.STATUS, new SqlParameterValue(Types.INTEGER, Reminder.Status.ACTIVE.getCode()))
+                        .addValue(Reminder.ID, new SqlParameterValue(Types.INTEGER, id))
         );
+        reminderTimeService.deleteReminderTimes(id);
 
         if (completed == null) {
             return null;
@@ -218,8 +223,13 @@ public class ReminderService {
 
         ZonedDateTime remindAt = remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC);
 
-        reminderDao.update(reminderId, new MapSqlParameterSource()
-                .addValue(Reminder.REMIND_AT, new SqlParameterValue(Types.TIMESTAMP, Timestamp.valueOf(remindAt.toLocalDateTime()))), null);
+        reminderDao.update(
+                new MapSqlParameterSource()
+                        .addValue(Reminder.REMIND_AT, new SqlParameterValue(Types.TIMESTAMP, Timestamp.valueOf(remindAt.toLocalDateTime()))),
+                null,
+                new MapSqlParameterSource()
+                        .addValue(Reminder.ID, new SqlParameterValue(Types.INTEGER, reminderId))
+        );
         Reminder reminder = new Reminder();
         reminder.setRemindAt(remindAt);
         reminder.setRemindAtInReceiverTimeZone(remindAtInReceiverTimeZone);

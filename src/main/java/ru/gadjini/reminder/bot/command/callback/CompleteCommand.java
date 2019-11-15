@@ -32,7 +32,7 @@ public class CompleteCommand implements CallbackBotCommand {
         Reminder reminder = reminderService.completeReminder(reminderId);
 
         if (reminder == null) {
-            reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getId(), callbackQuery.getMessage().getMessageId());
+            reminderMessageSender.sendReminderCantBeCompleted(callbackQuery.getMessage().getChatId(), callbackQuery.getId(), callbackQuery.getMessage().getMessageId());
         } else {
             reminder.getReceiver().setChatId(callbackQuery.getMessage().getChatId());
 
