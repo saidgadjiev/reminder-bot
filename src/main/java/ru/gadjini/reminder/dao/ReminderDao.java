@@ -138,7 +138,7 @@ public class ReminderDao {
                 "DELETE FROM completed_reminder WHERE completed_at <= '" + formatted + "'"
         );
 
-        return (int) IntStream.of(updated).count();
+        return (int) IntStream.of(updated).sum();
     }
 
     public List<Reminder> getReminders(ReminderMapping reminderMapping, SqlParameterSource sqlParameterSource) {
