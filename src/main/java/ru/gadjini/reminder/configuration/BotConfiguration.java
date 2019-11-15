@@ -7,14 +7,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import ru.gadjini.reminder.properties.WebHookProperties;
 
 @Configuration
 public class BotConfiguration {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public TelegramBotsApi telegramBotsApi() throws TelegramApiRequestException {
-        return new TelegramBotsApi("https://1aae0607.ngrok.io", "http://localhost:8080");
+    public TelegramBotsApi telegramBotsApi(WebHookProperties webHookProperties) throws TelegramApiRequestException {
+        return new TelegramBotsApi(webHookProperties.getExternalUrl(), webHookProperties.getInternalUrl());
     }
 
     @Bean

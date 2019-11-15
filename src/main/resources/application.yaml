@@ -1,6 +1,9 @@
 bot:
   name: mega_reminder_bot
   token: ${BOT_TOKEN}
+web-hook:
+  external-url: https://1aae0607.ngrok.io
+  internal-url: http://localhost:8080
 spring:
   profiles:
     active: default

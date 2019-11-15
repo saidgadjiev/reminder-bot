@@ -6,10 +6,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.ApiContextInitializer;
 import ru.gadjini.reminder.properties.BotProperties;
+import ru.gadjini.reminder.properties.WebHookProperties;
 
 @SpringBootApplication
 @EnableConfigurationProperties(value = {
-        BotProperties.class
+        BotProperties.class,
+        WebHookProperties.class
 })
 @EnableScheduling
 public class ReminderApplication {
