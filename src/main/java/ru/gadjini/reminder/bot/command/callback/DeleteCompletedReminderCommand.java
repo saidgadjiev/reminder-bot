@@ -27,7 +27,7 @@ public class DeleteCompletedReminderCommand implements CallbackBotCommand {
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
-        reminderService.deleteCompletedReminders();
+        reminderService.deleteMyCompletedReminders();
 
         reminderMessageSender.sendCompletedRemindersDeleted(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
     }

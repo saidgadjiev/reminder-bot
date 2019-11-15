@@ -18,7 +18,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Repository
@@ -29,6 +31,8 @@ public class ReminderDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private ResultSetMapper resultSetMapper;
+
+    private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
     public ReminderDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, ResultSetMapper resultSetMapper) {
@@ -126,11 +130,15 @@ public class ReminderDao {
         );
     }
 
-    public void deleteCompletedReminder(int reminderId) {
-        jdbcTemplate.batchUpdate(
-                "DELETE FROM reminder WHERE id = " + reminderId + " AND status = 1",
-                "DELETE FROM completed_reminder WHERE id = " + reminderId
+    public int deleteCompletedReminders(LocalDateTime dateTime) {
+        String formatted = dateTimeFormatter.format(dateTime);
+
+        int[] updated = jdbcTemplate.batchUpdate(
+                "DELETE FROM reminder WHERE status = 1 AND completed_at <= '" + formatted + "'",
+                "DELETE FROM completed_reminder WHERE completed_at <= '" + formatted + "'"
         );
+
+        return (int) IntStream.of(updated).count();
     }
 
     public List<Reminder> getReminders(ReminderMapping reminderMapping, SqlParameterSource sqlParameterSource) {

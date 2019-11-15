@@ -2,6 +2,7 @@ package ru.gadjini.reminder.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
@@ -170,14 +171,14 @@ public class ReminderService {
         return completed;
     }
 
-    public void deleteCompletedReminders() {
+    public void deleteMyCompletedReminders() {
         User user = securityService.getAuthenticatedUser();
 
         reminderDao.deleteCompletedReminders(user.getId());
     }
 
-    public void deleteCompletedReminder(int reminderId) {
-        reminderDao.deleteCompletedReminder(reminderId);
+    public int deleteCompletedReminders(LocalDateTime localDateTime) {
+        return reminderDao.deleteCompletedReminders(localDateTime);
     }
 
     public List<Reminder> getActiveReminders() {
