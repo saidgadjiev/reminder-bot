@@ -3,8 +3,8 @@ CREATE OR REPLACE FUNCTION after_reminder_completed()
 AS
 $BODY$
 BEGIN
-    INSERT INTO completed_reminder(reminder_text, creator_id, receiver_id, remind_at, initial_remind_at)
-    VALUES (NEW.reminder_text, NEW.creator_id, NEW.receiver_id, NEW.remind_at, NEW.initial_remind_at);
+    INSERT INTO completed_reminder(reminder_text, creator_id, receiver_id, remind_at, initial_remind_at, completed_at)
+    VALUES (NEW.reminder_text, NEW.creator_id, NEW.receiver_id, NEW.remind_at, NEW.initial_remind_at, NEW.completed_at);
     RETURN NEW;
 END;
 $BODY$ LANGUAGE PLPGSQL;;
