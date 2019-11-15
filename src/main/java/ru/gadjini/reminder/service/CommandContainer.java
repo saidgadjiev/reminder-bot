@@ -35,7 +35,8 @@ public class CommandContainer {
                             SecurityService securityService,
                             ReminderMessageSender reminderMessageSender,
                             MessageService messageService,
-                            CallbackCommandNavigator callbackCommandNavigator) {
+                            CallbackCommandNavigator callbackCommandNavigator,
+                            TimezoneService timezoneService) {
         for (BotCommand botCommand : getBotCommands(keyboardService, reminderService, tgUserService, requestParser,
                 securityService, reminderMessageSender, messageService)) {
             botCommandRegistryMap.put(botCommand.getCommandIdentifier(), botCommand);
@@ -44,7 +45,15 @@ public class CommandContainer {
                 commandNavigator, reminderService, tgUserService, requestParser, reminderMessageSender, messageService, callbackCommandNavigator)) {
             callbackBotCommandMap.put(botCommand.getName(), botCommand);
         }
-        keyboardBotCommands = getKeyboardBotCommands(keyboardService, friendshipService, localisationService, commandNavigator, messageService);
+        keyboardBotCommands = getKeyboardBotCommands(
+                keyboardService,
+                friendshipService,
+                localisationService,
+                commandNavigator,
+                tgUserService,
+                timezoneService,
+                messageService
+        );
 
         commandNavigator.setCommandContainer(this);
         callbackCommandNavigator.setCommandContainer(this);
@@ -62,13 +71,21 @@ public class CommandContainer {
         return keyboardBotCommands;
     }
 
-    private List<KeyboardBotCommand> getKeyboardBotCommands(KeyboardService keyboardService, FriendshipService friendshipService, LocalisationService localisationService, CommandNavigator commandNavigator, MessageService messageService) {
+    private List<KeyboardBotCommand> getKeyboardBotCommands(KeyboardService keyboardService,
+                                                            FriendshipService friendshipService,
+                                                            LocalisationService localisationService,
+                                                            CommandNavigator commandNavigator,
+                                                            TgUserService tgUserService,
+                                                            TimezoneService timezoneService,
+                                                            MessageService messageService) {
         return List.of(
                 new GeFriendsCommand(keyboardService, friendshipService, messageService, localisationService),
                 new GetFriendRequestsCommand(keyboardService, localisationService, friendshipService, messageService),
                 new SendFriendRequestCommand(localisationService, friendshipService, messageService,
                         keyboardService, commandNavigator),
                 new GoBackCommand(localisationService, commandNavigator),
+                new ChangeTimezoneCommand(localisationService, messageService, tgUserService, timezoneService,
+                        commandNavigator, keyboardService),
                 new GetRemindersCommand(localisationService, messageService, keyboardService));
     }
 

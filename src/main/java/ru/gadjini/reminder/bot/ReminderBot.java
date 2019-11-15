@@ -11,10 +11,10 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.exception.ValidationException;
 import ru.gadjini.reminder.properties.BotProperties;
-import ru.gadjini.reminder.service.CommandNavigator;
 import ru.gadjini.reminder.service.CommandExecutor;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.CommandNavigator;
 import ru.gadjini.reminder.service.MessageService;
+import ru.gadjini.reminder.service.keyboard.KeyboardService;
 
 @Component
 public class ReminderBot extends WorkerUpdatesBot {
@@ -83,6 +83,11 @@ public class ReminderBot extends WorkerUpdatesBot {
     @Override
     public String getBotToken() {
         return botProperties.getToken();
+    }
+
+    @Override
+    public String getBotPath() {
+        return botProperties.getName();
     }
 
     private boolean restoreIfNeed(long chatId, String command) {

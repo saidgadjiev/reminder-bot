@@ -5,6 +5,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.TgUser;
 
+import java.time.ZoneId;
+
 @Repository
 public class TgUserDao {
 
@@ -26,6 +28,12 @@ public class TgUserDao {
                     preparedStatement.setString(4, tgUser.getLastName());
                     preparedStatement.setLong(5, tgUser.getChatId());
                 }
+        );
+    }
+
+    public void updateTimezone(int userId, ZoneId zoneId) {
+        jdbcTemplate.update(
+                "UPDATE tg_user SET zone_id ='" + zoneId.getId() + "' WHERE user_id = " + userId
         );
     }
 }

@@ -13,3 +13,4 @@ logging:
   file: logs/reminder.log
   level:
     ru: debug
+    net.iakovlev.timeshape: error

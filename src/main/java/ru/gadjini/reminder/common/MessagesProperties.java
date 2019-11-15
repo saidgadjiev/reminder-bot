@@ -227,4 +227,12 @@ public class MessagesProperties {
     public static final String GO_BACK_CALLBACK_COMMAND_NAME = "goback";
 
     public static final String GO_BACK_CALLBACK_COMMAND_DESCRIPTION = "go.back.callback.command.description";
+
+    public static final String CHANGE_TIMEZONE_COMMAND_NAME = "change.timezone.command.name";
+
+    public static final String CHANGE_TIMEZONE_COMMAND_HISTORY_NAME = "changetimezone";
+
+    public static final String CURRENT_TIMEZONE = "current.timezone";
+
+    public static final String TIMEZONE_CHANGED = "timezone.changed";
 }

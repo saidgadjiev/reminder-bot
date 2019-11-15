@@ -135,6 +135,10 @@ public class KeyboardService {
             add(localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME));
         }});
 
+        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
+            add(localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME));
+        }});
+
         return replyKeyboardMarkup;
     }
 

@@ -37,4 +37,8 @@ public class TgUserService {
     public ZoneId getTimeZone(String username) {
         return ZoneId.of("Europe/Moscow");
     }
+
+    public void saveZoneId(int userId, ZoneId zoneId) {
+        tgUserDao.updateTimezone(userId, zoneId);
+    }
 }
