@@ -125,12 +125,14 @@ public class FriendshipDao {
     public Friendship getFriendship(int userOneId, String friendUsername) {
         return namedParameterJdbcTemplate.query(
                 "SELECT f.*\n" +
-                        "FROM friendship f,\n" +
-                        "     tg_user tu\n" +
-                        "WHERE \n" +
-                        "CASE WHEN tu.user_id = :user_id THEN tu.username = :friend_username\n" +
-                        "WHEN tu.username = :friend_sername THEN tu.user_id = :user_id\n" +
-                        "END",
+                        "FROM friendship f\n" +
+                        "         INNER JOIN\n" +
+                        "     tg_user tu ON\n" +
+                        "         CASE\n" +
+                        "             WHEN f.user_one_id = :user_id THEN tu.user_id = f.user_two_id\n" +
+                        "             WHEN f.user_two_id = :user_id THEN tu.user_id = f.user_one_id\n" +
+                        "             END\n" +
+                        "WHERE tu.username = :friend_username",
                 new MapSqlParameterSource().addValue("user_id", userOneId).addValue("friend_username", friendUsername),
                 rs -> {
                     if (rs.next()) {
@@ -167,8 +169,10 @@ public class FriendshipDao {
                 "WITH f AS (\n" +
                         "    INSERT INTO friendship (user_one_id, user_two_id, status) SELECT ?, user_id, ? FROM tg_user WHERE username = ? RETURNING id, user_one_id, user_two_id, status\n" +
                         ")\n" +
-                        "SELECT f.user_two_id, ut.first_name AS ut_first_name,\n" +
-                        "       ut.last_name  AS ut_last_name\n" +
+                        "SELECT f.user_two_id,\n" +
+                        "       ut.first_name AS ut_first_name,\n" +
+                        "       ut.last_name  AS ut_last_name,\n" +
+                        "       ut.chat_id AS ut_chat_id\n" +
                         "FROM f INNER JOIN tg_user ut ON f.user_two_id = ut.user_id",
                 ps -> {
                     ps.setInt(1, friendship.getUserOneId());
@@ -180,6 +184,7 @@ public class FriendshipDao {
                     friendship.getUserTwo().setUserId(friendship.getUserTwoId());
                     friendship.getUserTwo().setFirstName(rs.getString("ut_first_name"));
                     friendship.getUserTwo().setLastName(rs.getString("ut_last_name"));
+                    friendship.getUserTwo().setChatId(rs.getLong("ut_chat_id"));
                 }
         );
     }

@@ -32,8 +32,8 @@ public class PostponeRequestParser {
     public PostponeRequestParser(LocalisationService localisationService, Locale locale) {
         typeOn = localisationService.getMessage(MessagesProperties.REGEX_POSTPONE_TYPE_ON);
         typeAt = localisationService.getMessage(MessagesProperties.REGEX_POSTPONE_TYPE_AT);
-        tomorrow = localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TOMORROW);
-        dayAfterTomorrow = localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_DAY_AFTER_TOMORROW);
+        tomorrow = localisationService.getMessage(MessagesProperties.REGEXP_TOMORROW);
+        dayAfterTomorrow = localisationService.getMessage(MessagesProperties.REGEXP_DAY_AFTER_TOMORROW);
         this.locale = locale;
     }
 
