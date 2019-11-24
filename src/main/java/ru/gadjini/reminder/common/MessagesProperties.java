@@ -14,7 +14,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_CREATED_CREATOR = "message.reminder.created.creator";
 
-    public static final String MESSAGE_REMINDER_ME_CREATED = "message.reminder.me.created";
+    public static final String MESSAGE_REMINDER_CREATED_ME = "message.reminder.created.me";
 
     public static final String MESSAGE_REMINDER_FORMAT = "message.reminder.format";
 

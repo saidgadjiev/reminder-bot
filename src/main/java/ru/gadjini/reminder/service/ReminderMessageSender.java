@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.RemindMessage;
 import ru.gadjini.reminder.domain.Reminder;
@@ -109,17 +108,22 @@ public class ReminderMessageSender {
     }
 
     public void sendReminderCreated(Reminder reminder, ReplyKeyboardMarkup replyKeyboardMarkup) {
-        String reminderText = reminderTextBuilder.create(reminder);
         int messageId;
 
         if (reminder.getCreatorId() != reminder.getReceiverId()) {
-            messageId = messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED_RECEIVER,
-                    new Object[]{UserUtils.userLink(reminder.getCreator()), reminderText}, keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)).getMessageId();
-            messageService.sendMessageByCode(reminder.getCreator().getChatId(), MessagesProperties.MESSAGE_REMINDER_CREATED_CREATOR,
-                    new Object[]{reminderText, UserUtils.userLink(reminder.getReceiver())}, replyKeyboardMarkup);
+            messageId = messageService.sendMessage(
+                    reminder.getReceiver().getChatId(),
+                    reminderTextBuilder.reminderCreatedReceiver(reminder),
+                    keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)).getMessageId();
+            messageService.sendMessage(
+                    reminder.getCreator().getChatId(),
+                    reminderTextBuilder.reminderCreatedCreator(reminder),
+                    replyKeyboardMarkup);
         } else {
-            messageId = messageService.sendMessageByCode(reminder.getCreator().getChatId(), MessagesProperties.MESSAGE_REMINDER_ME_CREATED,
-                    new Object[]{reminderText}, keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)).getMessageId();
+            messageId = messageService.sendMessage(
+                    reminder.getCreator().getChatId(),
+                    reminderTextBuilder.reminderCreatedMe(reminder),
+                    keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)).getMessageId();
         }
         remindMessageService.create(reminder.getId(), messageId);
     }

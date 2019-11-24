@@ -112,6 +112,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         }
         reminderRequest.setText(parsedRequest.getText());
         reminderRequest.setRemindAt(ReminderUtils.buildRemindAt(parsedRequest.getParsedTime(), zoneId));
+        reminderRequest.setNote(parsedRequest.getNote());
 
         return reminderRequest;
     }

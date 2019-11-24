@@ -127,5 +127,6 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
         ZoneId zoneId = tgUserService.getTimeZone(reminderRequest.getReceiverId());
         reminderRequest.setRemindAt(ReminderUtils.buildRemindAt(parsedRequest.getParsedTime(), zoneId));
+        reminderRequest.setNote(parsedRequest.getNote());
     }
 }

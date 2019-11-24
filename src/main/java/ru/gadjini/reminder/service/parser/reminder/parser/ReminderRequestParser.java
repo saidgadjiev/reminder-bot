@@ -100,6 +100,9 @@ public class ReminderRequestParser {
         parsedRequest.setText(consume(lexems, ReminderToken.TEXT).getValue());
 
         parseTime(lexems);
+        if (check(lexems, ReminderToken.NOTE)) {
+            parsedRequest.setNote(consume(lexems, ReminderToken.NOTE).getValue());
+        }
     }
 
     private void consumeDayWord(List<ReminderLexem> lexems) {

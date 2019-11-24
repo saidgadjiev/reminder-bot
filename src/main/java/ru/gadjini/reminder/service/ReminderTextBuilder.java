@@ -34,6 +34,58 @@ public class ReminderTextBuilder {
         return create0(text, remindAt, note);
     }
 
+    public String reminderCreatedReceiver(Reminder reminder) {
+        StringBuilder result = new StringBuilder();
+
+        result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_RECEIVER, new Object[]{
+                reminder.getText() + " " + time(reminder.getRemindAtInReceiverTimeZone()),
+                UserUtils.userLink(reminder.getCreator())
+        }));
+
+        if (StringUtils.isNotBlank(reminder.getNote())) {
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
+                    reminder.getNote()
+            }));
+        }
+
+        return result.toString();
+    }
+
+    public String reminderCreatedCreator(Reminder reminder) {
+        StringBuilder result = new StringBuilder();
+
+        result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_CREATOR, new Object[]{
+                reminder.getText() + " " + time(reminder.getRemindAtInReceiverTimeZone()),
+                UserUtils.userLink(reminder.getReceiver())
+        }));
+
+        if (StringUtils.isNotBlank(reminder.getNote())) {
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
+                    reminder.getNote()
+            }));
+        }
+
+        return result.toString();
+    }
+
+    public String reminderCreatedMe(Reminder reminder) {
+        StringBuilder result = new StringBuilder();
+
+        result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_ME, new Object[]{
+                reminder.getText() + " " + time(reminder.getRemindAtInReceiverTimeZone())
+        }));
+
+        if (StringUtils.isNotBlank(reminder.getNote())) {
+            result
+                    .append("\n")
+                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
+                            reminder.getNote()
+                    }));
+        }
+
+        return result.toString();
+    }
+
     public String remindReceiver(Reminder reminder) {
         StringBuilder result = new StringBuilder();
 
