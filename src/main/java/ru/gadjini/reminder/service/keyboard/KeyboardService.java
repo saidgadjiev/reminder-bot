@@ -3,11 +3,13 @@ package ru.gadjini.reminder.service.keyboard;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.service.CommandExecutor;
 import ru.gadjini.reminder.service.LocalisationService;
 
@@ -155,11 +157,11 @@ public class KeyboardService {
     public InlineKeyboardMarkup getCreatorReminderKeyboard(int reminderId, String prevHistoryName) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
-        keyboardMarkup.getKeyboard().add(List.of(
-                buttonFactory.editReminderTimeButton(reminderId),
-                buttonFactory.editReminderTextButton(reminderId),
-                buttonFactory.deleteReminderButton(reminderId)
-        ));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminderTimeButton(reminderId)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminderTextButton(reminderId)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderButton(reminderId)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.changeReminderNote(reminderId)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderNote(reminderId)));
 
         if (prevHistoryName != null) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName)));
@@ -168,22 +170,33 @@ public class KeyboardService {
         return keyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getEditMySelfReminderKeyboard(int reminderId, String prevHistoryName) {
+    private InlineKeyboardMarkup getEditMySelfReminderKeyboard(int reminderId, String prevHistoryName) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
-        keyboardMarkup.getKeyboard().add(List.of(
-                buttonFactory.editReminderTimeButton(reminderId),
-                buttonFactory.editReminderTextButton(reminderId),
-                buttonFactory.deleteReminderButton(reminderId)
-        ));
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId), buttonFactory.cancelReminderButton(reminderId)));
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminderId), buttonFactory.postponeReminderButton(reminderId)));
+
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminderTimeButton(reminderId)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminderTextButton(reminderId)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderButton(reminderId)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.changeReminderNote(reminderId)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderNote(reminderId)));
 
         if (prevHistoryName != null) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName)));
         }
 
         return keyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup getReminderEditKeyboard(int currUserId, Reminder reminder) {
+        if (reminder.getCreatorId() == reminder.getReceiverId()) {
+            return getEditMySelfReminderKeyboard(reminder.getId(), MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME);
+        } else if (currUserId == reminder.getReceiverId()) {
+            return getReceiverReminderKeyboard(reminder.getId(), MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME);
+        } else {
+            return getCreatorReminderKeyboard(reminder.getId(), MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME);
+        }
     }
 
     private ReplyKeyboardMarkup replyKeyboardMarkup() {

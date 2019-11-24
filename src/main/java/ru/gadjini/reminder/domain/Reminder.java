@@ -31,7 +31,7 @@ public class Reminder {
     private int creatorId;
 
     private TgUser creator;
-    
+
     private int receiverId;
 
     private TgUser receiver;
@@ -170,7 +170,7 @@ public class Reminder {
         }
 
         public static Status fromCode(int code) {
-            for (Status status: values()) {
+            for (Status status : values()) {
                 if (status.code == code) {
                     return status;
                 }

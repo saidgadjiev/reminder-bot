@@ -107,8 +107,10 @@ public class CommandContainer {
                 new CustomRemindCommand(messageService, keyboardService, requestParser, reminderService, reminderMessageSender, commandNavigator),
                 new GetCompletedRemindersCommand(reminderService, reminderMessageSender),
                 new GoBackCallbackCommand(callbackCommandNavigator),
-                new GetActiveRemindersCommand(reminderService, reminderMessageSender),
-                new DeleteCompletedReminderCommand(reminderService, reminderMessageSender)
+                new GetActiveRemindersCommand(reminderService, reminderMessageSender, messageService, commandNavigator),
+                new DeleteCompletedReminderCommand(reminderService, reminderMessageSender),
+                new ChangeReminderNoteCommand(reminderMessageSender, messageService, reminderService, commandNavigator, keyboardService),
+                new DeleteReminderNoteCommand(reminderMessageSender, reminderService)
         );
     }
 

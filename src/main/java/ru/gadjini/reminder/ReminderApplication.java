@@ -8,6 +8,7 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.properties.WebHookProperties;
 
+
 @SpringBootApplication
 @EnableConfigurationProperties(value = {
         BotProperties.class,

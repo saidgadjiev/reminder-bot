@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -25,8 +26,47 @@ public class ReminderTextBuilder {
         this.localisationService = localisationService;
     }
 
-    public String create(String text, ZonedDateTime remindAt) {
-        return text + " " + time(remindAt);
+    public String create(Reminder reminder) {
+        return create0(reminder.getText(), reminder.getRemindAtInReceiverTimeZone(), reminder.getNote());
+    }
+
+    public String create(String text, ZonedDateTime remindAt, String note) {
+        return create0(text, remindAt, note);
+    }
+
+    public String remindReceiver(Reminder reminder) {
+        StringBuilder result = new StringBuilder();
+
+        result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND, new Object[]{
+                reminder.getText() + " " + time(reminder.getRemindAtInReceiverTimeZone()),
+                UserUtils.userLink(reminder.getCreator())
+        }));
+
+        if (StringUtils.isNotBlank(reminder.getNote())) {
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
+                    reminder.getNote()
+            }));
+        }
+
+        return result.toString();
+    }
+
+    public String remindMe(Reminder reminder) {
+        StringBuilder result = new StringBuilder();
+
+        result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_ME, new Object[]{
+                reminder.getText() + " " + time(reminder.getRemindAtInReceiverTimeZone())
+        }));
+
+        if (StringUtils.isNotBlank(reminder.getNote())) {
+            result
+                    .append("\n")
+                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
+                            reminder.getNote()
+                    }));
+        }
+
+        return result.toString();
     }
 
     public String changeReminderTime(String text, TgUser creator, ZonedDateTime newRemindAt, ZonedDateTime oldRemindAt) {
@@ -35,6 +75,23 @@ public class ReminderTextBuilder {
                 text,
                 time(oldRemindAt),
                 time(newRemindAt)
+        });
+    }
+
+    public String changeReminderNoteReceiver(String text, String note, TgUser creator, ZonedDateTime remindAt) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE_EDITED_RECEIVER, new Object[]{
+                UserUtils.userLink(creator),
+                text,
+                time(remindAt),
+                note
+        });
+    }
+
+    public String deleteReminderNoteReceiver(String text, TgUser creator, ZonedDateTime remindAt) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE_DELETED_RECEIVER, new Object[]{
+                UserUtils.userLink(creator),
+                text,
+                time(remindAt)
         });
     }
 
@@ -56,9 +113,14 @@ public class ReminderTextBuilder {
 
             if (reminder.getReceiverId() != reminder.getCreatorId()) {
                 if (requesterId == reminder.getReceiverId()) {
-                    text.append(" ".repeat(number.length() + 2)).append("От кого: ").append(UserUtils.userLink(reminder.getCreator()));
+                    text
+                            .append(" ".repeat(number.length() + 2))
+                            .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATOR)).append(": ")
+                            .append(UserUtils.userLink(reminder.getCreator()));
                 } else {
-                    text.append(" ".repeat(number.length() + 2)).append("Кому: ").append(UserUtils.userLink(reminder.getReceiver()));
+                    text.append(" ".repeat(number.length() + 2))
+                            .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_RECEIVER))
+                            .append(": ").append(UserUtils.userLink(reminder.getReceiver()));
                 }
                 text.append("\n");
             }
@@ -129,5 +191,19 @@ public class ReminderTextBuilder {
         } else {
             return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{fixedDay(remindAt, time)});
         }
+    }
+
+    private String create0(String text, ZonedDateTime remindAt, String note) {
+        StringBuilder result = new StringBuilder();
+
+        result.append(text).append(" ").append(time(remindAt));
+
+        if (StringUtils.isNotBlank(note)) {
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[] {
+                    note
+            }));
+        }
+
+        return result.toString();
     }
 }

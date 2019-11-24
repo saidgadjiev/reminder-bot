@@ -35,6 +35,7 @@ public class ReminderJob {
     }
 
     @Scheduled(cron = "0 0 0 * * *")
+    //@Scheduled(fixedDelay = 1000)
     public void deleteCompletedReminders() {
         LocalDateTime now = LocalDateTime.now();
         int deleted = reminderService.deleteCompletedReminders(now);

@@ -2,6 +2,8 @@ package ru.gadjini.reminder.domain;
 
 public class RemindMessage {
 
+    public static final String TYPE = "remind_message";
+
     public static final String ID = "id";
 
     public static final String REMINDER_ID = "reminder_id";

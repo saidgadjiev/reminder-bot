@@ -10,9 +10,9 @@ public class MessagesProperties {
 
     public static final String HELP_COMMAND_NAME = "help";
 
-    public static final String MESSAGE_REMINDER_FROM = "message.reminder.from";
+    public static final String MESSAGE_REMINDER_CREATED_RECEIVER = "message.reminder.created.receiver";
 
-    public static final String MESSAGE_REMINDER_CREATED = "message.reminder.created";
+    public static final String MESSAGE_REMINDER_CREATED_CREATOR = "message.reminder.created.creator";
 
     public static final String MESSAGE_REMINDER_ME_CREATED = "message.reminder.me.created";
 
@@ -120,6 +120,10 @@ public class MessagesProperties {
 
     public static final String EDIT_REMINDER_TEXT_COMMAND_NAME = "editremindertext";
 
+    public static final String EDIT_REMINDER_NOTE_COMMAND_DESCRIPTION = "edit.reminder.note.command.description";
+
+    public static final String EDIT_REMINDER_NOTE_COMMAND_NAME = "editremindernote";
+
     public static final String EDIT_REMINDER_TEXT_COMMAND_DESCRIPTION = "edit.reminder.text.command.description";
 
     public static final String MESSAGE_REMINDER_TIME = "message.reminder.time";
@@ -196,6 +200,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_COMPLETED_DELETED = "message.completed.deleted";
 
+    public static final String MESSAGE_ACTIVE_REMINDERS_COUNT = "message.active.reminders.count";
+
     public static final String CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION = "custom.reminder.time.command.description";
 
     public static final String MESSAGE_CUSTOM_REMIND = "message.custom.remind";
@@ -235,4 +241,26 @@ public class MessagesProperties {
     public static final String CURRENT_TIMEZONE = "current.timezone";
 
     public static final String TIMEZONE_CHANGED = "timezone.changed";
+
+    public static final String MESSAGE_REMINDER_NOTE_EDITED_RECEIVER = "message.reminder.note.edited.receiver";
+
+    public static final String MESSAGE_REMINDER_NOTE = "message.reminder.note";
+
+    public static final String MESSAGE_REMINDER_NOTE_EDITED_CREATOR = "message.reminder.note.edited.creator";
+
+    public static final String MESSAGE_REMINDER_CREATOR = "message.reminder.creator";
+
+    public static final String MESSAGE_REMINDER_RECEIVER = "message.reminder.receiver";
+
+    public static final String MESSAGE_REMINDER_NOTE_ANSWER = "message.reminder.note.answer";
+
+    public static final String MESSAGE_REMINDER_EDIT_NOTE = "message.reminder.edit.note";
+
+    public static final String DELETE_REMINDER_NOTE_COMMAND_DESCRIPTION = "delete.reminder.note.command.description";
+
+    public static final String DELETE_REMINDER_NOTE_COMMAND_NAME = "deleteremindernote";
+
+    public static final String MESSAGE_REMINDER_NOTE_DELETED_RECEIVER = "message.reminder.note.deleted.receiver";
+
+    public static final String MESSAGE_REMINDER_NOTE_DELETED = "message.reminder.note.deleted";
 }

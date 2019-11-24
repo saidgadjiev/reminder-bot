@@ -2,8 +2,6 @@ package ru.gadjini.reminder.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.SqlParameterValue;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -11,6 +9,7 @@ import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.model.ReminderRequest;
@@ -23,10 +22,10 @@ import ru.gadjini.reminder.util.DateUtils;
 import ru.gadjini.reminder.util.ReminderUtils;
 
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 //TODO: Не хватает валидации
@@ -96,12 +95,13 @@ public class ReminderService {
         validationService.validate(remindAtInReceiverTimeZone);
 
         ZonedDateTime remindAt = remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC);
-        reminderDao.update(new MapSqlParameterSource()
-                        .addValue(Reminder.INITIAL_REMIND_AT, new SqlParameterValue(Types.TIMESTAMP, Timestamp.valueOf(remindAt.toLocalDateTime())))
-                        .addValue(Reminder.REMIND_AT, new SqlParameterValue(Types.TIMESTAMP, Timestamp.valueOf(remindAt.toLocalDateTime()))),
-                null,
-                new MapSqlParameterSource()
-                        .addValue(Reminder.ID, new SqlParameterValue(Types.INTEGER, reminderId))
+        reminderDao.update(
+                new HashMap<>() {{
+                    put(ReminderTable.TABLE.INITIAL_REMIND_AT, Timestamp.valueOf(remindAt.toLocalDateTime()));
+                    put(ReminderTable.TABLE.REMIND_AT, Timestamp.valueOf(remindAt.toLocalDateTime()));
+                }},
+                ReminderTable.TABLE.ID.eq(reminderId),
+                null
         );
 
         List<ReminderTime> reminderTimes = getReminderTimes(remindAt);
@@ -122,6 +122,49 @@ public class ReminderService {
             setOldReminder(oldReminder);
             setNewReminder(reminder);
         }};
+    }
+
+    @Transactional
+    public Reminder changeReminderNote(int reminderId, String note) {
+        Reminder reminder = reminderDao.update(
+                new HashMap<>() {{
+                    put(ReminderTable.TABLE.NOTE, note);
+                }},
+                ReminderTable.TABLE.ID.eq(reminderId),
+                new ReminderMapping() {{
+                    setRemindMessageMapping(new Mapping());
+                    setReceiverMapping(new Mapping() {{
+                        setFields(List.of(ReminderMapping.RC_CHAT_ID));
+                    }});
+                }}
+        );
+
+        reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
+
+        return reminder;
+    }
+
+    public Reminder deleteReminderNote(int reminderId) {
+        Reminder reminder = reminderDao.update(
+                new HashMap<>() {{
+                    put(ReminderTable.TABLE.NOTE, null);
+                }},
+                ReminderTable.TABLE.ID.eq(reminderId),
+                new ReminderMapping() {{
+                    setRemindMessageMapping(new Mapping());
+                    setReceiverMapping(new Mapping() {{
+                        setFields(List.of(ReminderMapping.RC_CHAT_ID));
+                    }});
+                }}
+        );
+
+        if (reminder == null) {
+            return null;
+        }
+
+        reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
+
+        return reminder;
     }
 
     @Transactional
@@ -153,18 +196,18 @@ public class ReminderService {
 
     @Transactional
     public Reminder completeReminder(int id) {
-        Reminder completed = reminderDao.update(new MapSqlParameterSource()
-                        .addValue(Reminder.STATUS, new SqlParameterValue(Types.INTEGER, Reminder.Status.COMPLETED.getCode())),
+        Reminder completed = reminderDao.update(
+                new HashMap<>() {{
+                    put(ReminderTable.TABLE.STATUS, Reminder.Status.COMPLETED.getCode());
+                }},
+                ReminderTable.TABLE.STATUS.equal(Reminder.Status.ACTIVE.getCode()).and(ReminderTable.TABLE.ID.equal(id)),
                 new ReminderMapping() {{
                     setReceiverMapping(new Mapping());
                     setCreatorMapping(new Mapping() {{
                         setFields(Collections.singletonList(CR_CHAT_ID));
                     }});
                     setRemindMessageMapping(new Mapping());
-                }},
-                new MapSqlParameterSource()
-                        .addValue(Reminder.STATUS, new SqlParameterValue(Types.INTEGER, Reminder.Status.ACTIVE.getCode()))
-                        .addValue(Reminder.ID, new SqlParameterValue(Types.INTEGER, id))
+                }}
         );
         reminderTimeService.deleteReminderTimes(id);
 
@@ -194,12 +237,14 @@ public class ReminderService {
 
     @Transactional
     public Reminder delete(int reminderId) {
-        Reminder reminder = reminderDao.delete(new MapSqlParameterSource().addValue(Reminder.ID, reminderId), new ReminderMapping() {{
-            setReceiverMapping(new Mapping() {{
-                setFields(List.of(ReminderMapping.RC_CHAT_ID));
-            }});
-            setRemindMessageMapping(new Mapping());
-        }});
+        Reminder reminder = reminderDao.delete(
+                ReminderTable.TABLE.ID.equal(reminderId),
+                new ReminderMapping() {{
+                    setReceiverMapping(new Mapping() {{
+                        setFields(List.of(ReminderMapping.RC_CHAT_ID));
+                    }});
+                    setRemindMessageMapping(new Mapping());
+                }});
 
         if (reminder == null) {
             return null;
@@ -224,11 +269,11 @@ public class ReminderService {
         ZonedDateTime remindAt = remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC);
 
         reminderDao.update(
-                new MapSqlParameterSource()
-                        .addValue(Reminder.REMIND_AT, new SqlParameterValue(Types.TIMESTAMP, Timestamp.valueOf(remindAt.toLocalDateTime()))),
-                null,
-                new MapSqlParameterSource()
-                        .addValue(Reminder.ID, new SqlParameterValue(Types.INTEGER, reminderId))
+                new HashMap<>() {{
+                    put(ReminderTable.TABLE.REMIND_AT, Timestamp.valueOf(remindAt.toLocalDateTime()));
+                }},
+                ReminderTable.TABLE.ID.equal(reminderId),
+                null
         );
         Reminder reminder = new Reminder();
         reminder.setRemindAt(remindAt);
@@ -247,13 +292,15 @@ public class ReminderService {
 
     @Transactional
     public Reminder cancel(int reminderId) {
-        Reminder reminder = reminderDao.delete(new MapSqlParameterSource().addValue(Reminder.ID, new SqlParameterValue(Types.INTEGER, reminderId)), new ReminderMapping() {{
-            setReceiverMapping(new Mapping());
-            setCreatorMapping(new Mapping() {{
-                setFields(Collections.singletonList(CR_CHAT_ID));
-            }});
-            setRemindMessageMapping(new Mapping());
-        }});
+        Reminder reminder = reminderDao.delete(
+                ReminderTable.TABLE.ID.equal(reminderId),
+                new ReminderMapping() {{
+                    setReceiverMapping(new Mapping());
+                    setCreatorMapping(new Mapping() {{
+                        setFields(Collections.singletonList(CR_CHAT_ID));
+                    }});
+                    setRemindMessageMapping(new Mapping());
+                }});
 
         if (reminder == null) {
             return null;

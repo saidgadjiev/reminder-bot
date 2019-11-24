@@ -37,11 +37,12 @@ public class ResultSetMapper {
         reminder.setText(rs.getString(Reminder.TEXT));
         reminder.setReceiverId(rs.getInt(Reminder.RECEIVER_ID));
         reminder.setCreatorId(rs.getInt(Reminder.CREATOR_ID));
+        reminder.setNote(rs.getString(Reminder.NOTE));
         reminder.setRemindAt(ZonedDateTime.of(rs.getTimestamp(Reminder.REMIND_AT).toLocalDateTime(), ZoneOffset.UTC));
 
         if (reminderMapping.getReceiverMapping() != null) {
             String zoneId = rs.getString("rc_zone_id");
-            reminder.setRemindAtInReceiverTimeZone(ZonedDateTime.of(rs.getTimestamp("rc_remind_at").toLocalDateTime(), ZoneId.of(zoneId)));
+            reminder.setRemindAtInReceiverTimeZone(reminder.getRemindAt().withZoneSameInstant(ZoneId.of(zoneId)));
             TgUser rc = new TgUser();
 
             rc.setZoneId(zoneId);

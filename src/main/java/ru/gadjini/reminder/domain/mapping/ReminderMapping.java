@@ -11,6 +11,10 @@ public class ReminderMapping {
 
     public static final String CR_CHAT_ID = "cr_chat_id";
 
+    public static final String OLD_REMINDER_TEXT = "old_reminder_text";
+
+    public static final String OLD_REMIND_AT = "old_remind_at";
+
     private Mapping receiverMapping;
 
     private Mapping creatorMapping;

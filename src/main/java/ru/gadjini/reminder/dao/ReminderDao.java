@@ -1,16 +1,19 @@
 package ru.gadjini.reminder.dao;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jooq.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.ArgumentTypePreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.jooq.RemindMessageTable;
+import ru.gadjini.reminder.domain.jooq.ReminderTable;
+import ru.gadjini.reminder.domain.jooq.TgUserTable;
 import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
+import ru.gadjini.reminder.jdbc.JooqPreparedSetter;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.ResultSetMapper;
 
@@ -21,10 +24,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @Repository
 public class ReminderDao {
+
+    private DSLContext dslContext;
 
     private JdbcTemplate jdbcTemplate;
 
@@ -35,7 +39,9 @@ public class ReminderDao {
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
-    public ReminderDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, ResultSetMapper resultSetMapper) {
+    public ReminderDao(DSLContext dslContext, JdbcTemplate jdbcTemplate,
+                       NamedParameterJdbcTemplate namedParameterJdbcTemplate, ResultSetMapper resultSetMapper) {
+        this.dslContext = dslContext;
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.resultSetMapper = resultSetMapper;
@@ -51,13 +57,7 @@ public class ReminderDao {
 
     public List<Reminder> getActiveReminders(int userId) {
         return namedParameterJdbcTemplate.query(
-                "SELECT r.id,\n" +
-                        "       r.reminder_text,\n" +
-                        "       r.creator_id,\n" +
-                        "       r.receiver_id,\n" +
-                        "       r.remind_at,\n" +
-                        "       r.initial_remind_at,\n" +
-                        "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at,\n" +
+                "SELECT r.*,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.first_name                                    AS rc_first_name,\n" +
                         "       rc.last_name                                     AS rc_last_name,\n" +
@@ -85,7 +85,7 @@ public class ReminderDao {
                         "       r.receiver_id,\n" +
                         "       r.remind_at,\n" +
                         "       r.initial_remind_at,\n" +
-                        "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at,\n" +
+                        "       r.note,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.first_name                                    AS rc_first_name,\n" +
                         "       rc.last_name                                     AS rc_last_name,\n" +
@@ -103,7 +103,7 @@ public class ReminderDao {
                         "       r.receiver_id,\n" +
                         "       r.remind_at,\n" +
                         "       r.initial_remind_at,\n" +
-                        "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at,\n" +
+                        "       r.note,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.first_name                                    as rc_first_name,\n" +
                         "       rc.last_name                                     as rc_last_name,\n" +
@@ -141,18 +141,14 @@ public class ReminderDao {
         return IntStream.of(updated).sum();
     }
 
-    public List<Reminder> getReminders(ReminderMapping reminderMapping, SqlParameterSource sqlParameterSource) {
-        StringBuilder sql = new StringBuilder();
-        sql.append(buildSelect(reminderMapping)).append(" ");
+    public List<Reminder> getReminders(ReminderMapping reminderMapping, Condition condition) {
+        SelectSelectStep<Record> select = buildSelect(reminderMapping);
 
-        StringBuilder where = new StringBuilder("WHERE ");
-        AppendClause statementSetter = appendClause(sqlParameterSource, where, "r");
-
-        sql.append(where.toString());
+        select.where(condition);
 
         return jdbcTemplate.query(
-                sql.toString(),
-                new ArgumentTypePreparedStatementSetter(statementSetter.values.toArray(), statementSetter.types.stream().mapToInt(i -> i).toArray()),
+                select.getSQL(),
+                new JooqPreparedSetter(select.getParams()),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs, reminderMapping)
         );
     }
@@ -163,7 +159,6 @@ public class ReminderDao {
         namedParameterJdbcTemplate.query(
                 "SELECT r.*,\n" +
                         "       rm.message_id                                    as rm_message_id,\n" +
-                        "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id as rc_remind_at,\n" +
                         "       rt.id as rt_id,\n" +
                         "       rc.chat_id                                       as rc_chat_id,\n" +
                         "       rc.zone_id                                       as rc_zone_id,\n" +
@@ -218,44 +213,31 @@ public class ReminderDao {
         return new ArrayList<>(reminders.values());
     }
 
-    public Reminder update(SqlParameterSource updateClause, ReminderMapping reminderMapping, SqlParameterSource whereClause) {
-        StringBuilder sql = new StringBuilder();
-
-        sql.append("UPDATE reminder SET ");
-        List<Object> values = new ArrayList<>();
-        List<Integer> types = new ArrayList<>();
-        for (Iterator<String> iterator = Stream.of(updateClause.getParameterNames()).iterator(); iterator.hasNext(); ) {
-            String paramName = iterator.next();
-
-            values.add(updateClause.getValue(paramName));
-            types.add(updateClause.getSqlType(paramName));
-            sql.append(paramName).append(" = ?");
-            if (iterator.hasNext()) {
-                sql.append(", ");
-            }
-        }
-
-        sql.append(" WHERE ");
-        AppendClause statementSetter = appendClause(whereClause, sql, null);
-
-        values.addAll(statementSetter.values);
-        types.addAll(statementSetter.types);
+    public Reminder update(Map<Field<?>, Object> updateValues, Condition condition, ReminderMapping reminderMapping) {
+        UpdateConditionStep<Record> update = dslContext.update(ReminderTable.TABLE)
+                .set(updateValues)
+                .where(condition);
 
         if (reminderMapping == null) {
             jdbcTemplate.update(
-                    sql.toString(),
-                    new ArgumentTypePreparedStatementSetter(values.toArray(), types.stream().mapToInt(i -> i).toArray())
+                    update.getSQL(),
+                    new JooqPreparedSetter(update.getParams())
             );
 
             return null;
         } else {
-            StringBuilder withMappingSql = new StringBuilder();
+            update.returning(ReminderTable.TABLE.asterisk());
 
-            withMappingSql.append("WITH reminder AS(\n").append(sql).append(" RETURNING *").append("\n)\n").append(buildSelect(reminderMapping));
+            StringBuilder sql = new StringBuilder();
+
+            sql.append("WITH reminder AS (\n").append(update.getSQL()).append("\n)\n");
+
+            SelectSelectStep<Record> select = buildSelect(reminderMapping);
+            sql.append(select.getSQL());
 
             return jdbcTemplate.query(
-                    withMappingSql.toString(),
-                    new ArgumentTypePreparedStatementSetter(values.toArray(), types.stream().mapToInt(i -> i).toArray()),
+                    sql.toString(),
+                    new JooqPreparedSetter(update.getParams()),
                     rs -> {
                         if (rs.next()) {
                             return resultSetMapper.mapReminder(rs, reminderMapping);
@@ -270,10 +252,10 @@ public class ReminderDao {
     public UpdateReminderResult updateReminderText(int reminderId, String newText) {
         return jdbcTemplate.query(
                 "WITH r AS (\n" +
-                        "    UPDATE reminder r SET reminder_text = ? FROM reminder old WHERE r.id = old.id AND r.id = ? RETURNING r.id, r.receiver_id, r.remind_at, r.creator_id, r.reminder_text, old.reminder_text AS old_text\n" +
+                        "    UPDATE reminder r SET reminder_text = ? FROM reminder old WHERE r.id = old.id AND r.id = ? " +
+                        "RETURNING r.id, r.receiver_id, r.remind_at, r.creator_id, r.reminder_text, r.note, old.reminder_text AS old_text\n" +
                         ")\n" +
                         "SELECT r.*,\n" +
-                        "       r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.chat_id                                       AS rc_chat_id\n" +
                         "FROM r\n" +
@@ -320,29 +302,29 @@ public class ReminderDao {
         );
     }
 
-    public Reminder delete(SqlParameterSource sqlParameterSource, ReminderMapping reminderMapping) {
-        StringBuilder where = new StringBuilder();
-
-        AppendClause statementSetter = appendClause(sqlParameterSource, where, null);
+    public Reminder delete(Condition condition, ReminderMapping reminderMapping) {
+        DeleteConditionStep<Record> delete = dslContext.delete(ReminderTable.TABLE)
+                .where(condition);
 
         if (reminderMapping == null) {
             jdbcTemplate.update(
-                    "DELETE FROM reminder WHERE " + where.toString(),
-                    statementSetter
+                    delete.getSQL(),
+                    new JooqPreparedSetter(delete.getParams())
             );
 
             return null;
         }
-        StringBuilder sql = new StringBuilder();
+        delete.returning(ReminderTable.TABLE.asterisk());
 
-        sql.append("WITH reminder AS(\n")
-                .append("DELETE FROM reminder WHERE ").append(where.toString()).append(" RETURNING id, creator_id, receiver_id, remind_at, reminder_text\n")
-                .append(")\n")
-                .append(buildSelect(reminderMapping));
+        StringBuilder sql = new StringBuilder();
+        sql.append("WITH reminder AS(\n").append(delete.getSQL()).append("\n").append(")\n");
+
+        SelectSelectStep<Record> select = buildSelect(reminderMapping);
+        sql.append(select.getSQL());
 
         return jdbcTemplate.query(
                 sql.toString(),
-                new ArgumentTypePreparedStatementSetter(statementSetter.values.toArray(), statementSetter.types.stream().mapToInt(i -> i).toArray()),
+                new JooqPreparedSetter(delete.getParams()),
                 rs -> {
                     if (rs.next()) {
                         return resultSetMapper.mapReminder(rs, reminderMapping);
@@ -421,70 +403,47 @@ public class ReminderDao {
         return reminder;
     }
 
-    private String buildSelect(ReminderMapping reminderMapping) {
-        StringBuilder selectList = new StringBuilder();
-        StringBuilder from = new StringBuilder();
+    private SelectSelectStep<Record> buildSelect(ReminderMapping reminderMapping) {
+        ReminderTable reminder = ReminderTable.TABLE.as("r");
+        SelectSelectStep<Record> select = dslContext.select(reminder.asterisk());
 
-        selectList.append("SELECT r.*, ");
-        from.append("FROM reminder r ");
+        SelectJoinStep<Record> from = select.from(reminder);
         if (reminderMapping.getRemindMessageMapping() != null) {
-            selectList.append("rm.message_id as rm_message_id, ");
-            from.append("LEFT JOIN remind_message rm on r.id = rm.reminder_id ");
+            RemindMessageTable remindMessage = RemindMessageTable.TABLE.as("rm");
+
+            from
+                    .leftJoin(remindMessage)
+                    .on(reminder.ID.eq(remindMessage.REMINDER_ID));
+
+            select.select(remindMessage.MESSAGE_ID.as("rm_message_id"));
         }
         if (reminderMapping.getReceiverMapping() != null) {
-            selectList.append("r.remind_at::timestamptz AT TIME ZONE rc.zone_id AS rc_remind_at, rc.zone_id AS rc_zone_id, ");
+            TgUserTable rcTable = TgUserTable.TABLE.as("rc");
 
+            from
+                    .innerJoin(rcTable)
+                    .on(reminder.RECEIVER_ID.eq(rcTable.USER_ID));
+
+            select.select(rcTable.ZONE_ID.as("rc_zone_id"));
             if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_CHAT_ID)) {
-                selectList.append("rc.chat_id AS rc_chat_id, ");
+                select.select(rcTable.CHAT_ID.as("rc_chat_id"));
             }
             if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_FIRST_LAST_NAME)) {
-                selectList.append("rc.first_name AS rc_first_name, rc.last_name AS rc_last_name, ");
+                select.select(rcTable.FIRST_NAME.as("rc_first_name"), rcTable.LAST_NAME.as("rc_last_name"));
             }
-            from.append("INNER JOIN tg_user rc on r.receiver_id = rc.user_id ");
         }
         if (reminderMapping.getCreatorMapping() != null) {
+            TgUserTable creator = TgUserTable.TABLE.as("cr");
+
+            from
+                    .innerJoin(creator)
+                    .on(reminder.CREATOR_ID.eq(creator.USER_ID));
             if (reminderMapping.getCreatorMapping().fields().contains(ReminderMapping.CR_CHAT_ID)) {
-                selectList.append("cr.chat_id AS cr_chat_id, ");
+                select.select(creator.CHAT_ID.as("cr_chat_id"));
             }
-            selectList.append("cr.first_name AS cr_first_name, cr.last_name AS cr_last_name, ");
-            from.append("INNER JOIN tg_user cr on r.creator_id = cr.user_id ");
-        }
-        StringBuilder sql = new StringBuilder();
-
-        sql.append(selectList.toString(), 0, selectList.length() - 2).append(" ").append(from.toString());
-
-        return sql.toString();
-    }
-
-    private AppendClause appendClause(SqlParameterSource sqlParameterSource, StringBuilder clause, String alias) {
-        List<Object> values = new ArrayList<>();
-        List<Integer> types = new ArrayList<>();
-        for (Iterator<String> iterator = Arrays.stream(sqlParameterSource.getParameterNames()).iterator(); iterator.hasNext(); ) {
-            String paramName = iterator.next();
-
-            values.add(sqlParameterSource.getValue(paramName));
-            types.add(sqlParameterSource.getSqlType(paramName));
-            if (StringUtils.isBlank(alias)) {
-                clause.append(paramName).append(" = ?");
-            } else {
-                clause.append(alias).append(".").append(paramName).append(" = ?");
-            }
-            if (iterator.hasNext()) {
-                clause.append(" AND ");
-            }
+            select.select(creator.FIRST_NAME.as("cr_first_name"), creator.LAST_NAME.as("cr_last_name"));
         }
 
-        return new AppendClause(values, types);
-    }
-
-    private static class AppendClause {
-        private List<Object> values;
-
-        private List<Integer> types;
-
-        public AppendClause(List<Object> values, List<Integer> types) {
-            this.values = values;
-            this.types = types;
-        }
+        return select;
     }
 }

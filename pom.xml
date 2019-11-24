@@ -9,7 +9,6 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-
         <junit.jupiter.version>5.3.1</junit.jupiter.version>
         <junit.platform.version>1.2.0</junit.platform.version>
         <junit.vintage.version>5.2.0</junit.vintage.version>
@@ -35,6 +34,44 @@
                     <release>11</release>
                 </configuration>
             </plugin>
+            <!--
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>3.11.7</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <jdbc>
+                                <driver>org.postgresql.Driver</driver>
+                                <url>jdbc:postgresql://localhost:5432/reminder</url>
+                                <user>postgres</user>
+                                <password>postgres</password>
+                            </jdbc>
+                            <generator>
+                                <target>
+                                    <packageName>com.baeldung.jooq.introduction.db</packageName>
+                                    <directory>src/main/java</directory>
+                                </target>
+                                <database>
+                                    <inputSchema>public</inputSchema>
+                                    <includeRoutines>false</includeRoutines>
+                                    <includeSequences>false</includeSequences>
+                                    <includeIndexes>false</includeIndexes>
+                                    <includePrimaryKeys>false</includePrimaryKeys>
+                                    <includeUniqueKeys>false</includeUniqueKeys>
+                                    <includeForeignKeys>false</includeForeignKeys>
+                                    <includeUDTs>true</includeUDTs>
+                                </database>
+                            </generator>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
         </plugins>
     </build>
 
@@ -57,11 +94,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots-spring-boot-starter</artifactId>
             <version>4.4.0.1</version>
@@ -70,12 +102,6 @@
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambotsextensions</artifactId>
-            <version>4.4.0.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.telegram</groupId>
-            <artifactId>telegrambots-chat-session-bot</artifactId>
             <version>4.4.0.1</version>
         </dependency>
 
@@ -93,13 +119,11 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.5</version>
         </dependency>
 
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>2.8.0</version>
         </dependency>
 
         <dependency>
@@ -132,6 +156,11 @@
             <groupId>net.iakovlev</groupId>
             <artifactId>timeshape</artifactId>
             <version>2019b.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
         </dependency>
     </dependencies>
 

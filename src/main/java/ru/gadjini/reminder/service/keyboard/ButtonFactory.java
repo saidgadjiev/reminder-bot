@@ -120,4 +120,18 @@ public class ButtonFactory {
             setCallbackData(MessagesProperties.DELETE_REMINDER_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + reminderId);
         }};
     }
+
+    public InlineKeyboardButton changeReminderNote(int reminderId) {
+        return new InlineKeyboardButton() {{
+            setText(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_NOTE_COMMAND_DESCRIPTION));
+            setCallbackData(MessagesProperties.EDIT_REMINDER_NOTE_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + reminderId);
+        }};
+    }
+
+    public InlineKeyboardButton deleteReminderNote(int reminderId) {
+        return new InlineKeyboardButton() {{
+            setText(localisationService.getMessage(MessagesProperties.DELETE_REMINDER_NOTE_COMMAND_DESCRIPTION));
+            setCallbackData(MessagesProperties.DELETE_REMINDER_NOTE_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + reminderId);
+        }};
+    }
 }

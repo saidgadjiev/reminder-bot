@@ -63,7 +63,7 @@ public class PatternBuilder {
 
         StringBuilder patternBuilder = new StringBuilder();
 
-        patternBuilder.append("((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9])) (")
+        patternBuilder.append("((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))( )?(")
                 .append(regexpTimeArticle).append(" )?((?<").append(MONTH_WORD).append(">");
 
         for (Iterator<Month> iterator = Arrays.asList(Month.values()).iterator(); iterator.hasNext(); ) {

@@ -20,6 +20,8 @@ public class TgUser {
 
     public static final String ZONE_ID = "zone_id";
 
+    public static final String ID = "id";
+
     private long chatId;
 
     private String username;
