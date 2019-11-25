@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
@@ -24,10 +23,10 @@ public class CallbackCommandNavigator {
         commands.forEach(navigableBotCommand -> navigableBotCommands.put(navigableBotCommand.getHistoryName(), navigableBotCommand));
     }
 
-    public void goTo(long chatId, int messageId, String queryId, String callbackCommandName) {
+    public void goTo(long chatId, int messageId, String queryId, String callbackCommandName, String[] arguments) {
         NavigableCallbackBotCommand callbackBotCommand = navigableBotCommands.get(callbackCommandName);
 
-        callbackBotCommand.restore(chatId, messageId, queryId);
+        callbackBotCommand.restore(chatId, messageId, queryId, null);
     }
 
     private Collection<NavigableCallbackBotCommand> navigableBotCommands(Collection<KeyboardBotCommand> keyboardBotCommands,

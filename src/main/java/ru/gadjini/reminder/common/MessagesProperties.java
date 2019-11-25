@@ -214,6 +214,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_CUSTOM_REMIND_CREATED = "message.custom.remind.created";
 
+    public static final String REMINDER_DETAILS_COMMAND_NAME = "reminderdetails";
+
     public static final String EDIT_REMINDER_COMMAND_NAME = "editreminder";
 
     public static final String GET_COMPLETED_REMINDERS_COMMAND_DESCRIPTION = "get.completed.reminders.command.description";
@@ -263,4 +265,8 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_NOTE_DELETED_RECEIVER = "message.reminder.note.deleted.receiver";
 
     public static final String MESSAGE_REMINDER_NOTE_DELETED = "message.reminder.note.deleted";
+
+    public static final String EDIT_REMINDER_COMMAND_DESCRIPTION = "edit.reminder.command.description";
+
+    public static final String MESSAGE_HOW_HELP = "message.how.help";
 }

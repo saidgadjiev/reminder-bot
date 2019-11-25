@@ -42,7 +42,7 @@ public class CommandContainer {
             botCommandRegistryMap.put(botCommand.getCommandIdentifier(), botCommand);
         }
         for (CallbackBotCommand botCommand : getCallbackBotCommands(keyboardService, friendshipService, localisationService,
-                commandNavigator, reminderService, tgUserService, requestParser, reminderMessageSender, messageService, callbackCommandNavigator)) {
+                commandNavigator, reminderService, tgUserService, requestParser, reminderMessageSender, messageService, callbackCommandNavigator, securityService)) {
             callbackBotCommandMap.put(botCommand.getName(), botCommand);
         }
         keyboardBotCommands = getKeyboardBotCommands(
@@ -89,7 +89,12 @@ public class CommandContainer {
                 new GetRemindersCommand(localisationService, messageService, keyboardService));
     }
 
-    private List<CallbackBotCommand> getCallbackBotCommands(KeyboardService keyboardService, FriendshipService friendshipService, LocalisationService localisationService, CommandNavigator commandNavigator, ReminderService reminderService, TgUserService tgUserService, RequestParser requestParser, ReminderMessageSender reminderMessageSender, MessageService messageService, CallbackCommandNavigator callbackCommandNavigator) {
+    private List<CallbackBotCommand> getCallbackBotCommands(KeyboardService keyboardService, FriendshipService friendshipService,
+                                                            LocalisationService localisationService, CommandNavigator commandNavigator,
+                                                            ReminderService reminderService, TgUserService tgUserService, RequestParser requestParser,
+                                                            ReminderMessageSender reminderMessageSender, MessageService messageService,
+                                                            CallbackCommandNavigator callbackCommandNavigator,
+                                                            SecurityService securityService) {
         return List.of(
                 new CompleteCommand(reminderService, reminderMessageSender),
                 new AcceptFriendRequestCommand(friendshipService, messageService),
@@ -103,14 +108,15 @@ public class CommandContainer {
                 new PostponeReminderCommand(messageService, keyboardService, reminderService, requestParser, reminderMessageSender, commandNavigator),
                 new DeleteReminderCommand(reminderService, reminderMessageSender),
                 new CancelReminderCommand(reminderService, reminderMessageSender),
-                new EditReminderCommand(reminderService, reminderMessageSender),
+                new ReminderDetailsCommand(reminderService, reminderMessageSender, keyboardService, messageService, securityService),
                 new CustomRemindCommand(messageService, keyboardService, requestParser, reminderService, reminderMessageSender, commandNavigator),
                 new GetCompletedRemindersCommand(reminderService, reminderMessageSender),
                 new GoBackCallbackCommand(callbackCommandNavigator),
-                new GetActiveRemindersCommand(reminderService, reminderMessageSender, messageService, commandNavigator),
+                new GetActiveRemindersCommand(reminderService, reminderMessageSender),
                 new DeleteCompletedReminderCommand(reminderService, reminderMessageSender),
                 new ChangeReminderNoteCommand(reminderMessageSender, messageService, reminderService, commandNavigator, keyboardService),
-                new DeleteReminderNoteCommand(reminderMessageSender, reminderService)
+                new DeleteReminderNoteCommand(reminderMessageSender, reminderService),
+                new EditReminderCommand(reminderMessageSender, messageService, keyboardService, commandNavigator)
         );
     }
 

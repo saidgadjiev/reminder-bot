@@ -4,7 +4,7 @@ public interface NavigableCallbackBotCommand {
 
     String getHistoryName();
 
-    default void restore(long chatId, int messageId, String queryId) {
+    default void restore(long chatId, int messageId, String queryId, String[] arguments) {
 
     }
 }

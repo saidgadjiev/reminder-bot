@@ -2,22 +2,31 @@ package ru.gadjini.reminder.bot.command.callback;
 
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
+import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.service.CommandNavigator;
+import ru.gadjini.reminder.service.MessageService;
 import ru.gadjini.reminder.service.ReminderMessageSender;
-import ru.gadjini.reminder.service.ReminderService;
+import ru.gadjini.reminder.service.keyboard.KeyboardService;
 
-public class EditReminderCommand implements CallbackBotCommand {
+public class EditReminderCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
     private final String name = MessagesProperties.EDIT_REMINDER_COMMAND_NAME;
 
-    private ReminderService reminderService;
-
     private ReminderMessageSender reminderMessageSender;
 
-    public EditReminderCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
-        this.reminderService = reminderService;
+    private MessageService messageService;
+
+    private KeyboardService keyboardService;
+
+    private CommandNavigator commandNavigator;
+
+    public EditReminderCommand(ReminderMessageSender reminderMessageSender, MessageService messageService,
+                               KeyboardService keyboardService, CommandNavigator commandNavigator) {
         this.reminderMessageSender = reminderMessageSender;
+        this.messageService = messageService;
+        this.keyboardService = keyboardService;
+        this.commandNavigator = commandNavigator;
     }
 
     @Override
@@ -27,8 +36,17 @@ public class EditReminderCommand implements CallbackBotCommand {
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
-        Reminder reminder = reminderService.getReminder(Integer.parseInt(arguments[0]));
+        reminderMessageSender.sendReminderEdit(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), Integer.parseInt(arguments[0]));
+    }
 
-        reminderMessageSender.sendReminderEditing(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), reminder);
+    @Override
+    public String getHistoryName() {
+        return name;
+    }
+
+    @Override
+    public void restore(long chatId, int messageId, String queryId, String[] arguments) {
+        messageService.editReplyKeyboard(chatId, messageId, keyboardService.goBackCallbackCommand(MessagesProperties.REMINDER_DETAILS_COMMAND_NAME));
+        messageService.sendMessageByCode(chatId, MessagesProperties.MESSAGE_HOW_HELP, commandNavigator.silentPop(chatId));
     }
 }

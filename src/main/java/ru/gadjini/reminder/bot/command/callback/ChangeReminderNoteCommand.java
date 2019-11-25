@@ -57,6 +57,7 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
             setMessageId(callbackQuery.getMessage().getMessageId());
         }});
 
+        messageService.editReplyKeyboard(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), keyboardService.goBackCallbackCommand(MessagesProperties.EDIT_REMINDER_COMMAND_NAME));
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_REMINDER_NOTE_ANSWER);
         messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_REMINDER_EDIT_NOTE, keyboardService.goBackCommand());
     }

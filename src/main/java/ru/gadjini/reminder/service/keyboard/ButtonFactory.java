@@ -7,7 +7,9 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.CommandExecutor;
 import ru.gadjini.reminder.service.LocalisationService;
 
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ButtonFactory {
@@ -29,6 +31,13 @@ public class ButtonFactory {
         Objects.requireNonNull(prevHistoryName);
         return new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_CALLBACK_COMMAND_DESCRIPTION)) {{
             setCallbackData(MessagesProperties.GO_BACK_CALLBACK_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + prevHistoryName);
+        }};
+    }
+
+    public InlineKeyboardButton goBackCallbackButton(String prevHistoryName, String[] arguments) {
+        Objects.requireNonNull(prevHistoryName);
+        return new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_CALLBACK_COMMAND_DESCRIPTION)) {{
+            setCallbackData(MessagesProperties.GO_BACK_CALLBACK_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + prevHistoryName + String.join(CommandExecutor.COMMAND_ARG_SEPARATOR, arguments));
         }};
     }
 
@@ -132,6 +141,13 @@ public class ButtonFactory {
         return new InlineKeyboardButton() {{
             setText(localisationService.getMessage(MessagesProperties.DELETE_REMINDER_NOTE_COMMAND_DESCRIPTION));
             setCallbackData(MessagesProperties.DELETE_REMINDER_NOTE_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + reminderId);
+        }};
+    }
+
+    public InlineKeyboardButton editReminder(int reminderId) {
+        return new InlineKeyboardButton() {{
+            setText(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_COMMAND_DESCRIPTION));
+            setCallbackData(MessagesProperties.EDIT_REMINDER_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + reminderId);
         }};
     }
 }

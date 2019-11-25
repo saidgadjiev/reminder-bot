@@ -60,13 +60,13 @@ public class ReminderMessageSender {
             messageId = messageService.sendMessage(
                     reminder.getReceiver().getChatId(),
                     reminderTextBuilder.remindReceiver(reminder),
-                    keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)
+                    keyboardService.getReceiverReminderDetailsKeyboard(reminder.getId(), null)
             ).getMessageId();
         } else {
             messageId = messageService.sendMessage(
                     reminder.getReceiver().getChatId(),
                     reminderTextBuilder.remindMe(reminder),
-                    keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)
+                    keyboardService.getReceiverReminderDetailsKeyboard(reminder.getId(), null)
             ).getMessageId();
         }
         remindMessageService.create(reminder.getId(), messageId);
@@ -114,7 +114,7 @@ public class ReminderMessageSender {
             messageId = messageService.sendMessage(
                     reminder.getReceiver().getChatId(),
                     reminderTextBuilder.reminderCreatedReceiver(reminder),
-                    keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)).getMessageId();
+                    keyboardService.getReceiverReminderDetailsKeyboard(reminder.getId(), null)).getMessageId();
             messageService.sendMessage(
                     reminder.getCreator().getChatId(),
                     reminderTextBuilder.reminderCreatedCreator(reminder),
@@ -123,7 +123,7 @@ public class ReminderMessageSender {
             messageId = messageService.sendMessage(
                     reminder.getCreator().getChatId(),
                     reminderTextBuilder.reminderCreatedMe(reminder),
-                    keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)).getMessageId();
+                    keyboardService.getReceiverReminderDetailsKeyboard(reminder.getId(), null)).getMessageId();
         }
         remindMessageService.create(reminder.getId(), messageId);
     }
@@ -151,7 +151,7 @@ public class ReminderMessageSender {
         String newReminderText = reminderTextBuilder.create(oldReminder.getText(), updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone(), oldReminder.getNote());
 
         try {
-            messageService.editMessage(oldReminder.getCreator().getChatId(), messageId, newReminderText, keyboardService.getReminderEditKeyboard(oldReminder.getId(), oldReminder));
+            messageService.editMessage(oldReminder.getCreator().getChatId(), messageId, newReminderText, keyboardService.getReminderDetailsKeyboard(oldReminder.getId(), oldReminder));
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
@@ -168,7 +168,7 @@ public class ReminderMessageSender {
                     reminder.getReceiver().getChatId(),
                     remindMessage.getMessageId(),
                     reminderTextBuilder.postponeReminderForReceiver(reminder.getText(), updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone()),
-                    keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)
+                    keyboardService.getReceiverReminderDetailsKeyboard(reminder.getId(), null)
             );
             messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_POSTPONED, replyKeyboard);
         }
@@ -206,7 +206,7 @@ public class ReminderMessageSender {
             );
         }
         try {
-            messageService.editMessage(oldReminder.getCreator().getChatId(), messageId, newReminderText, keyboardService.getReminderEditKeyboard(oldReminder.getId(), oldReminder));
+            messageService.editMessage(oldReminder.getCreator().getChatId(), messageId, newReminderText, keyboardService.getReminderDetailsKeyboard(oldReminder.getId(), oldReminder));
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
@@ -319,12 +319,20 @@ public class ReminderMessageSender {
                     chatId,
                     messageId,
                     text,
-                    keyboardService.getActiveReminderListKeyboard(reminders.stream().map(Reminder::getId).collect(Collectors.toList()), MessagesProperties.GET_REMINDERS_COMMAND_HISTORY_NAME)
+                    keyboardService.getActiveRemindersListKeyboard(reminders.stream().map(Reminder::getId).collect(Collectors.toList()), MessagesProperties.GET_REMINDERS_COMMAND_HISTORY_NAME)
             );
         }
     }
 
-    public void sendReminderEditing(Long chatId, Integer messageId, Reminder reminder) {
+    public void sendReminderEdit(Long chatId, Integer messageId, int reminderId) {
+        messageService.editReplyKeyboard(
+                chatId,
+                messageId,
+                keyboardService.getEditReminderKeyboard(reminderId, MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)
+        );
+    }
+
+    public void sendReminderDetails(Long chatId, Integer messageId, Reminder reminder) {
         String text = reminderTextBuilder.create(reminder);
         User user = securityService.getAuthenticatedUser();
 
@@ -332,7 +340,7 @@ public class ReminderMessageSender {
                 chatId,
                 messageId,
                 text,
-                keyboardService.getReminderEditKeyboard(user.getId(), reminder)
+                keyboardService.getReminderDetailsKeyboard(user.getId(), reminder)
         );
     }
 
@@ -358,7 +366,7 @@ public class ReminderMessageSender {
                     reminder.getCreator().getChatId(),
                     messageId,
                     reminderText,
-                    keyboardService.getReminderEditKeyboard(securityService.getAuthenticatedUser().getId(), reminder)
+                    keyboardService.getReminderDetailsKeyboard(securityService.getAuthenticatedUser().getId(), reminder)
             );
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -383,7 +391,7 @@ public class ReminderMessageSender {
                     reminder.getCreator().getChatId(),
                     messageId,
                     reminderText,
-                    keyboardService.getReminderEditKeyboard(securityService.getAuthenticatedUser().getId(), reminder)
+                    keyboardService.getReminderDetailsKeyboard(securityService.getAuthenticatedUser().getId(), reminder)
             );
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);

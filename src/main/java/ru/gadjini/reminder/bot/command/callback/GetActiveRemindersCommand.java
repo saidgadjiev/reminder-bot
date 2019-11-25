@@ -5,8 +5,6 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.service.CommandNavigator;
-import ru.gadjini.reminder.service.MessageService;
 import ru.gadjini.reminder.service.ReminderMessageSender;
 import ru.gadjini.reminder.service.ReminderService;
 
@@ -20,16 +18,9 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
 
     private ReminderMessageSender reminderMessageSender;
 
-    private MessageService messageService;
-
-    private CommandNavigator commandNavigator;
-
-    public GetActiveRemindersCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender,
-                                     MessageService messageService, CommandNavigator commandNavigator) {
+    public GetActiveRemindersCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
-        this.messageService = messageService;
-        this.commandNavigator = commandNavigator;
         this.name = MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME;
     }
 
@@ -56,14 +47,9 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
     }
 
     @Override
-    public void restore(long chatId, int messageId, String queryId) {
+    public void restore(long chatId, int messageId, String queryId, String[] arguments) {
         List<Reminder> reminders = reminderService.getActiveReminders();
 
         reminderMessageSender.sendActiveReminders(chatId, messageId, reminders);
-        messageService.sendMessageByCode(
-                chatId,
-                MessagesProperties.MESSAGE_ACTIVE_REMINDERS_COUNT, new Object[] { reminders.size() },
-                commandNavigator.silentPop(chatId)
-        );
     }
 }

@@ -5,6 +5,8 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.CallbackCommandNavigator;
 
+import java.util.Arrays;
+
 public class GoBackCallbackCommand implements CallbackBotCommand {
 
     private CallbackCommandNavigator callbackCommandNavigator;
@@ -22,6 +24,6 @@ public class GoBackCallbackCommand implements CallbackBotCommand {
     public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
         String prevCommandName = arguments[0];
 
-        callbackCommandNavigator.goTo(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), callbackQuery.getId(), prevCommandName);
+        callbackCommandNavigator.goTo(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), callbackQuery.getId(), prevCommandName, Arrays.copyOfRange(arguments, 1, arguments.length));
     }
 }

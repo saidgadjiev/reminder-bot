@@ -42,7 +42,7 @@ public class GetRemindersCommand implements KeyboardBotCommand, NavigableCallbac
     }
 
     @Override
-    public void restore(long chatId, int messageId, String queryId) {
+    public void restore(long chatId, int messageId, String queryId, String[] arguments) {
         messageService.editMessageByMessageCode(
                 chatId,
                 messageId,
