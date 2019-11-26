@@ -161,6 +161,14 @@ public class KeyboardService {
         return inlineKeyboardMarkup;
     }
 
+    public InlineKeyboardMarkup goBackCallbackCommand(String prevHistoryName, String[] arguments) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
+
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, arguments)));
+
+        return inlineKeyboardMarkup;
+    }
+
     private InlineKeyboardMarkup getCreatorReminderDetailsKeyboard(int reminderId, String prevHistoryName) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 

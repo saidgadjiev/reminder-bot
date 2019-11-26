@@ -46,7 +46,7 @@ public class EditReminderCommand implements CallbackBotCommand, NavigableCallbac
 
     @Override
     public void restore(long chatId, int messageId, String queryId, String[] arguments) {
-        messageService.editReplyKeyboard(chatId, messageId, keyboardService.goBackCallbackCommand(MessagesProperties.REMINDER_DETAILS_COMMAND_NAME));
+        messageService.editReplyKeyboard(chatId, messageId, keyboardService.getEditReminderKeyboard(Integer.parseInt(arguments[0]), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME));
         messageService.sendMessageByCode(chatId, MessagesProperties.MESSAGE_HOW_HELP, commandNavigator.silentPop(chatId));
     }
 }

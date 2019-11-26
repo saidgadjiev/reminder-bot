@@ -151,7 +151,7 @@ public class ReminderMessageSender {
         String newReminderText = reminderTextBuilder.create(oldReminder.getText(), updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone(), oldReminder.getNote());
 
         try {
-            messageService.editMessage(oldReminder.getCreator().getChatId(), messageId, newReminderText, keyboardService.getReminderDetailsKeyboard(oldReminder.getId(), oldReminder));
+            messageService.editMessage(oldReminder.getCreator().getChatId(), messageId, newReminderText, keyboardService.getEditReminderKeyboard(oldReminder.getId(), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME));
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
@@ -206,7 +206,7 @@ public class ReminderMessageSender {
             );
         }
         try {
-            messageService.editMessage(oldReminder.getCreator().getChatId(), messageId, newReminderText, keyboardService.getReminderDetailsKeyboard(oldReminder.getId(), oldReminder));
+            messageService.editMessage(oldReminder.getCreator().getChatId(), messageId, newReminderText, keyboardService.getEditReminderKeyboard(oldReminder.getId(), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME));
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
@@ -366,7 +366,7 @@ public class ReminderMessageSender {
                     reminder.getCreator().getChatId(),
                     messageId,
                     reminderText,
-                    keyboardService.getReminderDetailsKeyboard(securityService.getAuthenticatedUser().getId(), reminder)
+                    keyboardService.getEditReminderKeyboard(reminder.getId(), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)
             );
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);

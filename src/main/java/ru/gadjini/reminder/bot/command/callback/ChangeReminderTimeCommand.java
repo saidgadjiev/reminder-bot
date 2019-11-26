@@ -69,7 +69,11 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
                 MessagesProperties.MESSAGE_REMINDER_TIME,
                 keyboardService.goBackCommand()
         );
-        messageService.editReplyKeyboard(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), keyboardService.goBackCallbackCommand(MessagesProperties.EDIT_REMINDER_COMMAND_NAME));
+        messageService.editReplyKeyboard(
+                callbackQuery.getMessage().getChatId(),
+                callbackQuery.getMessage().getMessageId(),
+                keyboardService.goBackCallbackCommand(MessagesProperties.EDIT_REMINDER_COMMAND_NAME, new String[] { arguments[0] })
+        );
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_REMINDER_TIME_ANSWER);
     }
 

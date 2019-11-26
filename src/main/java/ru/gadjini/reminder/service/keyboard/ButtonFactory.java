@@ -37,7 +37,8 @@ public class ButtonFactory {
     public InlineKeyboardButton goBackCallbackButton(String prevHistoryName, String[] arguments) {
         Objects.requireNonNull(prevHistoryName);
         return new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_CALLBACK_COMMAND_DESCRIPTION)) {{
-            setCallbackData(MessagesProperties.GO_BACK_CALLBACK_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + prevHistoryName + String.join(CommandExecutor.COMMAND_ARG_SEPARATOR, arguments));
+            setCallbackData(MessagesProperties.GO_BACK_CALLBACK_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + prevHistoryName
+                    + CommandExecutor.COMMAND_ARG_SEPARATOR + String.join(CommandExecutor.COMMAND_ARG_SEPARATOR, arguments));
         }};
     }
 

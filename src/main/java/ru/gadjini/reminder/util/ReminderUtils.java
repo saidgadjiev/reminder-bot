@@ -6,7 +6,6 @@ import ru.gadjini.reminder.service.parser.postpone.parser.PostponeOn;
 import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;
 import ru.gadjini.reminder.service.parser.reminder.parser.ParsedTime;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -18,7 +17,7 @@ public class ReminderUtils {
     }
 
     public static ZonedDateTime buildRemindAt(ParsedTime parsedTime, ZoneId zoneId) {
-        return buildDateTime(parsedTime.getDay(), parsedTime.getAddDays(), parsedTime.getTime(), zoneId);
+        return buildDateTime(parsedTime.getMonth(), parsedTime.getDay(), parsedTime.getAddDays(), parsedTime.getTime(), zoneId);
     }
 
     public static ZonedDateTime buildRemindAt(ParsedPostponeTime parsedTime, ZonedDateTime remindAt, ZoneId zoneId) {
@@ -39,7 +38,7 @@ public class ReminderUtils {
         } else {
             PostponeAt postponeAt = parsedTime.getPostponeAt();
 
-            return buildDateTime(postponeAt.getDay(), postponeAt.getAddDays(), postponeAt.getTime(), zoneId);
+            return buildDateTime(postponeAt.getMonth(), postponeAt.getDay(), postponeAt.getAddDays(), postponeAt.getTime(), zoneId);
         }
     }
 
@@ -84,13 +83,28 @@ public class ReminderUtils {
         }
     }
 
-    private static ZonedDateTime buildDateTime(Integer day, Integer addDays, LocalTime localTime, ZoneId zoneId) {
+    private static ZonedDateTime buildDateTime(Integer month, Integer day, Integer addDays, LocalTime localTime, ZoneId zoneId) {
+        ZonedDateTime dateTime = ZonedDateTime.now(zoneId);
+
+        if (month != null) {
+            dateTime = dateTime.withMonth(month);
+        }
         if (day != null) {
-            return ZonedDateTime.of(LocalDate.now(zoneId).withDayOfMonth(day), localTime, zoneId);
-        } else if (addDays != null) {
-            return ZonedDateTime.of(LocalDate.now(zoneId).plusDays(addDays),localTime, zoneId);
+            if (dateTime.getDayOfMonth() > day) {
+                dateTime = dateTime.plusMonths(1);
+            }
+            dateTime = dateTime.withDayOfMonth(day);
+        }
+        if (localTime != null) {
+            if (dateTime.toLocalTime().isAfter(localTime)) {
+                dateTime = dateTime.plusDays(1);
+            }
+            dateTime = dateTime.with(localTime);
+        }
+        if (addDays != null) {
+            dateTime = dateTime.plusDays(addDays);
         }
 
-        return ZonedDateTime.of(LocalDate.now(zoneId), localTime, zoneId);
+        return dateTime;
     }
 }

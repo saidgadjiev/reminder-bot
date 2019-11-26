@@ -92,7 +92,6 @@ public class ReminderService {
         oldReminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
 
         ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedTime, ZoneId.of(oldReminder.getReceiver().getZoneId()));
-        validationService.validate(remindAtInReceiverTimeZone);
 
         ZonedDateTime remindAt = remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC);
         reminderDao.update(

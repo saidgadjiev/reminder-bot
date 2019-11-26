@@ -26,7 +26,7 @@ public class CallbackCommandNavigator {
     public void goTo(long chatId, int messageId, String queryId, String callbackCommandName, String[] arguments) {
         NavigableCallbackBotCommand callbackBotCommand = navigableBotCommands.get(callbackCommandName);
 
-        callbackBotCommand.restore(chatId, messageId, queryId, null);
+        callbackBotCommand.restore(chatId, messageId, queryId, arguments);
     }
 
     private Collection<NavigableCallbackBotCommand> navigableBotCommands(Collection<KeyboardBotCommand> keyboardBotCommands,

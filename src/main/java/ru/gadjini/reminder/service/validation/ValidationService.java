@@ -9,7 +9,6 @@ import ru.gadjini.reminder.exception.ValidationException;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.FriendshipService;
 import ru.gadjini.reminder.service.LocalisationService;
-import ru.gadjini.reminder.util.DateUtils;
 
 import java.time.ZonedDateTime;
 
@@ -26,28 +25,7 @@ public class ValidationService {
         this.friendshipService = friendshipService;
     }
 
-    public void validate(ZonedDateTime time) {
-        ErrorBag errorBag = new ErrorBag();
-
-        if (time.isBefore(ZonedDateTime.now(time.getZone()))) {
-            errorBag.set("remindAt", localisationService.getMessage(MessagesProperties.MESSAGE_BAD_REMIND_AT));
-        }
-
-        if (errorBag.hasErrors()) {
-            throw new ValidationException(errorBag);
-        }
-    }
-
     public void validate(ReminderRequest reminderRequest) {
-        if (reminderRequest.getRemindAt().isBefore(DateUtils.now(reminderRequest.getRemindAt().getZone()))) {
-            ErrorBag errorBag = new ErrorBag();
-
-            errorBag.set("remindAt", localisationService.getMessage(MessagesProperties.MESSAGE_BAD_REMIND_AT));
-
-            if (errorBag.hasErrors()) {
-                throw new ValidationException(errorBag);
-            }
-        }
         if (!reminderRequest.isForMe()) {
             ErrorBag errorBag = new ErrorBag();
 
