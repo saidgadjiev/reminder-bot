@@ -15,6 +15,7 @@ import ru.gadjini.reminder.service.CommandExecutor;
 import ru.gadjini.reminder.service.CommandNavigator;
 import ru.gadjini.reminder.service.MessageService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.exception.UserMessageParseException;
 
 @Component
 public class ReminderBot extends WorkerUpdatesBot {
@@ -66,6 +67,8 @@ public class ReminderBot extends WorkerUpdatesBot {
                 chatId = update.getCallbackQuery().getMessage().getChatId();
                 commandExecutor.executeCallbackCommand(update.getCallbackQuery());
             }
+        } catch (UserMessageParseException ex) {
+            messageService.sendMessage(chatId, ex.getMessage(), null);
         } catch (ValidationException ex) {
             LOGGER.error(ex.getMessage(), ex);
             messageService.sendMessage(chatId, ex.getErrorBag().firstErrorMessage(), null);

@@ -1,10 +1,8 @@
 package ru.gadjini.reminder.util;
 
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
-import ru.gadjini.reminder.service.parser.postpone.parser.PostponeAt;
 import ru.gadjini.reminder.service.parser.postpone.parser.PostponeOn;
 import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;
-import ru.gadjini.reminder.service.parser.reminder.parser.ParsedTime;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -12,15 +10,9 @@ import java.time.ZonedDateTime;
 
 public class ReminderUtils {
 
-    private ReminderUtils() {
+    private ReminderUtils() { }
 
-    }
-
-    public static ZonedDateTime buildRemindAt(ParsedTime parsedTime, ZoneId zoneId) {
-        return buildDateTime(parsedTime.getMonth(), parsedTime.getDay(), parsedTime.getAddDays(), parsedTime.getTime(), zoneId);
-    }
-
-    public static ZonedDateTime buildRemindAt(ParsedPostponeTime parsedTime, ZonedDateTime remindAt, ZoneId zoneId) {
+    public static ZonedDateTime buildRemindAt(ParsedPostponeTime parsedTime, ZonedDateTime remindAt) {
         if (parsedTime.getPostponeOn() != null) {
             PostponeOn postponeOn = parsedTime.getPostponeOn();
 
@@ -36,13 +28,11 @@ public class ReminderUtils {
 
             return remindAt;
         } else {
-            PostponeAt postponeAt = parsedTime.getPostponeAt();
-
-            return buildDateTime(postponeAt.getMonth(), postponeAt.getDay(), postponeAt.getAddDays(), postponeAt.getTime(), zoneId);
+            return parsedTime.getPostponeAt();
         }
     }
 
-    public static ZonedDateTime buildRemindTime(ParsedCustomRemind customRemind, ZonedDateTime remindAt, ZoneId zoneId) {
+    public static ZonedDateTime buildCustomRemindTime(ParsedCustomRemind customRemind, ZonedDateTime remindAt, ZoneId zoneId) {
         switch (customRemind.getType()) {
             case AFTER: {
                 ZonedDateTime now = ZonedDateTime.now(zoneId);
@@ -81,30 +71,5 @@ public class ReminderUtils {
             default:
                 throw new UnsupportedOperationException();
         }
-    }
-
-    private static ZonedDateTime buildDateTime(Integer month, Integer day, Integer addDays, LocalTime localTime, ZoneId zoneId) {
-        ZonedDateTime dateTime = ZonedDateTime.now(zoneId);
-
-        if (month != null) {
-            dateTime = dateTime.withMonth(month);
-        }
-        if (day != null) {
-            if (dateTime.getDayOfMonth() > day) {
-                dateTime = dateTime.plusMonths(1);
-            }
-            dateTime = dateTime.withDayOfMonth(day);
-        }
-        if (localTime != null) {
-            if (dateTime.toLocalTime().isAfter(localTime)) {
-                dateTime = dateTime.plusDays(1);
-            }
-            dateTime = dateTime.with(localTime);
-        }
-        if (addDays != null) {
-            dateTime = dateTime.plusDays(addDays);
-        }
-
-        return dateTime;
     }
 }

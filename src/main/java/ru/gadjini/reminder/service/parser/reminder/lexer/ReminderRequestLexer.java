@@ -3,36 +3,38 @@ package ru.gadjini.reminder.service.parser.reminder.lexer;
 import org.apache.commons.lang3.StringUtils;
 import ru.gadjini.reminder.pattern.GroupMatcher;
 import ru.gadjini.reminder.pattern.GroupPattern;
-import ru.gadjini.reminder.service.parser.ParseException;
+import ru.gadjini.reminder.exception.UserMessageParseException;
+import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
+import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
+import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class ReminderRequestLexer {
 
     private final ReminderRequestLexerConfig lexerConfig;
 
-    private LinkedList<ReminderLexem> lexems = new LinkedList<>();
-
-    private int timeMatcherEnd;
+    private TimeLexer timeLexer;
 
     private String str;
 
-    public ReminderRequestLexer(ReminderRequestLexerConfig lexerConfig, String str) {
+    public ReminderRequestLexer(ReminderRequestLexerConfig lexerConfig, TimeLexerConfig timeLexerConfig, String str) {
         this.lexerConfig = lexerConfig;
         this.str = str;
+        this.timeLexer = new TimeLexer(timeLexerConfig, StringUtils.reverseDelimited(str, ' '));
     }
 
-    public List<ReminderLexem> tokenize() {
+    public List<BaseLexem> tokenize() {
         String[] parts = str.split(";");
 
         str = parts[0].trim();
-        String tokenizeStr = StringUtils.reverseDelimited(str, ' ' );
-        tokenizeTimePart();
-        tokenizeStr = StringUtils.reverseDelimited(tokenizeStr.substring(timeMatcherEnd).trim(), ' ' );
+        LinkedList<BaseLexem> lexems = new LinkedList<>(timeLexer.tokenize());
+
+        String tokenizeStr = StringUtils.reverseDelimited(str, ' ');
+        tokenizeStr = StringUtils.reverseDelimited(tokenizeStr.substring(timeLexer.end()).trim(), ' ');
 
         GroupPattern loginPattern = lexerConfig.getLoginPattern();
         GroupMatcher loginMatcher = loginPattern.matcher(tokenizeStr);
@@ -51,50 +53,16 @@ public class ReminderRequestLexer {
             return lexems;
         }
 
-        throw new ParseException();
+        throw new UserMessageParseException();
     }
 
-    public List<ReminderLexem> tokenizeTime() {
-        tokenizeTimePart();
+    public List<BaseLexem> tokenizeTime() {
+        LinkedList<BaseLexem> lexems = new LinkedList<>(timeLexer.tokenize());
 
         if (lexems.size() > 0) {
             return lexems;
         }
 
-        throw new ParseException();
-    }
-
-    private void tokenizeTimePart() {
-        String tokenizeStr = StringUtils.reverseDelimited(str, ' ' );
-        GroupPattern timePattern = lexerConfig.getTimePattern();
-        GroupMatcher timeMatcher = timePattern.matcher(tokenizeStr);
-
-        if (timeMatcher.find()) {
-            Map<String, String> values = timeMatcher.values();
-
-            if (values.containsKey(PatternBuilder.DAY_WORD)) {
-                lexems.add(new ReminderLexem(ReminderToken.DAY_WORD, values.get(PatternBuilder.DAY_WORD)));
-            }
-            if (values.containsKey(PatternBuilder.MONTH)) {
-                lexems.add(new ReminderLexem(ReminderToken.MONTH, values.get(PatternBuilder.MONTH)));
-            }
-            if (values.containsKey(PatternBuilder.DAY)) {
-                lexems.add(new ReminderLexem(ReminderToken.DAY, values.get(PatternBuilder.DAY)));
-            }
-            if (values.containsKey(PatternBuilder.MONTH_WORD)) {
-                lexems.add(new ReminderLexem(ReminderToken.MONTH_WORD, values.get(PatternBuilder.MONTH_WORD)));
-            }
-
-            lexems.add(new ReminderLexem(ReminderToken.HOUR, values.get(PatternBuilder.HOUR)));
-            lexems.add(new ReminderLexem(ReminderToken.MINUTE, values.get(PatternBuilder.MINUTE)));
-
-            timeMatcherEnd = timeMatcher.end();
-        }
-    }
-
-    public static void main(String[] args) {
-        Pattern pattern = Pattern.compile("(@(?<login>[0-9a-zA-Z_]+) )?(?<text>[a-zA-Zа-яА-ЯёЁ1-9 ]+)$");
-
-        System.out.println(pattern.matcher("Самолёт отца").matches());
+        throw new UserMessageParseException();
     }
 }

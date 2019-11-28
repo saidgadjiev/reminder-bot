@@ -2,13 +2,12 @@ package ru.gadjini.reminder.service.parser.remind.lexer;
 
 import ru.gadjini.reminder.pattern.GroupMatcher;
 import ru.gadjini.reminder.pattern.GroupPattern;
-import ru.gadjini.reminder.service.parser.ParseException;
+import ru.gadjini.reminder.exception.UserMessageParseException;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class CustomRemindLexer {
 
@@ -30,27 +29,27 @@ public class CustomRemindLexer {
             List<CustomRemindLexem> lexems = new ArrayList<>();
 
             if (values.containsKey(PatternBuilder.TYPE)) {
-                lexems.add(new CustomRemindLexem(CustomReminderToken.TYPE, values.get(PatternBuilder.TYPE)));
+                lexems.add(new CustomRemindLexem(CustomRemindToken.TYPE, values.get(PatternBuilder.TYPE)));
             }
             if (values.containsKey(PatternBuilder.TTYPE)) {
-                lexems.add(new CustomRemindLexem(CustomReminderToken.TTYPE, values.get(PatternBuilder.TTYPE)));
+                lexems.add(new CustomRemindLexem(CustomRemindToken.TTYPE, values.get(PatternBuilder.TTYPE)));
             }
             if (values.containsKey(PatternBuilder.HOUR)) {
-                lexems.add(new CustomRemindLexem(CustomReminderToken.HOUR, values.get(PatternBuilder.HOUR)));
+                lexems.add(new CustomRemindLexem(CustomRemindToken.HOUR, values.get(PatternBuilder.HOUR)));
             }
             if (values.containsKey(PatternBuilder.MINUTE)) {
-                lexems.add(new CustomRemindLexem(CustomReminderToken.MINUTE, values.get(PatternBuilder.MINUTE)));
+                lexems.add(new CustomRemindLexem(CustomRemindToken.MINUTE, values.get(PatternBuilder.MINUTE)));
             }
             if (values.containsKey(PatternBuilder.THOUR)) {
-                lexems.add(new CustomRemindLexem(CustomReminderToken.THOUR, values.get(PatternBuilder.THOUR)));
+                lexems.add(new CustomRemindLexem(CustomRemindToken.THOUR, values.get(PatternBuilder.THOUR)));
             }
             if (values.containsKey(PatternBuilder.TMINUTE)) {
-                lexems.add(new CustomRemindLexem(CustomReminderToken.TMINUTE, values.get(PatternBuilder.TMINUTE)));
+                lexems.add(new CustomRemindLexem(CustomRemindToken.TMINUTE, values.get(PatternBuilder.TMINUTE)));
             }
 
             return lexems;
         }
 
-        throw new ParseException();
+        throw new UserMessageParseException();
     }
 }

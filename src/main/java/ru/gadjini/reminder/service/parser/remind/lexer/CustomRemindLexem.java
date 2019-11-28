@@ -2,20 +2,20 @@ package ru.gadjini.reminder.service.parser.remind.lexer;
 
 public class CustomRemindLexem {
 
-    private CustomReminderToken token;
+    private CustomRemindToken token;
 
     private String value;
 
-    public CustomRemindLexem(CustomReminderToken token, String value) {
+    public CustomRemindLexem(CustomRemindToken token, String value) {
         this.token = token;
         this.value = value;
     }
 
-    public CustomReminderToken getToken() {
+    public CustomRemindToken getToken() {
         return token;
     }
 
-    public void setToken(CustomReminderToken token) {
+    public void setToken(CustomRemindToken token) {
         this.token = token;
     }
 

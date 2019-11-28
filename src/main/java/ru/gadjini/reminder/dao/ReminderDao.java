@@ -66,7 +66,7 @@ public class ReminderDao {
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
                         "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
-                        "WHERE status = 0 AND (creator_id = :user_id OR receiver_id = :user_id)",
+                        "WHERE status = 0 AND (creator_id = :user_id OR receiver_id = :user_id) ORDER BY r.remind_at",
                 new MapSqlParameterSource().addValue("user_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs, new ReminderMapping() {{
                     setReceiverMapping(new Mapping() {{
@@ -112,7 +112,7 @@ public class ReminderDao {
                         "FROM completed_reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id " +
                         "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
-                        "WHERE receiver_id = :creator_id",
+                        "WHERE receiver_id = :creator_id ORDER BY remind_at",
                 new MapSqlParameterSource().addValue("creator_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs, new ReminderMapping() {{
                     setReceiverMapping(new Mapping() {{
@@ -275,10 +275,7 @@ public class ReminderDao {
 
                         oldReminder.setText(rs.getString("old_text"));
 
-                        return new UpdateReminderResult() {{
-                            setOldReminder(oldReminder);
-                            setNewReminder(newReminder);
-                        }};
+                        return new UpdateReminderResult(oldReminder, newReminder);
                     }
 
                     return null;

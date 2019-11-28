@@ -25,7 +25,21 @@ public class ValidationService {
         this.friendshipService = friendshipService;
     }
 
+    public void validateIsNotPastTime(ZonedDateTime dateTime) {
+        if (dateTime.isBefore(ZonedDateTime.now(dateTime.getZone()))) {
+            ErrorBag errorBag = new ErrorBag();
+
+            errorBag.set("remindAt", localisationService.getMessage(MessagesProperties.MESSAGE_BAD_REMIND_AT));
+
+            if (errorBag.hasErrors()) {
+                throw new ValidationException(errorBag);
+            }
+        }
+    }
+
     public void validate(ReminderRequest reminderRequest) {
+        validateIsNotPastTime(reminderRequest.getRemindAt());
+
         if (!reminderRequest.isForMe()) {
             ErrorBag errorBag = new ErrorBag();
 

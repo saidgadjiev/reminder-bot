@@ -13,9 +13,6 @@ import ru.gadjini.reminder.service.MessageService;
 import ru.gadjini.reminder.service.ReminderMessageSender;
 import ru.gadjini.reminder.service.ReminderService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
-import ru.gadjini.reminder.service.parser.ParseException;
-import ru.gadjini.reminder.service.parser.RequestParser;
-import ru.gadjini.reminder.service.parser.reminder.parser.ParsedTime;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,8 +21,6 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
     private ConcurrentHashMap<Long, ChangeReminderRequest> changeReminderTimeRequests = new ConcurrentHashMap<>();
 
     private String name;
-
-    private RequestParser requestParser;
 
     private ReminderMessageSender reminderMessageSender;
 
@@ -37,14 +32,12 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
 
     private KeyboardService keyboardService;
 
-    public ChangeReminderTimeCommand(RequestParser requestParser,
-                                     ReminderMessageSender reminderMessageSender,
+    public ChangeReminderTimeCommand(ReminderMessageSender reminderMessageSender,
                                      MessageService messageService,
                                      ReminderService reminderService,
                                      CommandNavigator commandNavigator,
                                      KeyboardService keyboardService) {
         this.name = MessagesProperties.EDIT_REMINDER_TIME_COMMAND_NAME;
-        this.requestParser = requestParser;
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.reminderService = reminderService;
@@ -72,7 +65,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
         messageService.editReplyKeyboard(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
-                keyboardService.goBackCallbackCommand(MessagesProperties.EDIT_REMINDER_COMMAND_NAME, new String[] { arguments[0] })
+                keyboardService.goBackCallbackCommand(MessagesProperties.EDIT_REMINDER_COMMAND_NAME, new String[]{arguments[0]})
         );
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_REMINDER_TIME_ANSWER);
     }
@@ -87,18 +80,8 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
         if (!message.hasText()) {
             return;
         }
-        String text = message.getText().trim();
-        ParsedTime parsedTime;
-
-        try {
-            parsedTime = requestParser.parseTime(text);
-        } catch (ParseException ex) {
-            messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_REMINDER_TIME);
-            return;
-        }
-
         ChangeReminderRequest request = changeReminderTimeRequests.get(message.getChatId());
-        UpdateReminderResult updateReminderResult = reminderService.changeReminderTime(request.getReminderId(), parsedTime);
+        UpdateReminderResult updateReminderResult = reminderService.changeReminderTime(request.getReminderId(), message.getText().trim());
         updateReminderResult.getOldReminder().getCreator().setChatId(message.getChatId());
 
         ReplyKeyboard replyKeyboard = commandNavigator.silentPop(message.getChatId());

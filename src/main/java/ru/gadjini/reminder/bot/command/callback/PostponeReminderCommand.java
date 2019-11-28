@@ -8,11 +8,11 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.ChangeReminderRequest;
 import ru.gadjini.reminder.model.UpdateReminderResult;
-import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.service.CommandNavigator;
+import ru.gadjini.reminder.service.MessageService;
+import ru.gadjini.reminder.service.ReminderMessageSender;
+import ru.gadjini.reminder.service.ReminderService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
-import ru.gadjini.reminder.service.parser.ParseException;
-import ru.gadjini.reminder.service.parser.RequestParser;
-import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,8 +28,6 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     private ReminderService reminderService;
 
-    private RequestParser requestParser;
-
     private ReminderMessageSender reminderMessageSender;
 
     private CommandNavigator commandNavigator;
@@ -37,14 +35,12 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
     public PostponeReminderCommand(MessageService messageService,
                                    KeyboardService keyboardService,
                                    ReminderService reminderService,
-                                   RequestParser requestParser,
                                    ReminderMessageSender reminderMessageSender,
                                    CommandNavigator commandNavigator) {
         this.name = MessagesProperties.POSTPONE_REMINDER_COMMAND_NAME;
         this.messageService = messageService;
         this.keyboardService = keyboardService;
         this.reminderService = reminderService;
-        this.requestParser = requestParser;
         this.reminderMessageSender = reminderMessageSender;
         this.commandNavigator = commandNavigator;
     }
@@ -77,17 +73,8 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         if (!message.hasText()) {
             return;
         }
-
-        ParsedPostponeTime parsedPostponeTime;
-        try {
-            parsedPostponeTime = requestParser.parsePostponeTime(message.getText().trim());
-        } catch (ParseException ex) {
-            messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_POSTPONE_TIME, keyboardService.goBackCommand());
-            return;
-        }
-
         ChangeReminderRequest changeReminderRequest = reminderRequests.get(message.getChatId());
-        UpdateReminderResult updateReminderResult = reminderService.postponeReminder(changeReminderRequest.getReminderId(), parsedPostponeTime);
+        UpdateReminderResult updateReminderResult = reminderService.postponeReminder(changeReminderRequest.getReminderId(), message.getText().trim());
         updateReminderResult.getOldReminder().getReceiver().setChatId(message.getChatId());
         reminderRequests.remove(message.getChatId());
 

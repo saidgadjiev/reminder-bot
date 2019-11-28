@@ -1,22 +1,12 @@
 package ru.gadjini.reminder.service.parser.reminder.lexer;
 
-public enum ReminderToken {
+import ru.gadjini.reminder.service.parser.api.Token;
+
+public enum ReminderToken implements Token {
 
     LOGIN,
 
     TEXT,
-
-    DAY,
-
-    MONTH,
-
-    MONTH_WORD,
-
-    DAY_WORD,
-
-    HOUR,
-
-    MINUTE,
 
     NOTE
 }

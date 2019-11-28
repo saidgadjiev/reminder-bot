@@ -8,9 +8,9 @@ import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
-import ru.gadjini.reminder.util.DateUtils;
 
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableCallbackBotCommand {
@@ -54,7 +54,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableCallb
 
         messageService.sendMessageByCode(message.getChatId(), MessagesProperties.CURRENT_TIMEZONE, new Object[]{
                         zoneId.toString(),
-                        dateTimeFormatter.format(DateUtils.now(zoneId))
+                        dateTimeFormatter.format(ZonedDateTime.now(zoneId))
                 },
                 keyboardService.goBackCommand());
     }
@@ -77,7 +77,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableCallb
 
         messageService.sendMessageByCode(message.getChatId(), MessagesProperties.TIMEZONE_CHANGED, new Object[]{
                 zoneId.toString(),
-                dateTimeFormatter.format(DateUtils.now(zoneId))
+                dateTimeFormatter.format(ZonedDateTime.now(zoneId))
         }, replyKeyboardMarkup);
     }
 }

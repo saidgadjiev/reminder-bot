@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ActionType;
@@ -21,6 +23,8 @@ public class MessageService {
     private LocalisationService localisationService;
 
     private TelegramService telegramService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageService.class);
 
     @Autowired
     public MessageService(LocalisationService localisationService, TelegramService telegramService) {
@@ -97,7 +101,7 @@ public class MessageService {
         try {
             telegramService.execute(answerCallbackQuery);
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
@@ -115,7 +119,7 @@ public class MessageService {
         try {
             telegramService.execute(editMessageText);
         } catch (TelegramApiException ex) {
-            throw new RuntimeException(ex);
+            LOGGER.error(ex.getMessage(), ex);
         }
     }
 

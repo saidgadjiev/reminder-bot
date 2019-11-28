@@ -1,6 +1,11 @@
 package ru.gadjini.reminder.service.parser.remind.lexer;
 
-public class CustomRemindToken {
+public enum CustomRemindToken {
 
-
+    TYPE,
+    TTYPE,
+    HOUR,
+    MINUTE,
+    THOUR,
+    TMINUTE
 }

@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.bot.command;
 
-import org.apache.commons.lang3.StringUtils;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -13,10 +12,9 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
-import ru.gadjini.reminder.service.parser.ParseException;
+import ru.gadjini.reminder.exception.UserMessageParseException;
 import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ParsedRequest;
-import ru.gadjini.reminder.util.ReminderUtils;
 
 import java.time.ZoneId;
 
@@ -34,6 +32,8 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     private KeyboardService keyboardService;
 
+    private LocalisationService localisationService;
+
     private ReminderMessageSender reminderMessageSender;
 
     public StartCommand(MessageService messageService,
@@ -42,6 +42,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
                         SecurityService securityService,
                         RequestParser requestParser,
                         KeyboardService keyboardService,
+                        LocalisationService localisationService,
                         ReminderMessageSender reminderMessageSender) {
         super(MessagesProperties.START_COMMAND_NAME, "");
         this.messageService = messageService;
@@ -50,6 +51,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         this.securityService = securityService;
         this.requestParser = requestParser;
         this.keyboardService = keyboardService;
+        this.localisationService = localisationService;
         this.reminderMessageSender = reminderMessageSender;
     }
 
@@ -79,41 +81,9 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         if (!message.hasText()) {
             return;
         }
-
-        ReminderRequest reminderRequest;
-        try {
-            ParsedRequest parsedRequest = requestParser.parseRequest(message.getText().trim());
-
-            reminderRequest = createReminderRequest(parsedRequest);
-        } catch (ParseException ex) {
-            messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_REMINDER_FORMAT);
-            return;
-        }
-
-        Reminder reminder = reminderService.createReminder(reminderRequest);
+        Reminder reminder = reminderService.createReminder(message.getText().trim());
         reminder.getCreator().setChatId(message.getChatId());
 
         reminderMessageSender.sendReminderCreated(reminder, null);
-    }
-
-    private ReminderRequest createReminderRequest(ParsedRequest parsedRequest) {
-        ReminderRequest reminderRequest = new ReminderRequest();
-        ZoneId zoneId;
-
-        if (StringUtils.isBlank(parsedRequest.getReceiverName())) {
-            reminderRequest.setForMe(true);
-
-            User currentUser = securityService.getAuthenticatedUser();
-            zoneId = tgUserService.getTimeZone(currentUser.getId());
-        } else {
-            reminderRequest.setReceiverName(parsedRequest.getReceiverName());
-
-            zoneId = tgUserService.getTimeZone(parsedRequest.getReceiverName());
-        }
-        reminderRequest.setText(parsedRequest.getText());
-        reminderRequest.setRemindAt(ReminderUtils.buildRemindAt(parsedRequest.getParsedTime(), zoneId));
-        reminderRequest.setNote(parsedRequest.getNote());
-
-        return reminderRequest;
     }
 }

@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.service.parser.reminder.parser;
 
+import java.time.ZonedDateTime;
+
 public class ParsedRequest {
 
     private String receiverName;
@@ -8,13 +10,13 @@ public class ParsedRequest {
 
     private String note;
 
-    private ParsedTime parsedTime;
+    private ZonedDateTime parsedTime;
 
     public String getReceiverName() {
         return receiverName;
     }
 
-    void setReceiverName(String receiverName) {
+    public void setReceiverName(String receiverName) {
         this.receiverName = receiverName;
     }
 
@@ -26,11 +28,11 @@ public class ParsedRequest {
         this.text = text;
     }
 
-    public ParsedTime getParsedTime() {
+    public ZonedDateTime getParsedTime() {
         return parsedTime;
     }
 
-    void setParsedTime(ParsedTime parsedTime) {
+    void setParsedTime(ZonedDateTime parsedTime) {
         this.parsedTime = parsedTime;
     }
 

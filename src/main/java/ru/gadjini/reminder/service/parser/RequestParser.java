@@ -2,8 +2,9 @@ package ru.gadjini.reminder.service.parser;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.LocalisationService;
-import ru.gadjini.reminder.service.parser.postpone.lexer.PostponeLexem;
+import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.postpone.lexer.PostponeLexerConfig;
 import ru.gadjini.reminder.service.parser.postpone.lexer.PostponeRequestLexer;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
@@ -13,13 +14,14 @@ import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexer;
 import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexerConfig;
 import ru.gadjini.reminder.service.parser.remind.parser.CustomRemindParser;
 import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;
-import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderLexem;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderRequestLexer;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderRequestLexerConfig;
 import ru.gadjini.reminder.service.parser.reminder.parser.ParsedRequest;
-import ru.gadjini.reminder.service.parser.reminder.parser.ParsedTime;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequestParser;
+import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,35 +34,43 @@ public class RequestParser {
 
     private final ReminderRequestLexerConfig reminderRequestLexerConfig;
 
+    private final TimeLexerConfig timeLexerConfig;
+
     private final CustomRemindLexerConfig customRemindLexerConfig;
+
+    private DayOfWeekService dayOfWeekService;
 
     @Autowired
     public RequestParser(LocalisationService localisationService,
                          PostponeLexerConfig postponeLexerConfig,
                          ReminderRequestLexerConfig reminderRequestLexerConfig,
-                         CustomRemindLexerConfig customRemindLexerConfig) {
+                         TimeLexerConfig timeLexerConfig,
+                         CustomRemindLexerConfig customRemindLexerConfig,
+                         DayOfWeekService dayOfWeekService) {
         this.localisationService = localisationService;
         this.postponeLexerConfig = postponeLexerConfig;
         this.reminderRequestLexerConfig = reminderRequestLexerConfig;
+        this.timeLexerConfig = timeLexerConfig;
         this.customRemindLexerConfig = customRemindLexerConfig;
+        this.dayOfWeekService = dayOfWeekService;
     }
 
-    public ParsedRequest parseRequest(String text) {
-        List<ReminderLexem> lexems = new ReminderRequestLexer(reminderRequestLexerConfig, text).tokenize();
+    public ParsedRequest parseRequest(String text, ZoneId zoneId) {
+        List<BaseLexem> lexems = new ReminderRequestLexer(reminderRequestLexerConfig, timeLexerConfig, text).tokenize();
 
-        return new ReminderRequestParser(localisationService, Locale.getDefault()).parse(lexems);
+        return new ReminderRequestParser(localisationService, Locale.getDefault(), zoneId, dayOfWeekService).parse(lexems);
     }
 
-    public ParsedTime parseTime(String time) {
-        List<ReminderLexem> lexems = new ReminderRequestLexer(reminderRequestLexerConfig, time).tokenizeTime();
+    public ZonedDateTime parseTime(String time, ZoneId zoneId) {
+        List<BaseLexem> lexems = new ReminderRequestLexer(reminderRequestLexerConfig, timeLexerConfig, time).tokenizeTime();
 
-        return new ReminderRequestParser(localisationService, Locale.getDefault()).parseTime(lexems);
+        return new ReminderRequestParser(localisationService, Locale.getDefault(), zoneId, dayOfWeekService).parseTime(lexems);
     }
 
-    public ParsedPostponeTime parsePostponeTime(String time) {
-        List<PostponeLexem> lexems = new PostponeRequestLexer(postponeLexerConfig, time).tokenize();
+    public ParsedPostponeTime parsePostponeTime(String time, ZoneId zoneId) {
+        List<BaseLexem> lexems = new PostponeRequestLexer(postponeLexerConfig, timeLexerConfig, time).tokenize();
 
-        return new PostponeRequestParser(localisationService, Locale.getDefault()).parse(lexems);
+        return new PostponeRequestParser(localisationService, Locale.getDefault(), zoneId, dayOfWeekService).parse(lexems);
     }
 
     public ParsedCustomRemind parseCustomRemind(String text) {

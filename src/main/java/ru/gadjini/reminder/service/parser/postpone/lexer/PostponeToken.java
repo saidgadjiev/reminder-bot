@@ -1,6 +1,8 @@
 package ru.gadjini.reminder.service.parser.postpone.lexer;
 
-public enum PostponeToken {
+import ru.gadjini.reminder.service.parser.api.Token;
+
+public enum PostponeToken implements Token {
 
     TYPE,
 
@@ -8,17 +10,6 @@ public enum PostponeToken {
 
     ON_HOUR,
 
-    ON_MINUTE,
+    ON_MINUTE
 
-    AT_DAY,
-
-    AT_MONTH,
-
-    AT_MONTH_WORD,
-
-    AT_DAY_WORD,
-
-    AT_HOUR,
-
-    AT_MINUTE
 }

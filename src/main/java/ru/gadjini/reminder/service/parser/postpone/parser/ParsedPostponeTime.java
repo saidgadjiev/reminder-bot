@@ -1,10 +1,12 @@
 package ru.gadjini.reminder.service.parser.postpone.parser;
 
+import java.time.ZonedDateTime;
+
 public class ParsedPostponeTime {
 
     private PostponeOn postponeOn;
 
-    private PostponeAt postponeAt;
+    private ZonedDateTime postponeAt;
 
     public PostponeOn getPostponeOn() {
         return postponeOn;
@@ -14,11 +16,11 @@ public class ParsedPostponeTime {
         this.postponeOn = postponeOn;
     }
 
-    public PostponeAt getPostponeAt() {
+    public ZonedDateTime getPostponeAt() {
         return postponeAt;
     }
 
-    public void setPostponeAt(PostponeAt postponeAt) {
+    public void setPostponeAt(ZonedDateTime postponeAt) {
         this.postponeAt = postponeAt;
     }
 

@@ -269,4 +269,8 @@ public class MessagesProperties {
     public static final String EDIT_REMINDER_COMMAND_DESCRIPTION = "edit.reminder.command.description";
 
     public static final String MESSAGE_HOW_HELP = "message.how.help";
+
+    public static final String REGEXP_DAY_OF_WEEK_ARTICLE = "regexp.day.of.week.article";
+
+    public static final String REGEXP_NEXT_WEEK = "regexp.next.week";
 }

@@ -3,9 +3,12 @@ package ru.gadjini.reminder.service.parser.postpone.lexer;
 import org.apache.commons.lang3.StringUtils;
 import ru.gadjini.reminder.pattern.GroupMatcher;
 import ru.gadjini.reminder.pattern.GroupPattern;
-import ru.gadjini.reminder.service.parser.ParseException;
+import ru.gadjini.reminder.exception.UserMessageParseException;
+import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
+import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
+import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,29 +18,32 @@ public class PostponeRequestLexer {
 
     private PostponeLexerConfig lexerConfig;
 
+    private TimeLexer timeLexer;
+
     private String str;
 
-    public PostponeRequestLexer(PostponeLexerConfig lexerConfig, String str) {
+    public PostponeRequestLexer(PostponeLexerConfig lexerConfig, TimeLexerConfig timeLexerConfig, String str) {
         this.lexerConfig = lexerConfig;
         this.str = str.toLowerCase();
+        this.timeLexer = new TimeLexer(timeLexerConfig, StringUtils.reverseDelimited(str, ' '));
     }
 
-    public List<PostponeLexem> tokenize() {
-        List<PostponeLexem> lexems = new ArrayList<>();
-        int firstSpaceIndexOf = str.indexOf(' ' );
+    public List<BaseLexem> tokenize() {
+        List<BaseLexem> lexems = new ArrayList<>();
+        int firstSpaceIndexOf = str.indexOf(' ');
         String type = str.substring(0, firstSpaceIndexOf);
 
         lexems.add(new PostponeLexem(PostponeToken.TYPE, type));
         str = str.substring(firstSpaceIndexOf).trim();
 
-        List<PostponeLexem> postponeLexems = parseOnType();
+        List<BaseLexem> postponeLexems = parseOnType();
 
         if (postponeLexems != null) {
             lexems.addAll(postponeLexems);
 
             return lexems;
         }
-        postponeLexems = parseAtType();
+        postponeLexems = timeLexer.tokenize();
 
         if (postponeLexems != null) {
             lexems.addAll(postponeLexems);
@@ -45,78 +51,37 @@ public class PostponeRequestLexer {
             return lexems;
         }
 
-        throw new ParseException();
+        throw new UserMessageParseException();
     }
 
-    private List<PostponeLexem> parseOnType() {
+    private List<BaseLexem> parseOnType() {
         GroupPattern pattern = lexerConfig.getPattern(ParsedPostponeTime.Type.ON);
         GroupMatcher matcher = pattern.matcher(str);
 
         if (matcher.matches()) {
             Map<String, String> values = matcher.values();
 
-            return toLexems(values, ParsedPostponeTime.Type.ON);
+            return toLexems(values);
         }
 
         return null;
     }
 
-    private List<PostponeLexem> parseAtType() {
-        String tokenizeStr = StringUtils.reverseDelimited(str, ' ' );
+    private List<BaseLexem> toLexems(Map<String, String> values) {
+        List<BaseLexem> lexems = new ArrayList<>();
 
-        GroupPattern pattern = lexerConfig.getPattern(ParsedPostponeTime.Type.AT);
-        GroupMatcher timeMatcher = pattern.matcher(tokenizeStr);
-
-        if (timeMatcher.matches()) {
-            Map<String, String> values = timeMatcher.values();
-
-            return toLexems(values, ParsedPostponeTime.Type.AT);
+        if (values.containsKey(PatternBuilder.POSTPONE_DAY)) {
+            lexems.add(new PostponeLexem(PostponeToken.ON_DAY, values.get(PatternBuilder.POSTPONE_DAY)));
         }
 
-        return null;
-    }
-
-    private List<PostponeLexem> toLexems(Map<String, String> values, ParsedPostponeTime.Type type) {
-        switch (type) {
-            case ON: {
-                List<PostponeLexem> lexems = new ArrayList<>();
-
-                if (values.containsKey(PatternBuilder.POSTPONE_DAY)) {
-                    lexems.add(new PostponeLexem(PostponeToken.ON_DAY, values.get(PatternBuilder.POSTPONE_DAY)));
-                }
-
-                if (values.containsKey(PatternBuilder.POSTPONE_HOUR)) {
-                    lexems.add(new PostponeLexem(PostponeToken.ON_HOUR, values.get(PatternBuilder.POSTPONE_HOUR)));
-                }
-
-                if (values.containsKey(PatternBuilder.POSTPONE_MINUTE)) {
-                    lexems.add(new PostponeLexem(PostponeToken.ON_MINUTE, values.get(PatternBuilder.POSTPONE_MINUTE)));
-                }
-
-                return lexems;
-            }
-            case AT:
-                List<PostponeLexem> lexems = new ArrayList<>();
-
-                if (values.containsKey(PatternBuilder.DAY_WORD)) {
-                    lexems.add(new PostponeLexem(PostponeToken.AT_DAY_WORD, values.get(PatternBuilder.DAY_WORD)));
-                }
-                if (values.containsKey(PatternBuilder.MONTH)) {
-                    lexems.add(new PostponeLexem(PostponeToken.AT_MONTH, values.get(PatternBuilder.MONTH)));
-                }
-                if (values.containsKey(PatternBuilder.DAY)) {
-                    lexems.add(new PostponeLexem(PostponeToken.AT_DAY, values.get(PatternBuilder.DAY)));
-                }
-                if (values.containsKey(PatternBuilder.MONTH_WORD)) {
-                    lexems.add(new PostponeLexem(PostponeToken.AT_MONTH_WORD, values.get(PatternBuilder.MONTH_WORD)));
-                }
-
-                lexems.add(new PostponeLexem(PostponeToken.AT_HOUR, values.get(PatternBuilder.HOUR)));
-                lexems.add(new PostponeLexem(PostponeToken.AT_MINUTE, values.get(PatternBuilder.MINUTE)));
-
-                return lexems;
-            default:
-                throw new UnsupportedOperationException();
+        if (values.containsKey(PatternBuilder.POSTPONE_HOUR)) {
+            lexems.add(new PostponeLexem(PostponeToken.ON_HOUR, values.get(PatternBuilder.POSTPONE_HOUR)));
         }
+
+        if (values.containsKey(PatternBuilder.POSTPONE_MINUTE)) {
+            lexems.add(new PostponeLexem(PostponeToken.ON_MINUTE, values.get(PatternBuilder.POSTPONE_MINUTE)));
+        }
+
+        return lexems;
     }
 }

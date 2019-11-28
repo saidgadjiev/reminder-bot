@@ -1,29 +1,26 @@
 package ru.gadjini.reminder.service.parser.postpone.lexer;
 
-public class PostponeLexem {
+import ru.gadjini.reminder.service.parser.api.BaseLexem;
+import ru.gadjini.reminder.service.parser.api.Token;
+
+public class PostponeLexem extends BaseLexem {
 
     private PostponeToken token;
 
-    private String value;
-
     PostponeLexem(PostponeToken token, String value) {
+        super(value);
         this.token = token;
-        this.value = value;
     }
 
-    public PostponeToken getToken() {
+    public Token getToken() {
         return token;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     @Override
     public String toString() {
         return "Lexem{" +
                 "token=" + token +
-                ", value='" + value + '\'' +
+                ", value='" + getValue() + '\'' +
                 '}';
     }
 }
