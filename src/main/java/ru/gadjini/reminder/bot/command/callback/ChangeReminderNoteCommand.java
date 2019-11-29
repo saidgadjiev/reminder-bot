@@ -8,10 +8,10 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.ChangeReminderRequest;
-import ru.gadjini.reminder.service.CommandNavigator;
-import ru.gadjini.reminder.service.MessageService;
-import ru.gadjini.reminder.service.ReminderMessageSender;
-import ru.gadjini.reminder.service.ReminderService;
+import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 
 import java.util.concurrent.ConcurrentHashMap;

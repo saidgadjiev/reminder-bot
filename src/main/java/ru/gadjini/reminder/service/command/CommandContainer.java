@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service;
+package ru.gadjini.reminder.service.command;
 
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
@@ -8,7 +8,14 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.callback.*;
 import ru.gadjini.reminder.bot.command.keyboard.*;
+import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.ReminderRequestService;
+import ru.gadjini.reminder.service.reminder.ReminderService;
+import ru.gadjini.reminder.service.security.SecurityService;
 
 import java.util.Collection;
 import java.util.HashMap;

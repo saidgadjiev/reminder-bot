@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service;
+package ru.gadjini.reminder.service.security;
 
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;

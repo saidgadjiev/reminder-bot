@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service;
+package ru.gadjini.reminder.service.message;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;

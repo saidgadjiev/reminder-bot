@@ -4,9 +4,9 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.service.CommandNavigator;
-import ru.gadjini.reminder.service.MessageService;
-import ru.gadjini.reminder.service.ReminderMessageSender;
+import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 
 public class EditReminderCommand implements CallbackBotCommand, NavigableCallbackBotCommand {

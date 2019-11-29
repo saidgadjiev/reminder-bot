@@ -3,7 +3,7 @@ package ru.gadjini.reminder.service.parser.time.parser;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
-import ru.gadjini.reminder.service.LocalisationService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;

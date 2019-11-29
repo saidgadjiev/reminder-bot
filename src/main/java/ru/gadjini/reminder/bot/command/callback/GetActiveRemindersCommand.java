@@ -5,8 +5,8 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.service.ReminderMessageSender;
-import ru.gadjini.reminder.service.ReminderService;
+import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.ReminderService;
 
 import java.util.List;
 

@@ -8,7 +8,7 @@ import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.exception.ValidationException;
 import ru.gadjini.reminder.service.FriendshipService;
-import ru.gadjini.reminder.service.LocalisationService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.reminder.parser.ParsedRequest;
 
 import java.time.ZonedDateTime;

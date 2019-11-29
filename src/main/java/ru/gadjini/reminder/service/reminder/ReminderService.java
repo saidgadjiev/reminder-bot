@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service;
+package ru.gadjini.reminder.service.reminder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +12,7 @@ import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.model.UpdateReminderResult;
+import ru.gadjini.reminder.service.security.SecurityService;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;

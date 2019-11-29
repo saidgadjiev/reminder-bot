@@ -9,6 +9,7 @@ import ru.gadjini.reminder.dao.FriendshipDao;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
+import ru.gadjini.reminder.service.security.SecurityService;
 
 import java.util.List;
 

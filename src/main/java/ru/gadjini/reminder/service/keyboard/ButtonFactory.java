@@ -4,12 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.service.CommandExecutor;
-import ru.gadjini.reminder.service.LocalisationService;
+import ru.gadjini.reminder.service.command.CommandExecutor;
+import ru.gadjini.reminder.service.message.LocalisationService;
 
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class ButtonFactory {

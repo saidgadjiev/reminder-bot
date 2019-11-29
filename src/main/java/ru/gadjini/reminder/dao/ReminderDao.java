@@ -15,7 +15,7 @@ import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.jdbc.JooqPreparedSetter;
 import ru.gadjini.reminder.model.UpdateReminderResult;
-import ru.gadjini.reminder.service.ResultSetMapper;
+import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;

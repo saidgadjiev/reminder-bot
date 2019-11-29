@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.service.parser.remind.parser;
 
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.service.LocalisationService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexem;
 import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindToken;

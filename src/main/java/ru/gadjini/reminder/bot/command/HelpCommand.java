@@ -5,7 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.service.MessageService;
+import ru.gadjini.reminder.service.message.MessageService;
 
 public class HelpCommand extends BotCommand {
 

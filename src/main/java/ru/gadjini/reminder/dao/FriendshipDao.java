@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.mapping.FriendshipMapping;
-import ru.gadjini.reminder.service.ResultSetMapper;
+import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
 import java.util.List;
 

@@ -10,7 +10,10 @@ import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
 import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
 
 public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBotCommand {

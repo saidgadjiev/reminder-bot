@@ -3,8 +3,8 @@ package ru.gadjini.reminder.bot.command.keyboard;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.service.CommandNavigator;
-import ru.gadjini.reminder.service.LocalisationService;
+import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.message.LocalisationService;
 
 public class GoBackCommand implements KeyboardBotCommand {
 

@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service;
+package ru.gadjini.reminder.service.reminder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,9 @@ import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.UpdateReminderResult;
+import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.security.SecurityService;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;

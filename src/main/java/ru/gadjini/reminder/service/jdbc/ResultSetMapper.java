@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service;
+package ru.gadjini.reminder.service.jdbc;
 
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.*;

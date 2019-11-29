@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service;
+package ru.gadjini.reminder.service.reminder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.ZonedDateTime;

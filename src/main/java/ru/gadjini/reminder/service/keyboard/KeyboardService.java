@@ -9,8 +9,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.service.CommandExecutor;
-import ru.gadjini.reminder.service.LocalisationService;
+import ru.gadjini.reminder.service.command.CommandExecutor;
+import ru.gadjini.reminder.service.message.LocalisationService;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,7 +4,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.FriendshipService;
-import ru.gadjini.reminder.service.MessageService;
+import ru.gadjini.reminder.service.message.MessageService;
 
 public class DeleteFriendCommand implements CallbackBotCommand {
 

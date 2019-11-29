@@ -9,9 +9,9 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.service.MessageService;
-import ru.gadjini.reminder.service.ReminderRequestService;
-import ru.gadjini.reminder.service.ReminderMessageSender;
+import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.reminder.ReminderRequestService;
+import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 

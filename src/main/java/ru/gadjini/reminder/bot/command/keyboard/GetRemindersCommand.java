@@ -5,8 +5,8 @@ import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
-import ru.gadjini.reminder.service.LocalisationService;
-import ru.gadjini.reminder.service.MessageService;
+import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.message.MessageService;
 
 public class GetRemindersCommand implements KeyboardBotCommand, NavigableCallbackBotCommand {
 

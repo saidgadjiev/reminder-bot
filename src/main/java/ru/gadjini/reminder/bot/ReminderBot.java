@@ -12,11 +12,10 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.exception.ValidationException;
 import ru.gadjini.reminder.properties.BotProperties;
-import ru.gadjini.reminder.service.CommandExecutor;
-import ru.gadjini.reminder.service.CommandNavigator;
-import ru.gadjini.reminder.service.MessageService;
+import ru.gadjini.reminder.service.command.CommandExecutor;
+import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
-import ru.gadjini.reminder.exception.ParseException;
 
 @Component
 public class ReminderBot extends WorkerUpdatesBot {

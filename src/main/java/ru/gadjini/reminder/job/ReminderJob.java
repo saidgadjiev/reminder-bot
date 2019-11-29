@@ -7,9 +7,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
-import ru.gadjini.reminder.service.ReminderMessageSender;
-import ru.gadjini.reminder.service.ReminderService;
-import ru.gadjini.reminder.service.ReminderTimeService;
+import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.ReminderService;
+import ru.gadjini.reminder.service.reminder.ReminderTimeService;
 
 import java.time.LocalDateTime;
 import java.util.List;

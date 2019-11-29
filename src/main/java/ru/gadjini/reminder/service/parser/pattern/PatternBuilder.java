@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.pattern.GroupPattern;
 import ru.gadjini.reminder.service.DayOfWeekService;
-import ru.gadjini.reminder.service.LocalisationService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 
 import java.time.DayOfWeek;
 import java.time.Month;

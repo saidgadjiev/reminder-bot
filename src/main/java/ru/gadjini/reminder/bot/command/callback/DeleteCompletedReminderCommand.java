@@ -3,8 +3,8 @@ package ru.gadjini.reminder.bot.command.callback;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.service.ReminderMessageSender;
-import ru.gadjini.reminder.service.ReminderService;
+import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.ReminderService;
 
 public class DeleteCompletedReminderCommand implements CallbackBotCommand {
 

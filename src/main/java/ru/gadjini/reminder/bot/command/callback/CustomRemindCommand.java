@@ -7,10 +7,10 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.ChangeReminderRequest;
-import ru.gadjini.reminder.service.CommandNavigator;
-import ru.gadjini.reminder.service.MessageService;
-import ru.gadjini.reminder.service.ReminderMessageSender;
-import ru.gadjini.reminder.service.ReminderRequestService;
+import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 
 import java.time.ZonedDateTime;
