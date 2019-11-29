@@ -1,8 +1,8 @@
 package ru.gadjini.reminder.service.parser.postpone.lexer;
 
 import org.apache.commons.lang3.StringUtils;
-import ru.gadjini.reminder.pattern.GroupMatcher;
-import ru.gadjini.reminder.pattern.GroupPattern;
+import ru.gadjini.reminder.regex.GroupMatcher;
+import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;

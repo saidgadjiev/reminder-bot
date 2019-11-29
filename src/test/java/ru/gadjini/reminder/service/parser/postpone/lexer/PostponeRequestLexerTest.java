@@ -2,10 +2,9 @@ package ru.gadjini.reminder.service.parser.postpone.lexer;
 
 import org.junit.Assert;
 import org.mockito.Mockito;
-import ru.gadjini.reminder.pattern.GroupPattern;
+import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
-import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
 
 import java.util.List;

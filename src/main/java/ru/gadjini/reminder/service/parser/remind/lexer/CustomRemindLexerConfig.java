@@ -2,7 +2,7 @@ package ru.gadjini.reminder.service.parser.remind.lexer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.gadjini.reminder.pattern.GroupPattern;
+import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 
 @Component

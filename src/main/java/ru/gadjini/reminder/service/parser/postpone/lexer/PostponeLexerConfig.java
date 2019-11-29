@@ -3,7 +3,7 @@ package ru.gadjini.reminder.service.parser.postpone.lexer;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import ru.gadjini.reminder.pattern.GroupPattern;
+import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 

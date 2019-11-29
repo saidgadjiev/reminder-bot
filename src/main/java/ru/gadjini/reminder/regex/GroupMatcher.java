@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.pattern;
+package ru.gadjini.reminder.regex;
 
 import java.util.LinkedHashMap;
 import java.util.List;

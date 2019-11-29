@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.service.parser.time.lexer;
 
 import org.springframework.stereotype.Component;
-import ru.gadjini.reminder.pattern.GroupPattern;
+import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 
 import java.util.HashMap;

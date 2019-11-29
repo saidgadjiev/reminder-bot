@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.service.parser.remind.lexer;
 
-import ru.gadjini.reminder.pattern.GroupMatcher;
-import ru.gadjini.reminder.pattern.GroupPattern;
+import ru.gadjini.reminder.regex.GroupMatcher;
+import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 
