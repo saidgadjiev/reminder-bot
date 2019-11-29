@@ -10,7 +10,7 @@ import ru.gadjini.reminder.model.ChangeReminderRequest;
 import ru.gadjini.reminder.service.CommandNavigator;
 import ru.gadjini.reminder.service.MessageService;
 import ru.gadjini.reminder.service.ReminderMessageSender;
-import ru.gadjini.reminder.service.ReminderService;
+import ru.gadjini.reminder.service.ReminderRequestService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 
 import java.time.ZonedDateTime;
@@ -26,7 +26,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
 
     private KeyboardService keyboardService;
 
-    private ReminderService reminderService;
+    private ReminderRequestService reminderService;
 
     private ReminderMessageSender reminderMessageSender;
 
@@ -34,7 +34,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
 
     public CustomRemindCommand(MessageService messageService,
                                KeyboardService keyboardService,
-                               ReminderService reminderService,
+                               ReminderRequestService reminderService,
                                ReminderMessageSender reminderMessageSender,
                                CommandNavigator commandNavigator) {
         this.messageService = messageService;

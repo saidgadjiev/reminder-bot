@@ -2,7 +2,7 @@ package ru.gadjini.reminder.service.parser.remind.lexer;
 
 import ru.gadjini.reminder.pattern.GroupMatcher;
 import ru.gadjini.reminder.pattern.GroupPattern;
-import ru.gadjini.reminder.exception.UserMessageParseException;
+import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 
 import java.util.ArrayList;
@@ -50,6 +50,6 @@ public class CustomRemindLexer {
             return lexems;
         }
 
-        throw new UserMessageParseException();
+        throw new ParseException();
     }
 }

@@ -7,10 +7,7 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.service.CommandNavigator;
-import ru.gadjini.reminder.service.MessageService;
-import ru.gadjini.reminder.service.ReminderMessageSender;
-import ru.gadjini.reminder.service.ReminderService;
+import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +16,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     private final ConcurrentHashMap<Long, Integer> reminderRequests = new ConcurrentHashMap<>();
 
-    private ReminderService reminderService;
+    private ReminderRequestService reminderService;
 
     private MessageService messageService;
 
@@ -31,7 +28,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     private ReminderMessageSender reminderMessageSender;
 
-    public CreateReminderCommand(ReminderService reminderService,
+    public CreateReminderCommand(ReminderRequestService reminderService,
                                  MessageService messageService,
                                  KeyboardService keyboardService,
                                  CommandNavigator commandNavigator,

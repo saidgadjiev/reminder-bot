@@ -8,10 +8,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.ChangeReminderRequest;
 import ru.gadjini.reminder.model.UpdateReminderResult;
-import ru.gadjini.reminder.service.CommandNavigator;
-import ru.gadjini.reminder.service.MessageService;
-import ru.gadjini.reminder.service.ReminderMessageSender;
-import ru.gadjini.reminder.service.ReminderService;
+import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +23,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
 
     private MessageService messageService;
 
-    private ReminderService reminderService;
+    private ReminderRequestService reminderService;
 
     private CommandNavigator commandNavigator;
 
@@ -34,7 +31,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
 
     public ChangeReminderTimeCommand(ReminderMessageSender reminderMessageSender,
                                      MessageService messageService,
-                                     ReminderService reminderService,
+                                     ReminderRequestService reminderService,
                                      CommandNavigator commandNavigator,
                                      KeyboardService keyboardService) {
         this.name = MessagesProperties.EDIT_REMINDER_TIME_COMMAND_NAME;

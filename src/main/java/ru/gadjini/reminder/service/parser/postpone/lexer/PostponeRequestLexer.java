@@ -3,7 +3,7 @@ package ru.gadjini.reminder.service.parser.postpone.lexer;
 import org.apache.commons.lang3.StringUtils;
 import ru.gadjini.reminder.pattern.GroupMatcher;
 import ru.gadjini.reminder.pattern.GroupPattern;
-import ru.gadjini.reminder.exception.UserMessageParseException;
+import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
@@ -51,7 +51,7 @@ public class PostponeRequestLexer {
             return lexems;
         }
 
-        throw new UserMessageParseException();
+        throw new ParseException();
     }
 
     private List<BaseLexem> parseOnType() {

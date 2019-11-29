@@ -5,10 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
+import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.exception.ValidationException;
-import ru.gadjini.reminder.model.ReminderRequest;
 import ru.gadjini.reminder.service.FriendshipService;
 import ru.gadjini.reminder.service.LocalisationService;
+import ru.gadjini.reminder.service.parser.reminder.parser.ParsedRequest;
 
 import java.time.ZonedDateTime;
 
@@ -37,27 +38,27 @@ public class ValidationService {
         }
     }
 
-    public void validate(ReminderRequest reminderRequest) {
-        validateIsNotPastTime(reminderRequest.getRemindAt());
+    public void checkFriendShip(int userId, String receiverName) {
+        if (!friendshipService.existFriendship(userId, receiverName, Friendship.Status.ACCEPTED)) {
+            throw new UserException(localisationService.getMessage(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND)));
+        }
+    }
 
-        if (!reminderRequest.isForMe()) {
+    public void checkFriendShip(int userId, int receiverId) {
+        if (!friendshipService.existFriendship(userId, receiverId, Friendship.Status.ACCEPTED)) {
+            throw new UserException(localisationService.getMessage(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND)));
+        }
+    }
+
+    public void validateFriendReminderRequest(ParsedRequest parsedRequest) {
+        validateIsNotPastTime(parsedRequest.getParsedTime());
+
+        if (StringUtils.isNotBlank(parsedRequest.getReceiverName())) {
             ErrorBag errorBag = new ErrorBag();
 
-            String receiverName = reminderRequest.getReceiverName();
-            boolean friend;
-            if (StringUtils.isNotBlank(receiverName)) {
-                friend = friendshipService.existFriendship(receiverName, Friendship.Status.ACCEPTED);
-            } else {
-                friend = friendshipService.existFriendship(reminderRequest.getReceiverId(), Friendship.Status.ACCEPTED);
-            }
+            errorBag.set("receiverName", localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
 
-            if (!friend) {
-                errorBag.set("notFriend", localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND));
-
-                if (errorBag.hasErrors()) {
-                    throw new ValidationException(errorBag);
-                }
-            }
+            throw new ValidationException(errorBag);
         }
     }
 }

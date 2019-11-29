@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.service.parser.time.parser;
 
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.exception.UserMessageParseException;
+import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
@@ -105,7 +105,7 @@ public class TimeParser {
     private void consumeMonthWord(List<BaseLexem> lexems) {
         String month = lexemsConsumer.consume(lexems, TimeToken.MONTH_WORD).getValue();
 
-        Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, locale).equals(month)).findFirst().orElseThrow(UserMessageParseException::new);
+        Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, locale).equals(month)).findFirst().orElseThrow(ParseException::new);
 
         parsedTime = parsedTime.withMonth(m.getValue());
         parsedTime = parsedTime.with(consumeTime(lexems));

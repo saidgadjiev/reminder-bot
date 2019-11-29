@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.service.parser.postpone.parser;
 
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.exception.UserMessageParseException;
+import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
@@ -42,11 +42,11 @@ public class PostponeRequestParser {
             ZonedDateTime parsedTime = timeParser.parseTime(lexems);
             postponeTime.setPostponeAt(parsedTime);
         } else {
-            throw new UserMessageParseException();
+            throw new ParseException();
         }
 
         if (lexemsConsumer.getPosition() < lexems.size()) {
-            throw new UserMessageParseException();
+            throw new ParseException();
         }
 
         return postponeTime;

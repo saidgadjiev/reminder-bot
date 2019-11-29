@@ -1,6 +1,6 @@
 package ru.gadjini.reminder.service.parser.reminder.parser;
 
-import ru.gadjini.reminder.exception.UserMessageParseException;
+import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
@@ -42,20 +42,20 @@ public class ReminderRequestParser {
             return parsedRequest;
         }
         if (lexemsConsumer.getPosition() < lexems.size()) {
-            throw new UserMessageParseException();
+            throw new ParseException();
         }
 
-        throw new UserMessageParseException();
+        throw new ParseException();
     }
 
     public ZonedDateTime parseTime(List<BaseLexem> lexems) {
         parsedTime = timeParser.parseTime(lexems);
 
         if (parsedTime == null) {
-            throw new UserMessageParseException();
+            throw new ParseException();
         }
         if (lexemsConsumer.getPosition() < lexems.size()) {
-            throw new UserMessageParseException();
+            throw new ParseException();
         }
 
         return parsedTime;

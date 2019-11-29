@@ -9,13 +9,14 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.exception.ValidationException;
 import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.service.CommandExecutor;
 import ru.gadjini.reminder.service.CommandNavigator;
 import ru.gadjini.reminder.service.MessageService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
-import ru.gadjini.reminder.exception.UserMessageParseException;
+import ru.gadjini.reminder.exception.ParseException;
 
 @Component
 public class ReminderBot extends WorkerUpdatesBot {
@@ -67,7 +68,7 @@ public class ReminderBot extends WorkerUpdatesBot {
                 chatId = update.getCallbackQuery().getMessage().getChatId();
                 commandExecutor.executeCallbackCommand(update.getCallbackQuery());
             }
-        } catch (UserMessageParseException ex) {
+        } catch (UserException ex) {
             messageService.sendMessage(chatId, ex.getMessage(), null);
         } catch (ValidationException ex) {
             LOGGER.error(ex.getMessage(), ex);

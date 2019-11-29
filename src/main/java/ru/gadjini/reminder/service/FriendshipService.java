@@ -137,18 +137,6 @@ public class FriendshipService {
         return friendship != null && friendship.getStatus() == status;
     }
 
-    public boolean existFriendship(int friendId, Friendship.Status status) {
-        User user = securityService.getAuthenticatedUser();
-
-        return existFriendship(user.getId(), friendId, status);
-    }
-
-    public boolean existFriendship(String friendUsername, Friendship.Status status) {
-        User user = securityService.getAuthenticatedUser();
-
-        return existFriendship(user.getId(), friendUsername, status);
-    }
-
     private void setCreateFriendRequestState(User currUser, CreateFriendRequestResult createFriendRequestResult) {
         if (createFriendRequestResult.isConflict()) {
             if (createFriendRequestResult.getFriendship().getStatus() == Friendship.Status.REQUESTED) {

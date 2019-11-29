@@ -3,7 +3,7 @@ package ru.gadjini.reminder.service.parser.reminder.lexer;
 import org.apache.commons.lang3.StringUtils;
 import ru.gadjini.reminder.pattern.GroupMatcher;
 import ru.gadjini.reminder.pattern.GroupPattern;
-import ru.gadjini.reminder.exception.UserMessageParseException;
+import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
@@ -53,7 +53,7 @@ public class ReminderRequestLexer {
             return lexems;
         }
 
-        throw new UserMessageParseException();
+        throw new ParseException();
     }
 
     public List<BaseLexem> tokenizeTime() {
@@ -63,6 +63,6 @@ public class ReminderRequestLexer {
             return lexems;
         }
 
-        throw new UserMessageParseException();
+        throw new ParseException();
     }
 }

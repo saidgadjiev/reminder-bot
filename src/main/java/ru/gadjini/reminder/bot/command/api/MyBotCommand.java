@@ -4,5 +4,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 public interface MyBotCommand {
 
-    default void processNonCommandUpdate(Message message) { }
+    default void processNonCommandUpdate(Message message) {
+    }
 }

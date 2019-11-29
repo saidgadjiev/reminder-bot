@@ -9,49 +9,34 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.model.ReminderRequest;
-import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.service.MessageService;
+import ru.gadjini.reminder.service.ReminderRequestService;
+import ru.gadjini.reminder.service.ReminderMessageSender;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
-import ru.gadjini.reminder.exception.UserMessageParseException;
-import ru.gadjini.reminder.service.parser.RequestParser;
-import ru.gadjini.reminder.service.parser.reminder.parser.ParsedRequest;
-
-import java.time.ZoneId;
 
 public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     private final MessageService messageService;
 
-    private final ReminderService reminderService;
+    private final ReminderRequestService reminderService;
 
     private TgUserService tgUserService;
 
-    private SecurityService securityService;
-
-    private RequestParser requestParser;
-
     private KeyboardService keyboardService;
-
-    private LocalisationService localisationService;
 
     private ReminderMessageSender reminderMessageSender;
 
     public StartCommand(MessageService messageService,
-                        ReminderService reminderService,
+                        ReminderRequestService reminderService,
                         TgUserService tgUserService,
-                        SecurityService securityService,
-                        RequestParser requestParser,
                         KeyboardService keyboardService,
-                        LocalisationService localisationService,
                         ReminderMessageSender reminderMessageSender) {
         super(MessagesProperties.START_COMMAND_NAME, "");
         this.messageService = messageService;
         this.reminderService = reminderService;
         this.tgUserService = tgUserService;
-        this.securityService = securityService;
-        this.requestParser = requestParser;
         this.keyboardService = keyboardService;
-        this.localisationService = localisationService;
         this.reminderMessageSender = reminderMessageSender;
     }
 

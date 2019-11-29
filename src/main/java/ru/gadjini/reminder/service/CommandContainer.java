@@ -9,7 +9,6 @@ import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.callback.*;
 import ru.gadjini.reminder.bot.command.keyboard.*;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
-import ru.gadjini.reminder.service.parser.RequestParser;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,18 +30,18 @@ public class CommandContainer {
                             CommandNavigator commandNavigator,
                             ReminderService reminderService,
                             TgUserService tgUserService,
-                            RequestParser requestParser,
                             SecurityService securityService,
                             ReminderMessageSender reminderMessageSender,
                             MessageService messageService,
+                            ReminderRequestService reminderRequestService,
                             CallbackCommandNavigator callbackCommandNavigator,
                             TimezoneService timezoneService) {
-        for (BotCommand botCommand : getBotCommands(keyboardService, reminderService, tgUserService, requestParser,
-                securityService, reminderMessageSender, localisationService, messageService)) {
+        for (BotCommand botCommand : getBotCommands(keyboardService, reminderRequestService, tgUserService, reminderMessageSender, messageService)) {
             botCommandRegistryMap.put(botCommand.getCommandIdentifier(), botCommand);
         }
         for (CallbackBotCommand botCommand : getCallbackBotCommands(keyboardService, friendshipService,
-                commandNavigator, reminderService, reminderMessageSender, messageService, callbackCommandNavigator, securityService)) {
+                commandNavigator, reminderService, reminderRequestService,
+                reminderMessageSender, messageService, callbackCommandNavigator, securityService)) {
             callbackBotCommandMap.put(botCommand.getName(), botCommand);
         }
         keyboardBotCommands = getKeyboardBotCommands(
@@ -93,6 +92,7 @@ public class CommandContainer {
                                                             FriendshipService friendshipService,
                                                             CommandNavigator commandNavigator,
                                                             ReminderService reminderService,
+                                                            ReminderRequestService reminderRequestService,
                                                             ReminderMessageSender reminderMessageSender,
                                                             MessageService messageService,
                                                             CallbackCommandNavigator callbackCommandNavigator,
@@ -102,14 +102,14 @@ public class CommandContainer {
                 new AcceptFriendRequestCommand(friendshipService, messageService),
                 new RejectFriendRequestCommand(friendshipService, messageService),
                 new DeleteFriendCommand(messageService, friendshipService),
-                new CreateReminderCommand(reminderService, messageService, keyboardService, commandNavigator, reminderMessageSender),
-                new ChangeReminderTimeCommand(reminderMessageSender, messageService, reminderService, commandNavigator, keyboardService),
+                new CreateReminderCommand(reminderRequestService, messageService, keyboardService, commandNavigator, reminderMessageSender),
+                new ChangeReminderTimeCommand(reminderMessageSender, messageService, reminderRequestService, commandNavigator, keyboardService),
                 new ChangeReminderTextCommand(reminderMessageSender, messageService, reminderService, commandNavigator, keyboardService),
-                new PostponeReminderCommand(messageService, keyboardService, reminderService, reminderMessageSender, commandNavigator),
+                new PostponeReminderCommand(messageService, keyboardService, reminderRequestService, reminderMessageSender, commandNavigator),
                 new DeleteReminderCommand(reminderService, reminderMessageSender),
                 new CancelReminderCommand(reminderService, reminderMessageSender),
                 new ReminderDetailsCommand(reminderService, reminderMessageSender, keyboardService, messageService, securityService),
-                new CustomRemindCommand(messageService, keyboardService, reminderService, reminderMessageSender, commandNavigator),
+                new CustomRemindCommand(messageService, keyboardService, reminderRequestService, reminderMessageSender, commandNavigator),
                 new GetCompletedRemindersCommand(reminderService, reminderMessageSender),
                 new GoBackCallbackCommand(callbackCommandNavigator),
                 new GetActiveRemindersCommand(reminderService, reminderMessageSender),
@@ -120,13 +120,13 @@ public class CommandContainer {
         );
     }
 
-    private List<BotCommand> getBotCommands(KeyboardService keyboardService, ReminderService reminderService,
-                                            TgUserService tgUserService, RequestParser requestParser,
-                                            SecurityService securityService, ReminderMessageSender reminderMessageSender,
-                                            LocalisationService localisationService, MessageService messageService) {
+    private List<BotCommand> getBotCommands(KeyboardService keyboardService,
+                                            ReminderRequestService reminderRequestService,
+                                            TgUserService tgUserService,
+                                            ReminderMessageSender reminderMessageSender,
+                                            MessageService messageService) {
         return List.of(
-                new StartCommand(messageService, reminderService, tgUserService,
-                        securityService, requestParser, keyboardService, localisationService, reminderMessageSender),
+                new StartCommand(messageService, reminderRequestService, tgUserService, keyboardService, reminderMessageSender),
                 new HelpCommand(messageService));
     }
 }

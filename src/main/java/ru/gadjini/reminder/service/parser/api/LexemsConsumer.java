@@ -1,6 +1,6 @@
 package ru.gadjini.reminder.service.parser.api;
 
-import ru.gadjini.reminder.exception.UserMessageParseException;
+import ru.gadjini.reminder.exception.ParseException;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class LexemsConsumer {
             return lexem;
         }
 
-        throw new UserMessageParseException();
+        throw new ParseException();
     }
 
     public boolean check(List<BaseLexem> lexems, Token token) {

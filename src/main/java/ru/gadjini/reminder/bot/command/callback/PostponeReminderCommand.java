@@ -11,7 +11,7 @@ import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.CommandNavigator;
 import ru.gadjini.reminder.service.MessageService;
 import ru.gadjini.reminder.service.ReminderMessageSender;
-import ru.gadjini.reminder.service.ReminderService;
+import ru.gadjini.reminder.service.ReminderRequestService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +26,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     private KeyboardService keyboardService;
 
-    private ReminderService reminderService;
+    private ReminderRequestService reminderService;
 
     private ReminderMessageSender reminderMessageSender;
 
@@ -34,7 +34,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     public PostponeReminderCommand(MessageService messageService,
                                    KeyboardService keyboardService,
-                                   ReminderService reminderService,
+                                   ReminderRequestService reminderService,
                                    ReminderMessageSender reminderMessageSender,
                                    CommandNavigator commandNavigator) {
         this.name = MessagesProperties.POSTPONE_REMINDER_COMMAND_NAME;

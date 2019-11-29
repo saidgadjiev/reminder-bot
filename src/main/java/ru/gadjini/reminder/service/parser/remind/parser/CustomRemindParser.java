@@ -2,7 +2,7 @@ package ru.gadjini.reminder.service.parser.remind.parser;
 
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.LocalisationService;
-import ru.gadjini.reminder.exception.UserMessageParseException;
+import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexem;
 import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindToken;
 
@@ -37,7 +37,7 @@ public class CustomRemindParser {
             return parsedCustomRemind;
         }
 
-        throw new UserMessageParseException();
+        throw new ParseException();
     }
 
     private void consumeType(List<CustomRemindLexem> lexems) {
@@ -47,7 +47,7 @@ public class CustomRemindParser {
         } else if (type.equals(typeBefore)) {
             parsedCustomRemind.setType(ParsedCustomRemind.Type.BEFORE);
         } else {
-            throw new UserMessageParseException();
+            throw new ParseException();
         }
 
         if (check(lexems, CustomRemindToken.HOUR)) {
@@ -64,7 +64,7 @@ public class CustomRemindParser {
         String type = consume(lexems, CustomRemindToken.TTYPE).getValue();
 
         if (!type.equals(typeAt)) {
-            throw new UserMessageParseException();
+            throw new ParseException();
         }
         parsedCustomRemind.setType(ParsedCustomRemind.Type.AT);
 
@@ -87,7 +87,7 @@ public class CustomRemindParser {
             return lexem;
         }
 
-        throw new UserMessageParseException();
+        throw new ParseException();
     }
 
     private boolean check(List<CustomRemindLexem> lexems, CustomRemindToken token) {
