@@ -15,17 +15,17 @@ public class DayOfWeekService {
     private Map<String, Pattern> patterns = new HashMap<>();
 
     public DayOfWeekService() {
-        String mondayPattern = getFullPatternStr(DayOfWeek.MONDAY);
+        String mondayPattern = getFullDisplayNamePattern(DayOfWeek.MONDAY);
         patterns.put(mondayPattern, Pattern.compile(mondayPattern));
 
-        String fridayPattern = getFullPatternStr(DayOfWeek.FRIDAY);
+        String fridayPattern = getFullDisplayNamePattern(DayOfWeek.FRIDAY);
         patterns.put(fridayPattern, Pattern.compile(fridayPattern));
 
-        String sundayPattern = getFullPatternStr(DayOfWeek.SUNDAY);
+        String sundayPattern = getFullDisplayNamePattern(DayOfWeek.SUNDAY);
         patterns.put(sundayPattern, Pattern.compile(sundayPattern));
     }
 
-    public String getFullPatternStr(DayOfWeek dayOfWeek) {
+    public String getFullDisplayNamePattern(DayOfWeek dayOfWeek) {
         switch (dayOfWeek) {
             case MONDAY:
             case TUESDAY:
@@ -47,9 +47,10 @@ public class DayOfWeekService {
         throw new UnsupportedOperationException();
     }
 
-    public boolean isMatchFullPattern(DayOfWeek dayOfWeek, String value) {
-        Pattern pattern = patterns.get(getFullPatternStr(dayOfWeek));
+    public boolean isThatDay(DayOfWeek dayOfWeek, Locale locale, String value) {
+        Pattern pattern = patterns.get(getFullDisplayNamePattern(dayOfWeek));
 
-        return pattern.matcher(value).matches();
+        return pattern.matcher(value).matches()
+                || dayOfWeek.getDisplayName(TextStyle.SHORT, locale).equals(value);
     }
 }

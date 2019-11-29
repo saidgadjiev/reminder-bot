@@ -81,8 +81,7 @@ public class TimeParser {
     private void consumeDayOfWeek(List<BaseLexem> lexems) {
         String dayOfWeekValue = lexemsConsumer.consume(lexems, TimeToken.DAY_OF_WEEK).getValue();
         DayOfWeek dayOfWeek = Stream.of(DayOfWeek.values())
-                .filter(dow -> dayOfWeekService.isMatchFullPattern(dow, dayOfWeekValue)
-                        || dow.getDisplayName(TextStyle.SHORT, locale).equals(dayOfWeekValue))
+                .filter(dow -> dayOfWeekService.isThatDay(dow, locale, dayOfWeekValue))
                 .findFirst()
                 .orElseThrow();
         parsedTime = parsedTime.with(TemporalAdjusters.next(dayOfWeek));

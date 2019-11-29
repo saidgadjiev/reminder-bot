@@ -139,7 +139,7 @@ public class PatternBuilder {
         StringBuilder pattern = new StringBuilder();
 
         for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
-            pattern.append(dayOfWeekService.getFullPatternStr(dayOfWeek)).append("|");
+            pattern.append(dayOfWeekService.getFullDisplayNamePattern(dayOfWeek)).append("|");
         }
 
         return pattern.substring(0, pattern.length() - 1);
