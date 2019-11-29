@@ -17,15 +17,7 @@ public class UpdateReminderResult {
         return oldReminder;
     }
 
-    public void setOldReminder(Reminder oldReminder) {
-        this.oldReminder = oldReminder;
-    }
-
     public Reminder getNewReminder() {
         return newReminder;
-    }
-
-    public void setNewReminder(Reminder newReminder) {
-        this.newReminder = newReminder;
     }
 }
