@@ -15,6 +15,7 @@ import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
+import ru.gadjini.reminder.service.reminder.ReminderTextBuilder;
 import ru.gadjini.reminder.service.security.SecurityService;
 
 import java.util.Collection;
@@ -42,13 +43,14 @@ public class CommandContainer {
                             MessageService messageService,
                             ReminderRequestService reminderRequestService,
                             CallbackCommandNavigator callbackCommandNavigator,
+                            ReminderTextBuilder reminderTextBuilder,
                             TimezoneService timezoneService) {
         for (BotCommand botCommand : getBotCommands(keyboardService, reminderRequestService, tgUserService, reminderMessageSender, messageService)) {
             botCommandRegistryMap.put(botCommand.getCommandIdentifier(), botCommand);
         }
         for (CallbackBotCommand botCommand : getCallbackBotCommands(keyboardService, friendshipService,
                 commandNavigator, reminderService, reminderRequestService,
-                reminderMessageSender, messageService, callbackCommandNavigator, securityService)) {
+                reminderMessageSender, messageService, callbackCommandNavigator, localisationService, reminderTextBuilder, securityService)) {
             callbackBotCommandMap.put(botCommand.getName(), botCommand);
         }
         keyboardBotCommands = getKeyboardBotCommands(
@@ -103,6 +105,8 @@ public class CommandContainer {
                                                             ReminderMessageSender reminderMessageSender,
                                                             MessageService messageService,
                                                             CallbackCommandNavigator callbackCommandNavigator,
+                                                            LocalisationService localisationService,
+                                                            ReminderTextBuilder reminderTextBuilder,
                                                             SecurityService securityService) {
         return List.of(
                 new CompleteCommand(reminderService, reminderMessageSender),
@@ -110,20 +114,25 @@ public class CommandContainer {
                 new RejectFriendRequestCommand(friendshipService, messageService),
                 new DeleteFriendCommand(messageService, friendshipService),
                 new CreateReminderCommand(reminderRequestService, messageService, keyboardService, commandNavigator, reminderMessageSender),
-                new ChangeReminderTimeCommand(reminderMessageSender, messageService, reminderRequestService, commandNavigator, keyboardService),
-                new ChangeReminderTextCommand(reminderMessageSender, messageService, reminderService, commandNavigator, keyboardService),
-                new PostponeReminderCommand(messageService, keyboardService, reminderRequestService, reminderMessageSender, commandNavigator),
+                new ChangeReminderTimeCommand(reminderMessageSender, messageService, reminderRequestService, commandNavigator, keyboardService, localisationService),
+                new ChangeReminderTextCommand(reminderMessageSender, messageService, reminderService, commandNavigator, keyboardService, localisationService),
+                new PostponeReminderCommand(messageService, keyboardService, reminderRequestService, reminderMessageSender, commandNavigator, localisationService),
                 new DeleteReminderCommand(reminderService, reminderMessageSender),
                 new CancelReminderCommand(reminderService, reminderMessageSender),
-                new ReminderDetailsCommand(reminderService, reminderMessageSender, keyboardService, messageService, securityService),
-                new CustomRemindCommand(messageService, keyboardService, reminderRequestService, reminderMessageSender, commandNavigator),
+                new ReminderDetailsCommand(reminderService, reminderMessageSender, keyboardService, messageService, securityService, reminderTextBuilder),
+                new CustomRemindCommand(messageService, keyboardService, reminderRequestService, reminderMessageSender, commandNavigator, localisationService),
                 new GetCompletedRemindersCommand(reminderService, reminderMessageSender),
                 new GoBackCallbackCommand(callbackCommandNavigator),
                 new GetActiveRemindersCommand(reminderService, reminderMessageSender),
                 new DeleteCompletedReminderCommand(reminderService, reminderMessageSender),
-                new ChangeReminderNoteCommand(reminderMessageSender, messageService, reminderService, commandNavigator, keyboardService),
+                new ChangeReminderNoteCommand(reminderMessageSender, messageService, reminderService, commandNavigator, keyboardService, localisationService),
                 new DeleteReminderNoteCommand(reminderMessageSender, reminderService),
-                new EditReminderCommand(reminderMessageSender, messageService, keyboardService, commandNavigator)
+                new EditReminderCommand(reminderMessageSender, messageService, keyboardService, reminderTextBuilder, reminderService),
+                new CompleteFromListCommand(reminderService, reminderMessageSender),
+                new CancelReminderFromListCommand(reminderService, reminderMessageSender),
+                new ReceiverReminderCommand(reminderMessageSender, messageService, keyboardService, reminderTextBuilder, reminderService, commandNavigator),
+                new CustomRemindFromListCommand(messageService, keyboardService, reminderRequestService, reminderMessageSender, commandNavigator, localisationService),
+                new PostponeReminderFromListCommand(messageService, keyboardService, reminderRequestService, reminderMessageSender, commandNavigator, localisationService)
         );
     }
 

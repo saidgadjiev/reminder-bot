@@ -56,15 +56,15 @@ public class TimeParser {
                     && parsedTime.toLocalTime().isAfter(time)) {
                 parsedTime = parsedTime.plusDays(1);
             }
-            parsedTime.with(time);
+            parsedTime = parsedTime.with(time);
         }
 
         ZonedDateTime now = ZonedDateTime.now(parsedTime.getZone());
-        if (parsedTime.getDayOfMonth() > now.getDayOfMonth()) {
+        if (now.getDayOfMonth() < parsedTime.getDayOfMonth()) {
             parsedTime = parsedTime.plusMonths(1);
         }
         if (parsedTime.toLocalDate().equals(LocalDate.now(parsedTime.getZone()))
-                && parsedTime.toLocalTime().isAfter(now.toLocalTime())) {
+                && now.toLocalTime().isAfter(parsedTime.toLocalTime())) {
             parsedTime = parsedTime.plusDays(1);
         }
 

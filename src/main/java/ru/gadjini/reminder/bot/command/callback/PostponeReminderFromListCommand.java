@@ -9,15 +9,15 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.ChangeReminderRequest;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PostponeReminderCommand implements CallbackBotCommand, NavigableBotCommand {
+public class PostponeReminderFromListCommand implements CallbackBotCommand, NavigableBotCommand {
 
     private ConcurrentHashMap<Long, ChangeReminderRequest> reminderRequests = new ConcurrentHashMap<>();
 
@@ -35,13 +35,13 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     private LocalisationService localisationService;
 
-    public PostponeReminderCommand(MessageService messageService,
-                                   KeyboardService keyboardService,
-                                   ReminderRequestService reminderService,
-                                   ReminderMessageSender reminderMessageSender,
-                                   CommandNavigator commandNavigator, LocalisationService localisationService) {
+    public PostponeReminderFromListCommand(MessageService messageService,
+                                           KeyboardService keyboardService,
+                                           ReminderRequestService reminderService,
+                                           ReminderMessageSender reminderMessageSender,
+                                           CommandNavigator commandNavigator, LocalisationService localisationService) {
         this.localisationService = localisationService;
-        this.name = MessagesProperties.POSTPONE_REMINDER_COMMAND_NAME;
+        this.name = MessagesProperties.POSTPONE_REMINDER_FROM_LIST_COMMAND_NAME;
         this.messageService = messageService;
         this.keyboardService = keyboardService;
         this.reminderService = reminderService;
@@ -65,7 +65,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 callbackQuery.getMessage().getText() + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_TIME),
-                keyboardService.goBackCallbackCommand(MessagesProperties.RECEIVER_REMINDER_COMMAND_NAME, new String[]{arguments[0], String.valueOf(true)})
+                keyboardService.goBackCallbackCommand(MessagesProperties.REMINDER_DETAILS_COMMAND_NAME, new String[]{arguments[0], String.valueOf(true)})
         );
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION);
     }
@@ -75,9 +75,6 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         return name;
     }
 
-    /**
-     * Принимает команды: на 1д 1ч 1мин, до завтра 15:00;
-     */
     @Override
     public void processNonCommandUpdate(Message message) {
         if (!message.hasText()) {
@@ -90,7 +87,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
         ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(message.getChatId());
 
-        reminderMessageSender.sendReminderPostponed(updateReminderResult, replyKeyboard);
+        reminderMessageSender.sendReminderPostponedFromList(message.getChatId(), changeReminderRequest.getMessageId(), updateReminderResult, replyKeyboard);
         messageService.deleteMessage(message.getChatId(), message.getMessageId());
     }
 }

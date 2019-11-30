@@ -49,7 +49,7 @@ public class ReminderRequestParser {
     }
 
     public ZonedDateTime parseTime(List<BaseLexem> lexems) {
-        parsedTime = timeParser.parseTime(lexems);
+        consumeTime(lexems);
 
         if (parsedTime == null) {
             throw new ParseException();
@@ -61,10 +61,14 @@ public class ReminderRequestParser {
         return parsedTime;
     }
 
+    private void consumeTime(List<BaseLexem> lexems) {
+        parsedTime = timeParser.parseTime(lexems);
+    }
+
     private void consumeText(List<BaseLexem> lexems) {
         parsedRequest.setText(lexemsConsumer.consume(lexems, ReminderToken.TEXT).getValue());
 
-        parseTime(lexems);
+        consumeTime(lexems);
         if (lexemsConsumer.check(lexems, ReminderToken.NOTE)) {
             parsedRequest.setNote(lexemsConsumer.consume(lexems, ReminderToken.NOTE).getValue());
         }

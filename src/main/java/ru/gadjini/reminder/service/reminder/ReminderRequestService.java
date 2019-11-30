@@ -11,6 +11,7 @@ import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
+import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.security.SecurityService;
@@ -75,7 +76,7 @@ public class ReminderRequestService {
         return createReminder(reminderRequest, null);
     }
 
-    public ZonedDateTime customRemind(int reminderId, String text) {
+    public CustomRemindResult customRemind(int reminderId, String text) {
         Reminder reminder = reminderService.getReminder(reminderId, new ReminderMapping() {{
             setReceiverMapping(new Mapping());
         }});
@@ -87,7 +88,7 @@ public class ReminderRequestService {
                 ZoneId.of(reminder.getReceiver().getZoneId())
         );
 
-        return reminderService.customRemind(reminderId, remindTime);
+        return new CustomRemindResult(reminderService.customRemind(reminderId, remindTime), reminder);
     }
 
     public UpdateReminderResult changeReminderTime(int reminderId, String timeText) {

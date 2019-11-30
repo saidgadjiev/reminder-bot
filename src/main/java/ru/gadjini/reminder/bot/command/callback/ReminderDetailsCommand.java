@@ -10,6 +10,7 @@ import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
+import ru.gadjini.reminder.service.reminder.ReminderTextBuilder;
 import ru.gadjini.reminder.service.security.SecurityService;
 
 public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
@@ -26,15 +27,17 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
 
     private SecurityService securityService;
 
-    private CommandNavigator commandNavigator;
+    private ReminderTextBuilder reminderTextBuilder;
 
     public ReminderDetailsCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender,
-                                  KeyboardService keyboardService, MessageService messageService, SecurityService securityService) {
+                                  KeyboardService keyboardService, MessageService messageService,
+                                  SecurityService securityService, ReminderTextBuilder reminderTextBuilder) {
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
         this.keyboardService = keyboardService;
         this.messageService = messageService;
         this.securityService = securityService;
+        this.reminderTextBuilder = reminderTextBuilder;
     }
 
     @Override
@@ -59,9 +62,10 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
     public void restore(long chatId, int messageId, String queryId, String[] arguments) {
         Reminder reminder = reminderService.getReminder(Integer.parseInt(arguments[0]));
 
-        messageService.editReplyKeyboard(
+        messageService.editMessage(
                 chatId,
                 messageId,
+                reminderTextBuilder.create(reminder),
                 keyboardService.getReminderDetailsKeyboard(securityService.getAuthenticatedUser().getId(), reminder)
         );
     }

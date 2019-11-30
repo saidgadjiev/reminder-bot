@@ -142,6 +142,10 @@ public class MessageService {
         editMessage(chatId, messageId, localisationService.getMessage(messageCode), keyboardMarkup);
     }
 
+    public void editMessageByMessageCode(long chatId, int messageId, String messageCode, Object[] args, InlineKeyboardMarkup keyboardMarkup) {
+        editMessage(chatId, messageId, localisationService.getMessage(messageCode, args), keyboardMarkup);
+    }
+
     public void sendAnswerCallbackQueryByMessageCode(String callbackQueryId, String messageCode) {
         sendAnswerCallbackQuery(callbackQueryId, localisationService.getMessage(messageCode));
     }

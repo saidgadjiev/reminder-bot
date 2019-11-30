@@ -47,9 +47,23 @@ public class ButtonFactory {
         return completeReminderButton;
     }
 
+    public InlineKeyboardButton completeReminderFromListButton(int reminderId) {
+        InlineKeyboardButton completeReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.COMPLETE_REMINDER_COMMAND_DESCRIPTION));
+        completeReminderButton.setCallbackData(MessagesProperties.COMPLETE_REMINDER_FROM_LIST_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + reminderId);
+
+        return completeReminderButton;
+    }
+
     public InlineKeyboardButton cancelReminderButton(int reminderId) {
         InlineKeyboardButton cancelReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CANCEL_REMINDER_COMMAND_DESCRIPTION));
         cancelReminderButton.setCallbackData(MessagesProperties.CANCEL_REMINDER_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + reminderId);
+
+        return cancelReminderButton;
+    }
+
+    public InlineKeyboardButton cancelReminderFromListButton(int reminderId) {
+        InlineKeyboardButton cancelReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CANCEL_REMINDER_COMMAND_DESCRIPTION));
+        cancelReminderButton.setCallbackData(MessagesProperties.CANCEL_REMINDER_FROM_LIST_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + reminderId);
 
         return cancelReminderButton;
     }
@@ -61,9 +75,23 @@ public class ButtonFactory {
         return customRemindButton;
     }
 
+    public InlineKeyboardButton customReminderTimeFromListButton(int reminderId) {
+        InlineKeyboardButton customRemindButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION));
+        customRemindButton.setCallbackData(MessagesProperties.CUSTOM_REMINDER_TIME_FROM_LIST_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + reminderId);
+
+        return customRemindButton;
+    }
+
     public InlineKeyboardButton postponeReminderButton(int reminderId) {
         InlineKeyboardButton postponeButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION));
         postponeButton.setCallbackData(MessagesProperties.POSTPONE_REMINDER_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + reminderId);
+
+        return postponeButton;
+    }
+
+    public InlineKeyboardButton postponeReminderFromListButton(int reminderId) {
+        InlineKeyboardButton postponeButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION));
+        postponeButton.setCallbackData(MessagesProperties.POSTPONE_REMINDER_FROM_LIST_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + reminderId);
 
         return postponeButton;
     }

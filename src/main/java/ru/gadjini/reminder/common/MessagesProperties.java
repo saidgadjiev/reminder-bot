@@ -152,6 +152,8 @@ public class MessagesProperties {
 
     public static final String CANCEL_REMINDER_COMMAND_NAME = "cancelreminder";
 
+    public static final String CANCEL_REMINDER_FROM_LIST_COMMAND_NAME = "cancelreminderfromlist";
+
     public static final String CANCEL_REMINDER_COMMAND_DESCRIPTION = "cancel.reminder.command.description";
 
     public static final String MESSAGE_REMINDER_CANCELED_FROM = "message.reminder.canceled.from";
@@ -167,6 +169,8 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_CANT_BE_COMPLETED = "message.reminder.cant.be.completed";
 
     public static final String POSTPONE_REMINDER_COMMAND_NAME = "postponereminder";
+
+    public static final String POSTPONE_REMINDER_FROM_LIST_COMMAND_NAME = "postponereminderfromlist";
 
     public static final String POSTPONE_REMINDER_COMMAND_DESCRIPTION = "postpone.reminder.command.description";
 
@@ -191,6 +195,8 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_POSTPONE_TIME = "message.reminder.postpone.time";
 
     public static final String CUSTOM_REMINDER_TIME_COMMAND_NAME = "customremindertime";
+
+    public static final String CUSTOM_REMINDER_TIME_FROM_LIST_COMMAND_NAME = "customremindertimefromlist";
 
     public static final String DELETE_COMPLETED_REMINDERS_COMMAND_DESCRIPTION = "delete.completed.reminders.command.description";
 
@@ -217,6 +223,8 @@ public class MessagesProperties {
     public static final String REMINDER_DETAILS_COMMAND_NAME = "reminderdetails";
 
     public static final String EDIT_REMINDER_COMMAND_NAME = "editreminder";
+
+    public static final String RECEIVER_REMINDER_COMMAND_NAME = "receiverreminder";
 
     public static final String GET_COMPLETED_REMINDERS_COMMAND_DESCRIPTION = "get.completed.reminders.command.description";
 
@@ -273,4 +281,6 @@ public class MessagesProperties {
     public static final String REGEXP_DAY_OF_WEEK_ARTICLE = "regexp.day.of.week.article";
 
     public static final String REGEXP_NEXT_WEEK = "regexp.next.week";
+
+    public static final String COMPLETE_REMINDER_FROM_LIST_COMMAND_NAME = "completereminderfromlist";
 }

@@ -9,10 +9,11 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.ChangeReminderRequest;
 import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,12 +33,16 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
 
     private KeyboardService keyboardService;
 
+    private final LocalisationService localisationService;
+
     public ChangeReminderNoteCommand(ReminderMessageSender reminderMessageSender,
                                      MessageService messageService,
                                      ReminderService reminderService,
                                      CommandNavigator commandNavigator,
-                                     KeyboardService keyboardService) {
+                                     KeyboardService keyboardService,
+                                     LocalisationService localisationService) {
         this.keyboardService = keyboardService;
+        this.localisationService = localisationService;
         this.name = MessagesProperties.EDIT_REMINDER_NOTE_COMMAND_NAME;
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
@@ -57,13 +62,13 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
             setMessageId(callbackQuery.getMessage().getMessageId());
         }});
 
-        messageService.editReplyKeyboard(
+        messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
-                keyboardService.goBackCallbackCommand(MessagesProperties.EDIT_REMINDER_COMMAND_NAME, new String[] { arguments[0] })
+                callbackQuery.getMessage().getText() + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_EDIT_NOTE),
+                keyboardService.goBackCallbackCommand(MessagesProperties.EDIT_REMINDER_COMMAND_NAME, new String[]{arguments[0]})
         );
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_REMINDER_NOTE_ANSWER);
-        messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_REMINDER_EDIT_NOTE, keyboardService.goBackCommand());
     }
 
     @Override
@@ -79,6 +84,7 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
 
         ReplyKeyboard replyKeyboard = commandNavigator.silentPop(message.getChatId());
         reminderMessageSender.sendReminderNoteChanged(reminder, request.getMessageId(), replyKeyboard);
+        messageService.deleteMessage(message.getChatId(), message.getMessageId());
     }
 
     @Override

@@ -73,11 +73,24 @@ public class KeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getReceiverReminderDetailsKeyboard(int reminderId, String prevHistoryName) {
+    public InlineKeyboardMarkup getReceiverReminderKeyboard(int reminderId, String prevHistoryName) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId), buttonFactory.cancelReminderButton(reminderId)));
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminderId), buttonFactory.postponeReminderButton(reminderId)));
+
+        if (prevHistoryName != null) {
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName)));
+        }
+
+        return inlineKeyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup getReceiverReminderDetailsKeyboard(int reminderId, String prevHistoryName) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
+
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderFromListButton(reminderId), buttonFactory.cancelReminderFromListButton(reminderId)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeFromListButton(reminderId), buttonFactory.postponeReminderFromListButton(reminderId)));
 
         if (prevHistoryName != null) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName)));
@@ -184,8 +197,8 @@ public class KeyboardService {
     private InlineKeyboardMarkup getMySelfReminderDetailsKeyboard(int reminderId, String prevHistoryName) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId), buttonFactory.cancelReminderButton(reminderId)));
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminderId), buttonFactory.postponeReminderButton(reminderId)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderFromListButton(reminderId), buttonFactory.cancelReminderFromListButton(reminderId)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeFromListButton(reminderId), buttonFactory.postponeReminderFromListButton(reminderId)));
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminder(reminderId)));
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderButton(reminderId)));
 

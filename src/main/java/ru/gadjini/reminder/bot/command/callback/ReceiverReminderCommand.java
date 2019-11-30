@@ -5,15 +5,16 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.ReminderTextBuilder;
 
-public class EditReminderCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
+public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
-    private final String name = MessagesProperties.EDIT_REMINDER_COMMAND_NAME;
+    private final String name = MessagesProperties.RECEIVER_REMINDER_COMMAND_NAME;
 
     private ReminderMessageSender reminderMessageSender;
 
@@ -25,13 +26,17 @@ public class EditReminderCommand implements CallbackBotCommand, NavigableCallbac
 
     private ReminderService reminderService;
 
-    public EditReminderCommand(ReminderMessageSender reminderMessageSender, MessageService messageService,
-                               KeyboardService keyboardService, ReminderTextBuilder reminderTextBuilder, ReminderService reminderService) {
+    private CommandNavigator commandNavigator;
+
+    public ReceiverReminderCommand(ReminderMessageSender reminderMessageSender, MessageService messageService,
+                                   KeyboardService keyboardService, ReminderTextBuilder reminderTextBuilder,
+                                   ReminderService reminderService, CommandNavigator commandNavigator) {
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.keyboardService = keyboardService;
         this.reminderTextBuilder = reminderTextBuilder;
         this.reminderService = reminderService;
+        this.commandNavigator = commandNavigator;
     }
 
     @Override
@@ -52,9 +57,12 @@ public class EditReminderCommand implements CallbackBotCommand, NavigableCallbac
     @Override
     public void restore(long chatId, int messageId, String queryId, String[] arguments) {
         Reminder reminder = reminderService.getReminder(Integer.parseInt(arguments[0]));
-
-        messageService.editMessage(chatId,
-                messageId, reminderTextBuilder.create(reminder),
-                keyboardService.getEditReminderKeyboard(Integer.parseInt(arguments[0]), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME));
+        commandNavigator.silentPop(chatId);
+        messageService.editMessage(
+                chatId,
+                messageId,
+                reminderTextBuilder.create(reminder),
+                keyboardService.getReceiverReminderKeyboard(Integer.parseInt(arguments[0]), null)
+        );
     }
 }
