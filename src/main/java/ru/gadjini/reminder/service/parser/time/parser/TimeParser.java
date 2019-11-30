@@ -52,10 +52,6 @@ public class TimeParser {
             consumeDayOfWeek(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             LocalTime time = consumeTime(lexems);
-            if (parsedTime.toLocalDate().equals(LocalDate.now(parsedTime.getZone()))
-                    && parsedTime.toLocalTime().isAfter(time)) {
-                parsedTime = parsedTime.plusDays(1);
-            }
             parsedTime = parsedTime.with(time);
         }
 
@@ -73,9 +69,9 @@ public class TimeParser {
 
     private void consumeNextWeek(List<BaseLexem> lexems) {
         lexemsConsumer.consume(lexems, TimeToken.NEXT_WEEK);
-        parsedTime = parsedTime.plusDays(7);
 
         consumeDayOfWeek(lexems);
+        parsedTime = parsedTime.plusDays(7);
     }
 
     private void consumeDayOfWeek(List<BaseLexem> lexems) {
@@ -86,7 +82,7 @@ public class TimeParser {
                 .orElseThrow();
         parsedTime = parsedTime.with(TemporalAdjusters.next(dayOfWeek));
 
-        consumeTime(lexems);
+        parsedTime = parsedTime.with(consumeTime(lexems));
     }
 
     private void consumeMonth(List<BaseLexem> lexems) {

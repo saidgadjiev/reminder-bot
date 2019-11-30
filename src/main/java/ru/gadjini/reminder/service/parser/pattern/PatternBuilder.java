@@ -76,10 +76,9 @@ public class PatternBuilder {
 
         patternBuilder.append("((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))( )?(")
                 .append(regexpTimeArticle)
-                .append(" )?(((?<").append(NEXT_WEEK).append(">").append(regexpNextWeek).append(") )?")
-                .append("(?<").append(DAY_OF_WEEK_WORD).append(">")
+                .append(" )?((?<").append(DAY_OF_WEEK_WORD).append(">")
                 .append(getDayOfWeekPattern(locale))
-                .append(")( (").append(regexpDayOfWeekArticle).append("))?( )?)?")
+                .append(")").append("( (?<").append(NEXT_WEEK).append(">").append(regexpNextWeek).append("))?( (").append(regexpDayOfWeekArticle).append("))?( )?)?")
                 .append("((?<").append(MONTH_WORD).append(">")
                 .append(Stream.of(Month.values()).map(month -> month.getDisplayName(TextStyle.FULL, locale)).collect(Collectors.joining("|")));
 
@@ -143,14 +142,5 @@ public class PatternBuilder {
         }
 
         return pattern.substring(0, pattern.length() - 1);
-    }
-
-    public static void main(String[] args) {
-        //Pattern pattern = Pattern.compile("((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?((?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс) ((в|во) )?)?((?<monthword>января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря) )?(((?<month>1[0-2]|[1-9])\\.)?(?<day>0[1-9]|[12]\\d|3[01]|0?[1-9])|(?<dayword>завтра|послезавтра))?");
-        Pattern pattern = Pattern.compile("((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?((?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс)((?<nextweek>следующ(ий|ую|ее)|след) )?( (в|во))?( )?)?((?<monthword>января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря) )?(((?<month>1[0-2]|[1-9])\\\\.)?(?<day>0[1-9]|[12]\\\\d|3[01]|0?[1-9])|(?<dayword>завтра|послезавтра))?");
-
-        System.out.println(pattern.matcher(new StringBuilder("тест в след пт в 19:00").reverse().toString()).find());
-
-        //тест в след пт в 19:00
     }
 }

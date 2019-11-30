@@ -15,14 +15,10 @@ public class DayOfWeekService {
     private Map<String, Pattern> patterns = new HashMap<>();
 
     public DayOfWeekService() {
-        String mondayPattern = getFullDisplayNamePattern(DayOfWeek.MONDAY);
-        patterns.put(mondayPattern, Pattern.compile(mondayPattern));
-
-        String fridayPattern = getFullDisplayNamePattern(DayOfWeek.FRIDAY);
-        patterns.put(fridayPattern, Pattern.compile(fridayPattern));
-
-        String sundayPattern = getFullDisplayNamePattern(DayOfWeek.SUNDAY);
-        patterns.put(sundayPattern, Pattern.compile(sundayPattern));
+        for (DayOfWeek dayOfWeek: DayOfWeek.values()) {
+            String pattern = getFullDisplayNamePattern(dayOfWeek);
+            patterns.put(pattern, Pattern.compile(pattern));
+        }
     }
 
     public String getFullDisplayNamePattern(DayOfWeek dayOfWeek) {
