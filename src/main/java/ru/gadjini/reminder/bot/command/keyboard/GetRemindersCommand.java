@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.bot.command.keyboard;
 
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -42,7 +43,7 @@ public class GetRemindersCommand implements KeyboardBotCommand, NavigableCallbac
     }
 
     @Override
-    public void restore(long chatId, int messageId, String queryId, String[] arguments) {
+    public void restore(long chatId, int messageId, String queryId, ReplyKeyboard replyKeyboard, String[] arguments) {
         messageService.editMessageByMessageCode(
                 chatId,
                 messageId,

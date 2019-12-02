@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.bot.command.callback;
 
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -47,7 +48,7 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
     }
 
     @Override
-    public void restore(long chatId, int messageId, String queryId, String[] arguments) {
+    public void restore(long chatId, int messageId, String queryId, ReplyKeyboard replyKeyboard, String[] arguments) {
         List<Reminder> reminders = reminderService.getActiveReminders();
 
         reminderMessageSender.sendActiveReminders(chatId, messageId, reminders);

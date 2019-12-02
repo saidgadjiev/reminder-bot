@@ -76,8 +76,8 @@ public class KeyboardService {
     public InlineKeyboardMarkup getReceiverReminderKeyboard(int reminderId, String prevHistoryName) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId), buttonFactory.cancelReminderButton(reminderId)));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminderId), buttonFactory.postponeReminderButton(reminderId)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId, MessagesProperties.RECEIVER_REMINDER_COMMAND_NAME), buttonFactory.cancelReminderButton(reminderId, MessagesProperties.RECEIVER_REMINDER_COMMAND_NAME)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminderId, prevHistoryName), buttonFactory.postponeReminderButton(reminderId, MessagesProperties.RECEIVER_REMINDER_COMMAND_NAME)));
 
         if (prevHistoryName != null) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName)));
@@ -86,11 +86,11 @@ public class KeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getReceiverReminderDetailsKeyboard(int reminderId, String prevHistoryName) {
+    public InlineKeyboardMarkup getReceiverReminderDetailsKeyboard(int reminderId, String prevHistoryName, String currHistoryName) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderFromListButton(reminderId), buttonFactory.cancelReminderFromListButton(reminderId)));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeFromListButton(reminderId), buttonFactory.postponeReminderFromListButton(reminderId)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId, currHistoryName), buttonFactory.cancelReminderButton(reminderId, currHistoryName)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminderId, prevHistoryName), buttonFactory.postponeReminderButton(reminderId, prevHistoryName)));
 
         if (prevHistoryName != null) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName)));
@@ -166,7 +166,7 @@ public class KeyboardService {
         return replyKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup goBackCallbackCommand(String prevHistoryName) {
+    public InlineKeyboardMarkup goBackCallbackButton(String prevHistoryName) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName)));
@@ -174,10 +174,10 @@ public class KeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup goBackCallbackCommand(String prevHistoryName, String[] arguments) {
+    public InlineKeyboardMarkup goBackCallbackButton(String prevHistoryName, boolean restoreKeyboard, String[] arguments) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, arguments)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, restoreKeyboard, arguments)));
 
         return inlineKeyboardMarkup;
     }
@@ -194,11 +194,11 @@ public class KeyboardService {
         return keyboardMarkup;
     }
 
-    private InlineKeyboardMarkup getMySelfReminderDetailsKeyboard(int reminderId, String prevHistoryName) {
+    private InlineKeyboardMarkup getMySelfReminderDetailsKeyboard(int reminderId, String prevHistoryName, String currHistoryName) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderFromListButton(reminderId), buttonFactory.cancelReminderFromListButton(reminderId)));
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeFromListButton(reminderId), buttonFactory.postponeReminderFromListButton(reminderId)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId, currHistoryName), buttonFactory.cancelReminderButton(reminderId, currHistoryName)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminderId, prevHistoryName), buttonFactory.postponeReminderButton(reminderId, prevHistoryName)));
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminder(reminderId)));
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderButton(reminderId)));
 
@@ -211,9 +211,9 @@ public class KeyboardService {
 
     public InlineKeyboardMarkup getReminderDetailsKeyboard(int currUserId, Reminder reminder) {
         if (reminder.getCreatorId() == reminder.getReceiverId()) {
-            return getMySelfReminderDetailsKeyboard(reminder.getId(), MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME);
+            return getMySelfReminderDetailsKeyboard(reminder.getId(), MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME, MessagesProperties.REMINDER_DETAILS_COMMAND_NAME);
         } else if (currUserId == reminder.getReceiverId()) {
-            return getReceiverReminderDetailsKeyboard(reminder.getId(), MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME);
+            return getReceiverReminderDetailsKeyboard(reminder.getId(), MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME, MessagesProperties.REMINDER_DETAILS_COMMAND_NAME);
         } else {
             return getCreatorReminderDetailsKeyboard(reminder.getId(), MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME);
         }
@@ -228,7 +228,7 @@ public class KeyboardService {
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderNote(reminderId)));
 
         if (prevHistoryName != null) {
-            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, new String[]{String.valueOf(reminderId)})));
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, false, new String[]{String.valueOf(reminderId)})));
         }
 
         return keyboardMarkup;

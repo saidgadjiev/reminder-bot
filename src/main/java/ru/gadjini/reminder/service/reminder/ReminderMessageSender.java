@@ -135,7 +135,7 @@ public class ReminderMessageSender {
                     messageId,
                     MessagesProperties.MESSAGE_REMINDER_COMPLETED_FROM,
                     new Object[]{receiverReminderText, UserUtils.userLink(reminder.getCreator())},
-                    keyboardService.goBackCallbackCommand(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)
+                    keyboardService.goBackCallbackButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)
             );
         } else {
             messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
@@ -144,7 +144,7 @@ public class ReminderMessageSender {
                     messageId,
                     MessagesProperties.MESSAGE_REMINDER_ME_COMPLETED,
                     new Object[]{reminderText},
-                    keyboardService.goBackCallbackCommand(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)
+                    keyboardService.goBackCallbackButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)
             );
         }
     }
@@ -292,7 +292,7 @@ public class ReminderMessageSender {
 
     public void sendReminderCantBeCompletedFromList(long chatId, String queryId, int messageId) {
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED);
-        messageService.editMessageByMessageCode(chatId, messageId, MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED, keyboardService.goBackCallbackCommand(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME));
+        messageService.editMessageByMessageCode(chatId, messageId, MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED, keyboardService.goBackCallbackButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME));
     }
 
     public void sendReminderDeleted(String queryId, int messageId, Reminder reminder) {
@@ -314,7 +314,7 @@ public class ReminderMessageSender {
                 reminder.getCreator().getChatId(),
                 messageId,
                 MessagesProperties.MESSAGE_REMINDER_DELETED,
-                keyboardService.goBackCallbackCommand(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)
+                keyboardService.goBackCallbackButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)
         );
     }
 
@@ -360,7 +360,7 @@ public class ReminderMessageSender {
                             reminder.getText(),
                             UserUtils.userLink(reminder.getCreator())
                     },
-                    keyboardService.goBackCallbackCommand(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)
+                    keyboardService.goBackCallbackButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)
             );
             messageService.sendMessageByCode(
                     reminder.getCreator().getChatId(),
@@ -376,7 +376,7 @@ public class ReminderMessageSender {
                     messageId,
                     MessagesProperties.MESSAGE_REMINDER_CANCELED_ME,
                     new Object[]{reminder.getText()},
-                    keyboardService.goBackCallbackCommand(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)
+                    keyboardService.goBackCallbackButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)
             );
         }
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_CANCELED_ANSWER);

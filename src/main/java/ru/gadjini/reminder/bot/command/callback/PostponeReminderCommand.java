@@ -59,13 +59,15 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         reminderRequests.put(callbackQuery.getMessage().getChatId(), new ChangeReminderRequest() {{
             setMessageId(callbackQuery.getMessage().getMessageId());
             setReminderId(Integer.parseInt(arguments[0]));
+            setArguments(arguments);
         }});
 
+        String prevHistoryName = arguments[1];
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 callbackQuery.getMessage().getText() + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_TIME),
-                keyboardService.goBackCallbackCommand(MessagesProperties.RECEIVER_REMINDER_COMMAND_NAME, new String[]{arguments[0], String.valueOf(true)})
+                keyboardService.goBackCallbackButton(prevHistoryName, true, new String[]{arguments[0]})
         );
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION);
     }
@@ -75,9 +77,6 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         return name;
     }
 
-    /**
-     * Принимает команды: на 1д 1ч 1мин, до завтра 15:00;
-     */
     @Override
     public void processNonCommandUpdate(Message message) {
         if (!message.hasText()) {
@@ -90,7 +89,13 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
         ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(message.getChatId());
 
-        reminderMessageSender.sendReminderPostponed(updateReminderResult, replyKeyboard);
+        String prevHistoryName = changeReminderRequest.getArguments()[1];
+
+        if (prevHistoryName.equals(MessagesProperties.RECEIVER_REMINDER_COMMAND_NAME)) {
+            reminderMessageSender.sendReminderPostponed(updateReminderResult, replyKeyboard);
+        } else {
+            reminderMessageSender.sendReminderPostponedFromList(message.getChatId(), changeReminderRequest.getMessageId(), updateReminderResult, replyKeyboard);
+        }
         messageService.deleteMessage(message.getChatId(), message.getMessageId());
     }
 }

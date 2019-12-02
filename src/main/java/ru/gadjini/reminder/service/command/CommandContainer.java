@@ -122,17 +122,13 @@ public class CommandContainer {
                 new ReminderDetailsCommand(reminderService, reminderMessageSender, keyboardService, messageService, securityService, reminderTextBuilder),
                 new CustomRemindCommand(messageService, keyboardService, reminderRequestService, reminderMessageSender, commandNavigator, localisationService),
                 new GetCompletedRemindersCommand(reminderService, reminderMessageSender),
-                new GoBackCallbackCommand(callbackCommandNavigator),
+                new GoBackCallbackCommand(callbackCommandNavigator, commandNavigator),
                 new GetActiveRemindersCommand(reminderService, reminderMessageSender),
                 new DeleteCompletedReminderCommand(reminderService, reminderMessageSender),
                 new ChangeReminderNoteCommand(reminderMessageSender, messageService, reminderService, commandNavigator, keyboardService, localisationService),
                 new DeleteReminderNoteCommand(reminderMessageSender, reminderService),
                 new EditReminderCommand(reminderMessageSender, messageService, keyboardService, reminderTextBuilder, reminderService),
-                new CompleteFromListCommand(reminderService, reminderMessageSender),
-                new CancelReminderFromListCommand(reminderService, reminderMessageSender),
-                new ReceiverReminderCommand(reminderMessageSender, messageService, keyboardService, reminderTextBuilder, reminderService, commandNavigator),
-                new CustomRemindFromListCommand(messageService, keyboardService, reminderRequestService, reminderMessageSender, commandNavigator, localisationService),
-                new PostponeReminderFromListCommand(messageService, keyboardService, reminderRequestService, reminderMessageSender, commandNavigator, localisationService)
+                new ReceiverReminderCommand(reminderMessageSender, messageService, keyboardService, reminderTextBuilder, reminderService, commandNavigator)
         );
     }
 

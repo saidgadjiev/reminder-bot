@@ -6,6 +6,8 @@ public class ChangeReminderRequest {
 
     private int reminderId;
 
+    private String[] arguments;
+
     public int getMessageId() {
         return messageId;
     }
@@ -20,5 +22,13 @@ public class ChangeReminderRequest {
 
     public void setReminderId(int reminderId) {
         this.reminderId = reminderId;
+    }
+
+    public String[] getArguments() {
+        return arguments;
+    }
+
+    public void setArguments(String[] arguments) {
+        this.arguments = arguments;
     }
 }

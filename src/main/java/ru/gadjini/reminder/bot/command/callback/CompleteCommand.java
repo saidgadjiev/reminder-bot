@@ -29,14 +29,28 @@ public class CompleteCommand implements CallbackBotCommand {
     @Override
     public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
         int reminderId = Integer.parseInt(arguments[0]);
+
         Reminder reminder = reminderService.completeReminder(reminderId);
+        String currHistoryName = arguments[1];
 
-        if (reminder == null) {
-            reminderMessageSender.sendReminderCantBeCompleted(callbackQuery.getMessage().getChatId(), callbackQuery.getId(), callbackQuery.getMessage().getMessageId());
+        if (currHistoryName.equals(MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)) {
+            if (reminder == null) {
+                reminderMessageSender.sendReminderCantBeCompletedFromList(
+                        callbackQuery.getMessage().getChatId(), callbackQuery.getId(),
+                        callbackQuery.getMessage().getMessageId());
+            } else {
+                reminder.getReceiver().setChatId(callbackQuery.getMessage().getChatId());
+
+                reminderMessageSender.sendReminderCompleteFromList(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
+            }
         } else {
-            reminder.getReceiver().setChatId(callbackQuery.getMessage().getChatId());
+            if (reminder == null) {
+                reminderMessageSender.sendReminderCantBeCompleted(callbackQuery.getMessage().getChatId(), callbackQuery.getId(), callbackQuery.getMessage().getMessageId());
+            } else {
+                reminder.getReceiver().setChatId(callbackQuery.getMessage().getChatId());
 
-            reminderMessageSender.sendReminderComplete(callbackQuery.getId(), reminder);
+                reminderMessageSender.sendReminderComplete(callbackQuery.getId(), reminder);
+            }
         }
     }
 }
