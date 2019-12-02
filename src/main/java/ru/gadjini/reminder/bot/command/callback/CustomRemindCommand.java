@@ -64,10 +64,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        requests.put(callbackQuery.getMessage().getChatId(), new CallbackRequest() {{
-            setRequestParams(requestParams);
-            setMessageId(callbackQuery.getMessage().getMessageId());
-        }});
+        requests.put(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         String prevHistoryName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
         messageService.editMessage(

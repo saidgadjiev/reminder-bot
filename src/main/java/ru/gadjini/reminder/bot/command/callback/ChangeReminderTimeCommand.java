@@ -59,9 +59,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        changeReminderTimeRequests.put(callbackQuery.getMessage().getChatId(), new CallbackRequest() {{
-            setMessageId(callbackQuery.getMessage().getMessageId());
-        }});
+        changeReminderTimeRequests.put(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),

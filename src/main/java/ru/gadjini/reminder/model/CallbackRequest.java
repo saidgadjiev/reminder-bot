@@ -8,19 +8,16 @@ public class CallbackRequest {
 
     private RequestParams requestParams;
 
+    public CallbackRequest(int messageId, RequestParams requestParams) {
+        this.messageId = messageId;
+        this.requestParams = requestParams;
+    }
+
     public int getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(int messageId) {
-        this.messageId = messageId;
-    }
-
     public RequestParams getRequestParams() {
         return requestParams;
-    }
-
-    public void setRequestParams(RequestParams requestParams) {
-        this.requestParams = requestParams;
     }
 }

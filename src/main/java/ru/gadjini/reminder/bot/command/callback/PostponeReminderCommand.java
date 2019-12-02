@@ -58,10 +58,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        reminderRequests.put(callbackQuery.getMessage().getChatId(), new CallbackRequest() {{
-            setMessageId(callbackQuery.getMessage().getMessageId());
-            setRequestParams(requestParams);
-        }});
+        reminderRequests.put(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         String prevHistoryName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
         messageService.editMessage(
