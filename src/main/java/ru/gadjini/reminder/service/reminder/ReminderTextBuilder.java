@@ -208,18 +208,20 @@ public class ReminderTextBuilder {
         ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
         String time = DATE_TIME_FORMATTER.format(remindAt);
 
-        if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
-            return localisationService.getMessage(
-                    MessagesProperties.MESSAGE_REMINDER_TODAY,
-                    new Object[]{remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), time}
-            );
-        } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 1) {
-            return tomorrowTime(remindAt.getDayOfWeek(), time);
-        } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 2) {
-            return dayAfterTomorrowTime(now.getDayOfWeek(), time);
-        } else {
-            return fixedDay(remindAt, time);
+        if (remindAt.getMonth().equals(now.getMonth()) && remindAt.getYear() == now.getYear()) {
+            if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
+                return localisationService.getMessage(
+                        MessagesProperties.MESSAGE_REMINDER_TODAY,
+                        new Object[]{remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), time}
+                );
+            } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 1) {
+                return tomorrowTime(remindAt.getDayOfWeek(), time);
+            } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 2) {
+                return dayAfterTomorrowTime(now.getDayOfWeek(), time);
+            }
         }
+
+        return fixedDay(remindAt, time);
     }
 
     private String fixedDay(ZonedDateTime remindAt, String time) {

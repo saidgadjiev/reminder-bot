@@ -34,7 +34,12 @@ public class RequestParams {
     public String serialize(String delimiter) {
         StringBuilder serialize = new StringBuilder();
 
-        params.forEach((s, s2) -> serialize.append(s).append(delimiter).append(s2));
+        params.forEach((s, s2) -> {
+            if (serialize.length() > 0) {
+                serialize.append(delimiter);
+            }
+            serialize.append(s).append(delimiter).append(s2);
+        });
 
         return serialize.toString();
     }

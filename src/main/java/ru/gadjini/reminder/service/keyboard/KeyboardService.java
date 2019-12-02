@@ -41,7 +41,9 @@ public class KeyboardService {
             for (int remindId : list) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(i++));
-                button.setCallbackData(MessagesProperties.REMINDER_DETAILS_COMMAND_NAME + CommandExecutor.COMMAND_ARG_SEPARATOR + remindId);
+                button.setCallbackData(MessagesProperties.REMINDER_DETAILS_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
+                    add(Arg.REMINDER_ID.getKey(), remindId);
+                }}.serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
                 row.add(button);
             }
 

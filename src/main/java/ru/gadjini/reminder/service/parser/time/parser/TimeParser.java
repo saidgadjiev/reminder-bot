@@ -56,8 +56,8 @@ public class TimeParser {
         }
 
         ZonedDateTime now = ZonedDateTime.now(parsedTime.getZone());
-        if (now.getDayOfMonth() < parsedTime.getDayOfMonth()) {
-            parsedTime = parsedTime.plusMonths(1);
+        if (parsedTime.toLocalDate().isBefore(now.toLocalDate())) {
+            parsedTime = parsedTime.withMonth(now.getMonthValue() + 1);
         }
         if (parsedTime.toLocalDate().equals(LocalDate.now(parsedTime.getZone()))
                 && now.toLocalTime().isAfter(parsedTime.toLocalTime())) {

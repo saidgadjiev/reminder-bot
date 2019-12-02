@@ -9,6 +9,8 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 
+import java.util.Objects;
+
 public class CancelReminderCommand implements CallbackBotCommand {
 
     private String name;
@@ -35,7 +37,7 @@ public class CancelReminderCommand implements CallbackBotCommand {
         Reminder reminder = reminderService.cancel(reminderId);
         String currHistoryName = requestParams.getString(Arg.CURR_HISTORY_NAME.getKey());
 
-        if (currHistoryName.equals(MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)) {
+        if (Objects.equals(currHistoryName, MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)) {
             if (reminder == null) {
                 reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getId(), callbackQuery.getMessage().getMessageId());
             } else {
