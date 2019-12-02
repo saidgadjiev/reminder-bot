@@ -6,6 +6,7 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 
@@ -31,7 +32,7 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
+    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         List<Reminder> reminders = reminderService.getActiveReminders();
 
         reminderMessageSender.sendActiveReminders(
@@ -48,7 +49,7 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
     }
 
     @Override
-    public void restore(long chatId, int messageId, String queryId, ReplyKeyboard replyKeyboard, String[] arguments) {
+    public void restore(long chatId, int messageId, String queryId, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         List<Reminder> reminders = reminderService.getActiveReminders();
 
         reminderMessageSender.sendActiveReminders(chatId, messageId, reminders);

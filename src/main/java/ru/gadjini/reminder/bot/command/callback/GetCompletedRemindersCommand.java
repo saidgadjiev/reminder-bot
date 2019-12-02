@@ -4,6 +4,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 
@@ -29,7 +30,7 @@ public class GetCompletedRemindersCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
+    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         List<Reminder> reminders = reminderService.getCompletedReminders();
 
         reminderMessageSender.sendCompletedReminders(

@@ -9,22 +9,29 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.request.RequestParamsParser;
 
 import java.util.Arrays;
 
 @Service
 public class CommandExecutor {
 
-    public static final String COMMAND_ARG_SEPARATOR = "_";
+    public static final String COMMAND_ARG_SEPARATOR = "=";
+
+    public static final String COMMAND_NAME_SEPARATOR = "_";
 
     private CommandContainer commandContainer;
 
     private CommandNavigator commandNavigator;
 
+    private RequestParamsParser requestParamsParser;
+
     @Autowired
-    public CommandExecutor(CommandContainer commandContainer, CommandNavigator commandNavigator) {
+    public CommandExecutor(CommandContainer commandContainer, CommandNavigator commandNavigator, RequestParamsParser requestParamsParser) {
         this.commandContainer = commandContainer;
         this.commandNavigator = commandNavigator;
+        this.requestParamsParser = requestParamsParser;
     }
 
     public BotCommand getBotCommand(String startCommandName) {
@@ -57,12 +64,14 @@ public class CommandExecutor {
 
     public void executeCallbackCommand(CallbackQuery callbackQuery) {
         String text = callbackQuery.getData();
-        String[] commandSplit = text.split(COMMAND_ARG_SEPARATOR);
+        String[] commandSplit = text.split(COMMAND_NAME_SEPARATOR);
         CallbackBotCommand botCommand = commandContainer.getCallbackBotCommandMap().get(commandSplit[0]);
+        RequestParams requestParams = new RequestParams();
 
-        String[] parameters = Arrays.copyOfRange(commandSplit, 1, commandSplit.length);
-
-        botCommand.processMessage(callbackQuery, parameters);
+        if (commandSplit.length > 1) {
+            requestParams = requestParamsParser.parse(commandSplit[1]);
+        }
+        botCommand.processMessage(callbackQuery, requestParams);
 
         if (botCommand instanceof NavigableBotCommand) {
             commandNavigator.push(callbackQuery.getMessage().getChatId(), (NavigableBotCommand) botCommand);

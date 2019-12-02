@@ -6,6 +6,8 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.request.Arg;
+import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
@@ -46,8 +48,8 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
-        Reminder reminder = reminderService.getReminder(Integer.parseInt(arguments[0]));
+    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+        Reminder reminder = reminderService.getReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         reminderMessageSender.sendReminderDetails(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), reminder);
     }
@@ -59,8 +61,8 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
     }
 
     @Override
-    public void restore(long chatId, int messageId, String queryId, ReplyKeyboard replyKeyboard, String[] arguments) {
-        Reminder reminder = reminderService.getReminder(Integer.parseInt(arguments[0]));
+    public void restore(long chatId, int messageId, String queryId, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
+        Reminder reminder = reminderService.getReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         messageService.editMessage(
                 chatId,

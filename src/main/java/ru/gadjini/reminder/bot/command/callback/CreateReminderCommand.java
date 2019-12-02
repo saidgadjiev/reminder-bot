@@ -7,6 +7,8 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.request.Arg;
+import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -50,8 +52,8 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
-        reminderRequests.put(callbackQuery.getMessage().getChatId(), Integer.parseInt(arguments[0]));
+    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+        reminderRequests.put(callbackQuery.getMessage().getChatId(), requestParams.getInt(Arg.REMINDER_ID.getKey()));
         messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT, keyboardService.goBackCommand());
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_CREATE_REMINDER_CALLBACK_ANSWER);
     }

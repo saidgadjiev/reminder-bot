@@ -4,6 +4,8 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.request.Arg;
+import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 
@@ -26,11 +28,11 @@ public class GoBackCallbackCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
-        String prevCommandName = arguments[0];
+    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+        String prevCommandName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
         ReplyKeyboard replyKeyboard = null;
 
-        if (Boolean.parseBoolean(arguments[1])) {
+        if (requestParams.contains(Arg.RESTORE_KEYBOARD.getKey())) {
             replyKeyboard = commandNavigator.silentPop(callbackQuery.getMessage().getChatId());
         }
         callbackCommandNavigator.goTo(
@@ -39,7 +41,7 @@ public class GoBackCallbackCommand implements CallbackBotCommand {
                 callbackQuery.getId(),
                 prevCommandName,
                 replyKeyboard,
-                Arrays.copyOfRange(arguments, 2, arguments.length)
+                requestParams
         );
     }
 }

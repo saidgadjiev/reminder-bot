@@ -4,6 +4,8 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
+import ru.gadjini.reminder.request.Arg;
+import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.FriendshipService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
@@ -28,8 +30,8 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
-        Friendship friendship = friendshipService.rejectFriendRequest(Integer.parseInt(arguments[0]));
+    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+        Friendship friendship = friendshipService.rejectFriendRequest(requestParams.getInt(Arg.FRIEND_ID.getKey()));
 
         messageService.sendMessageByCode(
                 friendship.getUserOne().getChatId(),

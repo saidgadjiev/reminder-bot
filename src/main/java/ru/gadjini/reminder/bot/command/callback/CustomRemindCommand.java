@@ -6,8 +6,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.model.ChangeReminderRequest;
+import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.CustomRemindResult;
+import ru.gadjini.reminder.request.Arg;
+import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -19,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CustomRemindCommand implements CallbackBotCommand, NavigableBotCommand {
 
-    private final ConcurrentHashMap<Long, ChangeReminderRequest> requests = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, CallbackRequest> requests = new ConcurrentHashMap<>();
 
     private String name;
 
@@ -61,19 +63,18 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
-        requests.put(callbackQuery.getMessage().getChatId(), new ChangeReminderRequest() {{
-            setReminderId(Integer.parseInt(arguments[0]));
+    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+        requests.put(callbackQuery.getMessage().getChatId(), new CallbackRequest() {{
+            setRequestParams(requestParams);
             setMessageId(callbackQuery.getMessage().getMessageId());
-            setArguments(arguments);
         }});
 
-        String prevHistoryName = arguments[1];
+        String prevHistoryName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 callbackQuery.getMessage().getText() + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND),
-                keyboardService.goBackCallbackButton(prevHistoryName, true, new String[]{arguments[0]})
+                keyboardService.goBackCallbackButton(prevHistoryName, true, requestParams)
         );
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION);
     }
@@ -83,15 +84,15 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
         if (!message.hasText()) {
             return;
         }
-        ChangeReminderRequest changeReminderRequest = requests.get(message.getChatId());
-        CustomRemindResult customRemindResult = reminderService.customRemind(changeReminderRequest.getReminderId(), message.getText().trim());
+        CallbackRequest callbackRequest = requests.get(message.getChatId());
+        CustomRemindResult customRemindResult = reminderService.customRemind(callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), message.getText().trim());
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
-        String prevHistoryName = changeReminderRequest.getArguments()[1];
+        String prevHistoryName = callbackRequest.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
         if (prevHistoryName.equals(MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)) {
-            reminderMessageSender.sendCustomRemindCreatedFromList(message.getChatId(), changeReminderRequest.getMessageId(), customRemindResult, replyKeyboardMarkup);
+            reminderMessageSender.sendCustomRemindCreatedFromList(message.getChatId(), callbackRequest.getMessageId(), customRemindResult, replyKeyboardMarkup);
         } else {
-            reminderMessageSender.sendCustomRemindCreated(message.getChatId(), changeReminderRequest.getMessageId(), customRemindResult, replyKeyboardMarkup);
+            reminderMessageSender.sendCustomRemindCreated(message.getChatId(), callbackRequest.getMessageId(), customRemindResult, replyKeyboardMarkup);
         }
         messageService.deleteMessage(message.getChatId(), message.getMessageId());
     }

@@ -9,6 +9,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.request.Arg;
+import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandExecutor;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
@@ -174,10 +176,10 @@ public class KeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup goBackCallbackButton(String prevHistoryName, boolean restoreKeyboard, String[] arguments) {
+    public InlineKeyboardMarkup goBackCallbackButton(String prevHistoryName, boolean restoreKeyboard, RequestParams requestParams) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, restoreKeyboard, arguments)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, restoreKeyboard, requestParams)));
 
         return inlineKeyboardMarkup;
     }
@@ -228,7 +230,9 @@ public class KeyboardService {
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderNote(reminderId)));
 
         if (prevHistoryName != null) {
-            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, false, new String[]{String.valueOf(reminderId)})));
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, false, new RequestParams() {{
+                add(Arg.REMINDER_ID.getKey(), reminderId);
+            }})));
         }
 
         return keyboardMarkup;

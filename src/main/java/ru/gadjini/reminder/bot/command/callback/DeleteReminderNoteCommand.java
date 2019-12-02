@@ -4,6 +4,8 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.request.Arg;
+import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 
@@ -27,8 +29,8 @@ public class DeleteReminderNoteCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, String[] arguments) {
-        Reminder reminder = reminderService.deleteReminderNote(Integer.parseInt(arguments[0]));
+    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+        Reminder reminder = reminderService.deleteReminderNote(requestParams.getInt(Arg.REMINDER_ID.getKey()));
         reminder.getCreator().setChatId(callbackQuery.getMessage().getChatId());
 
         reminderMessageSender.sendReminderNoteDeleted(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
