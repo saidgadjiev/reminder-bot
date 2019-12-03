@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
@@ -28,6 +30,20 @@ public class KeyboardService {
     public KeyboardService(LocalisationService localisationService, ButtonFactory buttonFactory) {
         this.localisationService = localisationService;
         this.buttonFactory = buttonFactory;
+    }
+
+    public ReplyKeyboardMarkup getPostponeMessagesKeyboard() {
+        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
+
+        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
+            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING)));
+        }});
+
+        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
+            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON)));
+        }});
+
+        return replyKeyboardMarkup;
     }
 
     public InlineKeyboardMarkup getActiveRemindersListKeyboard(List<Integer> reminderIds, String prevHistoryName) {
@@ -158,6 +174,21 @@ public class KeyboardService {
         }});
 
         return replyKeyboardMarkup;
+    }
+
+    public ReplyKeyboardMarkup postponeTimeKeyboard() {
+        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
+
+        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
+            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN)));
+            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN)));
+        }});
+
+        return replyKeyboardMarkup;
+    }
+
+    public ReplyKeyboardRemove replyKeyboardRemove() {
+        return new ReplyKeyboardRemove();
     }
 
     public ReplyKeyboardMarkup goBackCommand() {

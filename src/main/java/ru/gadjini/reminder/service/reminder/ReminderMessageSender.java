@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.reminder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -195,7 +196,7 @@ public class ReminderMessageSender {
         messageService.editMessage(oldReminder.getCreator().getChatId(), messageId, newReminderText, keyboardService.getEditReminderKeyboard(oldReminder.getId(), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME));
     }
 
-    public void sendReminderPostponed(UpdateReminderResult updateReminderResult, ReplyKeyboard replyKeyboard) {
+    public void sendReminderPostponed(UpdateReminderResult updateReminderResult, String reason, ReplyKeyboard replyKeyboard) {
         Reminder reminder = updateReminderResult.getOldReminder();
         RemindMessage remindMessage = reminder.getRemindMessage();
 
@@ -221,6 +222,14 @@ public class ReminderMessageSender {
                     null
             );
         }
+        StringBuilder messageBuilder = new StringBuilder();
+
+        messageBuilder.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED));
+
+        if (StringUtils.isNotBlank(reason)) {
+            messageBuilder.append("\n\n").append(reason);
+        }
+        messageService.sendMessage(reminder.getReceiver().getChatId(), messageBuilder.toString(), replyKeyboard);
     }
 
     public void sendReminderPostponedFromList(long chatId, int messageId, UpdateReminderResult updateReminderResult, ReplyKeyboard replyKeyboard) {

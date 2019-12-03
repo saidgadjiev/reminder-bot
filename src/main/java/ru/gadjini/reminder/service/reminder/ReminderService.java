@@ -137,7 +137,7 @@ public class ReminderService {
         return reminderDao.getCompletedReminders(user.getId());
     }
 
-    Reminder getReminder(int reminderId, ReminderMapping reminderMapping) {
+    public Reminder getReminder(int reminderId, ReminderMapping reminderMapping) {
         return reminderDao.getReminder(reminderId, reminderMapping);
     }
 

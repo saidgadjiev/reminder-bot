@@ -248,7 +248,7 @@ public class ReminderTextBuilder {
 
     private String postponeTime(ZonedDateTime remindAt) {
         ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
-        String time = DATE_TIME_FORMATTER.format(remindAt) + "(" + remindAt.getDayOfWeek() + ")";
+        String time = DATE_TIME_FORMATTER.format(remindAt) + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")";
 
         if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
             return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{"<b>" + time + "</b>"});

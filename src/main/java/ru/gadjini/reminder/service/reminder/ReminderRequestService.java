@@ -106,6 +106,19 @@ public class ReminderRequestService {
         return new UpdateReminderResult(oldReminder, reminderService.changeReminderTime(reminderId, remindAtInReceiverTimeZone));
     }
 
+    public Reminder getReminderForPostpone(int reminderId) {
+        Reminder oldReminder = reminderService.getReminder(reminderId, new ReminderMapping() {{
+            setRemindMessageMapping(new Mapping());
+            setCreatorMapping(new Mapping() {{
+                setFields(List.of(ReminderMapping.CR_CHAT_ID));
+            }});
+            setReceiverMapping(new Mapping());
+        }});
+        oldReminder.getReceiver().setFrom(securityService.getAuthenticatedUser());
+
+        return oldReminder;
+    }
+
     public UpdateReminderResult postponeReminder(int reminderId, String posponeText) {
         Reminder oldReminder = reminderService.getReminder(reminderId, new ReminderMapping() {{
             setRemindMessageMapping(new Mapping());
@@ -121,6 +134,13 @@ public class ReminderRequestService {
         validationService.validateIsNotPastTime(remindAtInReceiverTimeZone);
 
         return new UpdateReminderResult(oldReminder, reminderService.postponeReminder(reminderId, remindAtInReceiverTimeZone));
+    }
+
+    public UpdateReminderResult postponeReminder(Reminder reminder, ParsedPostponeTime parsedPostponeTime) {
+        ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedPostponeTime, reminder.getRemindAtInReceiverTimeZone());
+        validationService.validateIsNotPastTime(remindAtInReceiverTimeZone);
+
+        return new UpdateReminderResult(reminder, reminderService.postponeReminder(reminder.getId(), remindAtInReceiverTimeZone));
     }
 
     private ParsedRequest parseRequest(String text) {
@@ -211,7 +231,7 @@ public class ReminderRequestService {
         }
     }
 
-    private ParsedPostponeTime parsePostponeTime(String text, ZoneId zoneId) {
+    public ParsedPostponeTime parsePostponeTime(String text, ZoneId zoneId) {
         try {
             return requestParser.parsePostponeTime(text, zoneId);
         } catch (ParseException ex) {
