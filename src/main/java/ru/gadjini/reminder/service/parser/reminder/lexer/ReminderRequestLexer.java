@@ -19,21 +19,23 @@ public class ReminderRequestLexer {
 
     private TimeLexer timeLexer;
 
-    private String str;
+    private String parts[];
 
     public ReminderRequestLexer(ReminderRequestLexerConfig lexerConfig, TimeLexerConfig timeLexerConfig, String str) {
         this.lexerConfig = lexerConfig;
-        this.str = str;
-        this.timeLexer = new TimeLexer(timeLexerConfig, StringUtils.reverseDelimited(str, ' '));
+        this.parts = str.split(";");
+
+        for (int i = 0; i < parts.length; ++i) {
+            this.parts[i] = this.parts[i].trim();
+        }
+
+        this.timeLexer = new TimeLexer(timeLexerConfig, StringUtils.reverseDelimited(parts[0], ' '));
     }
 
     public List<BaseLexem> tokenize() {
-        String[] parts = str.split(";");
-
-        str = parts[0].trim();
         LinkedList<BaseLexem> lexems = new LinkedList<>(timeLexer.tokenize());
 
-        String tokenizeStr = StringUtils.reverseDelimited(str, ' ');
+        String tokenizeStr = StringUtils.reverseDelimited(parts[0], ' ');
         tokenizeStr = StringUtils.reverseDelimited(tokenizeStr.substring(timeLexer.end()).trim(), ' ');
 
         GroupPattern loginPattern = lexerConfig.getLoginPattern();
@@ -47,7 +49,7 @@ public class ReminderRequestLexer {
                 lexems.addFirst(new ReminderLexem(ReminderToken.LOGIN, values.get(PatternBuilder.LOGIN).trim()));
             }
             if (parts.length > 1) {
-                lexems.add(new ReminderLexem(ReminderToken.NOTE, parts[1].trim()));
+                lexems.add(new ReminderLexem(ReminderToken.NOTE, parts[1]));
             }
 
             return lexems;

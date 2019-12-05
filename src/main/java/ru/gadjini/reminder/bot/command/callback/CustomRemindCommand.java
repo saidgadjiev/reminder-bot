@@ -85,12 +85,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
         CustomRemindResult customRemindResult = reminderService.customRemind(callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), message.getText().trim());
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
-        String prevHistoryName = callbackRequest.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
-        if (prevHistoryName.equals(MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)) {
-            reminderMessageSender.sendCustomRemindCreatedFromList(message.getChatId(), callbackRequest.getMessageId(), customRemindResult, replyKeyboardMarkup);
-        } else {
-            reminderMessageSender.sendCustomRemindCreated(message.getChatId(), callbackRequest.getMessageId(), customRemindResult, replyKeyboardMarkup);
-        }
+        reminderMessageSender.sendCustomRemindCreated(message.getChatId(), callbackRequest.getMessageId(), customRemindResult, replyKeyboardMarkup);
         messageService.deleteMessage(message.getChatId(), message.getMessageId());
     }
 }

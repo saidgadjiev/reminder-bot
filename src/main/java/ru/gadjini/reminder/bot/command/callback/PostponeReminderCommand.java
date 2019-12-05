@@ -121,14 +121,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         reminderRequests.remove(chatId);
 
         ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(chatId);
-        CallbackRequest callbackRequest = postponeCommandState.callbackRequest;
-        String prevHistoryName = callbackRequest.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
-
-        if (prevHistoryName.equals(MessagesProperties.RECEIVER_REMINDER_COMMAND_NAME)) {
-            reminderMessageSender.sendReminderPostponed(updateReminderResult, reason, replyKeyboard);
-        } else {
-            reminderMessageSender.sendReminderPostponedFromList(chatId, callbackRequest.getMessageId(), updateReminderResult, replyKeyboard);
-        }
+        reminderMessageSender.sendReminderPostponed(updateReminderResult, reason, replyKeyboard);
     }
 
     private static class PostponeCommandState {

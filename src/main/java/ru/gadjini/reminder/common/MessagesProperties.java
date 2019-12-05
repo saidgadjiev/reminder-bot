@@ -152,8 +152,6 @@ public class MessagesProperties {
 
     public static final String CANCEL_REMINDER_COMMAND_NAME = "cancelreminder";
 
-    public static final String CANCEL_REMINDER_FROM_LIST_COMMAND_NAME = "cancelreminderfromlist";
-
     public static final String CANCEL_REMINDER_COMMAND_DESCRIPTION = "cancel.reminder.command.description";
 
     public static final String MESSAGE_REMINDER_CANCELED_FROM = "message.reminder.canceled.from";
@@ -169,8 +167,6 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_CANT_BE_COMPLETED = "message.reminder.cant.be.completed";
 
     public static final String POSTPONE_REMINDER_COMMAND_NAME = "postponereminder";
-
-    public static final String POSTPONE_REMINDER_FROM_LIST_COMMAND_NAME = "postponereminderfromlist";
 
     public static final String POSTPONE_REMINDER_COMMAND_DESCRIPTION = "postpone.reminder.command.description";
 
@@ -195,8 +191,6 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_POSTPONE_TIME = "message.reminder.postpone.time";
 
     public static final String CUSTOM_REMINDER_TIME_COMMAND_NAME = "customremindertime";
-
-    public static final String CUSTOM_REMINDER_TIME_FROM_LIST_COMMAND_NAME = "customremindertimefromlist";
 
     public static final String DELETE_COMPLETED_REMINDERS_COMMAND_DESCRIPTION = "delete.completed.reminders.command.description";
 

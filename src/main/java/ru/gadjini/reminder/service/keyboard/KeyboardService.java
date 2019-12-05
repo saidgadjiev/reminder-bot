@@ -110,7 +110,6 @@ public class KeyboardService {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId, currHistoryName), buttonFactory.cancelReminderButton(reminderId, currHistoryName)));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminderId, prevHistoryName), buttonFactory.postponeReminderButton(reminderId, prevHistoryName)));
 
         if (prevHistoryName != null) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName)));
@@ -233,7 +232,6 @@ public class KeyboardService {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId, currHistoryName), buttonFactory.cancelReminderButton(reminderId, currHistoryName)));
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminderId, prevHistoryName), buttonFactory.postponeReminderButton(reminderId, prevHistoryName)));
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminder(reminderId)));
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderButton(reminderId)));
 
