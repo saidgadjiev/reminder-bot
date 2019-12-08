@@ -12,7 +12,7 @@ import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
-import ru.gadjini.reminder.service.reminder.ReminderTextBuilder;
+import ru.gadjini.reminder.service.reminder.MessageBuilder;
 import ru.gadjini.reminder.service.security.SecurityService;
 
 public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
@@ -29,17 +29,17 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
 
     private SecurityService securityService;
 
-    private ReminderTextBuilder reminderTextBuilder;
+    private MessageBuilder messageBuilder;
 
     public ReminderDetailsCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender,
                                   KeyboardService keyboardService, MessageService messageService,
-                                  SecurityService securityService, ReminderTextBuilder reminderTextBuilder) {
+                                  SecurityService securityService, MessageBuilder messageBuilder) {
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
         this.keyboardService = keyboardService;
         this.messageService = messageService;
         this.securityService = securityService;
-        this.reminderTextBuilder = reminderTextBuilder;
+        this.messageBuilder = messageBuilder;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
         messageService.editMessage(
                 chatId,
                 messageId,
-                reminderTextBuilder.create(reminder),
+                messageBuilder.create(reminder),
                 keyboardService.getReminderDetailsKeyboard(securityService.getAuthenticatedUser().getId(), reminder)
         );
     }

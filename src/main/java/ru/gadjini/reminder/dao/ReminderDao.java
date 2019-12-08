@@ -2,8 +2,10 @@ package ru.gadjini.reminder.dao;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.*;
+import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -58,6 +60,7 @@ public class ReminderDao {
     public List<Reminder> getActiveReminders(int userId) {
         return namedParameterJdbcTemplate.query(
                 "SELECT r.*,\n" +
+                        "       (r.repeat_remind_at).*,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.first_name                                    AS rc_first_name,\n" +
                         "       rc.last_name                                     AS rc_last_name,\n" +
@@ -177,11 +180,11 @@ public class ReminderDao {
                         "          WHEN time_type = 0 THEN :curr_date >= fixed_time\n" +
                         "          ELSE CASE\n" +
                         "                   WHEN last_reminder_at IS NULL THEN\n" +
-                        "                               date_diff_in_minute(:curr_date, r.remind_at) >= EXTRACT(MINUTE FROM (delay_time))\n" +
+                        "                               date_diff_in_minute(:curr_date, r.remind_at) >= minute(delay_time)\n" +
                         "                           OR\n" +
-                        "                               date_diff_in_minute(r.remind_at, :curr_date) BETWEEN 1 AND EXTRACT(MINUTE FROM (delay_time))\n" +
+                        "                               date_diff_in_minute(r.remind_at, :curr_date) BETWEEN 1 AND minute(delay_time)\n" +
                         "                   ELSE\n" +
-                        "                           date_diff_in_minute(:curr_date, last_reminder_at) >= EXTRACT(MINUTE FROM (delay_time))\n" +
+                        "                           date_diff_in_minute(:curr_date, last_reminder_at) >= minute(delay_time)\n" +
                         "              END\n" +
                         "          END\n" +
                         "ORDER BY rt.id\n" +
@@ -253,9 +256,10 @@ public class ReminderDao {
         return jdbcTemplate.query(
                 "WITH r AS (\n" +
                         "    UPDATE reminder r SET reminder_text = ? FROM reminder old WHERE r.id = old.id AND r.id = ? " +
-                        "RETURNING r.id, r.receiver_id, r.remind_at, r.creator_id, r.reminder_text, r.note, old.reminder_text AS old_text\n" +
+                        "RETURNING r.id, r.receiver_id, r.remind_at, r.repeat_remind_at, r.creator_id, r.reminder_text, r.note, old.reminder_text AS old_text\n" +
                         ")\n" +
                         "SELECT r.*,\n" +
+                        "       (r.repeat_remind_at).*,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.chat_id                                       AS rc_chat_id\n" +
                         "FROM r\n" +
@@ -334,7 +338,7 @@ public class ReminderDao {
 
     private Reminder createByReceiverId(Reminder reminder) {
         jdbcTemplate.query("WITH r AS (\n" +
-                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, initial_remind_at, note) VALUES (?, ?, ?, ?, ?, ?) " +
+                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at, note) VALUES (?, ?, ?, ?, ?, ?, ?) " +
                         "RETURNING id, receiver_id\n" +
                         ")\n" +
                         "SELECT r.id,\n" +
@@ -343,17 +347,14 @@ public class ReminderDao {
                         "       rc.chat_id    as rc_chat_id\n" +
                         "FROM r\n" +
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id",
-                ps -> {
-                    ps.setString(1, reminder.getText());
-                    ps.setInt(2, reminder.getCreatorId());
-                    ps.setInt(3, reminder.getReceiverId());
-                    ps.setTimestamp(4, Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()));
-                    ps.setTimestamp(5, Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()));
-                    if (StringUtils.isNotBlank(reminder.getNote())) {
-                        ps.setString(6, reminder.getNote());
-                    } else {
-                        ps.setNull(6, Types.VARCHAR);
-                    }
+                new SqlParameterValue[] {
+                        new SqlParameterValue(Types.VARCHAR, reminder.getText()),
+                        new SqlParameterValue(Types.INTEGER, reminder.getCreatorId()),
+                        new SqlParameterValue(Types.INTEGER, reminder.getReceiverId()),
+                        new SqlParameterValue(Types.TIMESTAMP, reminder.getRemindAt() != null ? Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()) : null),
+                        new SqlParameterValue(Types.VARCHAR, reminder.getRepeatRemindAt() != null ? reminder.getRepeatRemindAt().sql() : null),
+                        new SqlParameterValue(Types.TIMESTAMP, reminder.getRemindAt() != null ? Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()) : null),
+                        new SqlParameterValue(Types.VARCHAR, reminder.getNote())
                 },
                 rs -> {
                     reminder.setId(rs.getInt(Reminder.ID));
@@ -368,7 +369,7 @@ public class ReminderDao {
 
     private Reminder createByReceiverName(Reminder reminder) {
         jdbcTemplate.query("WITH r AS (\n" +
-                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, note) SELECT ?, ?, user_id, ?, ? FROM tg_user WHERE username = ? RETURNING id, receiver_id\n" +
+                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, initial_remind_at, note) SELECT ?, ?, user_id, ?, ? FROM tg_user WHERE username = ? RETURNING id, receiver_id\n" +
                         ")\n" +
                         "SELECT r.id,\n" +
                         "       r.receiver_id,\n" +
@@ -376,16 +377,13 @@ public class ReminderDao {
                         "       rc.last_name  as rc_last_name,\n" +
                         "       rc.chat_id    as rc_chat_id\n" +
                         "FROM r INNER JOIN tg_user rc ON r.receiver_id = rc.user_id",
-                ps -> {
-                    ps.setString(1, reminder.getText());
-                    ps.setInt(2, reminder.getCreatorId());
-                    ps.setTimestamp(3, Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()));
-                    ps.setString(4, reminder.getReceiver().getUsername());
-                    if (StringUtils.isNotBlank(reminder.getNote())) {
-                        ps.setString(5, reminder.getNote());
-                    } else {
-                        ps.setNull(5, Types.VARCHAR);
-                    }
+                new SqlParameterValue[] {
+                        new SqlParameterValue(Types.VARCHAR, reminder.getText()),
+                        new SqlParameterValue(Types.INTEGER, reminder.getCreatorId()),
+                        new SqlParameterValue(Types.TIMESTAMP, reminder.getRemindAt() != null ? Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()) : null),
+                        new SqlParameterValue(Types.TIMESTAMP, reminder.getRemindAt() != null ? Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()) : null),
+                        new SqlParameterValue(Types.VARCHAR, reminder.getReceiver().getUsername()),
+                        new SqlParameterValue(Types.VARCHAR, reminder.getNote())
                 },
                 rs -> {
                     reminder.setId(rs.getInt(Reminder.ID));
@@ -402,7 +400,7 @@ public class ReminderDao {
 
     private SelectSelectStep<Record> buildSelect(ReminderMapping reminderMapping) {
         ReminderTable reminder = ReminderTable.TABLE.as("r");
-        SelectSelectStep<Record> select = dslContext.select(reminder.asterisk());
+        SelectSelectStep<Record> select = dslContext.select(reminder.asterisk(), DSL.field("(r.repeat_remind_at).*"));
 
         SelectJoinStep<Record> from = select.from(reminder);
         if (reminderMapping.getRemindMessageMapping() != null) {

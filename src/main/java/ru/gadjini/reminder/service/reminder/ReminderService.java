@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.reminder;
 
+import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,12 +43,11 @@ public class ReminderService {
 
     @Transactional
     public Reminder createReminder(Reminder reminder) {
-        Reminder created = reminderDao.create(reminder);
-        List<ReminderTime> reminderTimes = getReminderTimes(reminder.getRemindAt());
-        reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(created.getId()));
-        reminderTimeService.create(reminderTimes);
-
-        return reminder;
+        if (reminder.isRepeatable()) {
+            return createRepeatableReminder(reminder);
+        } else {
+            return createStandardReminder(reminder);
+        }
     }
 
     @Transactional
@@ -267,6 +267,19 @@ public class ReminderService {
         return remindTime;
     }
 
+    private Reminder createRepeatableReminder(Reminder reminder) {
+        return reminderDao.create(reminder);
+    }
+
+    private Reminder createStandardReminder(Reminder reminder) {
+        Reminder created = reminderDao.create(reminder);
+        List<ReminderTime> reminderTimes = getReminderTimes(reminder.getRemindAt());
+        reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(created.getId()));
+        reminderTimeService.create(reminderTimes);
+
+        return reminder;
+    }
+
     private List<ReminderTime> getReminderTimes(ZonedDateTime remindAt) {
         List<ReminderTime> reminderTimes = new ArrayList<>();
 
@@ -302,7 +315,7 @@ public class ReminderService {
 
         ReminderTime delayTime = new ReminderTime();
         delayTime.setType(ReminderTime.Type.REPEAT);
-        delayTime.setDelayTime(LocalTime.of(0, delayMinute));
+        delayTime.setDelayTime(new Period().withMinutes(delayMinute));
         if (remindAt.minusMinutes(delayMinute).isBefore(now)) {
             delayTime.setLastReminderAt(remindAt.withZoneSameInstant(ZoneOffset.UTC));
         }

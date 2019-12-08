@@ -2,14 +2,16 @@ package ru.gadjini.reminder.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.ReminderTime;
+import ru.gadjini.reminder.util.JodaTimeUtils;
 
-import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +65,7 @@ public class ReminderTimeDao {
         return new MapSqlParameterSource()
                 .addValue(ReminderTime.TYPE_COL, reminderTime.getType().getCode())
                 .addValue(ReminderTime.FIXED_TIME, reminderTime.getFixedTime() != null ? Timestamp.valueOf(reminderTime.getFixedTime().toLocalDateTime()) : null)
-                .addValue(ReminderTime.DELAY_TIME, reminderTime.getDelayTime() != null ? Time.valueOf(reminderTime.getDelayTime()) : null)
+                .addValue(ReminderTime.DELAY_TIME, JodaTimeUtils.toPgInterval(reminderTime.getDelayTime()))
                 .addValue(ReminderTime.LAST_REMINDER_AT, reminderTime.getLastReminderAt() != null ? Timestamp.valueOf(reminderTime.getLastReminderAt().toLocalDateTime()) : null)
                 .addValue(ReminderTime.REMINDER_ID, reminderTime.getReminderId());
     }

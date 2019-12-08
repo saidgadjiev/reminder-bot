@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.parser.pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -13,6 +14,7 @@ import java.time.format.TextStyle;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,11 +22,11 @@ import java.util.stream.Stream;
 @Service
 public class PatternBuilder {
 
-    public static final String POSTPONE_DAY = "day";
+    public static final String DAYS = "days";
 
-    public static final String POSTPONE_HOUR = "hour";
+    public static final String HOURS = "hours";
 
-    public static final String POSTPONE_MINUTE = "minute";
+    public static final String MINUTES = "minutes";
 
     public static final String DAY = "day";
 
@@ -68,6 +70,21 @@ public class PatternBuilder {
         return new GroupPattern(Pattern.compile("^(@(?<login>[0-9a-zA-Z_]+) )?(?<text>[a-zA-Zа-яА-ЯёЁ1-9 ]+)$"), List.of(LOGIN, TEXT));
     }
 
+    public GroupPattern buildRepeatTimePattern(Locale locale) {
+        StringBuilder pattern = new StringBuilder();
+
+        String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX);
+        String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
+        String regexpTimeArticle = localisationService.getMessage(MessagesProperties.REGEXP_TIME_ARTICLE);
+        String regexRepeat = localisationService.getMessage(MessagesProperties.REGEXP_REPEAT);
+        pattern.append("(((?<").append(MINUTES).append(">\\d+").append(minutePrefix).append(")?( )?");
+        pattern.append("(?<").append(HOURS).append(">\\d+").append(hourPrefix).append(")?( )?)|");
+        pattern.append("(((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))( )?(").append(regexpTimeArticle).append(" )?(?<");
+        pattern.append(DAY_OF_WEEK_WORD).append(">").append(getDayOfWeekPattern(locale)).append("))) ").append(regexRepeat);
+
+        return new GroupPattern(Pattern.compile(pattern.toString()), List.of(MINUTES, HOURS, HOUR, MINUTE, DAY_OF_WEEK_WORD));
+    }
+
     public GroupPattern buildTimePattern(Locale locale) {
         String regexpTimeArticle = localisationService.getMessage(MessagesProperties.REGEXP_TIME_ARTICLE);
         String regexpDayOfWeekArticle = localisationService.getMessage(MessagesProperties.REGEXP_DAY_OF_WEEK_ARTICLE);
@@ -95,15 +112,15 @@ public class PatternBuilder {
         StringBuilder patternTypeOn = new StringBuilder();
 
         String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX);
-        patternTypeOn.append("((?<").append(POSTPONE_DAY).append(">\\d+)").append(dayPrefix).append(")?( )?");
+        patternTypeOn.append("((?<").append(DAYS).append(">\\d+)").append(dayPrefix).append(")?( )?");
 
         String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
-        patternTypeOn.append("((?<").append(POSTPONE_HOUR).append(">\\d+)").append(hourPrefix).append(")?( )?");
+        patternTypeOn.append("((?<").append(HOURS).append(">\\d+)").append(hourPrefix).append(")?( )?");
 
         String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX);
-        patternTypeOn.append("((?<").append(POSTPONE_MINUTE).append(">\\d+)").append(minutePrefix).append(")?");
+        patternTypeOn.append("((?<").append(MINUTES).append(">\\d+)").append(minutePrefix).append(")?");
 
-        return new GroupPattern(Pattern.compile(patternTypeOn.toString()), List.of(POSTPONE_DAY, POSTPONE_HOUR, POSTPONE_MINUTE));
+        return new GroupPattern(Pattern.compile(patternTypeOn.toString()), List.of(DAYS, HOURS, MINUTES));
     }
 
     public GroupPattern buildCustomRemindPattern() {
@@ -142,5 +159,28 @@ public class PatternBuilder {
         }
 
         return pattern.substring(0, pattern.length() - 1);
+    }
+
+    public static void main(String[] args) {
+        Pattern pattern = Pattern.compile("(((?<minutes>\\d+мин)?( )?(?<hours>\\d+ч)?( )?)|(((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?(?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс))) кажд[а-я]{0,2}");
+        Pattern p = Pattern.compile("(((\\d+мин)?( )?(\\d+ч)?( )?)|(((2[0-3]|[01]?[0-9]):([0-5]?[0-9]))( )?(в )?(воскресенье|вторник|пятницу))) кажд[а-я]{0,2}");
+        String str = "каждые 5мин";
+        String reverse = StringUtils.reverseDelimited(str, ' ');
+        System.out.println(reverse);
+        Matcher matcher = p.matcher(reverse);
+        System.out.println(matcher.matches());
+
+        str = "каждые 2ч 5мин";
+        reverse = StringUtils.reverseDelimited(str, ' ');
+        System.out.println(reverse);
+        matcher = p.matcher(StringUtils.reverseDelimited(str, ' '));
+        System.out.println(matcher.matches());
+
+        str = "каждую пятницу в 19:00";
+        reverse = StringUtils.reverseDelimited(str, ' ');
+        System.out.println(reverse);
+        matcher = p.matcher(StringUtils.reverseDelimited(str, ' '));
+        System.out.println(matcher.matches());
+
     }
 }

@@ -70,16 +70,16 @@ public class PostponeRequestLexer {
     private List<BaseLexem> toLexems(Map<String, String> values) {
         List<BaseLexem> lexems = new ArrayList<>();
 
-        if (values.containsKey(PatternBuilder.POSTPONE_DAY)) {
-            lexems.add(new PostponeLexem(PostponeToken.ON_DAY, values.get(PatternBuilder.POSTPONE_DAY)));
+        if (values.containsKey(PatternBuilder.DAYS)) {
+            lexems.add(new PostponeLexem(PostponeToken.ON_DAY, values.get(PatternBuilder.DAYS)));
         }
 
-        if (values.containsKey(PatternBuilder.POSTPONE_HOUR)) {
-            lexems.add(new PostponeLexem(PostponeToken.ON_HOUR, values.get(PatternBuilder.POSTPONE_HOUR)));
+        if (values.containsKey(PatternBuilder.HOURS)) {
+            lexems.add(new PostponeLexem(PostponeToken.ON_HOUR, values.get(PatternBuilder.HOURS)));
         }
 
-        if (values.containsKey(PatternBuilder.POSTPONE_MINUTE)) {
-            lexems.add(new PostponeLexem(PostponeToken.ON_MINUTE, values.get(PatternBuilder.POSTPONE_MINUTE)));
+        if (values.containsKey(PatternBuilder.MINUTES)) {
+            lexems.add(new PostponeLexem(PostponeToken.ON_MINUTE, values.get(PatternBuilder.MINUTES)));
         }
 
         return lexems;

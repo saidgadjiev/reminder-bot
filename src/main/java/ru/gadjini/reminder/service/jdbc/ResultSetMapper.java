@@ -1,14 +1,18 @@
 package ru.gadjini.reminder.service.jdbc;
 
+import org.apache.commons.lang3.StringUtils;
+import org.postgresql.util.PGInterval;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.*;
 import ru.gadjini.reminder.domain.mapping.FriendshipMapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
+import ru.gadjini.reminder.util.JodaTimeUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.DayOfWeek;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -38,11 +42,32 @@ public class ResultSetMapper {
         reminder.setReceiverId(rs.getInt(Reminder.RECEIVER_ID));
         reminder.setCreatorId(rs.getInt(Reminder.CREATOR_ID));
         reminder.setNote(rs.getString(Reminder.NOTE));
-        reminder.setRemindAt(ZonedDateTime.of(rs.getTimestamp(Reminder.REMIND_AT).toLocalDateTime(), ZoneOffset.UTC));
+        reminder.setRepeatable(rs.getBoolean(Reminder.REPEATABLE));
+
+        if (reminder.isRepeatable()) {
+            RepeatTime repeatTime = new RepeatTime();
+            String weekDay = rs.getString(RepeatTime.WEEK_DAY);
+            if (StringUtils.isNotBlank(weekDay)) {
+                repeatTime.setDayOfWeek(DayOfWeek.valueOf(weekDay));
+            }
+            Time time = rs.getTime(RepeatTime.TIME);
+            if (time != null) {
+                repeatTime.setTime(time.toLocalTime());
+            }
+            PGInterval interval = (PGInterval) rs.getObject(RepeatTime.INTERVAL);
+            if (interval != null) {
+                repeatTime.setInterval(JodaTimeUtils.toPeriod(interval));
+            }
+            reminder.setRepeatRemindAt(repeatTime);
+        } else {
+            reminder.setRemindAt(ZonedDateTime.of(rs.getTimestamp(Reminder.REMIND_AT).toLocalDateTime(), ZoneOffset.UTC));
+        }
 
         if (reminderMapping.getReceiverMapping() != null) {
             String zoneId = rs.getString("rc_zone_id");
-            reminder.setRemindAtInReceiverTimeZone(reminder.getRemindAt().withZoneSameInstant(ZoneId.of(zoneId)));
+            if (!reminder.isRepeatable()) {
+                reminder.setRemindAtInReceiverTimeZone(reminder.getRemindAt().withZoneSameInstant(ZoneId.of(zoneId)));
+            }
             TgUser rc = new TgUser();
 
             rc.setZoneId(zoneId);
@@ -95,8 +120,8 @@ public class ResultSetMapper {
         Timestamp fixedTime = rs.getTimestamp(prefix + ReminderTime.FIXED_TIME);
         reminderTime.setFixedTime(fixedTime == null ? null : ZonedDateTime.of(fixedTime.toLocalDateTime(), ZoneOffset.UTC));
 
-        Time delayTime = rs.getTime(prefix + ReminderTime.DELAY_TIME);
-        reminderTime.setDelayTime(delayTime == null ? null : delayTime.toLocalTime());
+        PGInterval delayTime = (PGInterval) rs.getObject(prefix + ReminderTime.DELAY_TIME);
+        reminderTime.setDelayTime(JodaTimeUtils.toPeriod(delayTime));
 
         return reminderTime;
     }

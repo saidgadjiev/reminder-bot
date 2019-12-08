@@ -5,42 +5,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.util.UserUtils;
 
-import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.util.List;
-import java.util.Locale;
 
 @Service
-public class ReminderTextBuilder {
-
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+public class MessageBuilder {
 
     private LocalisationService localisationService;
 
+    private TimeBuilder timeBuilder;
+
     @Autowired
-    public ReminderTextBuilder(LocalisationService localisationService) {
+    public MessageBuilder(LocalisationService localisationService, TimeBuilder timeBuilder) {
         this.localisationService = localisationService;
+        this.timeBuilder = timeBuilder;
     }
 
     public String create(Reminder reminder) {
-        return create0(reminder.getText(), reminder.getRemindAtInReceiverTimeZone(), reminder.getNote());
+        return create0(reminder.getText(), reminder.getRepeatRemindAt(), reminder.getRemindAtInReceiverTimeZone(), reminder.getNote());
     }
 
     public String create(String text, ZonedDateTime remindAt, String note) {
-        return create0(text, remindAt, note);
+        return create0(text, null, remindAt, note);
     }
 
     public String reminderCreatedReceiver(Reminder reminder) {
         StringBuilder result = new StringBuilder();
 
         result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_RECEIVER, new Object[]{
-                reminder.getText() + " " + time(reminder.getRemindAtInReceiverTimeZone()),
+                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverTimeZone()),
                 UserUtils.userLink(reminder.getCreator())
         }));
 
@@ -57,7 +55,7 @@ public class ReminderTextBuilder {
         StringBuilder result = new StringBuilder();
 
         result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_CREATOR, new Object[]{
-                reminder.getText() + " " + time(reminder.getRemindAtInReceiverTimeZone()),
+                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverTimeZone()),
                 UserUtils.userLink(reminder.getReceiver())
         }));
 
@@ -74,7 +72,7 @@ public class ReminderTextBuilder {
         StringBuilder result = new StringBuilder();
 
         result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_ME, new Object[]{
-                reminder.getText() + " " + time(reminder.getRemindAtInReceiverTimeZone())
+                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverTimeZone())
         }));
 
         if (StringUtils.isNotBlank(reminder.getNote())) {
@@ -92,7 +90,7 @@ public class ReminderTextBuilder {
         StringBuilder result = new StringBuilder();
 
         result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND, new Object[]{
-                reminder.getText() + " " + time(reminder.getRemindAtInReceiverTimeZone()),
+                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverTimeZone()),
                 UserUtils.userLink(reminder.getCreator())
         }));
 
@@ -109,7 +107,7 @@ public class ReminderTextBuilder {
         StringBuilder result = new StringBuilder();
 
         result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_ME, new Object[]{
-                reminder.getText() + " " + time(reminder.getRemindAtInReceiverTimeZone())
+                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverTimeZone())
         }));
 
         if (StringUtils.isNotBlank(reminder.getNote())) {
@@ -127,8 +125,8 @@ public class ReminderTextBuilder {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED_FROM, new Object[]{
                 UserUtils.userLink(creator),
                 text,
-                time(oldRemindAt),
-                time(newRemindAt)
+                timeBuilder.time(oldRemindAt),
+                timeBuilder.time(newRemindAt)
         });
     }
 
@@ -136,7 +134,7 @@ public class ReminderTextBuilder {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE_EDITED_RECEIVER, new Object[]{
                 UserUtils.userLink(creator),
                 text,
-                time(remindAt),
+                timeBuilder.time(remindAt),
                 note
         });
     }
@@ -145,7 +143,7 @@ public class ReminderTextBuilder {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE_DELETED_RECEIVER, new Object[]{
                 UserUtils.userLink(creator),
                 text,
-                time(remindAt)
+                timeBuilder.time(remindAt)
         });
     }
 
@@ -153,7 +151,7 @@ public class ReminderTextBuilder {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED_CREATOR, new Object[]{
                 UserUtils.userLink(receiver),
                 text,
-                postponeTime(remindAt)
+                timeBuilder.postponeTime(remindAt)
         });
     }
 
@@ -163,7 +161,7 @@ public class ReminderTextBuilder {
         int i = 1;
         for (Reminder reminder : reminders) {
             String number = i++ + ") ";
-            text.append(number).append(reminder.getText()).append("(").append(time(reminder.getRemindAtInReceiverTimeZone())).append(")\n");
+            text.append(number).append(reminder.getText()).append("(").append(timeBuilder.time(reminder)).append(")\n");
 
             if (reminder.getReceiverId() != reminder.getCreatorId()) {
                 if (requesterId == reminder.getReceiverId()) {
@@ -186,7 +184,7 @@ public class ReminderTextBuilder {
     public String postponeReminderForReceiver(String text, ZonedDateTime remindAt) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED_RECEIVER, new Object[]{
                 text,
-                postponeTime(remindAt)
+                timeBuilder.postponeTime(remindAt)
         });
     }
 
@@ -200,71 +198,19 @@ public class ReminderTextBuilder {
 
     public String customRemindText(ZonedDateTime remindAt) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND_CREATED, new Object[]{
-                time(remindAt)
+                timeBuilder.time(remindAt)
         });
     }
 
-    private String time(ZonedDateTime remindAt) {
-        ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
-        String time = DATE_TIME_FORMATTER.format(remindAt);
-
-        if (remindAt.getMonth().equals(now.getMonth()) && remindAt.getYear() == now.getYear()) {
-            if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
-                return localisationService.getMessage(
-                        MessagesProperties.MESSAGE_REMINDER_TODAY,
-                        new Object[]{remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), time}
-                );
-            } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 1) {
-                return tomorrowTime(remindAt.getDayOfWeek(), time);
-            } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 2) {
-                return dayAfterTomorrowTime(now.getDayOfWeek(), time);
-            }
-        }
-
-        return fixedDay(remindAt, time);
-    }
-
-    private String fixedDay(ZonedDateTime remindAt, String time) {
-        String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
-        return localisationService.getMessage(
-                MessagesProperties.MESSAGE_REMINDER_FIXED_DAY,
-                new Object[]{remindAt.getDayOfMonth(), monthName, remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), time}
-        );
-    }
-
-    private String tomorrowTime(DayOfWeek dayOfWeek, String time) {
-        return localisationService.getMessage(
-                MessagesProperties.MESSAGE_REMINDER_TOMORROW,
-                new Object[]{dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()), time}
-        );
-    }
-
-    private String dayAfterTomorrowTime(DayOfWeek dayOfWeek, String time) {
-        return localisationService.getMessage(
-                MessagesProperties.MESSAGE_REMINDER_DAY_AFTER_TOMORROW,
-                new Object[]{dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()), time}
-        );
-    }
-
-    private String postponeTime(ZonedDateTime remindAt) {
-        ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
-        String time = DATE_TIME_FORMATTER.format(remindAt) + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")";
-
-        if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{"<b>" + time + "</b>"});
-        } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 1) {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{tomorrowTime(remindAt.getDayOfWeek(), time)});
-        } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 2) {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{dayAfterTomorrowTime(remindAt.getDayOfWeek(), time)});
-        } else {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{fixedDay(remindAt, time)});
-        }
-    }
-
-    private String create0(String text, ZonedDateTime remindAt, String note) {
+    private String create0(String text, RepeatTime repeatTime, ZonedDateTime remindAt, String note) {
         StringBuilder result = new StringBuilder();
+        result.append(text).append(" ");
 
-        result.append(text).append(" ").append(time(remindAt));
+        if (remindAt != null) {
+            result.append(timeBuilder.time(remindAt));
+        } else {
+            result.append(timeBuilder.time(repeatTime));
+        }
 
         if (StringUtils.isNotBlank(note)) {
             result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{

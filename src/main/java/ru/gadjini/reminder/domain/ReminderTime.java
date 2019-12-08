@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.domain;
 
+import org.joda.time.Period;
+
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
@@ -23,7 +25,7 @@ public class ReminderTime {
 
     private ZonedDateTime fixedTime;
 
-    private LocalTime delayTime;
+    private Period delayTime;
 
     private ZonedDateTime lastReminderAt;
 
@@ -55,11 +57,11 @@ public class ReminderTime {
         this.fixedTime = fixedTime;
     }
 
-    public LocalTime getDelayTime() {
+    public Period getDelayTime() {
         return delayTime;
     }
 
-    public void setDelayTime(LocalTime delayTime) {
+    public void setDelayTime(Period delayTime) {
         this.delayTime = delayTime;
     }
 

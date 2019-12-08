@@ -16,18 +16,18 @@ public class ReminderRequestLexerConfig {
 
     private final GroupPattern loginPattern;
 
-    private final Map<Locale, GroupPattern> timePatterns = new HashMap<>();
+    private final Map<Locale, GroupPattern> repeatTimePatterns = new HashMap<>();
 
     public ReminderRequestLexerConfig(PatternBuilder patternBuilder) {
         loginPattern = patternBuilder.buildLoginPattern();
-        timePatterns.put(Locale.getDefault(), patternBuilder.buildTimePattern(Locale.getDefault()));
+        repeatTimePatterns.put(Locale.getDefault(), patternBuilder.buildRepeatTimePattern(Locale.getDefault()));
     }
 
     public GroupPattern getLoginPattern() {
         return loginPattern;
     }
 
-    public GroupPattern getTimePattern() {
-        return timePatterns.get(Locale.getDefault());
+    public GroupPattern getRepeatTimePattern() {
+        return repeatTimePatterns.get(Locale.getDefault());
     }
 }

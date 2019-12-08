@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 public class ReminderMessageSender {
 
-    private ReminderTextBuilder reminderTextBuilder;
+    private MessageBuilder messageBuilder;
 
     private MessageService messageService;
 
@@ -37,13 +37,13 @@ public class ReminderMessageSender {
     private LocalisationService localisationService;
 
     @Autowired
-    public ReminderMessageSender(ReminderTextBuilder reminderTextBuilder,
+    public ReminderMessageSender(MessageBuilder messageBuilder,
                                  MessageService messageService,
                                  KeyboardService keyboardService,
                                  RemindMessageService remindMessageService,
                                  SecurityService securityService,
                                  LocalisationService localisationService) {
-        this.reminderTextBuilder = reminderTextBuilder;
+        this.messageBuilder = messageBuilder;
         this.messageService = messageService;
         this.keyboardService = keyboardService;
         this.remindMessageService = remindMessageService;
@@ -63,13 +63,13 @@ public class ReminderMessageSender {
         if (reminder.getCreatorId() != reminder.getReceiverId()) {
             messageId = messageService.sendMessage(
                     reminder.getReceiver().getChatId(),
-                    reminderTextBuilder.remindReceiver(reminder),
+                    messageBuilder.remindReceiver(reminder),
                     keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)
             ).getMessageId();
         } else {
             messageId = messageService.sendMessage(
                     reminder.getReceiver().getChatId(),
-                    reminderTextBuilder.remindMe(reminder),
+                    messageBuilder.remindMe(reminder),
                     keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)
             ).getMessageId();
         }
@@ -84,7 +84,7 @@ public class ReminderMessageSender {
             remindMessageService.delete(reminder.getId());
         }
 
-        String reminderText = reminderTextBuilder.create(reminder);
+        String reminderText = messageBuilder.create(reminder);
 
         if (reminder.getCreatorId() != reminder.getReceiverId()) {
             messageService.sendMessageByCode(
@@ -94,7 +94,7 @@ public class ReminderMessageSender {
             );
             messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
 
-            String receiverReminderText = reminderTextBuilder.create(reminder);
+            String receiverReminderText = messageBuilder.create(reminder);
 
             messageService.sendMessageByCode(
                     reminder.getReceiver().getChatId(),
@@ -119,7 +119,7 @@ public class ReminderMessageSender {
             remindMessageService.delete(reminder.getId());
         }
 
-        String reminderText = reminderTextBuilder.create(reminder);
+        String reminderText = messageBuilder.create(reminder);
 
         if (reminder.getCreatorId() != reminder.getReceiverId()) {
             messageService.sendMessageByCode(
@@ -129,7 +129,7 @@ public class ReminderMessageSender {
             );
             messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
 
-            String receiverReminderText = reminderTextBuilder.create(reminder);
+            String receiverReminderText = messageBuilder.create(reminder);
 
             messageService.editMessageByMessageCode(
                     reminder.getReceiver().getChatId(),
@@ -156,16 +156,16 @@ public class ReminderMessageSender {
         if (reminder.getCreatorId() != reminder.getReceiverId()) {
             messageId = messageService.sendMessage(
                     reminder.getReceiver().getChatId(),
-                    reminderTextBuilder.reminderCreatedReceiver(reminder),
+                    messageBuilder.reminderCreatedReceiver(reminder),
                     keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)).getMessageId();
             messageService.sendMessage(
                     reminder.getCreator().getChatId(),
-                    reminderTextBuilder.reminderCreatedCreator(reminder),
+                    messageBuilder.reminderCreatedCreator(reminder),
                     replyKeyboardMarkup);
         } else {
             messageId = messageService.sendMessage(
                     reminder.getCreator().getChatId(),
-                    reminderTextBuilder.reminderCreatedMe(reminder),
+                    messageBuilder.reminderCreatedMe(reminder),
                     keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)).getMessageId();
         }
         remindMessageService.create(reminder.getId(), messageId);
@@ -182,7 +182,7 @@ public class ReminderMessageSender {
         if (oldReminder.getReceiverId() != oldReminder.getCreatorId()) {
             messageService.sendMessage(
                     oldReminder.getReceiver().getChatId(),
-                    reminderTextBuilder.changeReminderTime(
+                    messageBuilder.changeReminderTime(
                             oldReminder.getText(),
                             oldReminder.getCreator(),
                             oldReminder.getRemindAtInReceiverTimeZone(),
@@ -191,7 +191,7 @@ public class ReminderMessageSender {
                     null
             );
         }
-        String newReminderText = reminderTextBuilder.create(oldReminder.getText(), updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone(), oldReminder.getNote());
+        String newReminderText = messageBuilder.create(oldReminder.getText(), updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone(), oldReminder.getNote());
 
         messageService.editMessage(oldReminder.getCreator().getChatId(), messageId, newReminderText, keyboardService.getEditReminderKeyboard(oldReminder.getId(), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME));
     }
@@ -204,7 +204,7 @@ public class ReminderMessageSender {
             messageService.editMessage(
                     reminder.getReceiver().getChatId(),
                     remindMessage.getMessageId(),
-                    reminderTextBuilder.postponeReminderForReceiver(
+                    messageBuilder.postponeReminderForReceiver(
                             reminder.getText(),
                             updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone()
                     ) + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED),
@@ -214,7 +214,7 @@ public class ReminderMessageSender {
         if (reminder.getReceiverId() != reminder.getCreatorId()) {
             StringBuilder messageBuilder = new StringBuilder();
 
-            messageBuilder.append(reminderTextBuilder.postponeReminderTimeForCreator(
+            messageBuilder.append(this.messageBuilder.postponeReminderTimeForCreator(
                     reminder.getText(),
                     reminder.getReceiver(),
                     updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone()
@@ -236,7 +236,7 @@ public class ReminderMessageSender {
     public void sendReminderTextChanged(int messageId, UpdateReminderResult updateReminderResult, ReplyKeyboard replyKeyboard) {
         Reminder oldReminder = updateReminderResult.getOldReminder();
         RemindMessage remindMessage = oldReminder.getRemindMessage();
-        String newReminderText = reminderTextBuilder.create(updateReminderResult.getNewReminder().getText(), oldReminder.getRemindAtInReceiverTimeZone(), oldReminder.getNote());
+        String newReminderText = messageBuilder.create(updateReminderResult.getNewReminder().getText(), oldReminder.getRemindAtInReceiverTimeZone(), oldReminder.getNote());
 
         if (remindMessage != null) {
             messageService.deleteMessage(oldReminder.getReceiver().getChatId(), remindMessage.getMessageId());
@@ -245,7 +245,7 @@ public class ReminderMessageSender {
         if (oldReminder.getReceiverId() != oldReminder.getCreatorId()) {
             messageService.sendMessage(
                     oldReminder.getReceiver().getChatId(),
-                    reminderTextBuilder.changeReminderText(
+                    messageBuilder.changeReminderText(
                             oldReminder.getText(),
                             updateReminderResult.getNewReminder().getText(),
                             oldReminder.getCreator()
@@ -364,12 +364,12 @@ public class ReminderMessageSender {
     }
 
     public void sendCustomRemindCreated(long chatId, int messageId, CustomRemindResult customRemindResult, ReplyKeyboardMarkup replyKeyboardMarkup) {
-        String text = reminderTextBuilder.create(customRemindResult.getReminder());
+        String text = messageBuilder.create(customRemindResult.getReminder());
 
         messageService.editMessage(
                 chatId,
                 messageId,
-                text + "\n\n" + reminderTextBuilder.customRemindText(customRemindResult.getZonedDateTime()),
+                text + "\n\n" + messageBuilder.customRemindText(customRemindResult.getZonedDateTime()),
                 keyboardService.getReceiverReminderKeyboard(customRemindResult.getReminder().getId(), null)
         );
     }
@@ -385,7 +385,7 @@ public class ReminderMessageSender {
         } else {
             User user = securityService.getAuthenticatedUser();
 
-            String text = reminderTextBuilder.remindersList(user.getId(), reminders);
+            String text = messageBuilder.remindersList(user.getId(), reminders);
 
             messageService.editMessage(
                     chatId,
@@ -407,7 +407,7 @@ public class ReminderMessageSender {
         } else {
             User user = securityService.getAuthenticatedUser();
 
-            String text = reminderTextBuilder.remindersList(user.getId(), reminders);
+            String text = messageBuilder.remindersList(user.getId(), reminders);
 
             messageService.editMessage(
                     chatId,
@@ -427,7 +427,7 @@ public class ReminderMessageSender {
     }
 
     public void sendReminderDetails(Long chatId, Integer messageId, Reminder reminder) {
-        String text = reminderTextBuilder.create(reminder);
+        String text = messageBuilder.create(reminder);
         User user = securityService.getAuthenticatedUser();
 
         messageService.editMessage(
@@ -449,11 +449,11 @@ public class ReminderMessageSender {
 
     public void sendReminderNoteChanged(Reminder reminder, int messageId, ReplyKeyboard replyKeyboard) {
         if (reminder.getCreatorId() != reminder.getReceiverId()) {
-            String text = reminderTextBuilder.changeReminderNoteReceiver(reminder.getText(), reminder.getNote(), reminder.getCreator(), reminder.getRemindAtInReceiverTimeZone());
+            String text = messageBuilder.changeReminderNoteReceiver(reminder.getText(), reminder.getNote(), reminder.getCreator(), reminder.getRemindAtInReceiverTimeZone());
 
             messageService.sendMessage(reminder.getReceiver().getChatId(), text, null);
         }
-        String reminderText = reminderTextBuilder.create(reminder);
+        String reminderText = messageBuilder.create(reminder);
 
         messageService.editMessage(
                 reminder.getCreator().getChatId(),
@@ -465,11 +465,11 @@ public class ReminderMessageSender {
 
     public void sendReminderNoteDeleted(String queryId, int messageId, Reminder reminder) {
         if (reminder.getCreatorId() != reminder.getReceiverId()) {
-            String text = reminderTextBuilder.deleteReminderNoteReceiver(reminder.getText(), reminder.getCreator(), reminder.getRemindAtInReceiverTimeZone());
+            String text = messageBuilder.deleteReminderNoteReceiver(reminder.getText(), reminder.getCreator(), reminder.getRemindAtInReceiverTimeZone());
 
             messageService.sendMessage(reminder.getReceiver().getChatId(), text, null);
         }
-        String reminderText = reminderTextBuilder.create(reminder);
+        String reminderText = messageBuilder.create(reminder);
 
         messageService.editMessage(
                 reminder.getCreator().getChatId(),

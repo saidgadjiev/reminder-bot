@@ -276,6 +276,9 @@ public class MessagesProperties {
 
     public static final String REGEXP_NEXT_WEEK = "regexp.next.week";
 
+    public static final String REGEXP_REPEAT = "regexp.repeat";
+
+    public static final String COMPLETE_REMINDER_FROM_LIST_COMMAND_NAME = "completereminderfromlist";
     public static final String MESSAGE_POSTPONE_MESSAGE = "message.postpone.message";
 
     public static final String MESSAGE_POSTPONE_15_MIN = "message.postpone.15min";

@@ -8,5 +8,17 @@ public enum ReminderToken implements Token {
 
     TEXT,
 
-    NOTE
+    NOTE,
+
+    MINUTES,
+
+    HOURS,
+
+    DAY_OF_WEEK,
+
+    HOUR,
+
+    MINUTE,
+
+    REPEAT
 }

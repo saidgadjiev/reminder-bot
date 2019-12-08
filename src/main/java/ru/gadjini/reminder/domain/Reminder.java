@@ -24,6 +24,10 @@ public class Reminder {
 
     public static final String NOTE = "note";
 
+    public static final String REPEAT_REMIND_AT = "repeat_remind_at";
+
+    public static final String REPEATABLE = "repeatable";
+
     private int id;
 
     private String text;
@@ -49,6 +53,10 @@ public class Reminder {
     private Status status;
 
     private String note;
+
+    private boolean repeatable = false;
+
+    private RepeatTime repeatRemindAt;
 
     public int getId() {
         return id;
@@ -152,6 +160,22 @@ public class Reminder {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public boolean isRepeatable() {
+        return repeatable;
+    }
+
+    public void setRepeatable(boolean repeatable) {
+        this.repeatable = repeatable;
+    }
+
+    public RepeatTime getRepeatRemindAt() {
+        return repeatRemindAt;
+    }
+
+    public void setRepeatRemindAt(RepeatTime repeatRemindAt) {
+        this.repeatRemindAt = repeatRemindAt;
     }
 
     public enum Status {

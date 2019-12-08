@@ -13,7 +13,7 @@ import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
-import ru.gadjini.reminder.service.reminder.ReminderTextBuilder;
+import ru.gadjini.reminder.service.reminder.MessageBuilder;
 
 public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
@@ -25,19 +25,19 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
 
     private KeyboardService keyboardService;
 
-    private ReminderTextBuilder reminderTextBuilder;
+    private MessageBuilder messageBuilder;
 
     private ReminderService reminderService;
 
     private CommandNavigator commandNavigator;
 
     public ReceiverReminderCommand(ReminderMessageSender reminderMessageSender, MessageService messageService,
-                                   KeyboardService keyboardService, ReminderTextBuilder reminderTextBuilder,
+                                   KeyboardService keyboardService, MessageBuilder messageBuilder,
                                    ReminderService reminderService, CommandNavigator commandNavigator) {
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.keyboardService = keyboardService;
-        this.reminderTextBuilder = reminderTextBuilder;
+        this.messageBuilder = messageBuilder;
         this.reminderService = reminderService;
         this.commandNavigator = commandNavigator;
     }
@@ -64,7 +64,7 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
         messageService.editMessage(
                 chatId,
                 messageId,
-                reminderTextBuilder.create(reminder),
+                messageBuilder.create(reminder),
                 keyboardService.getReceiverReminderKeyboard(requestParams.getInt(Arg.REMINDER_ID.getKey()), null)
         );
         if (replyKeyboard != null) {

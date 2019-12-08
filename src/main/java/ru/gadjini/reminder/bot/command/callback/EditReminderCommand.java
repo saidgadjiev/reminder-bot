@@ -12,7 +12,7 @@ import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
-import ru.gadjini.reminder.service.reminder.ReminderTextBuilder;
+import ru.gadjini.reminder.service.reminder.MessageBuilder;
 
 public class EditReminderCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
@@ -24,16 +24,16 @@ public class EditReminderCommand implements CallbackBotCommand, NavigableCallbac
 
     private KeyboardService keyboardService;
 
-    private ReminderTextBuilder reminderTextBuilder;
+    private MessageBuilder messageBuilder;
 
     private ReminderService reminderService;
 
     public EditReminderCommand(ReminderMessageSender reminderMessageSender, MessageService messageService,
-                               KeyboardService keyboardService, ReminderTextBuilder reminderTextBuilder, ReminderService reminderService) {
+                               KeyboardService keyboardService, MessageBuilder messageBuilder, ReminderService reminderService) {
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.keyboardService = keyboardService;
-        this.reminderTextBuilder = reminderTextBuilder;
+        this.messageBuilder = messageBuilder;
         this.reminderService = reminderService;
     }
 
@@ -57,7 +57,7 @@ public class EditReminderCommand implements CallbackBotCommand, NavigableCallbac
         Reminder reminder = reminderService.getReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         messageService.editMessage(chatId,
-                messageId, reminderTextBuilder.create(reminder),
+                messageId, messageBuilder.create(reminder),
                 keyboardService.getEditReminderKeyboard(requestParams.getInt(Arg.REMINDER_ID.getKey()), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME));
     }
 }

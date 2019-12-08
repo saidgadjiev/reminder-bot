@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
@@ -55,17 +56,17 @@ public class ReminderRequestService {
         this.securityService = securityService;
     }
 
-    public Reminder createReminder(String text, int receiverId) {
+    public Reminder createStandardReminder(String text, int receiverId) {
         ParsedRequest parsedRequest = parseRequest(text, receiverId);
         validationService.validateFriendReminderRequest(parsedRequest);
 
         User user = securityService.getAuthenticatedUser();
         validationService.checkFriendShip(user.getId(), receiverId);
 
-        return createReminder(parsedRequest, receiverId);
+        return createStandardReminder(parsedRequest, receiverId);
     }
 
-    public Reminder createReminder(String text) {
+    public Reminder createStandardReminder(String text) {
         ParsedRequest reminderRequest = parseRequest(text);
         validationService.validateIsNotPastTime(reminderRequest.getParsedTime());
         if (StringUtils.isNotBlank(reminderRequest.getReceiverName())) {
@@ -73,7 +74,7 @@ public class ReminderRequestService {
             validationService.checkFriendShip(user.getId(), reminderRequest.getReceiverName());
         }
 
-        return createReminder(reminderRequest, null);
+        return createStandardReminder(reminderRequest, null);
     }
 
     public CustomRemindResult customRemind(int reminderId, String text) {
@@ -155,7 +156,23 @@ public class ReminderRequestService {
         return parsedRequest;
     }
 
-    private Reminder createReminder(ParsedRequest reminderRequest, Integer receiverId) {
+    private Reminder createRepeatReminder(ParsedRequest parsedRequest) {
+        Reminder reminder = new Reminder();
+        reminder.setRepeatable(true);
+        reminder.setRepeatRemindAt(parsedRequest.getRepeatTime());
+        reminder.setText(parsedRequest.getText());
+        reminder.setNote(parsedRequest.getNote());
+
+        User user = securityService.getAuthenticatedUser();
+        reminder.setCreator(TgUser.from(user));
+        reminder.setCreatorId(user.getId());
+        reminder.setReceiver(TgUser.from(user));
+        reminder.setReceiverId(user.getId());
+
+        return reminderService.createReminder(reminder);
+    }
+
+    private Reminder createStandardReminder(ParsedRequest reminderRequest, Integer receiverId) {
         Reminder reminder = new Reminder();
         reminder.setRemindAt(reminderRequest.getParsedTime().withZoneSameInstant(ZoneOffset.UTC));
         reminder.setInitialRemindAt(reminder.getRemindAt());
