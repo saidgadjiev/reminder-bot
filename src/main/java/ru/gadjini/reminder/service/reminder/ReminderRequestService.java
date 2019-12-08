@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
@@ -44,16 +43,19 @@ public class ReminderRequestService {
 
     private SecurityService securityService;
 
+    private RepeatReminderService repeatReminderService;
+
     @Autowired
     public ReminderRequestService(ReminderService reminderService, ValidationService validationService,
                                   TgUserService tgUserService, RequestParser requestParser,
-                                  LocalisationService localisationService, SecurityService securityService) {
+                                  LocalisationService localisationService, SecurityService securityService, RepeatReminderService repeatReminderService) {
         this.reminderService = reminderService;
         this.validationService = validationService;
         this.tgUserService = tgUserService;
         this.requestParser = requestParser;
         this.localisationService = localisationService;
         this.securityService = securityService;
+        this.repeatReminderService = repeatReminderService;
     }
 
     public Reminder createStandardReminder(String text, int receiverId) {
@@ -171,7 +173,7 @@ public class ReminderRequestService {
         reminder.setReceiver(TgUser.from(user));
         reminder.setReceiverId(user.getId());
 
-        return reminderService.createReminder(reminder);
+        return repeatReminderService.createReminder(reminder);
     }
 
     private Reminder createStandardReminder(ParsedRequest reminderRequest, Integer receiverId) {

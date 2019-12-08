@@ -43,11 +43,12 @@ public class ReminderService {
 
     @Transactional
     public Reminder createReminder(Reminder reminder) {
-        if (reminder.isRepeatable()) {
-            return createRepeatableReminder(reminder);
-        } else {
-            return createStandardReminder(reminder);
-        }
+        Reminder created = reminderDao.create(reminder);
+        List<ReminderTime> reminderTimes = getReminderTimes(reminder.getRemindAt());
+        reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(created.getId()));
+        reminderTimeService.create(reminderTimes);
+
+        return reminder;
     }
 
     @Transactional
@@ -265,19 +266,6 @@ public class ReminderService {
         reminderTimeService.create(reminderTime);
 
         return remindTime;
-    }
-
-    private Reminder createRepeatableReminder(Reminder reminder) {
-        return reminderDao.create(reminder);
-    }
-
-    private Reminder createStandardReminder(Reminder reminder) {
-        Reminder created = reminderDao.create(reminder);
-        List<ReminderTime> reminderTimes = getReminderTimes(reminder.getRemindAt());
-        reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(created.getId()));
-        reminderTimeService.create(reminderTimes);
-
-        return reminder;
     }
 
     private List<ReminderTime> getReminderTimes(ZonedDateTime remindAt) {
