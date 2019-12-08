@@ -28,43 +28,47 @@ public class TimeBuilder {
 
     public String time(ZonedDateTime remindAt) {
         ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
-        String time = DATE_TIME_FORMATTER.format(remindAt);
 
         if (remindAt.getMonth().equals(now.getMonth()) && remindAt.getYear() == now.getYear()) {
             if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
-                return localisationService.getMessage(
-                        MessagesProperties.MESSAGE_REMINDER_TODAY,
-                        new Object[]{remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), time}
-                );
+                return todayTime(remindAt);
             } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 1) {
-                return tomorrowTime(remindAt.getDayOfWeek(), time);
+                return tomorrowTime(remindAt);
             } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 2) {
-                return dayAfterTomorrowTime(now.getDayOfWeek(), time);
+                return dayAfterTomorrowTime(remindAt);
             }
         }
 
-        return fixedDay(remindAt, time);
+        return fixedDay(remindAt);
     }
 
-    public String fixedDay(ZonedDateTime remindAt, String time) {
+    private String todayTime(ZonedDateTime remindAt) {
+        return localisationService.getMessage(
+                MessagesProperties.MESSAGE_REMINDER_TODAY,
+                new Object[]{remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), DATE_TIME_FORMATTER.format(remindAt)}
+        );
+    }
+
+    private String fixedDay(ZonedDateTime remindAt) {
         String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+
         return localisationService.getMessage(
                 MessagesProperties.MESSAGE_REMINDER_FIXED_DAY,
-                new Object[]{remindAt.getDayOfMonth(), monthName, remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), time}
+                new Object[]{remindAt.getDayOfMonth(), monthName, remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), DATE_TIME_FORMATTER.format(remindAt)}
         );
     }
 
-    public String tomorrowTime(DayOfWeek dayOfWeek, String time) {
+    private String tomorrowTime(ZonedDateTime remindAt) {
         return localisationService.getMessage(
                 MessagesProperties.MESSAGE_REMINDER_TOMORROW,
-                new Object[]{dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()), time}
+                new Object[]{remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), DATE_TIME_FORMATTER.format(remindAt)}
         );
     }
 
-    public String dayAfterTomorrowTime(DayOfWeek dayOfWeek, String time) {
+    private String dayAfterTomorrowTime(ZonedDateTime remindAt) {
         return localisationService.getMessage(
                 MessagesProperties.MESSAGE_REMINDER_DAY_AFTER_TOMORROW,
-                new Object[]{dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()), time}
+                new Object[]{remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), DATE_TIME_FORMATTER.format(remindAt)}
         );
     }
 
@@ -73,13 +77,13 @@ public class TimeBuilder {
         String time = DATE_TIME_FORMATTER.format(remindAt) + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")";
 
         if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{"<b>" + time + "</b>"});
+            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{time});
         } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 1) {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{tomorrowTime(remindAt.getDayOfWeek(), time)});
+            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{tomorrowTime(remindAt)});
         } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 2) {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{dayAfterTomorrowTime(remindAt.getDayOfWeek(), time)});
+            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{dayAfterTomorrowTime(remindAt)});
         } else {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{fixedDay(remindAt, time)});
+            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{fixedDay(remindAt)});
         }
     }
 
@@ -92,11 +96,16 @@ public class TimeBuilder {
     }
 
     public String time(RepeatTime repeatTime) {
-        StringBuilder time = new StringBuilder("каждые ");
+        StringBuilder time = new StringBuilder();
 
         if (repeatTime.getInterval() != null) {
+            time.append(getRepeatWord(repeatTime.getInterval())).append(" ");
             time.append(time(repeatTime.getInterval()));
+            if (repeatTime.getTime() != null) {
+                time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
+            }
         } else {
+            time.append(getRepeatWord(repeatTime.getDayOfWeek())).append(" ");
             time.append(repeatTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault())).append(" ");
             time.append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
         }
@@ -108,15 +117,48 @@ public class TimeBuilder {
         StringBuilder time = new StringBuilder();
 
         if (period.getDays() != 0) {
-            time.append(period.getDays()).append(" дней ");
+            time.append(period.getDays()).append(" ").append(getDaysSuffix(period.getDays()));
         }
         if (period.getHours() != 0) {
-            time.append(period.getHours()).append(" часов ");
+            time.append(period.getHours()).append(" ").append(getHoursSuffix(period.getHours())).append(" ");
         }
         if (period.getMinutes() != 0) {
-            time.append(period.getMinutes()).append(" минут ");
+            time.append(period.getMinutes()).append(" ").append(getMinutesSuffix(period.getMinutes())).append(" ");
         }
 
-        return time.toString();
+        return time.toString().trim();
+    }
+
+    private String getRepeatWord(DayOfWeek dayOfWeek) {
+        switch (dayOfWeek) {
+            case MONDAY:
+            case TUESDAY:
+            case THURSDAY:
+                return "каждый";
+            case WEDNESDAY:
+            case FRIDAY:
+            case SATURDAY:
+                return "каждую";
+            case SUNDAY:
+                return "каждое";
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
+    private String getRepeatWord(Period period) {
+        return "каждые";
+    }
+
+    private String getDaysSuffix(int days) {
+        return "дня";
+    }
+
+    private String getMinutesSuffix(int minutes) {
+        return "минут";
+    }
+
+    private String getHoursSuffix(int hours) {
+        return "часа";
     }
 }

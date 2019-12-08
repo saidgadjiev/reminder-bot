@@ -64,7 +64,7 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
         messageService.editMessage(
                 chatId,
                 messageId,
-                messageBuilder.create(reminder),
+                messageBuilder.getReminderMessage(reminder),
                 keyboardService.getReceiverReminderKeyboard(requestParams.getInt(Arg.REMINDER_ID.getKey()), null)
         );
         if (replyKeyboard != null) {

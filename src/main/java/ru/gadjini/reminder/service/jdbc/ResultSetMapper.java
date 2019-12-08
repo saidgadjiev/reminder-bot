@@ -42,9 +42,9 @@ public class ResultSetMapper {
         reminder.setReceiverId(rs.getInt(Reminder.RECEIVER_ID));
         reminder.setCreatorId(rs.getInt(Reminder.CREATOR_ID));
         reminder.setNote(rs.getString(Reminder.NOTE));
-        reminder.setRepeatable(rs.getBoolean(Reminder.REPEATABLE));
+        String repeatRemindAt = rs.getString(Reminder.REPEAT_REMIND_AT);
 
-        if (reminder.isRepeatable()) {
+        if (StringUtils.isNotBlank(repeatRemindAt)) {
             RepeatTime repeatTime = new RepeatTime();
             String weekDay = rs.getString(RepeatTime.WEEK_DAY);
             if (StringUtils.isNotBlank(weekDay)) {

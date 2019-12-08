@@ -57,7 +57,7 @@ public class EditReminderCommand implements CallbackBotCommand, NavigableCallbac
         Reminder reminder = reminderService.getReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         messageService.editMessage(chatId,
-                messageId, messageBuilder.create(reminder),
+                messageId, messageBuilder.getReminderMessage(reminder),
                 keyboardService.getEditReminderKeyboard(requestParams.getInt(Arg.REMINDER_ID.getKey()), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME));
     }
 }

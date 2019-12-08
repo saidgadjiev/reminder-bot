@@ -279,6 +279,7 @@ public class MessagesProperties {
     public static final String REGEXP_REPEAT = "regexp.repeat";
 
     public static final String COMPLETE_REMINDER_FROM_LIST_COMMAND_NAME = "completereminderfromlist";
+
     public static final String MESSAGE_POSTPONE_MESSAGE = "message.postpone.message";
 
     public static final String MESSAGE_POSTPONE_15_MIN = "message.postpone.15min";
@@ -288,4 +289,8 @@ public class MessagesProperties {
     public static final String MESSAGE_POSTPONE_REASON_MEETING = "message.postpone.reason.meeting";
 
     public static final String MESSAGE_POSTPONE_WITHOUT_REASON = "message.postpone.without.reason";
+
+    public static final String REGEXP_DAY = "regexp.day";
+
+    public static final String REGEXP_DAYS = "regexp.days";
 }

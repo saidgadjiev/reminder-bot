@@ -55,4 +55,8 @@ public class ParsedRequest {
     public void setRepeatTime(RepeatTime repeatTime) {
         this.repeatTime = repeatTime;
     }
+
+    public boolean isRepeatReminder() {
+        return repeatTime != null;
+    }
 }

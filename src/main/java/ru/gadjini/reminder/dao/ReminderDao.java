@@ -352,7 +352,7 @@ public class ReminderDao {
                         new SqlParameterValue(Types.INTEGER, reminder.getCreatorId()),
                         new SqlParameterValue(Types.INTEGER, reminder.getReceiverId()),
                         new SqlParameterValue(Types.TIMESTAMP, reminder.getRemindAt() != null ? Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()) : null),
-                        new SqlParameterValue(Types.VARCHAR, reminder.getRepeatRemindAt() != null ? reminder.getRepeatRemindAt().sql() : null),
+                        new SqlParameterValue(Types.OTHER, reminder.getRepeatRemindAt() != null ? reminder.getRepeatRemindAt().sql() : null),
                         new SqlParameterValue(Types.TIMESTAMP, reminder.getRemindAt() != null ? Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()) : null),
                         new SqlParameterValue(Types.VARCHAR, reminder.getNote())
                 },

@@ -68,13 +68,16 @@ public class ReminderRequestService {
 
     public Reminder createStandardReminder(String text) {
         ParsedRequest reminderRequest = parseRequest(text);
-        validationService.validateIsNotPastTime(reminderRequest.getParsedTime());
-        if (StringUtils.isNotBlank(reminderRequest.getReceiverName())) {
-            User user = securityService.getAuthenticatedUser();
-            validationService.checkFriendShip(user.getId(), reminderRequest.getReceiverName());
+        if (reminderRequest.isRepeatReminder()) {
+            return createRepeatReminder(reminderRequest);
+        } else {
+            validationService.validateIsNotPastTime(reminderRequest.getParsedTime());
+            if (StringUtils.isNotBlank(reminderRequest.getReceiverName())) {
+                User user = securityService.getAuthenticatedUser();
+                validationService.checkFriendShip(user.getId(), reminderRequest.getReceiverName());
+            }
+            return createStandardReminder(reminderRequest, null);
         }
-
-        return createStandardReminder(reminderRequest, null);
     }
 
     public CustomRemindResult customRemind(int reminderId, String text) {
@@ -158,7 +161,6 @@ public class ReminderRequestService {
 
     private Reminder createRepeatReminder(ParsedRequest parsedRequest) {
         Reminder reminder = new Reminder();
-        reminder.setRepeatable(true);
         reminder.setRepeatRemindAt(parsedRequest.getRepeatTime());
         reminder.setText(parsedRequest.getText());
         reminder.setNote(parsedRequest.getNote());

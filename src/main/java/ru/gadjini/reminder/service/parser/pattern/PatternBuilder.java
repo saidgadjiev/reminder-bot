@@ -28,6 +28,8 @@ public class PatternBuilder {
 
     public static final String MINUTES = "minutes";
 
+    public static final String ONE_DAY = "oneday";
+
     public static final String DAY = "day";
 
     public static final String HOUR = "hour";
@@ -77,12 +79,15 @@ public class PatternBuilder {
         String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
         String regexpTimeArticle = localisationService.getMessage(MessagesProperties.REGEXP_TIME_ARTICLE);
         String regexRepeat = localisationService.getMessage(MessagesProperties.REGEXP_REPEAT);
-        pattern.append("(((?<").append(MINUTES).append(">\\d+").append(minutePrefix).append(")?( )?");
-        pattern.append("(?<").append(HOURS).append(">\\d+").append(hourPrefix).append(")?( )?)|");
-        pattern.append("(((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))( )?(").append(regexpTimeArticle).append(" )?(?<");
-        pattern.append(DAY_OF_WEEK_WORD).append(">").append(getDayOfWeekPattern(locale)).append("))) ").append(regexRepeat);
+        String regexpDay = localisationService.getMessage(MessagesProperties.REGEXP_DAY);
+        String regexpDays = localisationService.getMessage(MessagesProperties.REGEXP_DAYS);
+        pattern.append("((((?<").append(MINUTES).append(">\\d+)").append(minutePrefix).append(")?( )?");
+        pattern.append("((?<").append(HOURS).append(">\\d+)").append(hourPrefix).append(")?( )?)|");
+        pattern.append("(((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))( )?(").append(regexpTimeArticle).append(" )?((?<");
+        pattern.append(DAY_OF_WEEK_WORD).append(">").append(getDayOfWeekPattern(locale));
+        pattern.append(")|((?<").append(ONE_DAY).append(">").append(regexpDay).append(")|((?<").append(DAYS).append(">\\d+)").append(regexpDays).append(")").append(")))) ").append(regexRepeat);
 
-        return new GroupPattern(Pattern.compile(pattern.toString()), List.of(MINUTES, HOURS, HOUR, MINUTE, DAY_OF_WEEK_WORD));
+        return new GroupPattern(Pattern.compile(pattern.toString()), List.of(MINUTES, HOURS, HOUR, MINUTE, DAY_OF_WEEK_WORD, ONE_DAY, DAYS));
     }
 
     public GroupPattern buildTimePattern(Locale locale) {
@@ -162,24 +167,12 @@ public class PatternBuilder {
     }
 
     public static void main(String[] args) {
-        Pattern pattern = Pattern.compile("(((?<minutes>\\d+мин)?( )?(?<hours>\\d+ч)?( )?)|(((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?(?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс))) кажд[а-я]{0,2}");
-        Pattern p = Pattern.compile("(((\\d+мин)?( )?(\\d+ч)?( )?)|(((2[0-3]|[01]?[0-9]):([0-5]?[0-9]))( )?(в )?(воскресенье|вторник|пятницу))) кажд[а-я]{0,2}");
-        String str = "каждые 5мин";
+        Pattern pattern = Pattern.compile("(((?<minutes>\\d+мин)?( )?(?<hours>\\d+ч)?( )?)|(((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?((?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс)|((?<oneday>день)|(?<days>\\d+дня))))) кажд[а-я]{0,2}");
+        Pattern p = Pattern.compile(      "(((?<minutes>\\d+мин)?( )?(?<hours>\\d+ч)?( )?)|(((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?((?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс)|((?<oneday>день)|(?<days>\\d+дня))))) кажд[а-я]{0,2}");
+        String str = "каждый понедельник в 19:00";
         String reverse = StringUtils.reverseDelimited(str, ' ');
         System.out.println(reverse);
-        Matcher matcher = p.matcher(reverse);
-        System.out.println(matcher.matches());
-
-        str = "каждые 2ч 5мин";
-        reverse = StringUtils.reverseDelimited(str, ' ');
-        System.out.println(reverse);
-        matcher = p.matcher(StringUtils.reverseDelimited(str, ' '));
-        System.out.println(matcher.matches());
-
-        str = "каждую пятницу в 19:00";
-        reverse = StringUtils.reverseDelimited(str, ' ');
-        System.out.println(reverse);
-        matcher = p.matcher(StringUtils.reverseDelimited(str, ' '));
+        Matcher matcher = pattern.matcher(reverse);
         System.out.println(matcher.matches());
 
     }

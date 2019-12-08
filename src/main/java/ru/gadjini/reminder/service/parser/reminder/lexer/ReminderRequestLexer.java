@@ -81,6 +81,12 @@ public class ReminderRequestLexer {
             if (repeatTimeValues.containsKey(PatternBuilder.DAY_OF_WEEK_WORD)) {
                 lexems.add(new ReminderLexem(ReminderToken.DAY_OF_WEEK, repeatTimeValues.get(PatternBuilder.DAY_OF_WEEK_WORD)));
             }
+            if (repeatTimeValues.containsKey(PatternBuilder.ONE_DAY)) {
+                lexems.add(new ReminderLexem(ReminderToken.ONE_DAY, repeatTimeValues.get(PatternBuilder.ONE_DAY)));
+            }
+            if (repeatTimeValues.containsKey(PatternBuilder.DAYS)) {
+                lexems.add(new ReminderLexem(ReminderToken.DAYS, repeatTimeValues.get(PatternBuilder.DAYS)));
+            }
             if (repeatTimeValues.containsKey(PatternBuilder.HOUR)) {
                 lexems.add(new ReminderLexem(ReminderToken.HOUR, repeatTimeValues.get(PatternBuilder.HOUR)));
             }

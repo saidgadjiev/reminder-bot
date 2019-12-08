@@ -46,21 +46,17 @@ public class ReminderRequestParser {
     public ParsedRequest parse(List<BaseLexem> lexems) {
         if (lexemsConsumer.check(lexems, ReminderToken.LOGIN)) {
             consumeLogin(lexems);
-
-            parsedRequest.setParsedTime(parsedTime);
-
-            return parsedRequest;
         } else if (lexemsConsumer.check(lexems, ReminderToken.TEXT)) {
             consumeText(lexems);
-            parsedRequest.setParsedTime(parsedTime);
-
-            return parsedRequest;
         }
         if (lexemsConsumer.getPosition() < lexems.size()) {
             throw new ParseException();
         }
 
-        throw new ParseException();
+        parsedRequest.setParsedTime(parsedTime);
+        parsedRequest.setRepeatTime(repeatTime);
+
+        return parsedRequest;
     }
 
     public ZonedDateTime parseTime(List<BaseLexem> lexems) {
@@ -81,22 +77,36 @@ public class ReminderRequestParser {
             repeatTime.setInterval(new Period());
             consumeMinutes(lexems);
         } else if (lexemsConsumer.check(lexems, ReminderToken.HOURS)) {
+            repeatTime.setInterval(new Period());
             consumeHours(lexems);
-        } else {
-            repeatTime.setTime(consumeShortTime(lexems));
-
-            if (lexemsConsumer.check(lexems, ReminderToken.DAY_OF_WEEK)) {
-                consumeDayOfWeek(lexems);
-            }
+        } else if (lexemsConsumer.check(lexems, ReminderToken.DAY_OF_WEEK)) {
+            consumeDayOfWeek(lexems);
+        } else if (lexemsConsumer.check(lexems, ReminderToken.ONE_DAY)) {
+            repeatTime.setInterval(new Period());
+            consumeOneDay(lexems);
+        } else if (lexemsConsumer.check(lexems, ReminderToken.DAYS)) {
+            repeatTime.setInterval(new Period());
+            consumeDays(lexems);
         }
     }
 
+    private void consumeOneDay(List<BaseLexem> lexems) {
+        lexemsConsumer.consume(lexems, ReminderToken.ONE_DAY);
+        repeatTime.getInterval().withDays(1);
+        repeatTime.setTime(consumeShortTime(lexems));
+    }
+
+    private void consumeDays(List<BaseLexem> lexems) {
+        repeatTime.setInterval(repeatTime.getInterval().withDays(Integer.parseInt(lexemsConsumer.consume(lexems, ReminderToken.DAYS).getValue())));
+        repeatTime.setTime(consumeShortTime(lexems));
+    }
+
     private void consumeMinutes(List<BaseLexem> lexems) {
-        repeatTime.getInterval().withMinutes(Integer.parseInt(lexemsConsumer.consume(lexems, ReminderToken.MINUTES).getValue()));
+        repeatTime.setInterval(repeatTime.getInterval().withMinutes(Integer.parseInt(lexemsConsumer.consume(lexems, ReminderToken.MINUTES).getValue())));
     }
 
     private void consumeHours(List<BaseLexem> lexems) {
-        repeatTime.getInterval().withHours(Integer.parseInt(lexemsConsumer.consume(lexems, ReminderToken.HOURS).getValue()));
+        repeatTime.setInterval(repeatTime.getInterval().withHours(Integer.parseInt(lexemsConsumer.consume(lexems, ReminderToken.HOURS).getValue())));
         consumeMinutes(lexems);
     }
 
@@ -108,7 +118,7 @@ public class ReminderRequestParser {
                 .orElseThrow();
 
         repeatTime.setDayOfWeek(dayOfWeek);
-        consumeShortTime(lexems);
+        repeatTime.setTime(consumeShortTime(lexems));
     }
 
     private void consumeText(List<BaseLexem> lexems) {
@@ -116,6 +126,7 @@ public class ReminderRequestParser {
 
         if (lexemsConsumer.check(lexems, ReminderToken.REPEAT)) {
             repeatTime = new RepeatTime();
+            lexemsConsumer.consume(lexems, ReminderToken.REPEAT);
             consumeRepeatTime(lexems);
         } else {
             consumeFullTime(lexems);

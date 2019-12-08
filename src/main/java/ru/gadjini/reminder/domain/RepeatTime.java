@@ -57,7 +57,7 @@ public class RepeatTime {
     }
 
     public String sql() {
-        StringBuilder sql = new StringBuilder();
+        StringBuilder sql = new StringBuilder("(");
 
         if (dayOfWeek == null) {
             sql.append(",");
@@ -72,6 +72,7 @@ public class RepeatTime {
         if (interval != null) {
             sql.append(JodaTimeUtils.toSqlInterval(interval));
         }
+        sql.append(")");
 
         return sql.toString();
     }

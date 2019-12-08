@@ -67,7 +67,7 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
         messageService.editMessage(
                 chatId,
                 messageId,
-                messageBuilder.create(reminder),
+                messageBuilder.getReminderMessage(reminder),
                 keyboardService.getReminderDetailsKeyboard(securityService.getAuthenticatedUser().getId(), reminder)
         );
     }
