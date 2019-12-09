@@ -45,7 +45,7 @@ public class CompleteCommand implements CallbackBotCommand {
             } else {
                 reminder.getReceiver().setChatId(callbackQuery.getMessage().getChatId());
 
-                reminderMessageSender.sendReminderCompleteFromList(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
+                reminderMessageSender.sendReminderCompletedFromList(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
             }
         } else {
             if (reminder == null) {
@@ -53,7 +53,7 @@ public class CompleteCommand implements CallbackBotCommand {
             } else {
                 reminder.getReceiver().setChatId(callbackQuery.getMessage().getChatId());
 
-                reminderMessageSender.sendReminderComplete(callbackQuery.getId(), reminder);
+                reminderMessageSender.sendReminderCompleted(callbackQuery.getId(), reminder);
             }
         }
     }

@@ -49,7 +49,7 @@ public class CancelReminderCommand implements CallbackBotCommand {
                 reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getId(), callbackQuery.getMessage().getMessageId());
             } else {
                 reminder.getReceiver().setChatId(callbackQuery.getMessage().getChatId());
-                reminderMessageSender.sendReminderCanceled(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
+                reminderMessageSender.sendReminderCanceled(callbackQuery.getId(), reminder);
             }
         }
     }
