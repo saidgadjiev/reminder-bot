@@ -170,6 +170,10 @@ public class Reminder {
         this.repeatRemindAt = repeatRemindAt;
     }
 
+    public boolean isMySelf() {
+        return creatorId == receiverId;
+    }
+
     public enum Status {
 
         ACTIVE(0),

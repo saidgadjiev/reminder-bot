@@ -21,6 +21,8 @@ public class ReminderTime {
 
     public static final String LAST_REMINDER_AT = "last_reminder_at";
 
+    public static final String ITS_TIME = "its_time";
+
     private int id;
 
     private ZonedDateTime fixedTime;
@@ -32,6 +34,8 @@ public class ReminderTime {
     private Type type;
 
     private int reminderId;
+
+    private boolean itsTime = false;
 
     public Type getType() {
         return type;
@@ -79,6 +83,14 @@ public class ReminderTime {
 
     public void setReminderId(int reminderId) {
         this.reminderId = reminderId;
+    }
+
+    public boolean isItsTime() {
+        return itsTime;
+    }
+
+    public void setItsTime(boolean itsTime) {
+        this.itsTime = itsTime;
     }
 
     public enum Type {

@@ -103,26 +103,12 @@ public class MessageBuilder {
         return result.toString();
     }
 
-    public String getRemindMySelf(Reminder reminder) {
-        StringBuilder result = new StringBuilder();
-
-        result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_ME, new Object[]{
-                reminder.getText() + " " + timeBuilder.time(reminder)
-        }));
-
-        if (reminder.getRepeatRemindAt() != null) {
-            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAtInReceiverTimeZone())}));
+    public String getRemindMySelf(Reminder reminder, boolean itsTime, ZonedDateTime nextRemindAt) {
+        if (itsTime) {
+            return getItsTimeRemindMySelf(reminder, nextRemindAt);
+        } else {
+            return getRemindMySelf(reminder);
         }
-
-        if (StringUtils.isNotBlank(reminder.getNote())) {
-            result
-                    .append("\n")
-                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
-                            reminder.getNote()
-                    }));
-        }
-
-        return result.toString();
     }
 
     public String getReminderTimeChanged(String text, TgUser creator, ZonedDateTime newRemindAt, ZonedDateTime oldRemindAt) {
@@ -212,6 +198,10 @@ public class MessageBuilder {
         });
     }
 
+    private String getNextRemindAt(ZonedDateTime remindAt) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(remindAt)});
+    }
+
     private String getReminderInfo0(String text, RepeatTime repeatTime, ZonedDateTime remindAt, String note) {
         StringBuilder result = new StringBuilder();
         result.append(text).append(" ");
@@ -227,6 +217,51 @@ public class MessageBuilder {
             result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
                     note
             }));
+        }
+
+        return result.toString();
+    }
+
+    private String getRemindMySelf(Reminder reminder) {
+        StringBuilder result = new StringBuilder();
+
+        result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_ME, new Object[]{
+                reminder.getText() + " " + timeBuilder.time(reminder)
+        }));
+
+        if (reminder.isRepeatable()) {
+            String nextRemindAt = getNextRemindAt(reminder.getRemindAtInReceiverTimeZone());
+            result.append("\n").append(nextRemindAt);
+        }
+
+        if (StringUtils.isNotBlank(reminder.getNote())) {
+            result
+                    .append("\n")
+                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
+                            reminder.getNote()
+                    }));
+        }
+
+        return result.toString();
+    }
+
+    private String getItsTimeRemindMySelf(Reminder reminder, ZonedDateTime nextRemindAt) {
+        StringBuilder result = new StringBuilder();
+
+        result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_ME_ITS_TIME, new Object[]{
+                reminder.getText() + " " + timeBuilder.time(reminder)
+        }));
+
+        if (reminder.isRepeatable()) {
+            result.append("\n").append(getNextRemindAt(nextRemindAt));
+        }
+
+        if (StringUtils.isNotBlank(reminder.getNote())) {
+            result
+                    .append("\n")
+                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
+                            reminder.getNote()
+                    }));
         }
 
         return result.toString();

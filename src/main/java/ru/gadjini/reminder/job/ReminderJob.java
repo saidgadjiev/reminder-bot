@@ -10,7 +10,9 @@ import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.RepeatReminderService;
+import ru.gadjini.reminder.service.reminder.RestoreReminderService;
 import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
+import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.LocalDateTime;
@@ -30,15 +32,19 @@ public class ReminderJob {
 
     private RepeatReminderService repeatReminderService;
 
+    private RestoreReminderService restoreReminderService;
+
     @Autowired
     public ReminderJob(ReminderService reminderService,
                        ReminderTimeService reminderTimeService,
                        ReminderMessageSender reminderMessageSender,
-                       RepeatReminderService repeatReminderService) {
+                       RepeatReminderService repeatReminderService,
+                       RestoreReminderService restoreReminderService) {
         this.reminderService = reminderService;
         this.reminderTimeService = reminderTimeService;
         this.reminderMessageSender = reminderMessageSender;
         this.repeatReminderService = repeatReminderService;
+        this.restoreReminderService = restoreReminderService;
     }
 
     // @Scheduled(cron = "0 0 0 * * *")
@@ -55,8 +61,16 @@ public class ReminderJob {
         List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().minusSeconds(30).withNano(0), 30);
 
         for (Reminder reminder : reminders) {
-            sendReminder(reminder);
+            if (restoreReminderService.isNeedRestore(reminder)) {
+                sendReminderRestored();
+            } else {
+                sendReminder(reminder);
+            }
         }
+    }
+
+    private void sendReminderRestored() {
+
     }
 
     private void sendReminder(Reminder reminder) {
@@ -66,21 +80,23 @@ public class ReminderJob {
                     sendOnceReminder(reminder, reminderTime);
                     break;
                 case REPEAT:
-                    sendRepeatReminder(reminder, reminderTime);
+                    if (reminder.isRepeatable()) {
+                        sendRepeatReminderTimeForRepeatableReminder(reminder, reminderTime);
+                    } else {
+                        sendRepeatReminderTime(reminder, reminderTime);
+                    }
                     break;
             }
         }
     }
 
     private void sendOnceReminder(Reminder reminder, ReminderTime reminderTime) {
-        reminderMessageSender.sendRemindMessage(reminder);
-
+        reminderMessageSender.sendRemindMessage(reminder, reminderTime.isItsTime(), null);
         reminderTimeService.deleteReminderTime(reminderTime.getId());
     }
 
-    private void sendRepeatReminder(Reminder reminder, ReminderTime reminderTime) {
-        updateNextRemindAtIfNeed(reminder);
-        reminderMessageSender.sendRemindMessage(reminder);
+    private void sendRepeatReminderTime(Reminder reminder, ReminderTime reminderTime) {
+        reminderMessageSender.sendRemindMessage(reminder, reminderTime.isItsTime(), null);
 
         if (reminderTime.getLastReminderAt() == null) {
             reminderTimeService.updateLastRemindAt(reminderTime.getId(), reminder.getRemindAt().toLocalDateTime());
@@ -89,12 +105,17 @@ public class ReminderJob {
         }
     }
 
-    private void updateNextRemindAtIfNeed(Reminder reminder) {
-        ZonedDateTime now = TimeUtils.nowZoned();
+    private void sendRepeatReminderTimeForRepeatableReminder(Reminder reminder, ReminderTime reminderTime) {
+        ZonedDateTime nextRemindAt = reminder.getRemindAt();
 
-        if (reminder.getRemindAt().isBefore(now)
-                || reminder.getRemindAt().isEqual(now)) {
-            repeatReminderService.updateNextRemindAt(reminder);
+        if (reminderTime.isItsTime()) {
+            nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
+            repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
         }
+
+        reminderMessageSender.sendRemindMessage(reminder, reminderTime.isItsTime(), nextRemindAt);
+
+        ZonedDateTime nextLastRemindAt = JodaTimeUtils.plus(reminderTime.getLastReminderAt(), reminderTime.getDelayTime());
+        reminderTimeService.updateLastRemindAt(reminderTime.getId(), nextLastRemindAt.toLocalDateTime());
     }
 }

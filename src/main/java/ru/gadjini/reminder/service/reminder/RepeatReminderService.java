@@ -43,7 +43,7 @@ public class RepeatReminderService {
     @Transactional
     public Reminder createReminder(Reminder reminder) {
         ZoneId zoneId = userService.getTimeZone(reminder.getReceiverId());
-        ZonedDateTime nextRemindAtInReceiverZone = getNextRemindAt(null, zoneId, reminder.getRepeatRemindAt());
+        ZonedDateTime nextRemindAtInReceiverZone = getFirstRemindAt(zoneId, reminder.getRepeatRemindAt());
         reminder.setRemindAtInReceiverTimeZone(nextRemindAtInReceiverZone);
         reminder.setRemindAt(nextRemindAtInReceiverZone.withZoneSameInstant(ZoneOffset.UTC));
 
@@ -55,31 +55,23 @@ public class RepeatReminderService {
         return created;
     }
 
-    public void updateNextRemindAt(Reminder reminder) {
-        ZonedDateTime dateTime = getNextRemindAt(reminder.getRemindAt(), reminder.getReceiver().getZoneId(), reminder.getRepeatRemindAt());
-
-        reminder.setRemindAt(dateTime);
-        reminder.setRemindAtInReceiverTimeZone(dateTime.withZoneSameInstant(reminder.getReceiver().getZoneId()));
+    public void updateNextRemindAt(int reminderId, ZonedDateTime nextRemindAt) {
         reminderDao.update(
                 new HashMap<>() {{
-                    put(ReminderTable.TABLE.REMIND_AT, Timestamp.valueOf(dateTime.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime()));
+                    put(ReminderTable.TABLE.REMIND_AT, Timestamp.valueOf(nextRemindAt.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime()));
                 }},
-                ReminderTable.TABLE.ID.equal(reminder.getId()),
+                ReminderTable.TABLE.ID.equal(reminderId),
                 null
         );
     }
 
-    public ZonedDateTime getNextRemindAt(ZonedDateTime remindAt, ZoneId zoneId, RepeatTime repeatTime) {
-        if (remindAt == null) {
-            return getFirstRemindAt(zoneId, repeatTime);
+    public ZonedDateTime getNextRemindAt(ZonedDateTime remindAt, RepeatTime repeatTime) {
+        if (repeatTime.getDayOfWeek() != null) {
+            return getWeeklyNextRemindAt(remindAt.getZone(), repeatTime);
+        } else if (repeatTime.getInterval().getDays() > 0) {
+            return getDailyNextRemindAt(remindAt, repeatTime);
         } else {
-            if (repeatTime.getDayOfWeek() != null) {
-                return getWeeklyNextRemindAt(zoneId, repeatTime);
-            } else if (repeatTime.getInterval().getDays() > 0) {
-                return getDailyNextRemindAt(remindAt, repeatTime);
-            } else {
-                return getIntervalNextRemindAt(remindAt, repeatTime);
-            }
+            return getIntervalNextRemindAt(remindAt, repeatTime);
         }
     }
 
@@ -169,10 +161,10 @@ public class RepeatReminderService {
             repeatReminder.plusDays(repeatTime.getInterval().getDays());
         }
 
-        beforeHoursReminderTime(repeatReminder, repeatTime.getInterval().getDays(), 0, reminderTimes);
+        beforeHoursReminderTime(repeatReminder, repeatTime.getInterval().getDays(), 0, reminderTimes, false);
         beforeMinutesReminderTime(repeatReminder, repeatTime.getInterval().getDays(), 20, reminderTimes);
-        beforeHoursReminderTime(repeatReminder, repeatTime.getInterval().getDays(), 1, reminderTimes);
-        beforeHoursReminderTime(repeatReminder, repeatTime.getInterval().getDays(), 2, reminderTimes);
+        beforeHoursReminderTime(repeatReminder, repeatTime.getInterval().getDays(), 1, reminderTimes, false);
+        beforeHoursReminderTime(repeatReminder, repeatTime.getInterval().getDays(), 2, reminderTimes, false);
         nightBeforeReminderTime(repeatReminder, repeatTime.getInterval().getDays(), reminderTimes);
     }
 
@@ -180,10 +172,10 @@ public class RepeatReminderService {
         ZonedDateTime now = TimeUtils.now(zoneId);
         ZonedDateTime repeatReminder = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek())).with(repeatTime.getTime());
 
-        beforeHoursReminderTime(repeatReminder, 7, 0, reminderTimes);
+        beforeHoursReminderTime(repeatReminder, 7, 0, reminderTimes, false);
         beforeMinutesReminderTime(repeatReminder, 7, 20, reminderTimes);
-        beforeHoursReminderTime(repeatReminder, 7, 1, reminderTimes);
-        beforeHoursReminderTime(repeatReminder, 7, 2, reminderTimes);
+        beforeHoursReminderTime(repeatReminder, 7, 1, reminderTimes, false);
+        beforeHoursReminderTime(repeatReminder, 7, 2, reminderTimes, false);
         nightBeforeReminderTime(repeatReminder, 7, reminderTimes);
     }
 
@@ -203,11 +195,12 @@ public class RepeatReminderService {
         reminderTimes.add(reminderTimeMinutes);
     }
 
-    private void beforeHoursReminderTime(ZonedDateTime remindAt, int days, int hours, List<ReminderTime> reminderTimes) {
+    private void beforeHoursReminderTime(ZonedDateTime remindAt, int days, int hours, List<ReminderTime> reminderTimes, boolean itsTime) {
         ReminderTime beforeHourReminderTime = new ReminderTime();
         beforeHourReminderTime.setType(ReminderTime.Type.REPEAT);
         beforeHourReminderTime.setLastReminderAt(remindAt.minusDays(days).minusHours(hours).withZoneSameInstant(ZoneOffset.UTC));
         beforeHourReminderTime.setDelayTime(new Period().withDays(days));
+        beforeHourReminderTime.setItsTime(itsTime);
         reminderTimes.add(beforeHourReminderTime);
     }
 

@@ -3,6 +3,8 @@ package ru.gadjini.reminder.util;
 import org.joda.time.Period;
 import org.postgresql.util.PGInterval;
 
+import java.time.ZonedDateTime;
+
 public class JodaTimeUtils {
 
     private JodaTimeUtils() {
@@ -33,5 +35,13 @@ public class JodaTimeUtils {
         }
 
         return new Period(interval.getYears(), interval.getMonths(), 0, interval.getDays(), interval.getHours(), interval.getMinutes(), 0, 0);
+    }
+
+    public static ZonedDateTime plus(ZonedDateTime zonedDateTime, Period period) {
+        return zonedDateTime.plusDays(period.getDays()).plusHours(period.getHours()).plusMinutes(period.getMinutes());
+    }
+
+    public static ZonedDateTime minus(ZonedDateTime zonedDateTime, Period period) {
+        return zonedDateTime.minusDays(period.getDays()).minusHours(period.getHours()).minusMinutes(period.getMinutes());
     }
 }
