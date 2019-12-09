@@ -161,6 +161,7 @@ public class ReminderDao {
 
         namedParameterJdbcTemplate.query(
                 "SELECT r.*,\n" +
+                        "       (r.repeat_remind_at).*,\n" +
                         "       rm.message_id                                    as rm_message_id,\n" +
                         "       rt.id as rt_id,\n" +
                         "       rc.chat_id                                       as rc_chat_id,\n" +

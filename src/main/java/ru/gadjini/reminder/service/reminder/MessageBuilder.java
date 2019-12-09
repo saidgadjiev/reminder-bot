@@ -71,6 +71,10 @@ public class MessageBuilder {
                 reminder.getText() + " " + timeBuilder.time(reminder)
         }));
 
+        if (reminder.getRepeatRemindAt() != null) {
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAt())}));
+        }
+
         if (StringUtils.isNotBlank(reminder.getNote())) {
             result
                     .append("\n")
@@ -105,6 +109,10 @@ public class MessageBuilder {
         result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_ME, new Object[]{
                 reminder.getText() + " " + timeBuilder.time(reminder)
         }));
+
+        if (reminder.getRepeatRemindAt() != null) {
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAt())}));
+        }
 
         if (StringUtils.isNotBlank(reminder.getNote())) {
             result
