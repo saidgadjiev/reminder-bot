@@ -159,6 +159,12 @@ public class MessageBuilder {
             String number = i++ + ") ";
             text.append(number).append(reminder.getText()).append("(").append(timeBuilder.time(reminder)).append(")\n");
 
+            if (reminder.getRepeatRemindAt() != null) {
+                text
+                        .append(" ".repeat(number.length() + 2))
+                        .append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAt())})).append("\n");
+            }
+
             if (reminder.getReceiverId() != reminder.getCreatorId()) {
                 if (requesterId == reminder.getReceiverId()) {
                     text
@@ -202,10 +208,11 @@ public class MessageBuilder {
         StringBuilder result = new StringBuilder();
         result.append(text).append(" ");
 
-        if (remindAt != null) {
-            result.append(timeBuilder.time(remindAt));
-        } else {
+        if (repeatTime != null) {
             result.append(timeBuilder.time(repeatTime));
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(remindAt)}));
+        } else {
+            result.append(timeBuilder.time(remindAt));
         }
 
         if (StringUtils.isNotBlank(note)) {

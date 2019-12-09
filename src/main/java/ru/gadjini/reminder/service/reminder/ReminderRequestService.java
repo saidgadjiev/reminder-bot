@@ -91,7 +91,7 @@ public class ReminderRequestService {
         ZonedDateTime remindTime = ReminderUtils.buildCustomRemindTime(
                 customRemind,
                 reminder.getRemindAtInReceiverTimeZone(),
-                ZoneId.of(reminder.getReceiver().getZoneId())
+                reminder.getReceiver().getZoneId()
         );
 
         return new CustomRemindResult(reminderService.customRemind(reminderId, remindTime), reminder);
@@ -106,7 +106,7 @@ public class ReminderRequestService {
         }});
         oldReminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
 
-        ZonedDateTime remindAtInReceiverTimeZone = parseChangeReminderTime(timeText, ZoneId.of(oldReminder.getReceiver().getZoneId()));
+        ZonedDateTime remindAtInReceiverTimeZone = parseChangeReminderTime(timeText, oldReminder.getReceiver().getZoneId());
         validationService.validateIsNotPastTime(remindAtInReceiverTimeZone);
 
         return new UpdateReminderResult(oldReminder, reminderService.changeReminderTime(reminderId, remindAtInReceiverTimeZone));

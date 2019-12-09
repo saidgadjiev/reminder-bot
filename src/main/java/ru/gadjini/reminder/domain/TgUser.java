@@ -2,6 +2,8 @@ package ru.gadjini.reminder.domain;
 
 import org.telegram.telegrambots.meta.api.objects.User;
 
+import java.time.ZoneId;
+
 public class TgUser {
 
     public static final String TYPE = "tg_user";
@@ -74,8 +76,8 @@ public class TgUser {
         this.userId = userId;
     }
 
-    public String getZoneId() {
-        return zoneId;
+    public ZoneId getZoneId() {
+        return ZoneId.of(zoneId);
     }
 
     public void setZoneId(String zoneId) {

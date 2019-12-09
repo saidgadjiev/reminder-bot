@@ -59,15 +59,12 @@ public class ResultSetMapper {
                 repeatTime.setInterval(JodaTimeUtils.toPeriod(interval));
             }
             reminder.setRepeatRemindAt(repeatTime);
-        } else {
-            reminder.setRemindAt(ZonedDateTime.of(rs.getTimestamp(Reminder.REMIND_AT).toLocalDateTime(), ZoneOffset.UTC));
         }
+        reminder.setRemindAt(ZonedDateTime.of(rs.getTimestamp(Reminder.REMIND_AT).toLocalDateTime(), ZoneOffset.UTC));
 
         if (reminderMapping.getReceiverMapping() != null) {
             String zoneId = rs.getString("rc_zone_id");
-            if (!reminder.isRepeatable()) {
-                reminder.setRemindAtInReceiverTimeZone(reminder.getRemindAt().withZoneSameInstant(ZoneId.of(zoneId)));
-            }
+            reminder.setRemindAtInReceiverTimeZone(reminder.getRemindAt().withZoneSameInstant(ZoneId.of(zoneId)));
             TgUser rc = new TgUser();
 
             rc.setZoneId(zoneId);

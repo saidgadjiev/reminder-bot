@@ -105,7 +105,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
     private void postponeTime(Message message, PostponeCommandState postponeCommandState) {
         Reminder reminder = reminderRequestService.getReminderForPostpone(postponeCommandState.callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()));
         reminder.getReceiver().setChatId(message.getChatId());
-        postponeCommandState.parsedPostponeTime = reminderRequestService.parsePostponeTime(message.getText().trim(), ZoneId.of(reminder.getReceiver().getZoneId()));
+        postponeCommandState.parsedPostponeTime = reminderRequestService.parsePostponeTime(message.getText().trim(), reminder.getReceiver().getZoneId());
         postponeCommandState.reminder = reminder;
         postponeCommandState.state = State.REASON;
 

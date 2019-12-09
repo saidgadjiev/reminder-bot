@@ -293,4 +293,6 @@ public class MessagesProperties {
     public static final String REGEXP_DAY = "regexp.day";
 
     public static final String REGEXP_DAYS = "regexp.days";
+
+    public static final String MESSAGE_NEXT_REMIND_AT = "message.next.remind.at";
 }
