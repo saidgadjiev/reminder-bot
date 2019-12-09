@@ -68,7 +68,7 @@ public class ReminderRequestService {
         return createStandardReminder(parsedRequest, receiverId);
     }
 
-    public Reminder createStandardReminder(String text) {
+    public Reminder createReminder(String text) {
         ParsedRequest reminderRequest = parseRequest(text);
         if (reminderRequest.isRepeatReminder()) {
             return createRepeatReminder(reminderRequest);

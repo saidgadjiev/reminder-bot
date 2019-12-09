@@ -72,7 +72,7 @@ public class MessageBuilder {
         }));
 
         if (reminder.getRepeatRemindAt() != null) {
-            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAt())}));
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAtInReceiverTimeZone())}));
         }
 
         if (StringUtils.isNotBlank(reminder.getNote())) {
@@ -111,7 +111,7 @@ public class MessageBuilder {
         }));
 
         if (reminder.getRepeatRemindAt() != null) {
-            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAt())}));
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAtInReceiverTimeZone())}));
         }
 
         if (StringUtils.isNotBlank(reminder.getNote())) {
@@ -170,7 +170,7 @@ public class MessageBuilder {
             if (reminder.getRepeatRemindAt() != null) {
                 text
                         .append(" ".repeat(number.length() + 2))
-                        .append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAt())})).append("\n");
+                        .append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAtInReceiverTimeZone())})).append("\n");
             }
 
             if (reminder.getReceiverId() != reminder.getCreatorId()) {

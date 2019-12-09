@@ -3,13 +3,15 @@ package ru.gadjini.reminder.job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
-import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
 import ru.gadjini.reminder.service.reminder.RepeatReminderService;
+import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
+import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -39,7 +41,7 @@ public class ReminderJob {
         this.repeatReminderService = repeatReminderService;
     }
 
-   // @Scheduled(cron = "0 0 0 * * *")
+    // @Scheduled(cron = "0 0 0 * * *")
     //@Scheduled(fixedDelay = 1000)
     public void deleteCompletedReminders() {
         LocalDateTime now = LocalDateTime.now();
@@ -48,9 +50,9 @@ public class ReminderJob {
         LOGGER.debug("Delete " + deleted + " completed reminders at " + now);
     }
 
-    //@Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 1000)
     public void sendReminders() {
-        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().withSecond(0).withNano(0), 30);
+        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().minusSeconds(30).withNano(0), 30);
 
         for (Reminder reminder : reminders) {
             sendReminder(reminder);
@@ -77,18 +79,18 @@ public class ReminderJob {
     }
 
     private void sendRepeatReminder(Reminder reminder, ReminderTime reminderTime) {
+        updateNextRemindAtIfNeed(reminder);
         reminderMessageSender.sendRemindMessage(reminder);
 
         if (reminderTime.getLastReminderAt() == null) {
             reminderTimeService.updateLastRemindAt(reminderTime.getId(), reminder.getRemindAt().toLocalDateTime());
         } else {
-            reminderTimeService.updateLastRemindAt(reminderTime.getId(), LocalDateTime.now());
+            reminderTimeService.updateLastRemindAt(reminderTime.getId(), TimeUtils.now());
         }
-        updateNextRemindAtIfNeed(reminder);
     }
 
     private void updateNextRemindAtIfNeed(Reminder reminder) {
-        ZonedDateTime now = ZonedDateTime.now().withSecond(0).withNano(0);
+        ZonedDateTime now = TimeUtils.nowZoned();
 
         if (reminder.getRemindAt().isBefore(now)
                 || reminder.getRemindAt().isEqual(now)) {
