@@ -3,13 +3,12 @@ package ru.gadjini.reminder.job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
-import ru.gadjini.reminder.service.reminder.ReminderTimeService;
+import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
 import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 
 import java.time.LocalDateTime;

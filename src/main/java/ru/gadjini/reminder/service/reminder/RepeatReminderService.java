@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.service.reminder;
 
-import org.glassfish.grizzly.http.util.TimeStamp;
 import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +10,8 @@ import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.service.TgUserService;
+import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeAI;
+import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
 
 import java.sql.Timestamp;
 import java.time.*;
@@ -28,11 +29,14 @@ public class RepeatReminderService {
 
     private TgUserService userService;
 
+    private ReminderTimeAI reminderTimeAI;
+
     @Autowired
-    public RepeatReminderService(ReminderDao reminderDao, ReminderTimeService reminderTimeService, TgUserService userService) {
+    public RepeatReminderService(ReminderDao reminderDao, ReminderTimeService reminderTimeService, TgUserService userService, ReminderTimeAI reminderTimeAI) {
         this.reminderDao = reminderDao;
         this.reminderTimeService = reminderTimeService;
         this.userService = userService;
+        this.reminderTimeAI = reminderTimeAI;
     }
 
     @Transactional
@@ -134,14 +138,13 @@ public class RepeatReminderService {
 
         intervalReminderTime(now, repeatTime.getInterval(), 0, reminderTimes);
 
-        int minutes = repeatTime.getInterval().toStandardMinutes().getMinutes();
-        if (minutes > 20) {
+        if (reminderTimeAI.isNeedCreateReminderTime(repeatTime.getInterval(), 20)) {
             intervalReminderTime(now, repeatTime.getInterval(), 20, reminderTimes);
         }
-        if (minutes > 60) {
+        if (reminderTimeAI.isNeedCreateReminderTime(repeatTime.getInterval(), 60)) {
             intervalReminderTime(now, repeatTime.getInterval(), 60, reminderTimes);
         }
-        if (minutes > 120) {
+        if (reminderTimeAI.isNeedCreateReminderTime(repeatTime.getInterval(), 120)) {
             intervalReminderTime(now, repeatTime.getInterval(), 120, reminderTimes);
         }
     }

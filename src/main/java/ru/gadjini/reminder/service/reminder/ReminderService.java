@@ -13,6 +13,8 @@ import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.model.UpdateReminderResult;
+import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeAI;
+import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
 import ru.gadjini.reminder.service.security.SecurityService;
 
 import java.sql.Timestamp;
@@ -34,11 +36,14 @@ public class ReminderService {
 
     private ReminderTimeService reminderTimeService;
 
+    private ReminderTimeAI reminderTimeAI;
+
     @Autowired
-    public ReminderService(ReminderDao reminderDao, SecurityService securityService, ReminderTimeService reminderTimeService) {
+    public ReminderService(ReminderDao reminderDao, SecurityService securityService, ReminderTimeService reminderTimeService, ReminderTimeAI reminderTimeAI) {
         this.reminderDao = reminderDao;
         this.securityService = securityService;
         this.reminderTimeService = reminderTimeService;
+        this.reminderTimeAI = reminderTimeAI;
     }
 
     @Transactional
@@ -271,10 +276,18 @@ public class ReminderService {
     private List<ReminderTime> getReminderTimes(ZonedDateTime remindAt) {
         List<ReminderTime> reminderTimes = new ArrayList<>();
 
-        addNightBeforeReminderTime(remindAt, reminderTimes);
-        addFixedTime(remindAt, 2, reminderTimes);
-        addFixedTime(remindAt, 1, reminderTimes);
-        addDelayTime(remindAt, 20, reminderTimes);
+        if (reminderTimeAI.isNeedCreateNightBeforeReminderTime(remindAt)) {
+            addNightBeforeReminderTime(remindAt, reminderTimes);
+        }
+        if (reminderTimeAI.isNeedCreateReminderTime(remindAt, 120)) {
+            addFixedTime(remindAt, 2, reminderTimes);
+        }
+        if (reminderTimeAI.isNeedCreateReminderTime(remindAt, 60)) {
+            addFixedTime(remindAt, 1, reminderTimes);
+        }
+        if (reminderTimeAI.isNeedCreateReminderTime(remindAt, 20)) {
+            addDelayTime(remindAt, 20, reminderTimes);
+        }
         addItsTimeFixedTime(remindAt, reminderTimes);
 
         return reminderTimes;
@@ -313,22 +326,20 @@ public class ReminderService {
     private void addNightBeforeReminderTime(ZonedDateTime remindAt, List<ReminderTime> reminderTimes) {
         ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
 
-        if (remindAt.getDayOfMonth() > now.getDayOfMonth()) {
-            if (remindAt.getDayOfMonth() - now.getDayOfMonth() > 1) {
-                ReminderTime reminderTime = new ReminderTime();
+        if (remindAt.getDayOfMonth() - now.getDayOfMonth() > 1) {
+            ReminderTime reminderTime = new ReminderTime();
 
-                reminderTime.setType(ReminderTime.Type.ONCE);
-                reminderTime.setFixedTime(remindAt.minusDays(1).with(LocalTime.of(22, 0)).withZoneSameInstant(ZoneOffset.UTC));
+            reminderTime.setType(ReminderTime.Type.ONCE);
+            reminderTime.setFixedTime(remindAt.minusDays(1).with(LocalTime.of(22, 0)).withZoneSameInstant(ZoneOffset.UTC));
 
-                reminderTimes.add(reminderTime);
-            } else if (now.getHour() < 22) {
-                ReminderTime reminderTime = new ReminderTime();
+            reminderTimes.add(reminderTime);
+        } else if (now.getHour() < 22) {
+            ReminderTime reminderTime = new ReminderTime();
 
-                reminderTime.setType(ReminderTime.Type.ONCE);
-                reminderTime.setFixedTime(now.with(LocalTime.of(22, 0)).withZoneSameInstant(ZoneOffset.UTC));
+            reminderTime.setType(ReminderTime.Type.ONCE);
+            reminderTime.setFixedTime(now.with(LocalTime.of(22, 0)).withZoneSameInstant(ZoneOffset.UTC));
 
-                reminderTimes.add(reminderTime);
-            }
+            reminderTimes.add(reminderTime);
         }
     }
 }
