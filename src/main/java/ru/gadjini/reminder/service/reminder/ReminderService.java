@@ -49,7 +49,7 @@ public class ReminderService {
     @Transactional
     public Reminder createReminder(Reminder reminder) {
         Reminder created = reminderDao.create(reminder);
-        List<ReminderTime> reminderTimes = getReminderTimes(reminder.getRemindAt());
+        List<ReminderTime> reminderTimes = getReminderTimes(reminder.getRemindAtInReceiverTimeZone());
         reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(created.getId()));
         reminderTimeService.create(reminderTimes);
 

@@ -58,7 +58,7 @@ public class ReminderJob {
 
     @Scheduled(fixedDelay = 1000)
     public void sendReminders() {
-        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().minusSeconds(5).withNano(0), 30);
+        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().minusSeconds(15).withNano(0), 30);
 
         for (Reminder reminder : reminders) {
             if (restoreReminderService.isNeedRestore(reminder)) {

@@ -18,7 +18,7 @@ public class ReminderTimeAI {
     public boolean isNeedCreateReminderTime(ZonedDateTime remindAt, int minutes) {
         ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
 
-        return Duration.between(remindAt, now).toMinutes() >= minutes + MINUTE_DIFF;
+        return Duration.between(now, remindAt).toMinutes() >= minutes + MINUTE_DIFF;
     }
 
     public boolean isNeedCreateNightBeforeReminderTime(ZonedDateTime remindAt) {
