@@ -16,7 +16,11 @@ public enum ReminderToken implements Token {
 
     DAY_OF_WEEK,
 
-    ONE_DAY,
+    EVERY_DAY,
+
+    EVERY_MINUTE,
+
+    EVERY_HOUR,
 
     DAYS,
 

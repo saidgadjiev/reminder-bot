@@ -119,6 +119,7 @@ public class ResultSetMapper {
 
         PGInterval delayTime = (PGInterval) rs.getObject(prefix + ReminderTime.DELAY_TIME);
         reminderTime.setDelayTime(JodaTimeUtils.toPeriod(delayTime));
+        reminderTime.setItsTime(rs.getBoolean(prefix + ReminderTime.ITS_TIME));
 
         return reminderTime;
     }

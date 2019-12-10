@@ -8,6 +8,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.ZonedDateTime;
@@ -27,7 +28,28 @@ public class MessageBuilder {
     }
 
     public String getReminderMessage(Reminder reminder) {
-        return getReminderInfo0(reminder.getText(), reminder.getRepeatRemindAt(), reminder.getRemindAtInReceiverTimeZone(), reminder.getNote());
+        StringBuilder result = new StringBuilder();
+        String text = reminder.getText();
+        RepeatTime repeatTime = reminder.getRepeatRemindAt();
+        ZonedDateTime remindAt = reminder.getRemindAtInReceiverTimeZone();
+        String note = reminder.getNote();
+
+        result.append(text).append(" ");
+
+        if (repeatTime != null) {
+            result.append(timeBuilder.time(repeatTime));
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(remindAt)}));
+        } else {
+            result.append(timeBuilder.time(remindAt));
+        }
+
+        if (StringUtils.isNotBlank(note)) {
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
+                    note
+            }));
+        }
+
+        return result.toString();
     }
 
     public String getReminderCreatedForReceiver(Reminder reminder) {
@@ -200,26 +222,6 @@ public class MessageBuilder {
 
     private String getNextRemindAt(ZonedDateTime remindAt) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(remindAt)});
-    }
-
-    private String getReminderInfo0(String text, RepeatTime repeatTime, ZonedDateTime remindAt, String note) {
-        StringBuilder result = new StringBuilder();
-        result.append(text).append(" ");
-
-        if (repeatTime != null) {
-            result.append(timeBuilder.time(repeatTime));
-            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(remindAt)}));
-        } else {
-            result.append(timeBuilder.time(remindAt));
-        }
-
-        if (StringUtils.isNotBlank(note)) {
-            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
-                    note
-            }));
-        }
-
-        return result.toString();
     }
 
     private String getRemindMySelf(Reminder reminder) {

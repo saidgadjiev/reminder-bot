@@ -290,7 +290,11 @@ public class MessagesProperties {
 
     public static final String MESSAGE_POSTPONE_WITHOUT_REASON = "message.postpone.without.reason";
 
-    public static final String REGEXP_DAY = "regexp.day";
+    public static final String REGEXP_EVERY_DAY = "regexp.every.day";
+
+    public static final String REGEXP_EVERY_MINUTE = "regexp.every.minute";
+
+    public static final String REGEXP_EVERY_HOUR = "regexp.every.hour";
 
     public static final String REGEXP_DAYS = "regexp.days";
 

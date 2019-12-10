@@ -81,18 +81,37 @@ public class ReminderRequestParser {
             consumeHours(lexems);
         } else if (lexemsConsumer.check(lexems, ReminderToken.DAY_OF_WEEK)) {
             consumeDayOfWeek(lexems);
-        } else if (lexemsConsumer.check(lexems, ReminderToken.ONE_DAY)) {
+        } else if (lexemsConsumer.check(lexems, ReminderToken.EVERY_DAY)) {
             repeatTime.setInterval(new Period());
-            consumeOneDay(lexems);
+            consumeEveryDay(lexems);
+        } else if (lexemsConsumer.check(lexems, ReminderToken.EVERY_MINUTE)) {
+            repeatTime.setInterval(new Period());
+            consumeEveryMinute(lexems);
+        } else if (lexemsConsumer.check(lexems, ReminderToken.EVERY_HOUR)) {
+            repeatTime.setInterval(new Period());
+            consumeEveryHour(lexems);
         } else if (lexemsConsumer.check(lexems, ReminderToken.DAYS)) {
             repeatTime.setInterval(new Period());
             consumeDays(lexems);
         }
     }
 
-    private void consumeOneDay(List<BaseLexem> lexems) {
-        lexemsConsumer.consume(lexems, ReminderToken.ONE_DAY);
-        repeatTime.getInterval().withDays(1);
+    private void consumeEveryMinute(List<BaseLexem> lexems) {
+        lexemsConsumer.consume(lexems, ReminderToken.EVERY_MINUTE);
+        repeatTime.setInterval(repeatTime.getInterval().withMinutes(1));
+    }
+
+    private void consumeEveryHour(List<BaseLexem> lexems) {
+        lexemsConsumer.consume(lexems, ReminderToken.EVERY_HOUR);
+        repeatTime.setInterval(repeatTime.getInterval().withHours(1));
+        if (lexemsConsumer.check(lexems, ReminderToken.MINUTES)) {
+            consumeMinutes(lexems);
+        }
+    }
+
+    private void consumeEveryDay(List<BaseLexem> lexems) {
+        lexemsConsumer.consume(lexems, ReminderToken.EVERY_DAY);
+        repeatTime.setInterval(repeatTime.getInterval().withDays(1));
         repeatTime.setTime(consumeShortTime(lexems));
     }
 
@@ -107,7 +126,9 @@ public class ReminderRequestParser {
 
     private void consumeHours(List<BaseLexem> lexems) {
         repeatTime.setInterval(repeatTime.getInterval().withHours(Integer.parseInt(lexemsConsumer.consume(lexems, ReminderToken.HOURS).getValue())));
-        consumeMinutes(lexems);
+        if (lexemsConsumer.check(lexems, ReminderToken.MINUTES)) {
+            consumeMinutes(lexems);
+        }
     }
 
     private void consumeDayOfWeek(List<BaseLexem> lexems) {

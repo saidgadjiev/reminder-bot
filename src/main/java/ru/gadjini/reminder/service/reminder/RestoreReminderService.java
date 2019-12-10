@@ -3,6 +3,7 @@ package ru.gadjini.reminder.service.reminder;
 import com.google.inject.Inject;
 import org.joda.time.Period;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
@@ -32,6 +33,7 @@ public class RestoreReminderService {
         }
     }
 
+    @Transactional
     public void restore(Reminder reminder) {
         if (reminder.isRepeatable()) {
             restoreRepeatableReminder(reminder);
@@ -48,8 +50,11 @@ public class RestoreReminderService {
                 if (reminderTime.isItsTime()) {
                     ZonedDateTime nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
                     repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
+                    reminder.setRemindAt(nextRemindAt);
+                    reminder.setRemindAtInReceiverTimeZone(nextRemindAt.withZoneSameInstant(reminder.getReceiver().getZoneId()));
                 }
-                reminderTimeService.updateLastRemindAt(reminderTime.getId(), getNextLastRemindAt(reminderTime.getLastReminderAt(), reminderTime.getDelayTime()).toLocalDateTime());
+                ZonedDateTime restoredLastRemindAt = getNextLastRemindAt(reminderTime.getLastReminderAt(), reminderTime.getDelayTime());
+                reminderTimeService.updateLastRemindAt(reminderTime.getId(), restoredLastRemindAt.toLocalDateTime());
             }
         }
     }
@@ -65,7 +70,7 @@ public class RestoreReminderService {
     }
 
     private ZonedDateTime getNextLastRemindAt(ZonedDateTime lastRemindAt, Period period) {
-        ZonedDateTime now = JodaTimeUtils.minus(lastRemindAt, period);
+        ZonedDateTime now = JodaTimeUtils.minus(ZonedDateTime.now(lastRemindAt.getZone()), period);
 
         while (now.isAfter(lastRemindAt)) {
             lastRemindAt = JodaTimeUtils.plus(lastRemindAt, period);

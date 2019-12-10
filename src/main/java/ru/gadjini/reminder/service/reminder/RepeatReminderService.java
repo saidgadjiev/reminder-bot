@@ -12,6 +12,7 @@ import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeAI;
 import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
+import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
 
 import java.sql.Timestamp;
@@ -56,9 +57,12 @@ public class RepeatReminderService {
     }
 
     public void updateNextRemindAt(int reminderId, ZonedDateTime nextRemindAt) {
+        LocalDateTime localDateTime = nextRemindAt.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
+        Timestamp timestamp = Timestamp.valueOf(localDateTime);
         reminderDao.update(
                 new HashMap<>() {{
-                    put(ReminderTable.TABLE.REMIND_AT, Timestamp.valueOf(nextRemindAt.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime()));
+                    put(ReminderTable.TABLE.REMIND_AT, timestamp);
+                    put(ReminderTable.TABLE.INITIAL_REMIND_AT, timestamp);
                 }},
                 ReminderTable.TABLE.ID.equal(reminderId),
                 null
@@ -86,7 +90,13 @@ public class RepeatReminderService {
     }
 
     private ZonedDateTime getIntervalNextRemindAt(ZonedDateTime lastRemindAt, RepeatTime repeatTime) {
-        return lastRemindAt.plusHours(repeatTime.getInterval().getHours()).plusMinutes(repeatTime.getInterval().getMinutes());
+        ZonedDateTime now = ZonedDateTime.now(lastRemindAt.getZone());
+
+        while (now.isAfter(lastRemindAt)) {
+            lastRemindAt = JodaTimeUtils.plus(lastRemindAt, repeatTime.getInterval());
+        }
+
+        return lastRemindAt;
     }
 
     private ZonedDateTime getIntervalFirstRemindAt(ZoneId zoneId, RepeatTime repeatTime) {
@@ -132,24 +142,25 @@ public class RepeatReminderService {
     private void addIntervalReminderTimes(RepeatTime repeatTime, ZoneId zoneId, List<ReminderTime> reminderTimes) {
         ZonedDateTime now = TimeUtils.now(zoneId);
 
-        intervalReminderTime(now, repeatTime.getInterval(), 0, reminderTimes);
+        intervalReminderTime(now, repeatTime.getInterval(), 0, reminderTimes, true);
 
         if (reminderTimeAI.isNeedCreateReminderTime(repeatTime.getInterval(), 20)) {
-            intervalReminderTime(now, repeatTime.getInterval(), 20, reminderTimes);
+            intervalReminderTime(now, repeatTime.getInterval(), 20, reminderTimes, false);
         }
         if (reminderTimeAI.isNeedCreateReminderTime(repeatTime.getInterval(), 60)) {
-            intervalReminderTime(now, repeatTime.getInterval(), 60, reminderTimes);
+            intervalReminderTime(now, repeatTime.getInterval(), 60, reminderTimes, false);
         }
         if (reminderTimeAI.isNeedCreateReminderTime(repeatTime.getInterval(), 120)) {
-            intervalReminderTime(now, repeatTime.getInterval(), 120, reminderTimes);
+            intervalReminderTime(now, repeatTime.getInterval(), 120, reminderTimes, false);
         }
     }
 
-    private void intervalReminderTime(ZonedDateTime remindAt, Period interval, int minutes, List<ReminderTime> reminderTimes) {
+    private void intervalReminderTime(ZonedDateTime remindAt, Period interval, int minutes, List<ReminderTime> reminderTimes, boolean itsTime) {
         ReminderTime reminderTime = new ReminderTime();
         reminderTime.setType(ReminderTime.Type.REPEAT);
         reminderTime.setLastReminderAt(remindAt.minusMinutes(minutes).withZoneSameInstant(ZoneOffset.UTC));
         reminderTime.setDelayTime(interval);
+        reminderTime.setItsTime(itsTime);
         reminderTimes.add(reminderTime);
     }
 
@@ -161,28 +172,28 @@ public class RepeatReminderService {
             repeatReminder.plusDays(repeatTime.getInterval().getDays());
         }
 
-        beforeHoursReminderTime(repeatReminder, repeatTime.getInterval().getDays(), 0, reminderTimes, false);
+        beforeHoursReminderTime(repeatReminder, repeatTime.getInterval().getDays(), 0, reminderTimes, true);
         beforeMinutesReminderTime(repeatReminder, repeatTime.getInterval().getDays(), 20, reminderTimes);
         beforeHoursReminderTime(repeatReminder, repeatTime.getInterval().getDays(), 1, reminderTimes, false);
         beforeHoursReminderTime(repeatReminder, repeatTime.getInterval().getDays(), 2, reminderTimes, false);
-        nightBeforeReminderTime(repeatReminder, repeatTime.getInterval().getDays(), reminderTimes);
+        nightBeforeReminderTime(repeatReminder,  repeatTime.getInterval().getDays(), 0, reminderTimes);
     }
 
     private void addWeeklyReminderTimes(RepeatTime repeatTime, ZoneId zoneId, List<ReminderTime> reminderTimes) {
         ZonedDateTime now = TimeUtils.now(zoneId);
         ZonedDateTime repeatReminder = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek())).with(repeatTime.getTime());
 
-        beforeHoursReminderTime(repeatReminder, 7, 0, reminderTimes, false);
+        beforeHoursReminderTime(repeatReminder, 7, 0, reminderTimes, true);
         beforeMinutesReminderTime(repeatReminder, 7, 20, reminderTimes);
         beforeHoursReminderTime(repeatReminder, 7, 1, reminderTimes, false);
         beforeHoursReminderTime(repeatReminder, 7, 2, reminderTimes, false);
-        nightBeforeReminderTime(repeatReminder, 7, reminderTimes);
+        nightBeforeReminderTime(repeatReminder,7, 1, reminderTimes);
     }
 
-    private void nightBeforeReminderTime(ZonedDateTime repeatAt, int days, List<ReminderTime> reminderTimes) {
+    private void nightBeforeReminderTime(ZonedDateTime repeatAt, int days, int minusDays, List<ReminderTime> reminderTimes) {
         ReminderTime reminderTimeNightBefore = new ReminderTime();
         reminderTimeNightBefore.setType(ReminderTime.Type.REPEAT);
-        reminderTimeNightBefore.setLastReminderAt(repeatAt.minusDays(days + 1).with(LocalTime.of(22, 0)).withZoneSameInstant(ZoneOffset.UTC));
+        reminderTimeNightBefore.setLastReminderAt(repeatAt.minusDays(days + minusDays).with(LocalTime.of(22, 0)).withZoneSameInstant(ZoneOffset.UTC));
         reminderTimeNightBefore.setDelayTime(new Period().withDays(days));
         reminderTimes.add(reminderTimeNightBefore);
     }

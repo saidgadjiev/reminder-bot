@@ -1,6 +1,5 @@
-package ru.gadjini.reminder.service.reminder;
+package ru.gadjini.reminder.service.reminder.time;
 
-import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -21,9 +20,12 @@ public class TimeBuilder {
 
     private LocalisationService localisationService;
 
+    private IntervalLocalisationService intervalLocalisationService;
+
     @Autowired
-    public TimeBuilder(LocalisationService localisationService) {
+    public TimeBuilder(LocalisationService localisationService, IntervalLocalisationService intervalLocalisationService) {
         this.localisationService = localisationService;
+        this.intervalLocalisationService = intervalLocalisationService;
     }
 
     public String time(ZonedDateTime remindAt) {
@@ -99,8 +101,7 @@ public class TimeBuilder {
         StringBuilder time = new StringBuilder();
 
         if (repeatTime.getInterval() != null) {
-            time.append(getRepeatWord(repeatTime.getInterval())).append(" ");
-            time.append(time(repeatTime.getInterval()));
+            time.append(intervalLocalisationService.get(repeatTime.getInterval()));
             if (repeatTime.getTime() != null) {
                 time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
             }
@@ -111,22 +112,6 @@ public class TimeBuilder {
         }
 
         return time.toString();
-    }
-
-    public String time(Period period) {
-        StringBuilder time = new StringBuilder();
-
-        if (period.getDays() != 0) {
-            time.append(period.getDays()).append(" ").append(getDaysSuffix(period.getDays()));
-        }
-        if (period.getHours() != 0) {
-            time.append(period.getHours()).append(" ").append(getHoursSuffix(period.getHours())).append(" ");
-        }
-        if (period.getMinutes() != 0) {
-            time.append(period.getMinutes()).append(" ").append(getMinutesSuffix(period.getMinutes())).append(" ");
-        }
-
-        return time.toString().trim();
     }
 
     private String getRepeatWord(DayOfWeek dayOfWeek) {
@@ -144,21 +129,5 @@ public class TimeBuilder {
         }
 
         throw new UnsupportedOperationException();
-    }
-
-    private String getRepeatWord(Period period) {
-        return "каждые";
-    }
-
-    private String getDaysSuffix(int days) {
-        return "дня";
-    }
-
-    private String getMinutesSuffix(int minutes) {
-        return "минут";
-    }
-
-    private String getHoursSuffix(int hours) {
-        return "часа";
     }
 }

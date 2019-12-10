@@ -58,19 +58,32 @@ public class ReminderJob {
 
     @Scheduled(fixedDelay = 1000)
     public void sendReminders() {
-        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().minusSeconds(30).withNano(0), 30);
+        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().minusSeconds(5).withNano(0), 30);
 
         for (Reminder reminder : reminders) {
             if (restoreReminderService.isNeedRestore(reminder)) {
-                sendReminderRestored();
+                restoreReminderService.restore(reminder);
+                sendReminderRestored(reminder);
             } else {
                 sendReminder(reminder);
             }
         }
     }
 
-    private void sendReminderRestored() {
+    private void sendReminderRestored(Reminder reminder) {
+        if (reminder.isRepeatable()) {
+            sendRepeatableReminderRestored(reminder);
+        } else {
+            sendStandardReminderRestored(reminder);
+        }
+    }
 
+    private void sendStandardReminderRestored(Reminder reminder) {
+        reminderMessageSender.sendRemindMessage(reminder, reminder.getReminderTimes().stream().anyMatch(ReminderTime::isItsTime), null);
+    }
+
+    private void sendRepeatableReminderRestored(Reminder reminder) {
+        reminderMessageSender.sendRemindMessage(reminder, reminder.getReminderTimes().stream().anyMatch(ReminderTime::isItsTime), reminder.getRemindAtInReceiverTimeZone());
     }
 
     private void sendReminder(Reminder reminder) {
@@ -111,6 +124,7 @@ public class ReminderJob {
         if (reminderTime.isItsTime()) {
             nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
             repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
+            reminder.setRemindAt(nextRemindAt);
         }
 
         reminderMessageSender.sendRemindMessage(reminder, reminderTime.isItsTime(), nextRemindAt);

@@ -171,6 +171,7 @@ public class ReminderDao {
                         "       rt.last_reminder_at as rt_last_reminder_at,\n" +
                         "       rt.fixed_time as rt_fixed_time,\n" +
                         "       rt.delay_time as rt_delay_time,\n" +
+                        "       rt.its_time as rt_its_time,\n" +
                         "       rt.time_type as rt_time_type\n" +
                         "FROM reminder_time rt\n" +
                         "         INNER JOIN reminder r ON rt.reminder_id = r.id\n" +

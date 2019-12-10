@@ -67,7 +67,8 @@ public class ReminderTimeDao {
                 .addValue(ReminderTime.FIXED_TIME, reminderTime.getFixedTime() != null ? Timestamp.valueOf(reminderTime.getFixedTime().toLocalDateTime()) : null)
                 .addValue(ReminderTime.DELAY_TIME, JodaTimeUtils.toPgInterval(reminderTime.getDelayTime()))
                 .addValue(ReminderTime.LAST_REMINDER_AT, reminderTime.getLastReminderAt() != null ? Timestamp.valueOf(reminderTime.getLastReminderAt().toLocalDateTime()) : null)
-                .addValue(ReminderTime.REMINDER_ID, reminderTime.getReminderId());
+                .addValue(ReminderTime.REMINDER_ID, reminderTime.getReminderId())
+                .addValue(ReminderTime.ITS_TIME, reminderTime.isItsTime());
     }
 
     private SqlParameterSource[] sqlParameterSources(List<ReminderTime> reminderTimes) {

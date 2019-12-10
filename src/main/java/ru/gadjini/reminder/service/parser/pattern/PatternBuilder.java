@@ -28,7 +28,11 @@ public class PatternBuilder {
 
     public static final String MINUTES = "minutes";
 
-    public static final String ONE_DAY = "oneday";
+    public static final String EVERY_DAY = "everyday";
+
+    public static final String EVERY_MINUTE = "everyminute";
+
+    public static final String EVERY_HOUR = "everyhour";
 
     public static final String DAY = "day";
 
@@ -79,15 +83,19 @@ public class PatternBuilder {
         String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
         String regexpTimeArticle = localisationService.getMessage(MessagesProperties.REGEXP_TIME_ARTICLE);
         String regexRepeat = localisationService.getMessage(MessagesProperties.REGEXP_REPEAT);
-        String regexpDay = localisationService.getMessage(MessagesProperties.REGEXP_DAY);
+        String regexpEveryDay = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_DAY);
+        String regexpEveryMinute = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_MINUTE);
+        String regexpEveryHour = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_HOUR);
         String regexpDays = localisationService.getMessage(MessagesProperties.REGEXP_DAYS);
         pattern.append("((((?<").append(MINUTES).append(">\\d+)").append(minutePrefix).append(")?( )?");
-        pattern.append("((?<").append(HOURS).append(">\\d+)").append(hourPrefix).append(")?( )?)|");
+        pattern.append("(((?<").append(HOURS).append(">\\d+)").append(hourPrefix).append(")|").append("(?<").append(EVERY_HOUR).append(">")
+                .append(regexpEveryHour).append("))?( )?)|(?<").append(EVERY_MINUTE).append(">").append(regexpEveryMinute).append(")|");
         pattern.append("(((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))( )?(").append(regexpTimeArticle).append(" )?((?<");
         pattern.append(DAY_OF_WEEK_WORD).append(">").append(getDayOfWeekPattern(locale));
-        pattern.append(")|((?<").append(ONE_DAY).append(">").append(regexpDay).append(")|((?<").append(DAYS).append(">\\d+)").append(regexpDays).append(")").append(")))) ").append(regexRepeat);
+        pattern.append(")|((?<").append(EVERY_DAY).append(">").append(regexpEveryDay)
+                .append(")|((?<").append(DAYS).append(">\\d+)").append(regexpDays).append(")").append(")))) ").append(regexRepeat);
 
-        return new GroupPattern(Pattern.compile(pattern.toString()), List.of(MINUTES, HOURS, HOUR, MINUTE, DAY_OF_WEEK_WORD, ONE_DAY, DAYS));
+        return new GroupPattern(Pattern.compile(pattern.toString()), List.of(MINUTES, HOURS, EVERY_HOUR, EVERY_MINUTE, HOUR, MINUTE, DAY_OF_WEEK_WORD, EVERY_DAY, DAYS));
     }
 
     public GroupPattern buildTimePattern(Locale locale) {
@@ -168,12 +176,13 @@ public class PatternBuilder {
 
     public static void main(String[] args) {
         Pattern pattern = Pattern.compile("(((?<minutes>\\d+мин)?( )?(?<hours>\\d+ч)?( )?)|(((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?((?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс)|((?<oneday>день)|(?<days>\\d+дня))))) кажд[а-я]{0,2}");
-        Pattern p = Pattern.compile(      "(((?<minutes>\\d+мин)?( )?(?<hours>\\d+ч)?( )?)|(((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?((?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс)|((?<oneday>день)|(?<days>\\d+дня))))) кажд[а-я]{0,2}");
-        String str = "каждый понедельник в 19:00";
+        Pattern p = Pattern.compile(      "((((?<minutes>\\d+)мин)?( )?(((?<hours>\\d+)ч)|(час))?( )?)|(?<everyminute>минуту)|(((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?((?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс)|((?<everyday>день)|((?<days>\\d+)дня))))) кажд[а-я]{0,2}");
+        String str = "Тест каждый час";
         String reverse = StringUtils.reverseDelimited(str, ' ');
         System.out.println(reverse);
-        Matcher matcher = pattern.matcher(reverse);
-        System.out.println(matcher.matches());
+        Matcher matcher = p.matcher(reverse);
+        System.out.println(matcher.find());
+        System.out.println(matcher.group(EVERY_HOUR));
 
     }
 }
