@@ -177,12 +177,11 @@ public class PatternBuilder {
     public static void main(String[] args) {
         Pattern pattern = Pattern.compile("(((?<minutes>\\d+мин)?( )?(?<hours>\\d+ч)?( )?)|(((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?((?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс)|((?<oneday>день)|(?<days>\\d+дня))))) кажд[а-я]{0,2}");
         Pattern p = Pattern.compile(      "((((?<minutes>\\d+)мин)?( )?(((?<hours>\\d+)ч)|(час))?( )?)|(?<everyminute>минуту)|(((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?((?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс)|((?<everyday>день)|((?<days>\\d+)дня))))) кажд[а-я]{0,2}");
-        String str = "Тест каждый час";
+        String str = "Тест каждый час 30мин";
         String reverse = StringUtils.reverseDelimited(str, ' ');
         System.out.println(reverse);
         Matcher matcher = p.matcher(reverse);
         System.out.println(matcher.find());
-        System.out.println(matcher.group(EVERY_HOUR));
 
     }
 }

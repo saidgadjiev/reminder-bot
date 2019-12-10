@@ -75,6 +75,9 @@ public class ReminderRequestLexer {
             if (repeatTimeValues.containsKey(PatternBuilder.HOURS)) {
                 lexems.add(new ReminderLexem(ReminderToken.HOURS, repeatTimeValues.get(PatternBuilder.HOURS)));
             }
+            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_HOUR)) {
+                lexems.add(new ReminderLexem(ReminderToken.EVERY_HOUR, repeatTimeValues.get(PatternBuilder.EVERY_HOUR)));
+            }
             if (repeatTimeValues.containsKey(PatternBuilder.MINUTES)) {
                 lexems.add(new ReminderLexem(ReminderToken.MINUTES, repeatTimeValues.get(PatternBuilder.MINUTES)));
             }
@@ -86,9 +89,6 @@ public class ReminderRequestLexer {
             }
             if (repeatTimeValues.containsKey(PatternBuilder.EVERY_MINUTE)) {
                 lexems.add(new ReminderLexem(ReminderToken.EVERY_MINUTE, repeatTimeValues.get(PatternBuilder.EVERY_MINUTE)));
-            }
-            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_HOUR)) {
-                lexems.add(new ReminderLexem(ReminderToken.EVERY_HOUR, repeatTimeValues.get(PatternBuilder.EVERY_HOUR)));
             }
             if (repeatTimeValues.containsKey(PatternBuilder.DAYS)) {
                 lexems.add(new ReminderLexem(ReminderToken.DAYS, repeatTimeValues.get(PatternBuilder.DAYS)));
