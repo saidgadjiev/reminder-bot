@@ -11,9 +11,9 @@ public class RepeatTime {
 
     public static final String WEEK_DAY = "week_day";
 
-    public static final String TIME = "t";
+    public static final String TIME = "rt_time";
 
-    public static final String INTERVAL = "i";
+    public static final String INTERVAL = "rt_interval";
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 

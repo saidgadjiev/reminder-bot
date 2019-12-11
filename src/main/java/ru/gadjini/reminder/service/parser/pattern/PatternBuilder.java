@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.service.parser.pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -14,7 +13,6 @@ import java.time.format.TextStyle;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -90,7 +88,7 @@ public class PatternBuilder {
         pattern.append("((((?<").append(MINUTES).append(">\\d+)").append(minutePrefix).append(")?( )?");
         pattern.append("(((?<").append(HOURS).append(">\\d+)").append(hourPrefix).append(")|").append("(?<").append(EVERY_HOUR).append(">")
                 .append(regexpEveryHour).append("))?( )?)|(?<").append(EVERY_MINUTE).append(">").append(regexpEveryMinute).append(")|");
-        pattern.append("(((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))( )?(").append(regexpTimeArticle).append(" )?((?<");
+        pattern.append("(((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))?( )?(").append(regexpTimeArticle).append(" )?((?<");
         pattern.append(DAY_OF_WEEK_WORD).append(">").append(getDayOfWeekPattern(locale));
         pattern.append(")|((?<").append(EVERY_DAY).append(">").append(regexpEveryDay)
                 .append(")|((?<").append(DAYS).append(">\\d+)").append(regexpDays).append(")").append(")))) ").append(regexRepeat);
@@ -104,7 +102,7 @@ public class PatternBuilder {
         String regexpNextWeek = localisationService.getMessage(MessagesProperties.REGEXP_NEXT_WEEK);
         StringBuilder patternBuilder = new StringBuilder();
 
-        patternBuilder.append("((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))( )?(")
+        patternBuilder.append("((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))?( )?(")
                 .append(regexpTimeArticle)
                 .append(" )?((?<").append(DAY_OF_WEEK_WORD).append(">")
                 .append(getDayOfWeekPattern(locale))
@@ -172,16 +170,5 @@ public class PatternBuilder {
         }
 
         return pattern.substring(0, pattern.length() - 1);
-    }
-
-    public static void main(String[] args) {
-        Pattern pattern = Pattern.compile("(((?<minutes>\\d+мин)?( )?(?<hours>\\d+ч)?( )?)|(((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?((?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс)|((?<oneday>день)|(?<days>\\d+дня))))) кажд[а-я]{0,2}");
-        Pattern p = Pattern.compile(      "((((?<minutes>\\d+)мин)?( )?(((?<hours>\\d+)ч)|(час))?( )?)|(?<everyminute>минуту)|(((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?((?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс)|((?<everyday>день)|((?<days>\\d+)дня))))) кажд[а-я]{0,2}");
-        String str = "Тест каждый час 30мин";
-        String reverse = StringUtils.reverseDelimited(str, ' ');
-        System.out.println(reverse);
-        Matcher matcher = p.matcher(reverse);
-        System.out.println(matcher.find());
-
     }
 }

@@ -61,6 +61,7 @@ public class ReminderDao {
         return namedParameterJdbcTemplate.query(
                 "SELECT r.*,\n" +
                         "       (r.repeat_remind_at).*,\n" +
+                        "       (r.remind_at).*,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.first_name                                    AS rc_first_name,\n" +
                         "       rc.last_name                                     AS rc_last_name,\n" +
@@ -87,6 +88,7 @@ public class ReminderDao {
                         "       r.creator_id,\n" +
                         "       r.receiver_id,\n" +
                         "       r.remind_at,\n" +
+                        "       (r.remind_at).*,\n" +
                         "       r.initial_remind_at,\n" +
                         "       r.note,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
@@ -105,6 +107,7 @@ public class ReminderDao {
                         "       r.creator_id,\n" +
                         "       r.receiver_id,\n" +
                         "       r.remind_at,\n" +
+                        "       (r.remind_at).*,\n" +
                         "       r.initial_remind_at,\n" +
                         "       r.note,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
@@ -162,6 +165,7 @@ public class ReminderDao {
         namedParameterJdbcTemplate.query(
                 "SELECT r.*,\n" +
                         "       (r.repeat_remind_at).*,\n" +
+                        "       (r.remind_at).*,\n" +
                         "       rm.message_id                                    as rm_message_id,\n" +
                         "       rt.id as rt_id,\n" +
                         "       rc.chat_id                                       as rc_chat_id,\n" +
@@ -262,6 +266,7 @@ public class ReminderDao {
                         ")\n" +
                         "SELECT r.*,\n" +
                         "       (r.repeat_remind_at).*,\n" +
+                        "       (r.remind_at).*,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.chat_id                                       AS rc_chat_id\n" +
                         "FROM r\n" +
@@ -402,7 +407,7 @@ public class ReminderDao {
 
     private SelectSelectStep<Record> buildSelect(ReminderMapping reminderMapping) {
         ReminderTable reminder = ReminderTable.TABLE.as("r");
-        SelectSelectStep<Record> select = dslContext.select(reminder.asterisk(), DSL.field("(r.repeat_remind_at).*"));
+        SelectSelectStep<Record> select = dslContext.select(reminder.asterisk(), DSL.field("(r.repeat_remind_at).*"), DSL.field("(r.remind_at).*"));
 
         SelectJoinStep<Record> from = select.from(reminder);
         if (reminderMapping.getRemindMessageMapping() != null) {

@@ -10,11 +10,11 @@ import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderToken;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import ru.gadjini.reminder.service.parser.time.parser.TimeParser;
+import ru.gadjini.reminder.time.DateTime;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -23,7 +23,7 @@ public class ReminderRequestParser {
 
     private ParsedRequest parsedRequest = new ParsedRequest();
 
-    private ZonedDateTime parsedTime = null;
+    private DateTime parsedTime = null;
 
     private RepeatTime repeatTime = null;
 
@@ -59,7 +59,7 @@ public class ReminderRequestParser {
         return parsedRequest;
     }
 
-    public ZonedDateTime parseTime(List<BaseLexem> lexems) {
+    public DateTime parseTime(List<BaseLexem> lexems) {
         consumeFullTime(lexems);
 
         if (parsedTime == null) {

@@ -51,7 +51,7 @@ public class ValidationService {
     }
 
     public void validateFriendReminderRequest(ParsedRequest parsedRequest) {
-        validateIsNotPastTime(parsedRequest.getParsedTime());
+        validateIsNotPastTime(parsedRequest.getParsedTime().toZonedDateTime());
 
         if (StringUtils.isNotBlank(parsedRequest.getReceiverName())) {
             ErrorBag errorBag = new ErrorBag();

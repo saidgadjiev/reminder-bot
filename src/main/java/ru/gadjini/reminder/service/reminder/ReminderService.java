@@ -16,6 +16,7 @@ import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeAI;
 import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
 import ru.gadjini.reminder.service.security.SecurityService;
+import ru.gadjini.reminder.time.DateTime;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -49,7 +50,7 @@ public class ReminderService {
     @Transactional
     public Reminder createReminder(Reminder reminder) {
         Reminder created = reminderDao.create(reminder);
-        List<ReminderTime> reminderTimes = getReminderTimes(reminder.getRemindAtInReceiverTimeZone());
+        List<ReminderTime> reminderTimes = getReminderTimes(reminder.getRemindAtInReceiverZone());
         reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(created.getId()));
         reminderTimeService.create(reminderTimes);
 
@@ -76,7 +77,6 @@ public class ReminderService {
         Reminder reminder = new Reminder();
 
         reminder.setId(reminderId);
-        reminder.setRemindAtInReceiverTimeZone(remindAtInReceiverTimeZone);
         reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
         reminder.setReceiver(new TgUser() {{
             setZoneId(remindAtInReceiverTimeZone.getZone().getId());
@@ -231,10 +231,9 @@ public class ReminderService {
                 null
         );
         Reminder reminder = new Reminder();
-        reminder.setRemindAt(remindAt);
-        reminder.setRemindAtInReceiverTimeZone(remindAtInReceiverTimeZone);
+        reminder.setRemindAt(new DateTime(remindAt));
 
-        List<ReminderTime> reminderTimes = getReminderTimes(remindAt);
+        List<ReminderTime> reminderTimes = getReminderTimes(reminder.getRemindAt().toZonedDateTime());
         reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(reminderId));
         reminderTimeService.deleteReminderTimes(reminderId);
         reminderTimeService.create(reminderTimes);

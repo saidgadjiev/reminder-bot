@@ -173,8 +173,8 @@ public class ReminderMessageSender {
             String message = messageBuilder.getReminderTimeChanged(
                     oldReminder.getText(),
                     oldReminder.getCreator(),
-                    oldReminder.getRemindAtInReceiverTimeZone(),
-                    updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone()
+                    oldReminder.getRemindAtInReceiverZone(),
+                    updateReminderResult.getNewReminder().getRemindAtInReceiverZone()
             );
             messageService.sendMessage(oldReminder.getReceiver().getChatId(), message, null);
         }
@@ -193,7 +193,7 @@ public class ReminderMessageSender {
                     remindMessage.getMessageId(),
                     messageBuilder.getReminderPostponedForReceiver(
                             reminder.getText(),
-                            updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone()
+                            updateReminderResult.getNewReminder().getRemindAtInReceiverZone()
                     ) + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED),
                     keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)
             );
@@ -204,7 +204,7 @@ public class ReminderMessageSender {
             messageBuilder.append(this.messageBuilder.getReminderPostponedForCreator(
                     reminder.getText(),
                     reminder.getReceiver(),
-                    updateReminderResult.getNewReminder().getRemindAtInReceiverTimeZone()
+                    updateReminderResult.getNewReminder().getRemindAtInReceiverZone()
             ));
 
             if (StringUtils.isNotBlank(reason)) {
@@ -438,7 +438,7 @@ public class ReminderMessageSender {
 
     public void sendReminderNoteChanged(Reminder reminder, int messageId, ReplyKeyboard replyKeyboard) {
         if (!reminder.isMySelf()) {
-            String text = messageBuilder.getReminderNoteChangedForReceiver(reminder.getText(), reminder.getNote(), reminder.getCreator(), reminder.getRemindAtInReceiverTimeZone());
+            String text = messageBuilder.getReminderNoteChangedForReceiver(reminder.getText(), reminder.getNote(), reminder.getCreator(), reminder.getRemindAtInReceiverZone());
 
             messageService.sendMessage(reminder.getReceiver().getChatId(), text, null);
         }
@@ -454,7 +454,7 @@ public class ReminderMessageSender {
 
     public void sendReminderNoteDeleted(String queryId, int messageId, Reminder reminder) {
         if (!reminder.isMySelf()) {
-            String text = messageBuilder.getReminderNoteDeletedForReceiver(reminder.getText(), reminder.getCreator(), reminder.getRemindAtInReceiverTimeZone());
+            String text = messageBuilder.getReminderNoteDeletedForReceiver(reminder.getText(), reminder.getCreator(), reminder.getRemindAtInReceiverZone());
 
             messageService.sendMessage(reminder.getReceiver().getChatId(), text, null);
         }

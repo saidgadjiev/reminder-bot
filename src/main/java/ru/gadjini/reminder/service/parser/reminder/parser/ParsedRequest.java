@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.service.parser.reminder.parser;
 
 import ru.gadjini.reminder.domain.RepeatTime;
+import ru.gadjini.reminder.time.DateTime;
 
 import java.time.ZonedDateTime;
 
@@ -12,7 +13,7 @@ public class ParsedRequest {
 
     private String note;
 
-    private ZonedDateTime parsedTime;
+    private DateTime parsedTime;
 
     private RepeatTime repeatTime;
 
@@ -32,11 +33,11 @@ public class ParsedRequest {
         this.text = text;
     }
 
-    public ZonedDateTime getParsedTime() {
+    public DateTime getParsedTime() {
         return parsedTime;
     }
 
-    void setParsedTime(ZonedDateTime parsedTime) {
+    void setParsedTime(DateTime parsedTime) {
         this.parsedTime = parsedTime;
     }
 

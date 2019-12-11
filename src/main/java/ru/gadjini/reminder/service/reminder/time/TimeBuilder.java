@@ -93,7 +93,7 @@ public class TimeBuilder {
         if (reminder.isRepeatable()) {
             return time(reminder.getRepeatRemindAt());
         } else {
-            return time(reminder.getRemindAtInReceiverTimeZone());
+            return time(reminder.getRemindAtInReceiverZone());
         }
     }
 

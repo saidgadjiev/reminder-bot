@@ -13,13 +13,13 @@ import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.UpdateReminderResult;
-import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.TgUserService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;
 import ru.gadjini.reminder.service.parser.reminder.parser.ParsedRequest;
+import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.validation.ValidationService;
 import ru.gadjini.reminder.util.ReminderUtils;
 
@@ -73,7 +73,7 @@ public class ReminderRequestService {
         if (reminderRequest.isRepeatReminder()) {
             return createRepeatReminder(reminderRequest);
         } else {
-            validationService.validateIsNotPastTime(reminderRequest.getParsedTime());
+            validationService.validateIsNotPastTime(reminderRequest.getParsedTime().toZonedDateTime());
             if (StringUtils.isNotBlank(reminderRequest.getReceiverName())) {
                 User user = securityService.getAuthenticatedUser();
                 validationService.checkFriendShip(user.getId(), reminderRequest.getReceiverName());
@@ -90,7 +90,7 @@ public class ReminderRequestService {
         ParsedCustomRemind customRemind = parsedCustomRemind(text);
         ZonedDateTime remindTime = ReminderUtils.buildCustomRemindTime(
                 customRemind,
-                reminder.getRemindAtInReceiverTimeZone(),
+                reminder.getRemindAtInReceiverZone(),
                 reminder.getReceiver().getZoneId()
         );
 
@@ -125,25 +125,8 @@ public class ReminderRequestService {
         return oldReminder;
     }
 
-    public UpdateReminderResult postponeReminder(int reminderId, String posponeText) {
-        Reminder oldReminder = reminderService.getReminder(reminderId, new ReminderMapping() {{
-            setRemindMessageMapping(new Mapping());
-            setCreatorMapping(new Mapping() {{
-                setFields(List.of(ReminderMapping.CR_CHAT_ID));
-            }});
-            setReceiverMapping(new Mapping());
-        }});
-        oldReminder.getReceiver().setFrom(securityService.getAuthenticatedUser());
-
-        ParsedPostponeTime parsedPostponeTime = parsePostponeTime(posponeText, oldReminder.getRemindAtInReceiverTimeZone().getZone());
-        ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedPostponeTime, oldReminder.getRemindAtInReceiverTimeZone());
-        validationService.validateIsNotPastTime(remindAtInReceiverTimeZone);
-
-        return new UpdateReminderResult(oldReminder, reminderService.postponeReminder(reminderId, remindAtInReceiverTimeZone));
-    }
-
     public UpdateReminderResult postponeReminder(Reminder reminder, ParsedPostponeTime parsedPostponeTime) {
-        ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedPostponeTime, reminder.getRemindAtInReceiverTimeZone());
+        ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedPostponeTime, reminder.getRemindAtInReceiverZone());
         validationService.validateIsNotPastTime(remindAtInReceiverTimeZone);
 
         return new UpdateReminderResult(reminder, reminderService.postponeReminder(reminder.getId(), remindAtInReceiverTimeZone));
@@ -180,7 +163,6 @@ public class ReminderRequestService {
         Reminder reminder = new Reminder();
         reminder.setRemindAt(reminderRequest.getParsedTime().withZoneSameInstant(ZoneOffset.UTC));
         reminder.setInitialRemindAt(reminder.getRemindAt());
-        reminder.setRemindAtInReceiverTimeZone(reminderRequest.getParsedTime());
         reminder.setText(reminderRequest.getText());
         reminder.setNote(reminderRequest.getNote());
 

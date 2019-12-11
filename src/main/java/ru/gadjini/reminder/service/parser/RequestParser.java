@@ -64,7 +64,7 @@ public class RequestParser {
     public ZonedDateTime parseTime(String time, ZoneId zoneId) {
         List<BaseLexem> lexems = new ReminderRequestLexer(reminderRequestLexerConfig, timeLexerConfig, time).tokenizeTime();
 
-        return new ReminderRequestParser(localisationService, Locale.getDefault(), zoneId, dayOfWeekService).parseTime(lexems);
+        return new ReminderRequestParser(localisationService, Locale.getDefault(), zoneId, dayOfWeekService).parseTime(lexems).toZonedDateTime();
     }
 
     public ParsedPostponeTime parsePostponeTime(String time, ZoneId zoneId) {

@@ -12,6 +12,7 @@ import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeAI;
 import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
+import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
 
@@ -45,8 +46,7 @@ public class RepeatReminderService {
     public Reminder createReminder(Reminder reminder) {
         ZoneId zoneId = userService.getTimeZone(reminder.getReceiverId());
         ZonedDateTime nextRemindAtInReceiverZone = getFirstRemindAt(zoneId, reminder.getRepeatRemindAt());
-        reminder.setRemindAtInReceiverTimeZone(nextRemindAtInReceiverZone);
-        reminder.setRemindAt(nextRemindAtInReceiverZone.withZoneSameInstant(ZoneOffset.UTC));
+        reminder.setRemindAt(new DateTime(nextRemindAtInReceiverZone.withZoneSameInstant(ZoneOffset.UTC)));
 
         Reminder created = reminderDao.create(reminder);
         List<ReminderTime> reminderTimes = getRepeatReminderTimes(reminder.getRepeatRemindAt(), zoneId);

@@ -12,6 +12,7 @@ import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.RestoreReminderService;
 import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
+import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
 
@@ -83,7 +84,11 @@ public class ReminderJob {
     }
 
     private void sendRepeatableReminderRestored(Reminder reminder) {
-        reminderMessageSender.sendRemindMessage(reminder, reminder.getReminderTimes().stream().anyMatch(ReminderTime::isItsTime), reminder.getRemindAtInReceiverTimeZone());
+        reminderMessageSender.sendRemindMessage(
+                reminder,
+                reminder.getReminderTimes().stream().anyMatch(ReminderTime::isItsTime),
+                reminder.getRemindAtInReceiverZone()
+        );
     }
 
     private void sendReminder(Reminder reminder) {
@@ -119,12 +124,12 @@ public class ReminderJob {
     }
 
     private void sendRepeatReminderTimeForRepeatableReminder(Reminder reminder, ReminderTime reminderTime) {
-        ZonedDateTime nextRemindAt = reminder.getRemindAt();
+        ZonedDateTime nextRemindAt = reminder.getZonedRemindAt();
 
         if (reminderTime.isItsTime()) {
-            nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
+            nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getZonedRemindAt(), reminder.getRepeatRemindAt());
             repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
-            reminder.setRemindAt(nextRemindAt);
+            reminder.setRemindAt(new DateTime(nextRemindAt));
         }
 
         reminderMessageSender.sendRemindMessage(reminder, reminderTime.isItsTime(), nextRemindAt);

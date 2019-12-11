@@ -10,12 +10,17 @@ CREATE TABLE IF NOT EXISTS tg_user
     UNIQUE (user_id, chat_id)
 );
 
+CREATE TYPE datetime AS (
+    dt_date date,
+    dt_time time
+    );
+
 CREATE TYPE day_of_week AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
 
 CREATE TYPE repeat_time AS (
     week_day day_of_week,
-    t time,
-    i INTERVAL
+    rt_time time,
+    rt_interval INTERVAL
     );
 
 CREATE TABLE IF NOT EXISTS reminder

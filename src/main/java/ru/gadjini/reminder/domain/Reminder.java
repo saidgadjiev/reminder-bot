@@ -1,5 +1,8 @@
 package ru.gadjini.reminder.domain;
 
+import ru.gadjini.reminder.time.DateTime;
+
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +41,9 @@ public class Reminder {
 
     private TgUser receiver;
 
-    private ZonedDateTime remindAt;
+    private DateTime remindAt;
 
-    private ZonedDateTime remindAtInReceiverTimeZone;
-
-    private ZonedDateTime initialRemindAt;
+    private DateTime initialRemindAt;
 
     private List<ReminderTime> reminderTimes = new ArrayList<>();
 
@@ -62,11 +63,23 @@ public class Reminder {
         this.id = id;
     }
 
-    public ZonedDateTime getRemindAt() {
+    public DateTime getRemindAt() {
         return remindAt;
     }
 
-    public void setRemindAt(ZonedDateTime remindAt) {
+    public ZonedDateTime getZonedRemindAt() {
+        return remindAt.toZonedDateTime();
+    }
+
+    public ZonedDateTime getZonedRemindAt(ZoneId zoneId) {
+        return remindAt.toZonedDateTime(zoneId);
+    }
+
+    public ZonedDateTime getRemindAtInReceiverZone() {
+        return remindAt.toZonedDateTime(receiver.getZoneId());
+    }
+
+    public void setRemindAt(DateTime remindAt) {
         this.remindAt = remindAt;
     }
 
@@ -106,6 +119,10 @@ public class Reminder {
         return receiver;
     }
 
+    public ZoneId getReceiverZoneId() {
+        return receiver.getZoneId();
+    }
+
     public void setReceiver(TgUser receiver) {
         this.receiver = receiver;
     }
@@ -118,14 +135,6 @@ public class Reminder {
         return creator;
     }
 
-    public ZonedDateTime getRemindAtInReceiverTimeZone() {
-        return remindAtInReceiverTimeZone;
-    }
-
-    public void setRemindAtInReceiverTimeZone(ZonedDateTime remindAtInReceiverTimeZone) {
-        this.remindAtInReceiverTimeZone = remindAtInReceiverTimeZone;
-    }
-
     public RemindMessage getRemindMessage() {
         return remindMessage;
     }
@@ -134,11 +143,11 @@ public class Reminder {
         this.remindMessage = remindMessage;
     }
 
-    public ZonedDateTime getInitialRemindAt() {
+    public DateTime getInitialRemindAt() {
         return initialRemindAt;
     }
 
-    public void setInitialRemindAt(ZonedDateTime initialRemindAt) {
+    public void setInitialRemindAt(DateTime initialRemindAt) {
         this.initialRemindAt = initialRemindAt;
     }
 

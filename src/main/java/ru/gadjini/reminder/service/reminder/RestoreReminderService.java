@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
+import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
 
@@ -48,10 +49,9 @@ public class RestoreReminderService {
                 reminderTimeService.deleteReminderTime(reminderTime.getId());
             } else {
                 if (reminderTime.isItsTime()) {
-                    ZonedDateTime nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
+                    ZonedDateTime nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt().toZonedDateTime(), reminder.getRepeatRemindAt());
                     repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
-                    reminder.setRemindAt(nextRemindAt);
-                    reminder.setRemindAtInReceiverTimeZone(nextRemindAt.withZoneSameInstant(reminder.getReceiver().getZoneId()));
+                    reminder.setRemindAt(new DateTime(nextRemindAt));
                 }
                 ZonedDateTime restoredLastRemindAt = getNextLastRemindAt(reminderTime.getLastReminderAt(), reminderTime.getDelayTime());
                 reminderTimeService.updateLastRemindAt(reminderTime.getId(), restoredLastRemindAt.toLocalDateTime());

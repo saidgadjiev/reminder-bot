@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.*;
 import ru.gadjini.reminder.domain.mapping.FriendshipMapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
+import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 
 import java.sql.ResultSet;
@@ -13,7 +14,6 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -60,11 +60,10 @@ public class ResultSetMapper {
             }
             reminder.setRepeatRemindAt(repeatTime);
         }
-        reminder.setRemindAt(ZonedDateTime.of(rs.getTimestamp(Reminder.REMIND_AT).toLocalDateTime(), ZoneOffset.UTC));
+        reminder.setRemindAt(mapDateTime(rs));
 
         if (reminderMapping.getReceiverMapping() != null) {
             String zoneId = rs.getString("rc_zone_id");
-            reminder.setRemindAtInReceiverTimeZone(reminder.getRemindAt().withZoneSameInstant(ZoneId.of(zoneId)));
             TgUser rc = new TgUser();
 
             rc.setZoneId(zoneId);
@@ -151,5 +150,13 @@ public class ResultSetMapper {
         friendship.setUserTwo(userTwo);
 
         return friendship;
+    }
+
+    private DateTime mapDateTime(ResultSet rs) throws SQLException {
+        Time time = rs.getTime(DateTime.TIME);
+
+        return new DateTime(ZoneOffset.UTC)
+                .date(rs.getDate(DateTime.DATE).toLocalDate())
+                .time(time == null ? null : time.toLocalTime());
     }
 }

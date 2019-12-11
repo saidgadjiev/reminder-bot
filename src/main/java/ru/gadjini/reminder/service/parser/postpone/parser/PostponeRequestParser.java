@@ -8,9 +8,9 @@ import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.postpone.lexer.PostponeToken;
 import ru.gadjini.reminder.service.parser.time.parser.TimeParser;
+import ru.gadjini.reminder.time.DateTime;
 
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,8 +39,8 @@ public class PostponeRequestParser {
             postponeTime.setPostponeOn(new PostponeOn());
             consumeTypeOn(lexems);
         } else if (type.equals(typeAt)) {
-            ZonedDateTime parsedTime = timeParser.parseTime(lexems);
-            postponeTime.setPostponeAt(parsedTime);
+            DateTime parsedTime = timeParser.parseTime(lexems);
+            postponeTime.setPostponeAt(parsedTime.toZonedDateTime());
         } else {
             throw new ParseException();
         }

@@ -31,7 +31,7 @@ public class MessageBuilder {
         StringBuilder result = new StringBuilder();
         String text = reminder.getText();
         RepeatTime repeatTime = reminder.getRepeatRemindAt();
-        ZonedDateTime remindAt = reminder.getRemindAtInReceiverTimeZone();
+        ZonedDateTime remindAt = reminder.getRemindAtInReceiverZone();
         String note = reminder.getNote();
 
         result.append(text).append(" ");
@@ -56,7 +56,7 @@ public class MessageBuilder {
         StringBuilder result = new StringBuilder();
 
         result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_RECEIVER, new Object[]{
-                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverTimeZone()),
+                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverZone()),
                 UserUtils.userLink(reminder.getCreator())
         }));
 
@@ -73,7 +73,7 @@ public class MessageBuilder {
         StringBuilder result = new StringBuilder();
 
         result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_CREATOR, new Object[]{
-                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverTimeZone()),
+                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverZone()),
                 UserUtils.userLink(reminder.getReceiver())
         }));
 
@@ -94,7 +94,7 @@ public class MessageBuilder {
         }));
 
         if (reminder.getRepeatRemindAt() != null) {
-            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAtInReceiverTimeZone())}));
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAtInReceiverZone())}));
         }
 
         if (StringUtils.isNotBlank(reminder.getNote())) {
@@ -112,7 +112,7 @@ public class MessageBuilder {
         StringBuilder result = new StringBuilder();
 
         result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND, new Object[]{
-                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverTimeZone()),
+                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverZone()),
                 UserUtils.userLink(reminder.getCreator())
         }));
 
@@ -178,7 +178,7 @@ public class MessageBuilder {
             if (reminder.getRepeatRemindAt() != null) {
                 text
                         .append(" ".repeat(number.length() + 2))
-                        .append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAtInReceiverTimeZone())})).append("\n");
+                        .append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(reminder.getRemindAtInReceiverZone())})).append("\n");
             }
 
             if (reminder.getReceiverId() != reminder.getCreatorId()) {
@@ -232,7 +232,7 @@ public class MessageBuilder {
         }));
 
         if (reminder.isRepeatable()) {
-            String nextRemindAt = getNextRemindAt(reminder.getRemindAtInReceiverTimeZone());
+            String nextRemindAt = getNextRemindAt(reminder.getRemindAtInReceiverZone());
             result.append("\n").append(nextRemindAt);
         }
 
