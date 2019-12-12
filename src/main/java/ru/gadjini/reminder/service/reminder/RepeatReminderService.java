@@ -232,7 +232,7 @@ public class RepeatReminderService {
     private void addDailyReminderTimesWithoutTime(RepeatTime repeatTime, ZoneId zoneId, List<ReminderTime> reminderTimes) {
         LocalDate repeatReminder = LocalDate.now(zoneId);
 
-        if (repeatTime.getInterval().getDays() > 1) {
+        if (reminderTimeAI.isNeedCreateNightBeforeReminderTime(repeatTime.getInterval())) {
             fixedReminderTime(repeatReminder.minusDays(1), zoneId, repeatTime.getInterval().getDays(), LocalTime.of(22, 0), reminderTimes);
         }
         LocalTime now = LocalTime.now(zoneId);

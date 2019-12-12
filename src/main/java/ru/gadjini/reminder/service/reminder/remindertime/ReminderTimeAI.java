@@ -26,6 +26,10 @@ public class ReminderTimeAI {
         return remindAt.getDayOfMonth() > now.getDayOfMonth();
     }
 
+    public boolean isNeedCreateNightBeforeReminderTime(Period period) {
+        return period.getDays() > 1;
+    }
+
     public boolean isNeedCreateNightBeforeReminderTime(LocalDate remindAt, ZoneId zoneId) {
         LocalDate now = LocalDate.now(zoneId);
 
