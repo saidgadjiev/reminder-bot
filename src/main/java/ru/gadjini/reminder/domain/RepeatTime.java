@@ -23,15 +23,6 @@ public class RepeatTime {
 
     private Period interval;
 
-    public RepeatTime() {
-    }
-
-    public RepeatTime(DayOfWeek dayOfWeek, LocalTime time, Period interval) {
-        this.dayOfWeek = dayOfWeek;
-        this.time = time;
-        this.interval = interval;
-    }
-
     public DayOfWeek getDayOfWeek() {
         return dayOfWeek;
     }
@@ -54,6 +45,14 @@ public class RepeatTime {
 
     public void setInterval(Period interval) {
         this.interval = interval;
+    }
+
+    public boolean hasDayOfWeek() {
+        return dayOfWeek != null;
+    }
+
+    public boolean hasTime() {
+        return time != null;
     }
 
     public String sql() {

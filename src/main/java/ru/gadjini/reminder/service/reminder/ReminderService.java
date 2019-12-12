@@ -19,10 +19,7 @@ import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -231,7 +228,7 @@ public class ReminderService {
                 null
         );
         Reminder reminder = new Reminder();
-        reminder.setRemindAt(new DateTime(remindAt));
+        reminder.setRemindAt(DateTime.of(remindAt));
 
         List<ReminderTime> reminderTimes = getReminderTimes(reminder.getRemindAt().toZonedDateTime());
         reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(reminderId));
@@ -272,74 +269,63 @@ public class ReminderService {
         return remindTime;
     }
 
-    private List<ReminderTime> getReminderTimes(ZonedDateTime remindAt) {
+    private List<ReminderTime> getReminderTimes(DateTime dateTime) {
+        if (dateTime.isDateOnly()) {
+            return getReminderTimesWithoutTime(dateTime.date(), dateTime.getZone());
+        }
+
+        return getReminderTimes(dateTime.toZonedDateTime());
+    }
+
+    private List<ReminderTime> getReminderTimesWithoutTime(LocalDate localDate, ZoneId zoneId) {
         List<ReminderTime> reminderTimes = new ArrayList<>();
 
-        if (reminderTimeAI.isNeedCreateNightBeforeReminderTime(remindAt)) {
-            addNightBeforeReminderTime(remindAt, reminderTimes);
+        if (reminderTimeAI.isNeedCreateNightBeforeReminderTime(localDate, zoneId)) {
+            fixedReminderTime(localDate.minusDays(1), LocalTime.of(22, 0), zoneId, reminderTimes);
         }
-        if (reminderTimeAI.isNeedCreateReminderTime(remindAt, 120)) {
-            addFixedTime(remindAt, 2, reminderTimes);
+        if (reminderTimeAI.isNeedCreateReminderTime(localDate, LocalTime.of(12, 0), zoneId)) {
+            fixedReminderTime(localDate, LocalTime.of(12, 0), zoneId, reminderTimes);
         }
-        if (reminderTimeAI.isNeedCreateReminderTime(remindAt, 60)) {
-            addFixedTime(remindAt, 1, reminderTimes);
+        if (reminderTimeAI.isNeedCreateReminderTime(localDate, LocalTime.of(22, 0), zoneId)) {
+            fixedReminderTime(localDate, LocalTime.of(22, 0), zoneId, reminderTimes);
         }
-        if (reminderTimeAI.isNeedCreateReminderTime(remindAt, 20)) {
-            addDelayTime(remindAt, 20, reminderTimes);
-        }
-        addItsTimeFixedTime(remindAt, reminderTimes);
 
         return reminderTimes;
     }
 
-    private void addItsTimeFixedTime(ZonedDateTime remindAt, List<ReminderTime> reminderTimes) {
-        ReminderTime itsTimeFixedTime = new ReminderTime();
-        itsTimeFixedTime.setType(ReminderTime.Type.ONCE);
-        itsTimeFixedTime.setFixedTime(remindAt.withZoneSameInstant(ZoneOffset.UTC));
-        itsTimeFixedTime.setItsTime(true);
-        reminderTimes.add(itsTimeFixedTime);
+    private List<ReminderTime> getReminderTimes(ZonedDateTime remindAt) {
+        List<ReminderTime> reminderTimes = new ArrayList<>();
+
+        if (reminderTimeAI.isNeedCreateNightBeforeReminderTime(remindAt)) {
+            fixedReminderTime(remindAt.toLocalDate().minusDays(1), LocalTime.of(22, 0), remindAt.getZone(), reminderTimes);
+        }
+        if (reminderTimeAI.isNeedCreateReminderTime(remindAt, 120)) {
+            fixedReminderTime(remindAt.toLocalDate(), remindAt.toLocalTime().minusHours(2), remindAt.getZone(), reminderTimes);
+        }
+        if (reminderTimeAI.isNeedCreateReminderTime(remindAt, 60)) {
+            fixedReminderTime(remindAt.toLocalDate(), remindAt.toLocalTime().minusHours(1), remindAt.getZone(), reminderTimes);
+        }
+        if (reminderTimeAI.isNeedCreateReminderTime(remindAt, 20)) {
+            fixedReminderTime(remindAt.toLocalDate(), remindAt.toLocalTime().minusMinutes(20), remindAt.getZone(), reminderTimes);
+        }
+        addDelayTime(remindAt, 20, reminderTimes);
+        fixedReminderTime(remindAt.toLocalDate(), remindAt.toLocalTime(), remindAt.getZone(), reminderTimes).setItsTime(true);
+
+        return reminderTimes;
     }
 
-    private void addFixedTime(ZonedDateTime remindAt, int hour, List<ReminderTime> reminderTimes) {
-        ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
+    private ReminderTime fixedReminderTime(LocalDate date, LocalTime time, ZoneId zoneId, List<ReminderTime> reminderTimes) {
+        ReminderTime fixedTime = ReminderTime.onceTime();
+        fixedTime.setFixedTime(ZonedDateTime.of(date, time, zoneId).withZoneSameInstant(ZoneOffset.UTC));
+        reminderTimes.add(fixedTime);
 
-        if (remindAt.minusHours(hour).isAfter(now)) {
-            ReminderTime oneHourFixedTime = new ReminderTime();
-            oneHourFixedTime.setType(ReminderTime.Type.ONCE);
-            oneHourFixedTime.setFixedTime(remindAt.minusHours(hour).withZoneSameInstant(ZoneOffset.UTC));
-            reminderTimes.add(oneHourFixedTime);
-        }
+        return fixedTime;
     }
 
     private void addDelayTime(ZonedDateTime remindAt, int delayMinute, List<ReminderTime> reminderTimes) {
-        ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
-
-        ReminderTime delayTime = new ReminderTime();
-        delayTime.setType(ReminderTime.Type.REPEAT);
+        ReminderTime delayTime = ReminderTime.repeatTime();
         delayTime.setDelayTime(new Period().withMinutes(delayMinute));
-        if (remindAt.minusMinutes(delayMinute).isBefore(now)) {
-            delayTime.setLastReminderAt(remindAt.withZoneSameInstant(ZoneOffset.UTC));
-        }
+        delayTime.setLastReminderAt(remindAt.withZoneSameInstant(ZoneOffset.UTC));
         reminderTimes.add(delayTime);
-    }
-
-    private void addNightBeforeReminderTime(ZonedDateTime remindAt, List<ReminderTime> reminderTimes) {
-        ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
-
-        if (remindAt.getDayOfMonth() - now.getDayOfMonth() > 1) {
-            ReminderTime reminderTime = new ReminderTime();
-
-            reminderTime.setType(ReminderTime.Type.ONCE);
-            reminderTime.setFixedTime(remindAt.minusDays(1).with(LocalTime.of(22, 0)).withZoneSameInstant(ZoneOffset.UTC));
-
-            reminderTimes.add(reminderTime);
-        } else if (now.getHour() < 22) {
-            ReminderTime reminderTime = new ReminderTime();
-
-            reminderTime.setType(ReminderTime.Type.ONCE);
-            reminderTime.setFixedTime(now.with(LocalTime.of(22, 0)).withZoneSameInstant(ZoneOffset.UTC));
-
-            reminderTimes.add(reminderTime);
-        }
     }
 }

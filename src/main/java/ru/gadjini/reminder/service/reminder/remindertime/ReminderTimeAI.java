@@ -3,8 +3,7 @@ package ru.gadjini.reminder.service.reminder.remindertime;
 import org.joda.time.Period;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.ZonedDateTime;
+import java.time.*;
 
 @Service
 public class ReminderTimeAI {
@@ -25,5 +24,18 @@ public class ReminderTimeAI {
         ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
 
         return remindAt.getDayOfMonth() > now.getDayOfMonth();
+    }
+
+    public boolean isNeedCreateNightBeforeReminderTime(LocalDate remindAt, ZoneId zoneId) {
+        LocalDate now = LocalDate.now(zoneId);
+
+        return remindAt.getDayOfMonth() > now.getDayOfMonth();
+    }
+
+    public boolean isNeedCreateReminderTime(LocalDate remindAt, LocalTime localTime, ZoneId zoneId) {
+        ZonedDateTime now = ZonedDateTime.now(zoneId);
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(remindAt, localTime, zoneId);
+
+        return now.isBefore(zonedDateTime);
     }
 }

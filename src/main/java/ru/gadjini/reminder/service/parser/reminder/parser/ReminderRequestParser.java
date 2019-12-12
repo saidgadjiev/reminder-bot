@@ -112,12 +112,16 @@ public class ReminderRequestParser {
     private void consumeEveryDay(List<BaseLexem> lexems) {
         lexemsConsumer.consume(lexems, ReminderToken.EVERY_DAY);
         repeatTime.setInterval(repeatTime.getInterval().withDays(1));
-        repeatTime.setTime(consumeShortTime(lexems));
+        if (lexemsConsumer.check(lexems, ReminderToken.HOUR)) {
+            repeatTime.setTime(consumeShortTime(lexems));
+        }
     }
 
     private void consumeDays(List<BaseLexem> lexems) {
         repeatTime.setInterval(repeatTime.getInterval().withDays(Integer.parseInt(lexemsConsumer.consume(lexems, ReminderToken.DAYS).getValue())));
-        repeatTime.setTime(consumeShortTime(lexems));
+        if (lexemsConsumer.check(lexems, ReminderToken.HOUR)) {
+            repeatTime.setTime(consumeShortTime(lexems));
+        }
     }
 
     private void consumeMinutes(List<BaseLexem> lexems) {
@@ -139,7 +143,9 @@ public class ReminderRequestParser {
                 .orElseThrow();
 
         repeatTime.setDayOfWeek(dayOfWeek);
-        repeatTime.setTime(consumeShortTime(lexems));
+        if (lexemsConsumer.check(lexems, ReminderToken.HOUR)) {
+            repeatTime.setTime(consumeShortTime(lexems));
+        }
     }
 
     private void consumeText(List<BaseLexem> lexems) {

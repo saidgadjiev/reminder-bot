@@ -19,7 +19,6 @@ import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 
-import java.time.ZoneId;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PostponeReminderCommand implements CallbackBotCommand, NavigableBotCommand {
@@ -105,7 +104,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
     private void postponeTime(Message message, PostponeCommandState postponeCommandState) {
         Reminder reminder = reminderRequestService.getReminderForPostpone(postponeCommandState.callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()));
         reminder.getReceiver().setChatId(message.getChatId());
-        postponeCommandState.parsedPostponeTime = reminderRequestService.parsePostponeTime(message.getText().trim(), reminder.getReceiver().getZoneId());
+        postponeCommandState.parsedPostponeTime = reminderRequestService.parsePostponeTime(message.getText().trim(), reminder.getReceiver().getZone());
         postponeCommandState.reminder = reminder;
         postponeCommandState.state = State.REASON;
 

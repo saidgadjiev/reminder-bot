@@ -12,8 +12,3 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
-logging:
-  file: logs/reminder.log
-  level:
-    ru: debug
-    net.iakovlev.timeshape: error

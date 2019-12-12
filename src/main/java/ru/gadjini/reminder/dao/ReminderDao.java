@@ -184,14 +184,7 @@ public class ReminderDao {
                         "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
                         "WHERE status = 0 AND CASE\n" +
                         "          WHEN time_type = 0 THEN :curr_date >= fixed_time\n" +
-                        "          ELSE CASE\n" +
-                        "                   WHEN last_reminder_at IS NULL THEN\n" +
-                        "                               date_diff_in_minute(:curr_date, r.remind_at) >= minute(delay_time)\n" +
-                        "                           OR\n" +
-                        "                               date_diff_in_minute(r.remind_at, :curr_date) BETWEEN 1 AND minute(delay_time)\n" +
-                        "                   ELSE\n" +
-                        "                           date_diff_in_minute(:curr_date, last_reminder_at) >= minute(delay_time)\n" +
-                        "              END\n" +
+                        "          ELSE date_diff_in_minute(:curr_date, last_reminder_at) >= minute(delay_time)\n" +
                         "          END\n" +
                         "ORDER BY rt.id\n" +
                         "LIMIT :lim",
@@ -358,9 +351,9 @@ public class ReminderDao {
                         new SqlParameterValue(Types.VARCHAR, reminder.getText()),
                         new SqlParameterValue(Types.INTEGER, reminder.getCreatorId()),
                         new SqlParameterValue(Types.INTEGER, reminder.getReceiverId()),
-                        new SqlParameterValue(Types.TIMESTAMP, reminder.getRemindAt() != null ? Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()) : null),
+                        new SqlParameterValue(Types.OTHER, reminder.getRemindAt().sql()),
                         new SqlParameterValue(Types.OTHER, reminder.getRepeatRemindAt() != null ? reminder.getRepeatRemindAt().sql() : null),
-                        new SqlParameterValue(Types.TIMESTAMP, reminder.getRemindAt() != null ? Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()) : null),
+                        new SqlParameterValue(Types.OTHER, reminder.getRemindAt().sql()),
                         new SqlParameterValue(Types.VARCHAR, reminder.getNote())
                 },
                 rs -> {
@@ -387,8 +380,8 @@ public class ReminderDao {
                 new SqlParameterValue[] {
                         new SqlParameterValue(Types.VARCHAR, reminder.getText()),
                         new SqlParameterValue(Types.INTEGER, reminder.getCreatorId()),
-                        new SqlParameterValue(Types.TIMESTAMP, reminder.getRemindAt() != null ? Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()) : null),
-                        new SqlParameterValue(Types.TIMESTAMP, reminder.getRemindAt() != null ? Timestamp.valueOf(reminder.getRemindAt().toLocalDateTime()) : null),
+                        new SqlParameterValue(Types.OTHER, reminder.getRemindAt().sql()),
+                        new SqlParameterValue(Types.OTHER, reminder.getRemindAt().sql()),
                         new SqlParameterValue(Types.VARCHAR, reminder.getReceiver().getUsername()),
                         new SqlParameterValue(Types.VARCHAR, reminder.getNote())
                 },

@@ -6,8 +6,11 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.time.DateTime;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -28,6 +31,30 @@ public class TimeBuilder {
         this.intervalLocalisationService = intervalLocalisationService;
     }
 
+    public String time(DateTime dateTime) {
+        if (dateTime.isDateOnly()) {
+            return time(dateTime.date(), dateTime.getZone());
+        }
+
+        return time(dateTime.toZonedDateTime());
+    }
+
+    public String time(LocalDate remindAt, ZoneId zoneId) {
+        LocalDate now = LocalDate.now(zoneId);
+
+        if (remindAt.getMonth().equals(now.getMonth()) && remindAt.getYear() == now.getYear()) {
+            if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
+                return todayDate(remindAt);
+            } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 1) {
+                return tomorrowDate(remindAt);
+            } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 2) {
+                return dayAfterTomorrowDate(remindAt);
+            }
+        }
+
+        return fixedDate(remindAt);
+    }
+
     public String time(ZonedDateTime remindAt) {
         ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
 
@@ -44,34 +71,56 @@ public class TimeBuilder {
         return fixedDay(remindAt);
     }
 
+    private String todayDate(LocalDate remindAt) {
+        String today = localisationService.getMessage(MessagesProperties.TODAY);
+
+        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")</b>";
+    }
+
+    private String tomorrowDate(LocalDate remindAt) {
+        String today = localisationService.getMessage(MessagesProperties.TOMORROW);
+
+        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")</b>";
+    }
+
+    private String dayAfterTomorrowDate(LocalDate remindAt) {
+        String today = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
+
+        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")</b>";
+    }
+
+    private String fixedDate(LocalDate remindAt) {
+        String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+
+        return "<b>" + remindAt.getDayOfMonth() + " " + monthName + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")</b>";
+    }
+
     private String todayTime(ZonedDateTime remindAt) {
-        return localisationService.getMessage(
-                MessagesProperties.MESSAGE_REMINDER_TODAY,
-                new Object[]{remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), DATE_TIME_FORMATTER.format(remindAt)}
-        );
+        String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
+        String today = localisationService.getMessage(MessagesProperties.TODAY);
+
+        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
     }
 
     private String fixedDay(ZonedDateTime remindAt) {
         String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+        String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
 
-        return localisationService.getMessage(
-                MessagesProperties.MESSAGE_REMINDER_FIXED_DAY,
-                new Object[]{remindAt.getDayOfMonth(), monthName, remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), DATE_TIME_FORMATTER.format(remindAt)}
-        );
+        return "<b>" + remindAt.getDayOfMonth() + " " + monthName + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
     }
 
     private String tomorrowTime(ZonedDateTime remindAt) {
-        return localisationService.getMessage(
-                MessagesProperties.MESSAGE_REMINDER_TOMORROW,
-                new Object[]{remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), DATE_TIME_FORMATTER.format(remindAt)}
-        );
+        String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
+        String today = localisationService.getMessage(MessagesProperties.TOMORROW);
+
+        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
     }
 
     private String dayAfterTomorrowTime(ZonedDateTime remindAt) {
-        return localisationService.getMessage(
-                MessagesProperties.MESSAGE_REMINDER_DAY_AFTER_TOMORROW,
-                new Object[]{remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()), DATE_TIME_FORMATTER.format(remindAt)}
-        );
+        String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
+        String today = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
+
+        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt);
     }
 
     public String postponeTime(ZonedDateTime remindAt) {

@@ -79,7 +79,7 @@ public class PatternBuilder {
 
         String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX);
         String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
-        String regexpTimeArticle = localisationService.getMessage(MessagesProperties.REGEXP_TIME_ARTICLE);
+        String regexpTimeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
         String regexRepeat = localisationService.getMessage(MessagesProperties.REGEXP_REPEAT);
         String regexpEveryDay = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_DAY);
         String regexpEveryMinute = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_MINUTE);
@@ -97,7 +97,7 @@ public class PatternBuilder {
     }
 
     public GroupPattern buildTimePattern(Locale locale) {
-        String regexpTimeArticle = localisationService.getMessage(MessagesProperties.REGEXP_TIME_ARTICLE);
+        String regexpTimeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
         String regexpDayOfWeekArticle = localisationService.getMessage(MessagesProperties.REGEXP_DAY_OF_WEEK_ARTICLE);
         String regexpNextWeek = localisationService.getMessage(MessagesProperties.REGEXP_NEXT_WEEK);
         StringBuilder patternBuilder = new StringBuilder();
@@ -110,8 +110,8 @@ public class PatternBuilder {
                 .append("((?<").append(MONTH_WORD).append(">")
                 .append(Stream.of(Month.values()).map(month -> month.getDisplayName(TextStyle.FULL, locale)).collect(Collectors.joining("|")));
 
-        String tomorrow = localisationService.getMessage(MessagesProperties.REGEXP_TOMORROW);
-        String dayAfterTomorrow = localisationService.getMessage(MessagesProperties.REGEXP_DAY_AFTER_TOMORROW);
+        String tomorrow = localisationService.getMessage(MessagesProperties.TOMORROW);
+        String dayAfterTomorrow = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
         patternBuilder
                 .append(") )?(((?<").append(MONTH).append(">1[0-2]|[1-9])\\.)?(?<").append(DAY).append(">0[1-9]|[12]\\d|3[01]|0?[1-9])|(?<").append(DAY_WORD).append(">")
                 .append(tomorrow).append("|").append(dayAfterTomorrow).append("))?");

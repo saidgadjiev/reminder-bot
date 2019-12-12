@@ -93,6 +93,18 @@ public class ReminderTime {
         this.itsTime = itsTime;
     }
 
+    public static ReminderTime repeatTime() {
+        return new ReminderTime() {{
+            setType(Type.REPEAT);
+        }};
+    }
+
+    public static ReminderTime onceTime() {
+        return new ReminderTime() {{
+            setType(Type.REPEAT);
+        }};
+    }
+
     public enum Type {
 
         ONCE(0),

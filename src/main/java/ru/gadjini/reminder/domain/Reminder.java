@@ -3,7 +3,6 @@ package ru.gadjini.reminder.domain;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,16 +66,8 @@ public class Reminder {
         return remindAt;
     }
 
-    public ZonedDateTime getZonedRemindAt() {
-        return remindAt.toZonedDateTime();
-    }
-
-    public ZonedDateTime getZonedRemindAt(ZoneId zoneId) {
-        return remindAt.toZonedDateTime(zoneId);
-    }
-
-    public ZonedDateTime getRemindAtInReceiverZone() {
-        return remindAt.toZonedDateTime(receiver.getZoneId());
+    public DateTime getRemindAtInReceiverZone() {
+        return remindAt.withZoneSameInstant(receiver.getZone());
     }
 
     public void setRemindAt(DateTime remindAt) {
@@ -120,7 +111,7 @@ public class Reminder {
     }
 
     public ZoneId getReceiverZoneId() {
-        return receiver.getZoneId();
+        return receiver.getZone();
     }
 
     public void setReceiver(TgUser receiver) {

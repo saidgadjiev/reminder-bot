@@ -10,7 +10,9 @@ import ru.gadjini.reminder.exception.ValidationException;
 import ru.gadjini.reminder.service.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.reminder.parser.ParsedRequest;
+import ru.gadjini.reminder.time.DateTime;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 @Service
@@ -24,6 +26,22 @@ public class ValidationService {
     public ValidationService(LocalisationService localisationService, FriendshipService friendshipService) {
         this.localisationService = localisationService;
         this.friendshipService = friendshipService;
+    }
+
+    public void validateIsNotPastTime(DateTime dateTime) {
+        if (dateTime.isDateOnly()) {
+            if (dateTime.date().isBefore(LocalDate.now(dateTime.getZone()))) {
+                ErrorBag errorBag = new ErrorBag();
+
+                errorBag.set("remindAt", localisationService.getMessage(MessagesProperties.MESSAGE_BAD_REMIND_AT));
+
+                if (errorBag.hasErrors()) {
+                    throw new ValidationException(errorBag);
+                }
+            }
+        } else {
+            validateIsNotPastTime(dateTime.toZonedDateTime());
+        }
     }
 
     public void validateIsNotPastTime(ZonedDateTime dateTime) {

@@ -76,8 +76,16 @@ public class TgUser {
         this.userId = userId;
     }
 
-    public ZoneId getZoneId() {
+    public ZoneId getZone() {
         return ZoneId.of(zoneId);
+    }
+
+    public void setZone(ZoneId zone) {
+        this.zoneId = zone.getId();
+    }
+
+    public String getZoneId() {
+        return zoneId;
     }
 
     public void setZoneId(String zoneId) {

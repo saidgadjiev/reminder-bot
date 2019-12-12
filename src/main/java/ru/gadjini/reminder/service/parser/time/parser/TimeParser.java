@@ -32,11 +32,11 @@ public class TimeParser {
 
     public TimeParser(LocalisationService localisationService, Locale locale, LexemsConsumer lexemsConsumer,
                       ZoneId zoneId, DayOfWeekService dayOfWeekService) {
-        this.tomorrow = localisationService.getMessage(MessagesProperties.REGEXP_TOMORROW);
-        this.dayAfterTomorrow = localisationService.getMessage(MessagesProperties.REGEXP_DAY_AFTER_TOMORROW);
+        this.tomorrow = localisationService.getMessage(MessagesProperties.TOMORROW);
+        this.dayAfterTomorrow = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
         this.locale = locale;
         this.lexemsConsumer = lexemsConsumer;
-        this.parsedTime = new DateTime(zoneId);
+        this.parsedTime = DateTime.now(zoneId).time(null);
         this.dayOfWeekService = dayOfWeekService;
     }
 
@@ -81,11 +81,13 @@ public class TimeParser {
                 .filter(dow -> dayOfWeekService.isThatDay(dow, locale, dayOfWeekValue))
                 .findFirst()
                 .orElseThrow();
-        LocalDate dayOfWeekDate = (LocalDate) TemporalAdjusters.next(dayOfWeek).adjustInto(LocalDate.now());
+        LocalDate dayOfWeekDate = (LocalDate) TemporalAdjusters.next(dayOfWeek).adjustInto(parsedTime.date());
 
         parsedTime.date(dayOfWeekDate);
 
-        parsedTime.time(consumeTime(lexems));
+        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            parsedTime.time(consumeTime(lexems));
+        }
     }
 
     private void consumeMonth(List<BaseLexem> lexems) {
@@ -96,8 +98,9 @@ public class TimeParser {
 
         parsedTime.dayOfMonth(day);
 
-        LocalTime time = consumeTime(lexems);
-        parsedTime.time(time);
+        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            parsedTime.time(consumeTime(lexems));
+        }
     }
 
     private void consumeMonthWord(List<BaseLexem> lexems) {
@@ -106,7 +109,9 @@ public class TimeParser {
         Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, locale).equals(month)).findFirst().orElseThrow(ParseException::new);
 
         parsedTime.month(m.getValue());
-        parsedTime.time(consumeTime(lexems));
+        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            parsedTime.time(consumeTime(lexems));
+        }
     }
 
     private void consumeDayWord(List<BaseLexem> lexems) {
@@ -114,9 +119,10 @@ public class TimeParser {
 
         if (dayWord.equals(tomorrow)) {
             parsedTime.plusDays(1);
-            parsedTime.time(consumeTime(lexems));
         } else if (dayWord.equals(dayAfterTomorrow)) {
             parsedTime.plusDays(2);
+        }
+        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             parsedTime.time(consumeTime(lexems));
         }
     }
@@ -127,7 +133,7 @@ public class TimeParser {
         parsedTime.dayOfMonth(day);
         if (lexemsConsumer.check(lexems, TimeToken.MONTH_WORD)) {
             consumeMonthWord(lexems);
-        } else {
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             parsedTime.time(consumeTime(lexems));
         }
         if (parsedTime.dayOfMonth() > day) {

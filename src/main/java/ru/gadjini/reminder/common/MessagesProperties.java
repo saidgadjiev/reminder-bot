@@ -96,20 +96,6 @@ public class MessagesProperties {
 
     public static final String MESSAGE_BOT_RESTARTED = "message.bot.restarted";
 
-    public static final String REGEXP_TOMORROW = "regexp.tomorrow";
-
-    public static final String REGEXP_DAY_AFTER_TOMORROW = "regexp.day.after.tomorrow";
-
-    public static final String REGEXP_TIME_ARTICLE = "regexp.time.article";
-
-    public static final String MESSAGE_REMINDER_TODAY = "message.reminder.today";
-
-    public static final String MESSAGE_REMINDER_TOMORROW = "message.reminder.tomorrow";
-
-    public static final String MESSAGE_REMINDER_DAY_AFTER_TOMORROW = "message.reminder.day.after.tomorrow";
-
-    public static final String MESSAGE_REMINDER_FIXED_DAY = "message.reminder.fixed.day";
-
     public static final String GET_REMINDERS_COMMAND_NAME = "get.reminder.command.name";
 
     public static final String GET_REMINDERS_COMMAND_HISTORY_NAME = "getreminders";
@@ -301,4 +287,12 @@ public class MessagesProperties {
     public static final String MESSAGE_NEXT_REMIND_AT = "message.next.remind.at";
 
     public static final String MESSAGE_REMIND_ME_ITS_TIME = "message.remind.me.its.time";
+
+    public static final String TODAY = "today";
+
+    public static final String TOMORROW = "tomorrow";
+
+    public static final String DAY_AFTER_TOMORROW = "day.after.tomorrow";
+
+    public static final String TIME_ARTICLE = "time.article";
 }

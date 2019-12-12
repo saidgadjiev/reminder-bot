@@ -19,9 +19,9 @@ public class ReminderTable extends TableImpl<Record> {
 
     public TableField<Record, Integer> RECEIVER_ID;
 
-    public TableField<Record, Timestamp> INITIAL_REMIND_AT;
+    public TableField<Record, Object> INITIAL_REMIND_AT;
 
-    public TableField<Record, Timestamp> REMIND_AT;
+    public TableField<Record, Object> REMIND_AT;
 
     public TableField<Record, String> TEXT;
 
@@ -48,8 +48,8 @@ public class ReminderTable extends TableImpl<Record> {
         CREATOR_ID = createField(Reminder.CREATOR_ID, SQLDataType.INTEGER);
         RECEIVER_ID = createField(Reminder.RECEIVER_ID, SQLDataType.INTEGER);
         TEXT = createField(Reminder.TEXT, SQLDataType.VARCHAR);
-        INITIAL_REMIND_AT = createField(Reminder.INITIAL_REMIND_AT, SQLDataType.TIMESTAMP);
-        REMIND_AT = createField(Reminder.REMIND_AT, SQLDataType.TIMESTAMP);
+        INITIAL_REMIND_AT = createField(Reminder.INITIAL_REMIND_AT, SQLDataType.OTHER);
+        REMIND_AT = createField(Reminder.REMIND_AT, SQLDataType.OTHER);
         NOTE = createField(Reminder.NOTE, SQLDataType.VARCHAR);
         STATUS = createField(Reminder.STATUS, SQLDataType.INTEGER);
     }

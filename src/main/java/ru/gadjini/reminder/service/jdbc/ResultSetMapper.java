@@ -155,8 +155,6 @@ public class ResultSetMapper {
     private DateTime mapDateTime(ResultSet rs) throws SQLException {
         Time time = rs.getTime(DateTime.TIME);
 
-        return new DateTime(ZoneOffset.UTC)
-                .date(rs.getDate(DateTime.DATE).toLocalDate())
-                .time(time == null ? null : time.toLocalTime());
+        return DateTime.of(rs.getDate(DateTime.DATE).toLocalDate(), time == null ? null : time.toLocalTime(), ZoneOffset.UTC);
     }
 }

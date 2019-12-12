@@ -1,8 +1,13 @@
 package ru.gadjini.reminder.time;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 
 public class DateTime {
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     public static final String DATE = "dt_date";
 
@@ -13,18 +18,6 @@ public class DateTime {
     private LocalDate localDate;
 
     private LocalTime localTime;
-
-    public DateTime(ZonedDateTime zonedDateTime) {
-        this.zoneId = zonedDateTime.getZone();
-        this.localDate = zonedDateTime.toLocalDate();
-        this.localTime = zonedDateTime.toLocalTime();
-    }
-
-    public DateTime(ZoneId zoneId) {
-        this.zoneId = zoneId;
-        this.localDate = LocalDate.now(zoneId);
-        this.localTime = LocalTime.now();
-    }
 
     public ZoneId getZone() {
         return zoneId;
@@ -42,12 +35,6 @@ public class DateTime {
 
     public DateTime plusDays(int days) {
         localDate = localDate.plusDays(days);
-
-        return this;
-    }
-
-    public DateTime minusDays(int days) {
-        localDate = localDate.minusDays(days);
 
         return this;
     }
@@ -84,19 +71,55 @@ public class DateTime {
         return this;
     }
 
+    public boolean isDateOnly() {
+        return localTime == null;
+    }
+
+    public static DateTime now(ZoneId zoneId) {
+        return of(ZonedDateTime.now(zoneId));
+    }
+
     public DateTime withZoneSameInstant(ZoneId targetZone) {
-        return new DateTime(toZonedDateTime(targetZone));
+        if (localTime != null) {
+            return DateTime.of(toZonedDateTime().withZoneSameInstant(targetZone));
+        }
+
+        return DateTime.of(localDate, null, targetZone);
     }
 
     public ZonedDateTime toZonedDateTime() {
         return ZonedDateTime.of(localDate, localTime, zoneId);
     }
 
-    public ZonedDateTime toZonedDateTime(ZoneId targetZone) {
-        return toZonedDateTime().withZoneSameInstant(targetZone);
+    public String sql() {
+        StringBuilder sql = new StringBuilder();
+
+        sql.append("(").append(DATE_FORMATTER.format(localDate)).append(",");
+        if (localTime != null) {
+            sql.append(TIME_FORMATTER.format(localTime));
+        }
+        sql.append(")");
+
+        return sql.toString();
     }
 
-    public LocalDateTime toLocalDateTime() {
-        return LocalDateTime.of(localDate, localTime);
+    public static DateTime of(LocalDate localDate, LocalTime localTime, ZoneId zoneId) {
+        DateTime dateTime = new DateTime();
+
+        dateTime.zoneId = zoneId;
+        dateTime.localDate = localDate;
+        dateTime.localTime = localTime;
+
+        return dateTime;
+    }
+
+    public static DateTime of(ZonedDateTime zonedDateTime) {
+        DateTime dateTime = new DateTime();
+
+        dateTime.zoneId = zonedDateTime.getZone();
+        dateTime.localDate = zonedDateTime.toLocalDate();
+        dateTime.localTime = zonedDateTime.toLocalTime();
+
+        return dateTime;
     }
 }

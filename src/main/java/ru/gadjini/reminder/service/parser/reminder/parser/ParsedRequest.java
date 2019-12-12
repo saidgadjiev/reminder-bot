@@ -3,7 +3,7 @@ package ru.gadjini.reminder.service.parser.reminder.parser;
 import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.time.DateTime;
 
-import java.time.ZonedDateTime;
+import java.time.ZoneId;
 
 public class ParsedRequest {
 
@@ -16,6 +16,8 @@ public class ParsedRequest {
     private DateTime parsedTime;
 
     private RepeatTime repeatTime;
+
+    private ZoneId zone;
 
     public String getReceiverName() {
         return receiverName;
@@ -59,5 +61,13 @@ public class ParsedRequest {
 
     public boolean isRepeatReminder() {
         return repeatTime != null;
+    }
+
+    public ZoneId getZone() {
+        return zone;
+    }
+
+    public void setZone(ZoneId zone) {
+        this.zone = zone;
     }
 }

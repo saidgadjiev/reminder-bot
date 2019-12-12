@@ -17,6 +17,7 @@ import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.security.SecurityService;
+import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.ZonedDateTime;
@@ -54,7 +55,7 @@ public class ReminderMessageSender {
     }
 
     @Transactional
-    public void sendRemindMessage(Reminder reminder, boolean itsTime, ZonedDateTime nextRemindAt) {
+    public void sendRemindMessage(Reminder reminder, boolean itsTime, DateTime nextRemindAt) {
         RemindMessage remindMessage = reminder.getRemindMessage();
 
         if (remindMessage != null) {
@@ -63,7 +64,7 @@ public class ReminderMessageSender {
 
         String message;
         if (reminder.isMySelf()) {
-            message = messageBuilder.getRemindMySelf(reminder, itsTime, nextRemindAt);
+            message = messageBuilder.getRemindMySelf(reminder, itsTime, nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId()));
         } else {
             message = messageBuilder.getRemindForReceiver(reminder);
         }

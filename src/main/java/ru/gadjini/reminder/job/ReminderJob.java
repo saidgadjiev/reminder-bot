@@ -116,20 +116,16 @@ public class ReminderJob {
     private void sendRepeatReminderTime(Reminder reminder, ReminderTime reminderTime) {
         reminderMessageSender.sendRemindMessage(reminder, reminderTime.isItsTime(), null);
 
-        if (reminderTime.getLastReminderAt() == null) {
-            reminderTimeService.updateLastRemindAt(reminderTime.getId(), reminder.getRemindAt().toLocalDateTime());
-        } else {
-            reminderTimeService.updateLastRemindAt(reminderTime.getId(), TimeUtils.now());
-        }
+        reminderTimeService.updateLastRemindAt(reminderTime.getId(), TimeUtils.now());
     }
 
     private void sendRepeatReminderTimeForRepeatableReminder(Reminder reminder, ReminderTime reminderTime) {
-        ZonedDateTime nextRemindAt = reminder.getZonedRemindAt();
+        DateTime nextRemindAt = reminder.getRemindAtInReceiverZone();
 
         if (reminderTime.isItsTime()) {
-            nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getZonedRemindAt(), reminder.getRepeatRemindAt());
+            nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
             repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
-            reminder.setRemindAt(new DateTime(nextRemindAt));
+            reminder.setRemindAt(nextRemindAt);
         }
 
         reminderMessageSender.sendRemindMessage(reminder, reminderTime.isItsTime(), nextRemindAt);

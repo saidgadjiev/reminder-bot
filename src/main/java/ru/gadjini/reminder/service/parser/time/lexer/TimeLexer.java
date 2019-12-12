@@ -64,9 +64,10 @@ public class TimeLexer {
         if (values.containsKey(PatternBuilder.DAY_OF_WEEK_WORD)) {
             lexems.add(new TimeLexem(TimeToken.DAY_OF_WEEK, values.get(PatternBuilder.DAY_OF_WEEK_WORD)));
         }
-
-        lexems.add(new TimeLexem(TimeToken.HOUR, values.get(PatternBuilder.HOUR)));
-        lexems.add(new TimeLexem(TimeToken.MINUTE, values.get(PatternBuilder.MINUTE)));
+        if (values.containsKey(PatternBuilder.HOUR)) {
+            lexems.add(new TimeLexem(TimeToken.HOUR, values.get(PatternBuilder.HOUR)));
+            lexems.add(new TimeLexem(TimeToken.MINUTE, values.get(PatternBuilder.MINUTE)));
+        }
 
         return lexems;
     }
