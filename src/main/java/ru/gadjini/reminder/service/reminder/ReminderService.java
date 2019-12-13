@@ -270,7 +270,7 @@ public class ReminderService {
     }
 
     private List<ReminderTime> getReminderTimes(DateTime dateTime) {
-        if (dateTime.isDateOnly()) {
+        if (!dateTime.hasTime()) {
             return getReminderTimesWithoutTime(dateTime.date(), dateTime.getZone());
         }
 

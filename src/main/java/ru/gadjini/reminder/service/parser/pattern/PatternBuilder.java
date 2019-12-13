@@ -112,9 +112,10 @@ public class PatternBuilder {
 
         String tomorrow = localisationService.getMessage(MessagesProperties.TOMORROW);
         String dayAfterTomorrow = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
+        String today = localisationService.getMessage(MessagesProperties.TODAY);
         patternBuilder
                 .append(") )?(((?<").append(MONTH).append(">1[0-2]|[1-9])\\.)?(?<").append(DAY).append(">0[1-9]|[12]\\d|3[01]|0?[1-9])|(?<").append(DAY_WORD).append(">")
-                .append(tomorrow).append("|").append(dayAfterTomorrow).append("))?");
+                .append(tomorrow).append("|").append(dayAfterTomorrow).append("|").append(today).append("))?");
 
         return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(HOUR, MINUTE, DAY_OF_WEEK_WORD, NEXT_WEEK, MONTH_WORD, MONTH, DAY, DAY_WORD));
     }

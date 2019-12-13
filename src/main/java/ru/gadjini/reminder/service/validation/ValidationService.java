@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.service.validation;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -9,7 +8,6 @@ import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.exception.ValidationException;
 import ru.gadjini.reminder.service.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.parser.reminder.parser.ParsedRequest;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.LocalDate;
@@ -29,7 +27,7 @@ public class ValidationService {
     }
 
     public void validateIsNotPastTime(DateTime dateTime) {
-        if (dateTime.isDateOnly()) {
+        if (!dateTime.hasTime()) {
             if (dateTime.date().isBefore(LocalDate.now(dateTime.getZone()))) {
                 ErrorBag errorBag = new ErrorBag();
 

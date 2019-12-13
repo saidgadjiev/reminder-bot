@@ -71,8 +71,8 @@ public class DateTime {
         return this;
     }
 
-    public boolean isDateOnly() {
-        return localTime == null;
+    public boolean hasTime() {
+        return localTime != null;
     }
 
     public static DateTime now(ZoneId zoneId) {

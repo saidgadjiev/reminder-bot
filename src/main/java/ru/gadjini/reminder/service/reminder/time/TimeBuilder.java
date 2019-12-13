@@ -32,7 +32,7 @@ public class TimeBuilder {
     }
 
     public String time(DateTime dateTime) {
-        if (dateTime.isDateOnly()) {
+        if (!dateTime.hasTime()) {
             return time(dateTime.date(), dateTime.getZone());
         }
 
