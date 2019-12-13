@@ -29,13 +29,12 @@ CREATE TABLE IF NOT EXISTS reminder
     reminder_text     TEXT         NOT NULL,
     creator_id        INTEGER      NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
     receiver_id       INTEGER      NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
-    remind_at         TIMESTAMP(0),
+    remind_at         TIMESTAMP(0) NOT NULL,
     repeat_remind_at  repeat_time,
     initial_remind_at TIMESTAMP(0) NOT NULL,
     status            INT          NOT NULL DEFAULT 0,
     note              TEXT,
-    completed_at      TIMESTAMP(0),
-    repeatable        BOOLEAN               DEFAULT FALSE
+    completed_at      TIMESTAMP(0)
 );
 
 CREATE TABLE IF NOT EXISTS reminder_time
