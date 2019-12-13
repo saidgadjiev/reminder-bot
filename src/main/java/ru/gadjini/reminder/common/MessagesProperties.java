@@ -24,11 +24,13 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMIND_ME = "message.remind.me";
 
+    public static final String MESSAGE_REMIND_ITS_TIME = "message.remind.its.time";
+
     public static final String COMPLETE_REMINDER_COMMAND_NAME = "completereminder";
 
     public static final String COMPLETE_REMINDER_COMMAND_DESCRIPTION = "complete.reminder.command.description";
 
-    public static final String MESSAGE_REMINDER_COMPLETED_FROM = "message.reminder.completed.from";
+    public static final String MESSAGE_REMINDER_COMPLETED_RECEIVER = "message.reminder.completed.receiver";
 
     public static final String MESSAGE_REMINDER_COMPLETE_ANSWER = "message.reminder.complete.answer";
 
@@ -36,7 +38,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMIND_NOT_FRIEND = "message.remind.not.friend";
 
-    public static final String MESSAGE_REMINDER_COMPLETED = "message.reminder.completed";
+    public static final String MESSAGE_REMINDER_COMPLETED_CREATOR = "message.reminder.completed.creator";
 
     public static final String MESSAGE_REMINDER_ME_COMPLETED = "message.reminder.me.completed";
 
@@ -54,11 +56,11 @@ public class MessagesProperties {
 
     public static final String MESSAGE_FRIEND_REQUEST_ACCEPTED = "message.friend.request.accepted";
 
-    public static final String MESSAGE_FRIEND_REQUEST_ACCEPTED_FROM = "message.friend.request.accepted.from";
+    public static final String MESSAGE_FRIEND_REQUEST_ACCEPTED_INITIATOR = "message.friend.request.accepted.initiator";
 
     public static final String MESSAGE_FRIEND_REQUEST_REJECTED = "message.friend.request.rejected";
 
-    public static final String MESSAGE_FRIEND_REQUEST_REJECTED_FROM = "message.friend.request.rejected.from";
+    public static final String MESSAGE_FRIEND_REQUEST_REJECTED_INITIATOR = "message.friend.request.rejected.initiator";
 
     public static final String MESSAGE_NEW_FRIEND_REQUEST = "message.new.friend.request";
 
@@ -120,29 +122,29 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_TEXT_ANSWER = "message.reminder.text.answer";
 
-    public static final String MESSAGE_REMINDER_TIME_EDITED_FROM = "message.reminder.time.edited.from";
+    public static final String MESSAGE_REMINDER_TIME_EDITED_RECEIVER = "message.reminder.time.edited.receiver";
 
-    public static final String MESSAGE_REMINDER_TIME_EDITED = "message.reminder.time.edited";
+    public static final String MESSAGE_REMINDER_TIME_EDITED_CREATOR = "message.reminder.time.edited.creator";
 
-    public static final String MESSAGE_REMINDER_TEXT_EDITED_FROM = "message.reminder.text.edited.from";
+    public static final String MESSAGE_REMINDER_TEXT_EDITED_RECEIVER = "message.reminder.text.edited.receiver";
 
-    public static final String MESSAGE_REMINDER_TEXT_EDITED = "message.reminder.text.edited";
+    public static final String MESSAGE_REMINDER_TEXT_EDITED_CREATOR = "message.reminder.text.edited.creator";
 
     public static final String DELETE_REMINDER_COMMAND_NAME = "deletereminder";
 
     public static final String DELETE_REMINDER_COMMAND_DESCRIPTION = "delete.reminder.command.description";
 
-    public static final String MESSAGE_REMINDER_DELETED_FROM = "message.reminder.deleted.from";
+    public static final String MESSAGE_REMINDER_DELETED_RECEIVER = "message.reminder.deleted.receiver";
 
-    public static final String MESSAGE_REMINDER_DELETED = "message.reminder.deleted";
+    public static final String MESSAGE_REMINDER_DELETED_CREATOR = "message.reminder.deleted.creator";
 
     public static final String CANCEL_REMINDER_COMMAND_NAME = "cancelreminder";
 
     public static final String CANCEL_REMINDER_COMMAND_DESCRIPTION = "cancel.reminder.command.description";
 
-    public static final String MESSAGE_REMINDER_CANCELED_FROM = "message.reminder.canceled.from";
+    public static final String MESSAGE_REMINDER_CANCELED_RECEIVER = "message.reminder.canceled.receiver";
 
-    public static final String MESSAGE_REMINDER_CANCELED = "message.reminder.canceled";
+    public static final String MESSAGE_REMINDER_CANCELED_CREATOR = "message.reminder.canceled.creator";
 
     public static final String MESSAGE_REMINDER_CANCELED_ME = "message.reminder.canceled.me";
 

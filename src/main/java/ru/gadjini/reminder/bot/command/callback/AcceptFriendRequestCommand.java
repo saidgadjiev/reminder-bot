@@ -33,7 +33,7 @@ public class AcceptFriendRequestCommand implements CallbackBotCommand {
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Friendship friendship = friendshipService.acceptFriendRequest(requestParams.getInt(Arg.FRIEND_ID.getKey()));
 
-        messageService.sendMessageByCode(friendship.getUserOne().getChatId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_ACCEPTED_FROM, new Object[]{
+        messageService.sendMessageByCode(friendship.getUserOne().getChatId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_ACCEPTED_INITIATOR, new Object[]{
                 UserUtils.userLink(friendship.getUserTwo())
         });
 

@@ -16,6 +16,7 @@ import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -48,7 +49,7 @@ public class ReminderJob {
         this.restoreReminderService = restoreReminderService;
     }
 
-    // @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     //@Scheduled(fixedDelay = 1000)
     public void deleteCompletedReminders() {
         LocalDateTime now = LocalDateTime.now();
@@ -87,7 +88,7 @@ public class ReminderJob {
         reminderMessageSender.sendRemindMessage(
                 reminder,
                 reminder.getReminderTimes().stream().anyMatch(ReminderTime::isItsTime),
-                reminder.getRemindAtInReceiverZone()
+                reminder.getRemindAt()
         );
     }
 
@@ -120,9 +121,9 @@ public class ReminderJob {
     }
 
     private void sendRepeatReminderTimeForRepeatableReminder(Reminder reminder, ReminderTime reminderTime) {
-        DateTime nextRemindAt = reminder.getRemindAtInReceiverZone();
+        DateTime nextRemindAt = reminder.getRemindAt();
 
-        if (reminderTime.isItsTime()) {
+        if (isNeedUpdateNextRemindAt(reminder, reminderTime)) {
             nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
             repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
             reminder.setRemindAt(nextRemindAt);
@@ -132,5 +133,11 @@ public class ReminderJob {
 
         ZonedDateTime nextLastRemindAt = JodaTimeUtils.plus(reminderTime.getLastReminderAt(), reminderTime.getDelayTime());
         reminderTimeService.updateLastRemindAt(reminderTime.getId(), nextLastRemindAt.toLocalDateTime());
+    }
+
+    private boolean isNeedUpdateNextRemindAt(Reminder reminder, ReminderTime reminderTime) {
+        LocalDate now = LocalDate.now(reminder.getRemindAt().getZone());
+
+        return reminderTime.isItsTime() || (reminder.getRemindAt().isDateOnly() && reminder.getRemindAt().date().equals(now));
     }
 }

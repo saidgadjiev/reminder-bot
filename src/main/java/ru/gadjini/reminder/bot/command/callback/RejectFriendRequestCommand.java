@@ -35,7 +35,7 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
 
         messageService.sendMessageByCode(
                 friendship.getUserOne().getChatId(),
-                MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED_FROM,
+                MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED_INITIATOR,
                 new Object[]{UserUtils.userLink(friendship.getUserTwo())}
         );
 

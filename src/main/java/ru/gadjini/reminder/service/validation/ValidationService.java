@@ -67,16 +67,4 @@ public class ValidationService {
             throw new UserException(localisationService.getMessage(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND)));
         }
     }
-
-    public void validateFriendReminderRequest(ParsedRequest parsedRequest) {
-        validateIsNotPastTime(parsedRequest.getParsedTime().toZonedDateTime());
-
-        if (StringUtils.isNotBlank(parsedRequest.getReceiverName())) {
-            ErrorBag errorBag = new ErrorBag();
-
-            errorBag.set("receiverName", localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
-
-            throw new ValidationException(errorBag);
-        }
-    }
 }

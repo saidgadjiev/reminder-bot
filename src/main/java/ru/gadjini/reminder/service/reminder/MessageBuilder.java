@@ -111,21 +111,12 @@ public class MessageBuilder {
         return result.toString();
     }
 
-    public String getRemindForReceiver(Reminder reminder) {
-        StringBuilder result = new StringBuilder();
-
-        result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND, new Object[]{
-                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverZone()),
-                UserUtils.userLink(reminder.getCreator())
-        }));
-
-        if (StringUtils.isNotBlank(reminder.getNote())) {
-            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
-                    reminder.getNote()
-            }));
+    public String getRemindForReceiver(Reminder reminder, boolean itsTime, DateTime nextRemindAt) {
+        if (itsTime) {
+            return getItsTimeRemindForReceiver(reminder, nextRemindAt);
+        } else {
+            return getRemindForReceiver(reminder);
         }
-
-        return result.toString();
     }
 
     public String getRemindMySelf(Reminder reminder, boolean itsTime, DateTime nextRemindAt) {
@@ -137,7 +128,7 @@ public class MessageBuilder {
     }
 
     public String getReminderTimeChanged(String text, TgUser creator, DateTime newRemindAt, DateTime oldRemindAt) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED_FROM, new Object[]{
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED_RECEIVER, new Object[]{
                 UserUtils.userLink(creator),
                 text,
                 timeBuilder.time(oldRemindAt),
@@ -210,7 +201,7 @@ public class MessageBuilder {
     }
 
     public String getReminderTextChanged(String oldText, String newText, TgUser creator) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TEXT_EDITED_FROM, new Object[]{
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TEXT_EDITED_RECEIVER, new Object[]{
                 UserUtils.userLink(creator),
                 oldText,
                 newText
@@ -225,6 +216,49 @@ public class MessageBuilder {
 
     private String getNextRemindAt(DateTime remindAt) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{timeBuilder.time(remindAt)});
+    }
+
+    private String getRemindForReceiver(Reminder reminder) {
+        StringBuilder result = new StringBuilder();
+
+        result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND, new Object[]{
+                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverZone()),
+                UserUtils.userLink(reminder.getCreator())
+        }));
+
+        if (reminder.isRepeatable()) {
+            String nextRemindAt = getNextRemindAt(reminder.getRemindAtInReceiverZone());
+            result.append("\n").append(nextRemindAt);
+        }
+
+        if (StringUtils.isNotBlank(reminder.getNote())) {
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
+                    reminder.getNote()
+            }));
+        }
+
+        return result.toString();
+    }
+
+    private String getItsTimeRemindForReceiver(Reminder reminder, DateTime nextRemindAt) {
+        StringBuilder result = new StringBuilder();
+
+        result.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_ITS_TIME, new Object[]{
+                reminder.getText() + " " + timeBuilder.time(reminder.getRemindAtInReceiverZone()),
+                UserUtils.userLink(reminder.getCreator())
+        }));
+
+        if (reminder.isRepeatable()) {
+            result.append("\n").append(nextRemindAt);
+        }
+
+        if (StringUtils.isNotBlank(reminder.getNote())) {
+            result.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{
+                    reminder.getNote()
+            }));
+        }
+
+        return result.toString();
     }
 
     private String getRemindMySelf(Reminder reminder) {

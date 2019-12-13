@@ -100,11 +100,7 @@ public class ReminderRequestLexer {
                 lexems.add(new ReminderLexem(ReminderToken.MINUTE, repeatTimeValues.get(PatternBuilder.MINUTE)));
             }
             tokenizeStr = StringUtils.reverseDelimited(tokenizeStr.substring(repeatTimeMatcher.end()).trim(), ' ');
-
-            lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, tokenizeStr.trim()));
-            if (parts.length > 1) {
-                lexems.add(new ReminderLexem(ReminderToken.NOTE, parts[1]));
-            }
+            tokenizeReminderTextAndNote(tokenizeStr, lexems);
 
             return lexems;
         }
@@ -118,10 +114,10 @@ public class ReminderRequestLexer {
         String tokenizeStr = StringUtils.reverseDelimited(parts[0], ' ');
         tokenizeStr = StringUtils.reverseDelimited(tokenizeStr.substring(timeLexer.end()).trim(), ' ');
 
-        return tokenizeReminderText(tokenizeStr, lexems);
+        return tokenizeReminderTextAndNote(tokenizeStr, lexems);
     }
 
-    private LinkedList<BaseLexem> tokenizeReminderText(String tokenizeStr, LinkedList<BaseLexem> lexems) {
+    private LinkedList<BaseLexem> tokenizeReminderTextAndNote(String tokenizeStr, LinkedList<BaseLexem> lexems) {
         GroupPattern loginPattern = lexerConfig.getLoginPattern();
         GroupMatcher loginMatcher = loginPattern.matcher(tokenizeStr);
 

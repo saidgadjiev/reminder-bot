@@ -58,20 +58,24 @@ public class ReminderRequestService {
         this.repeatReminderService = repeatReminderService;
     }
 
-    public Reminder createStandardReminder(String text, int receiverId) {
+    public Reminder createReminder(String text, int receiverId) {
         ParsedRequest parsedRequest = parseRequest(text, receiverId);
-        validationService.validateFriendReminderRequest(parsedRequest);
 
-        User user = securityService.getAuthenticatedUser();
-        validationService.checkFriendShip(user.getId(), receiverId);
+        if (parsedRequest.isRepeatReminder()) {
+            return createRepeatReminder(parsedRequest, receiverId);
+        } else {
+            validationService.validateIsNotPastTime(parsedRequest.getParsedTime());
+            User user = securityService.getAuthenticatedUser();
+            validationService.checkFriendShip(user.getId(), receiverId);
 
-        return createStandardReminder(parsedRequest, receiverId);
+            return createStandardReminder(parsedRequest, receiverId);
+        }
     }
 
     public Reminder createReminder(String text) {
         ParsedRequest reminderRequest = parseRequest(text);
         if (reminderRequest.isRepeatReminder()) {
-            return createRepeatReminder(reminderRequest);
+            return createRepeatReminder(reminderRequest, null);
         } else {
             validationService.validateIsNotPastTime(reminderRequest.getParsedTime());
             if (StringUtils.isNotBlank(reminderRequest.getReceiverName())) {
@@ -144,7 +148,7 @@ public class ReminderRequestService {
         return parsedRequest;
     }
 
-    private Reminder createRepeatReminder(ParsedRequest parsedRequest) {
+    private Reminder createRepeatReminder(ParsedRequest parsedRequest, Integer receiverId) {
         Reminder reminder = new Reminder();
         reminder.setRepeatRemindAt(parsedRequest.getRepeatTime());
         reminder.setText(parsedRequest.getText());
@@ -153,9 +157,8 @@ public class ReminderRequestService {
         User user = securityService.getAuthenticatedUser();
         reminder.setCreator(TgUser.from(user));
         reminder.setCreatorId(user.getId());
-        reminder.setReceiver(TgUser.from(user));
-        reminder.setReceiverId(user.getId());
-        reminder.getReceiver().setZone(parsedRequest.getZone());
+
+        setReceiver(reminder, parsedRequest, receiverId);
 
         return repeatReminderService.createReminder(reminder);
     }
@@ -172,6 +175,12 @@ public class ReminderRequestService {
         reminder.setCreator(creator);
         reminder.setCreatorId(creator.getUserId());
 
+        setReceiver(reminder, parsedRequest, receiverId);
+
+        return reminderService.createReminder(reminder);
+    }
+
+    private void setReceiver(Reminder reminder, ParsedRequest parsedRequest, Integer receiverId) {
         if (StringUtils.isNotBlank(parsedRequest.getReceiverName())) {
             reminder.setReceiver(new TgUser() {{
                 setUsername(parsedRequest.getReceiverName());
@@ -188,8 +197,6 @@ public class ReminderRequestService {
             reminder.setReceiverId(reminder.getCreatorId());
         }
         reminder.getReceiver().setZone(parsedRequest.getZone());
-
-        return reminderService.createReminder(reminder);
     }
 
     private ParsedRequest parseWithLoginRequest(String text) {
