@@ -20,8 +20,6 @@ public class TimeParser {
 
     private DateTime parsedTime;
 
-    private String today;
-
     private String tomorrow;
 
     private String dayAfterTomorrow;
@@ -36,7 +34,6 @@ public class TimeParser {
                       ZoneId zoneId, DayOfWeekService dayOfWeekService) {
         this.tomorrow = localisationService.getMessage(MessagesProperties.TOMORROW);
         this.dayAfterTomorrow = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
-        this.today = localisationService.getMessage(MessagesProperties.TODAY);
         this.locale = locale;
         this.lexemsConsumer = lexemsConsumer;
         this.parsedTime = DateTime.now(zoneId).time(null);
