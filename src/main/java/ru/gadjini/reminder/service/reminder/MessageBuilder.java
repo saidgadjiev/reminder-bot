@@ -292,7 +292,7 @@ public class MessageBuilder {
         }));
 
         if (reminder.isRepeatable()) {
-            result.append("\n").append(getNextRemindAt(nextRemindAt));
+            result.append("\n").append(getNextRemindAt(nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId())));
         }
 
         if (StringUtils.isNotBlank(reminder.getNote())) {

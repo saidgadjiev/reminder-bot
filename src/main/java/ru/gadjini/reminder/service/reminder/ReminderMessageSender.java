@@ -63,7 +63,7 @@ public class ReminderMessageSender {
 
         String message;
         if (reminder.isMySelf()) {
-            message = messageBuilder.getRemindMySelf(reminder, itsTime, nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId()));
+            message = messageBuilder.getRemindMySelf(reminder, itsTime, nextRemindAt);
         } else {
             message = messageBuilder.getRemindForReceiver(reminder, itsTime, nextRemindAt);
         }

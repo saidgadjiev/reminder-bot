@@ -94,17 +94,21 @@ public class ReminderJob {
 
     private void sendReminder(Reminder reminder) {
         for (ReminderTime reminderTime : reminder.getReminderTimes()) {
-            switch (reminderTime.getType()) {
-                case ONCE:
-                    sendOnceReminder(reminder, reminderTime);
-                    break;
-                case REPEAT:
-                    if (reminder.isRepeatable()) {
-                        sendRepeatReminderTimeForRepeatableReminder(reminder, reminderTime);
-                    } else {
-                        sendRepeatReminderTime(reminder, reminderTime);
-                    }
-                    break;
+            try {
+                switch (reminderTime.getType()) {
+                    case ONCE:
+                        sendOnceReminder(reminder, reminderTime);
+                        break;
+                    case REPEAT:
+                        if (reminder.isRepeatable()) {
+                            sendRepeatReminderTimeForRepeatableReminder(reminder, reminderTime);
+                        } else {
+                            sendRepeatReminderTime(reminder, reminderTime);
+                        }
+                        break;
+                }
+            } catch (Exception ex) {
+                LOGGER.error(ex.getMessage(), ex);
             }
         }
     }

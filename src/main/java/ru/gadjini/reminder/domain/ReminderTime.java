@@ -101,7 +101,7 @@ public class ReminderTime {
 
     public static ReminderTime onceTime() {
         return new ReminderTime() {{
-            setType(Type.REPEAT);
+            setType(Type.ONCE);
         }};
     }
 
