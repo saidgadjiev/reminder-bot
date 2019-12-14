@@ -68,7 +68,7 @@ public class ReminderMessageSender {
             message = messageBuilder.getRemindForReceiver(reminder, itsTime, nextRemindAt);
         }
 
-        InlineKeyboardMarkup keyboard = keyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable(), null);
+        InlineKeyboardMarkup keyboard = keyboardService.getRemindKeyboard(reminder.getId(), reminder.isRepeatable());
         int messageId = messageService.sendMessage(reminder.getReceiver().getChatId(), message, keyboard).getMessageId();
         remindMessageService.create(reminder.getId(), messageId);
     }
@@ -155,7 +155,7 @@ public class ReminderMessageSender {
                     messageBuilder.getReminderCreatedForCreator(reminder),
                     replyKeyboardMarkup);
         }
-        InlineKeyboardMarkup keyboard = keyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable(), null);
+        InlineKeyboardMarkup keyboard = keyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable());
         int messageId = messageService.sendMessage(reminder.getReceiver().getChatId(), messageForCreator, keyboard).getMessageId();
 
         remindMessageService.create(reminder.getId(), messageId);
@@ -195,7 +195,7 @@ public class ReminderMessageSender {
                             reminder.getText(),
                             updateReminderResult.getNewReminder().getRemindAtInReceiverZone()
                     ),
-                    keyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable(), null)
+                    keyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable())
             );
         }
         if (!reminder.isMySelf()) {
@@ -359,7 +359,7 @@ public class ReminderMessageSender {
                 chatId,
                 messageId,
                 text + "\n\n" + messageBuilder.getCustomRemindText(customRemindResult.getZonedDateTime()),
-                keyboardService.getReceiverReminderKeyboard(customRemindResult.getReminder().getId(), customRemindResult.getReminder().isRepeatable(), null)
+                keyboardService.getReceiverReminderKeyboard(customRemindResult.getReminder().getId(), customRemindResult.getReminder().isRepeatable())
         );
     }
 

@@ -187,4 +187,11 @@ public class ButtonFactory {
             }}.serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
         }};
     }
+
+    public InlineKeyboardButton okButton() {
+        return new InlineKeyboardButton() {{
+            setText(localisationService.getMessage(MessagesProperties.OK_COMMAND_DESCRIPTION));
+            setCallbackData(MessagesProperties.OK_COMMAND_NAME);
+        }};
+    }
 }

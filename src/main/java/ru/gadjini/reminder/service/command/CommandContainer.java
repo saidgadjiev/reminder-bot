@@ -131,7 +131,8 @@ public class CommandContainer {
                 new DeleteReminderNoteCommand(reminderMessageSender, reminderService),
                 new EditReminderCommand(reminderMessageSender, messageService, keyboardService, messageBuilder, reminderService),
                 new ReceiverReminderCommand(reminderMessageSender, messageService, keyboardService, messageBuilder, reminderService, commandNavigator),
-                new FriendDetailsCommand(userService, messageService, keyboardService, localisationService)
+                new FriendDetailsCommand(userService, messageService, keyboardService, localisationService),
+                new OkCommand(messageService)
         );
     }
 

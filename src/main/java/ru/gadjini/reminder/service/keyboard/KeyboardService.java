@@ -11,7 +11,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandExecutor;
@@ -117,7 +116,15 @@ public class KeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getReceiverReminderKeyboard(int reminderId, boolean repeatable, String prevHistoryName) {
+    public InlineKeyboardMarkup getRemindKeyboard(int reminderId, boolean repeatable) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = getReceiverReminderKeyboard(reminderId, repeatable);
+
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.okButton()));
+
+        return inlineKeyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup getReceiverReminderKeyboard(int reminderId, boolean repeatable) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         if (repeatable) {
@@ -126,10 +133,6 @@ public class KeyboardService {
         } else {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId, MessagesProperties.RECEIVER_REMINDER_COMMAND_NAME), buttonFactory.cancelReminderButton(reminderId, MessagesProperties.RECEIVER_REMINDER_COMMAND_NAME)));
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminderId, MessagesProperties.RECEIVER_REMINDER_COMMAND_NAME), buttonFactory.postponeReminderButton(reminderId, MessagesProperties.RECEIVER_REMINDER_COMMAND_NAME)));
-        }
-
-        if (prevHistoryName != null) {
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName)));
         }
 
         return inlineKeyboardMarkup;

@@ -303,4 +303,8 @@ public class MessagesProperties {
     public static final String TIME_ARTICLE = "time.article";
 
     public static final String FRIEND_DETAILS_COMMAND = "frienddetails";
+
+    public static final String OK_COMMAND_DESCRIPTION = "ok.command.description";
+
+    public static final String OK_COMMAND_NAME = "ok";
 }
