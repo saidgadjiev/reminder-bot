@@ -217,20 +217,19 @@ public class ReminderService {
     }
 
     @Transactional
-    public Reminder postponeReminder(int reminderId, ZonedDateTime remindAtInReceiverTimeZone) {
-        ZonedDateTime remindAt = remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC);
-
+    public Reminder postponeReminder(int reminderId, DateTime remindAtInReceiverZone) {
+        DateTime remindAt = remindAtInReceiverZone.withZoneSameInstant(ZoneOffset.UTC);
         reminderDao.update(
                 new HashMap<>() {{
-                    put(ReminderTable.TABLE.REMIND_AT, Timestamp.valueOf(remindAt.toLocalDateTime()));
+                    put(ReminderTable.TABLE.REMIND_AT, remindAt.sqlObject());
                 }},
                 ReminderTable.TABLE.ID.equal(reminderId),
                 null
         );
         Reminder reminder = new Reminder();
-        reminder.setRemindAt(DateTime.of(remindAt));
+        reminder.setRemindAt(remindAt);
 
-        List<ReminderTime> reminderTimes = getReminderTimes(reminder.getRemindAt().toZonedDateTime());
+        List<ReminderTime> reminderTimes = getReminderTimes(remindAtInReceiverZone);
         reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(reminderId));
         reminderTimeService.deleteReminderTimes(reminderId);
         reminderTimeService.create(reminderTimes);

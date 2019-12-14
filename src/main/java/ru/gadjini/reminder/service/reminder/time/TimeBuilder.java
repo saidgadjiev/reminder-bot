@@ -123,19 +123,10 @@ public class TimeBuilder {
         return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt);
     }
 
-    public String postponeTime(ZonedDateTime remindAt) {
-        ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
-        String time = DATE_TIME_FORMATTER.format(remindAt) + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")";
+    public String postponeTime(DateTime remindAt) {
+        String time = time(remindAt);
 
-        if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{time});
-        } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 1) {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{tomorrowTime(remindAt)});
-        } else if (remindAt.getDayOfMonth() - now.getDayOfMonth() == 2) {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{dayAfterTomorrowTime(remindAt)});
-        } else {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{fixedDay(remindAt)});
-        }
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[] {time});
     }
 
     public String time(Reminder reminder) {

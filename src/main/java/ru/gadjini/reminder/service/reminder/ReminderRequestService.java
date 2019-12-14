@@ -21,6 +21,7 @@ import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;
 import ru.gadjini.reminder.service.parser.reminder.parser.ParsedRequest;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.validation.ValidationService;
+import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.ReminderUtils;
 
 import java.time.ZoneId;
@@ -130,10 +131,16 @@ public class ReminderRequestService {
     }
 
     public UpdateReminderResult postponeReminder(Reminder reminder, ParsedPostponeTime parsedPostponeTime) {
-        ZonedDateTime remindAtInReceiverTimeZone = ReminderUtils.buildRemindAt(parsedPostponeTime, reminder.getRemindAtInReceiverZone().toZonedDateTime());
-        validationService.validateIsNotPastTime(remindAtInReceiverTimeZone);
+        DateTime remindAtInReceiverZone = ReminderUtils.buildRemindAt(parsedPostponeTime, reminder.getRemindAtInReceiverZone().copy());
+        if (!reminder.getRemindAt().hasTime()) {
+            remindAtInReceiverZone.time(null);
+        } else {
+            validationService.validateIsNotPastTime(remindAtInReceiverZone);
+        }
+        Reminder newReminder = reminderService.postponeReminder(reminder.getId(), remindAtInReceiverZone);
+        newReminder.setReceiver(reminder.getReceiver());
 
-        return new UpdateReminderResult(reminder, reminderService.postponeReminder(reminder.getId(), remindAtInReceiverTimeZone));
+        return new UpdateReminderResult(reminder, newReminder);
     }
 
     private ParsedRequest parseRequest(String text) {

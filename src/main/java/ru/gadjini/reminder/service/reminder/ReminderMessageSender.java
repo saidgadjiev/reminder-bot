@@ -68,7 +68,7 @@ public class ReminderMessageSender {
             message = messageBuilder.getRemindForReceiver(reminder, itsTime, nextRemindAt);
         }
 
-        InlineKeyboardMarkup keyboard = keyboardService.getReceiverReminderKeyboard(reminder.getId(), null);
+        InlineKeyboardMarkup keyboard = keyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable(), null);
         int messageId = messageService.sendMessage(reminder.getReceiver().getChatId(), message, keyboard).getMessageId();
         remindMessageService.create(reminder.getId(), messageId);
     }
@@ -155,7 +155,7 @@ public class ReminderMessageSender {
                     messageBuilder.getReminderCreatedForCreator(reminder),
                     replyKeyboardMarkup);
         }
-        InlineKeyboardMarkup keyboard = keyboardService.getReceiverReminderKeyboard(reminder.getId(), null);
+        InlineKeyboardMarkup keyboard = keyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable(), null);
         int messageId = messageService.sendMessage(reminder.getReceiver().getChatId(), messageForCreator, keyboard).getMessageId();
 
         remindMessageService.create(reminder.getId(), messageId);
@@ -194,8 +194,8 @@ public class ReminderMessageSender {
                     messageBuilder.getReminderPostponedForReceiver(
                             reminder.getText(),
                             updateReminderResult.getNewReminder().getRemindAtInReceiverZone()
-                    ) + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED),
-                    keyboardService.getReceiverReminderKeyboard(reminder.getId(), null)
+                    ),
+                    keyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable(), null)
             );
         }
         if (!reminder.isMySelf()) {
@@ -359,7 +359,7 @@ public class ReminderMessageSender {
                 chatId,
                 messageId,
                 text + "\n\n" + messageBuilder.getCustomRemindText(customRemindResult.getZonedDateTime()),
-                keyboardService.getReceiverReminderKeyboard(customRemindResult.getReminder().getId(), null)
+                keyboardService.getReceiverReminderKeyboard(customRemindResult.getReminder().getId(), customRemindResult.getReminder().isRepeatable(), null)
         );
     }
 

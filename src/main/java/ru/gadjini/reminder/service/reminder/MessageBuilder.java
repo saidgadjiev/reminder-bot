@@ -43,7 +43,7 @@ public class MessageBuilder {
                     )
             );
         } else {
-            result.append(timeBuilder.time(reminder.getRemindAt()));
+            result.append(timeBuilder.time(reminder.getRemindAt().withZoneSameInstant(reminder.getReceiverZoneId())));
         }
 
         if (StringUtils.isNotBlank(note)) {
@@ -157,7 +157,7 @@ public class MessageBuilder {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED_CREATOR, new Object[]{
                 UserUtils.userLink(receiver),
                 text,
-                timeBuilder.postponeTime(remindAt.toZonedDateTime())
+                timeBuilder.postponeTime(remindAt)
         });
     }
 
@@ -196,7 +196,7 @@ public class MessageBuilder {
     public String getReminderPostponedForReceiver(String text, DateTime remindAt) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED_RECEIVER, new Object[]{
                 text,
-                timeBuilder.postponeTime(remindAt.toZonedDateTime())
+                timeBuilder.postponeTime(remindAt)
         });
     }
 

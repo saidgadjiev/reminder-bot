@@ -3,6 +3,7 @@ package ru.gadjini.reminder.util;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 import ru.gadjini.reminder.service.parser.postpone.parser.PostponeOn;
 import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;
+import ru.gadjini.reminder.time.DateTime;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -10,9 +11,10 @@ import java.time.ZonedDateTime;
 
 public class ReminderUtils {
 
-    private ReminderUtils() { }
+    private ReminderUtils() {
+    }
 
-    public static ZonedDateTime buildRemindAt(ParsedPostponeTime parsedTime, ZonedDateTime remindAt) {
+    public static DateTime buildRemindAt(ParsedPostponeTime parsedTime, DateTime remindAt) {
         if (parsedTime.getPostponeOn() != null) {
             PostponeOn postponeOn = parsedTime.getPostponeOn();
 
@@ -28,7 +30,7 @@ public class ReminderUtils {
 
             return remindAt;
         } else {
-            return parsedTime.getPostponeAt();
+            return DateTime.of(parsedTime.getPostponeAt());
         }
     }
 

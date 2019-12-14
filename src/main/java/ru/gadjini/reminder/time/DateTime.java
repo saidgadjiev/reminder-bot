@@ -1,5 +1,8 @@
 package ru.gadjini.reminder.time;
 
+import org.postgresql.util.PGobject;
+
+import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
@@ -39,6 +42,18 @@ public class DateTime {
         return this;
     }
 
+    public DateTime plusHours(int hours) {
+        localTime = localTime.plusHours(hours);
+
+        return this;
+    }
+
+    public DateTime plusMinutes(int minutes) {
+        localTime = localTime.plusMinutes(minutes);
+
+        return this;
+    }
+
     public DateTime plusMonths(int months) {
         localDate = localDate.plusMonths(months);
 
@@ -71,6 +86,10 @@ public class DateTime {
         return this;
     }
 
+    public DateTime copy() {
+        return DateTime.of(localDate, localTime, zoneId);
+    }
+
     public boolean hasTime() {
         return localTime != null;
     }
@@ -101,6 +120,18 @@ public class DateTime {
         sql.append(")");
 
         return sql.toString();
+    }
+
+    public PGobject sqlObject() {
+        PGobject pGobject = new PGobject();
+        pGobject.setType("datetime");
+        try {
+            pGobject.setValue(sql());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return pGobject;
     }
 
     public static DateTime of(LocalDate localDate, LocalTime localTime, ZoneId zoneId) {

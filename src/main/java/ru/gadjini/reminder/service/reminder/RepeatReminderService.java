@@ -59,8 +59,8 @@ public class RepeatReminderService {
     public void updateNextRemindAt(int reminderId, DateTime nextRemindAt) {
         reminderDao.update(
                 new HashMap<>() {{
-                    put(ReminderTable.TABLE.REMIND_AT, nextRemindAt.sql());
-                    put(ReminderTable.TABLE.INITIAL_REMIND_AT, nextRemindAt.sql());
+                    put(ReminderTable.TABLE.REMIND_AT, nextRemindAt.sqlObject());
+                    put(ReminderTable.TABLE.INITIAL_REMIND_AT, nextRemindAt.sqlObject());
                 }},
                 ReminderTable.TABLE.ID.equal(reminderId),
                 null
