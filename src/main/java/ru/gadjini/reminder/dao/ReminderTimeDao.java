@@ -2,16 +2,18 @@ package ru.gadjini.reminder.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.ReminderTime;
+import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +23,34 @@ public class ReminderTimeDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    private ResultSetMapper resultSetMapper;
+
     @Autowired
-    public ReminderTimeDao(JdbcTemplate jdbcTemplate) {
+    public ReminderTimeDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.resultSetMapper = resultSetMapper;
+    }
+
+    public ReminderTime getById(int id) {
+        return jdbcTemplate.query(
+                "SELECT * FROM reminder_time WHERE id = ?",
+                prepared -> prepared.setInt(1, id),
+                rs -> {
+                    if (rs.next()) {
+                        return resultSetMapper.mapReminderTime(rs, "");
+                    }
+
+                    return null;
+                }
+        );
+    }
+
+    public List<ReminderTime> getReminderTimes(int reminderId) {
+        return jdbcTemplate.query(
+                "SELECT * FROM reminder_time WHERE reminder_id = ?",
+                prepared -> prepared.setInt(1, reminderId),
+                (rs, rowNum) -> resultSetMapper.mapReminderTime(rs, "")
+        );
     }
 
     public void create(ReminderTime reminderTime) {
@@ -33,8 +60,19 @@ public class ReminderTimeDao {
                 .execute(sqlParameterSource(reminderTime));
     }
 
-    public void delete(int id) {
-        jdbcTemplate.update("DELETE FROM reminder_time WHERE id = ?", ps -> ps.setInt(1, id));
+    public int delete(int id) {
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(
+                con -> {
+                    PreparedStatement ps = con.prepareStatement("DELETE FROM reminder_time WHERE id = ? RETURNING reminder_id", Statement.RETURN_GENERATED_KEYS);
+                    ps.setInt(1, id);
+
+                    return ps;
+                },
+                generatedKeyHolder);
+
+        return (int) generatedKeyHolder.getKeys().get("reminder_id");
     }
 
     public void updateLastRemindAt(int id, LocalDateTime lastReminderAt) {

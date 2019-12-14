@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
+import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.ZonedDateTime;
@@ -25,6 +27,20 @@ public class MessageBuilder {
     public MessageBuilder(LocalisationService localisationService, TimeBuilder timeBuilder) {
         this.localisationService = localisationService;
         this.timeBuilder = timeBuilder;
+    }
+
+    public String getReminderTimesListMessage(List<ReminderTime> reminderTimes) {
+        StringBuilder message = new StringBuilder();
+
+        int i = 1;
+        for (ReminderTime reminderTime : reminderTimes) {
+            if (message.length() > 0) {
+                message.append("\n");
+            }
+            message.append(i++).append(") ").append(timeBuilder.time(reminderTime));
+        }
+
+        return message.toString();
     }
 
     public String getReminderMessage(Reminder reminder) {
@@ -161,7 +177,7 @@ public class MessageBuilder {
         });
     }
 
-    public String getRemindersListInfo(int requesterId, List<Reminder> reminders) {
+    public String getRemindersListMessage(int requesterId, List<Reminder> reminders) {
         StringBuilder text = new StringBuilder();
 
         int i = 1;

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
@@ -29,6 +30,28 @@ public class TimeBuilder {
     public TimeBuilder(LocalisationService localisationService, IntervalLocalisationService intervalLocalisationService) {
         this.localisationService = localisationService;
         this.intervalLocalisationService = intervalLocalisationService;
+    }
+
+    public String time(ReminderTime reminderTime) {
+        if (reminderTime.getType().equals(ReminderTime.Type.ONCE)) {
+            return time(reminderTime.getFixedTime());
+        }
+
+        StringBuilder time = new StringBuilder();
+        if (reminderTime.getDelayTime().getDays() == 7) {
+            DayOfWeek dayOfWeek = reminderTime.getLastReminderAt().getDayOfWeek();
+
+            time.append(getRepeatWord(dayOfWeek)).append(" ");
+            time.append(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())).append(" ");
+            time.append(DATE_TIME_FORMATTER.format(reminderTime.getLastReminderAt()));
+        } else {
+            time.append(intervalLocalisationService.get(reminderTime.getDelayTime()));
+            if (reminderTime.getLastReminderAt() != null) {
+                time.append(" ").append(DATE_TIME_FORMATTER.format(reminderTime.getLastReminderAt()));
+            }
+        }
+
+        return time.toString();
     }
 
     public String time(DateTime dateTime) {
@@ -120,7 +143,7 @@ public class TimeBuilder {
         String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
         String today = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
 
-        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt);
+        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
     }
 
     public String postponeTime(DateTime remindAt) {

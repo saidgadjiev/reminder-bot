@@ -54,6 +54,22 @@ public class Reminder {
 
     private RepeatTime repeatRemindAt;
 
+    public Reminder() {
+    }
+
+    public Reminder(Reminder reminder) {
+        this.id = reminder.id;
+        this.text = reminder.text;
+        this.creatorId = reminder.creatorId;
+        this.creator = reminder.creator;
+        this.receiverId = reminder.receiverId;
+        this.receiver = reminder.receiver;
+        this.remindAt = reminder.remindAt;
+        this.initialRemindAt = reminder.initialRemindAt;
+        this.status = reminder.status;
+        this.note = reminder.note;
+    }
+
     public int getId() {
         return id;
     }

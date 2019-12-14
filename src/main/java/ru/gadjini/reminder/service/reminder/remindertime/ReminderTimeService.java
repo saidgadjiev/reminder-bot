@@ -30,11 +30,19 @@ public class ReminderTimeService {
         reminderTimeDao.deleteByReminderId(reminderId);
     }
 
-    public void deleteReminderTime(int id) {
-        reminderTimeDao.delete(id);
+    public int deleteReminderTime(int id) {
+        return reminderTimeDao.delete(id);
     }
 
     public void updateLastRemindAt(int id, LocalDateTime lastReminderAt) {
         reminderTimeDao.updateLastRemindAt(id, lastReminderAt);
+    }
+
+    public List<ReminderTime> getReminderTimes(int reminderId) {
+        return reminderTimeDao.getReminderTimes(reminderId);
+    }
+
+    public ReminderTime getReminderTime(int id) {
+        return reminderTimeDao.getById(id);
     }
 }

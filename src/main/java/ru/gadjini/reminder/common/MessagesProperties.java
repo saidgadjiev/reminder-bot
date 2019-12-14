@@ -307,4 +307,16 @@ public class MessagesProperties {
     public static final String OK_COMMAND_DESCRIPTION = "ok.command.description";
 
     public static final String OK_COMMAND_NAME = "ok";
+
+    public static final String SCHEDULE_COMMAND_NAME = "reminderschedule";
+
+    public static final String SCHEDULE_COMMAND_DESCRIPTION = "schedule.command.description";
+
+    public static final String REMINDER_TIME_DETAILS_COMMAND_NAME = "remindertimedetails";
+
+    public static final String DELETE_REMINDER_TIME_COMMAND_NAME = "deleteremindertime";
+
+    public static final String DELETE_REMINDER_TIME_COMMAND_DESCRIPTION = "delete.reminder.time.command.description";
+
+    public static final String MESSAGE_REMINDER_TIME_DELETED = "message.reminder.time.deleted";
 }

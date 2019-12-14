@@ -194,4 +194,22 @@ public class ButtonFactory {
             setCallbackData(MessagesProperties.OK_COMMAND_NAME);
         }};
     }
+
+    public InlineKeyboardButton reminderTimesScheduleButton(int reminderId) {
+        return new InlineKeyboardButton() {{
+            setText(localisationService.getMessage(MessagesProperties.SCHEDULE_COMMAND_DESCRIPTION));
+            setCallbackData(MessagesProperties.SCHEDULE_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
+                add(Arg.REMINDER_ID.getKey(), reminderId);
+            }}.serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
+        }};
+    }
+
+    public InlineKeyboardButton deleteReminderTimeButton(int reminderTimeId) {
+        return new InlineKeyboardButton() {{
+            setText(localisationService.getMessage(MessagesProperties.DELETE_REMINDER_TIME_COMMAND_DESCRIPTION));
+            setCallbackData(MessagesProperties.DELETE_REMINDER_TIME_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
+                add(Arg.REMINDER_TIME_ID.getKey(), reminderTimeId);
+            }}.serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
+        }};
+    }
 }

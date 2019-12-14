@@ -374,7 +374,7 @@ public class ReminderMessageSender {
         } else {
             User user = securityService.getAuthenticatedUser();
 
-            String text = messageBuilder.getRemindersListInfo(user.getId(), reminders);
+            String text = messageBuilder.getRemindersListMessage(user.getId(), reminders);
 
             messageService.editMessage(
                     chatId,
@@ -396,7 +396,7 @@ public class ReminderMessageSender {
         } else {
             User user = securityService.getAuthenticatedUser();
 
-            String text = messageBuilder.getRemindersListInfo(user.getId(), reminders);
+            String text = messageBuilder.getRemindersListMessage(user.getId(), reminders);
 
             messageService.editMessage(
                     chatId,

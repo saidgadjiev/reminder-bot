@@ -88,8 +88,9 @@ public class ReminderDao {
                         "       r.creator_id,\n" +
                         "       r.receiver_id,\n" +
                         "       r.remind_at,\n" +
+                        "       r.repeat_remind_at,\n" +
                         "       (r.remind_at).*,\n" +
-                        "       r.initial_remind_at,\n" +
+                        "       (r.repeat_remind_at).*,\n" +
                         "       r.note,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.first_name                                    AS rc_first_name,\n" +
@@ -107,8 +108,9 @@ public class ReminderDao {
                         "       r.creator_id,\n" +
                         "       r.receiver_id,\n" +
                         "       r.remind_at,\n" +
+                        "       r.repeat_remind_at,\n" +
                         "       (r.remind_at).*,\n" +
-                        "       r.initial_remind_at,\n" +
+                        "       (r.repeat_remind_at).*,\n" +
                         "       r.note,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.first_name                                    as rc_first_name,\n" +
@@ -272,10 +274,12 @@ public class ReminderDao {
                 rs -> {
                     if (rs.next()) {
                         Reminder oldReminder = resultSetMapper.mapReminder(rs, new ReminderMapping() {{
-                            setReceiverMapping(new Mapping());
+                            setReceiverMapping(new Mapping() {{
+                                setFields(List.of(ReminderMapping.RC_CHAT_ID));
+                            }});
                         }});
-                        Reminder newReminder = new Reminder();
-                        newReminder.setText(oldReminder.getText());
+                        Reminder newReminder = new Reminder(oldReminder);
+                        newReminder.setText(newText);
 
                         oldReminder.setText(rs.getString("old_text"));
 
