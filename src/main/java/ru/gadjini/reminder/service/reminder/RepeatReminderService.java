@@ -206,7 +206,7 @@ public class RepeatReminderService {
         fixedReminderTime(repeatReminder.toLocalDate(), zoneId, repeatTime.getInterval().getDays(), repeatTime.getTime().minusMinutes(20), reminderTimes);
         fixedReminderTime(repeatReminder.toLocalDate(), zoneId, repeatTime.getInterval().getDays(), repeatTime.getTime().minusHours(1), reminderTimes);
         fixedReminderTime(repeatReminder.toLocalDate(), zoneId, repeatTime.getInterval().getDays(), repeatTime.getTime().minusHours(2), reminderTimes);
-        fixedReminderTime(repeatReminder.toLocalDate(), zoneId, repeatTime.getInterval().getDays() + 1, LocalTime.of(22, 0), reminderTimes);
+        fixedReminderTime(repeatReminder.toLocalDate().minusDays(1), zoneId, repeatTime.getInterval().getDays(), LocalTime.of(22, 0), reminderTimes);
     }
 
     private void addWeeklyReminderTimes(RepeatTime repeatTime, ZoneId zoneId, List<ReminderTime> reminderTimes) {
@@ -217,7 +217,7 @@ public class RepeatReminderService {
         fixedReminderTime(repeatReminder.toLocalDate(), zoneId, 7, repeatTime.getTime().minusMinutes(20), reminderTimes);
         fixedReminderTime(repeatReminder.toLocalDate(), zoneId, 7, repeatTime.getTime().minusHours(1), reminderTimes);
         fixedReminderTime(repeatReminder.toLocalDate(), zoneId, 7, repeatTime.getTime().minusHours(2), reminderTimes);
-        fixedReminderTime(repeatReminder.toLocalDate(), zoneId, 8, LocalTime.of(22, 0), reminderTimes);
+        fixedReminderTime(repeatReminder.toLocalDate().minusDays(1), zoneId, 7, LocalTime.of(22, 0), reminderTimes);
     }
 
     private void addWeeklyReminderTimesWithoutTime(RepeatTime repeatTime, ZoneId zoneId, List<ReminderTime> reminderTimes) {
