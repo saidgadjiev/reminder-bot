@@ -100,7 +100,7 @@ public class FriendshipDao {
                         "          WHEN f.user_one_id = :user_id THEN f.user_two_id = tu.user_id\n" +
                         "          WHEN f.user_two_id = :user_id THEN f.user_one_id = tu.user_id\n" +
                         "          ELSE false END\n" +
-                        "  AND f.status = :state",
+                        "  AND f.status = :state ORDER BY tu.first_name",
                 new MapSqlParameterSource().addValue("user_id", userId).addValue("state", status.getCode()),
                 (rs, rowNum) -> resultSetMapper.mapUser(rs)
         );

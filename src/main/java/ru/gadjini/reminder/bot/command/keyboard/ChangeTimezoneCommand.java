@@ -11,14 +11,13 @@ import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.time.DateTimeFormats;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableCallbackBotCommand {
-
-    private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private String name;
 
@@ -57,7 +56,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableCallb
 
         messageService.sendMessageByCode(message.getChatId(), MessagesProperties.CURRENT_TIMEZONE, new Object[]{
                         zoneId.toString(),
-                        dateTimeFormatter.format(ZonedDateTime.now(zoneId))
+                        DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(ZonedDateTime.now(zoneId))
                 },
                 keyboardService.goBackCommand());
     }
@@ -80,7 +79,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableCallb
 
         messageService.sendMessageByCode(message.getChatId(), MessagesProperties.TIMEZONE_CHANGED, new Object[]{
                 zoneId.toString(),
-                dateTimeFormatter.format(ZonedDateTime.now(zoneId))
+                DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(ZonedDateTime.now(zoneId))
         }, replyKeyboardMarkup);
     }
 }

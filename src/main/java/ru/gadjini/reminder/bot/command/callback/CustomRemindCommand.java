@@ -67,13 +67,17 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
         requests.put(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         String prevHistoryName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
-        messageService.editMessage(
+        messageService.editReplyKeyboard(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
-                callbackQuery.getMessage().getText() + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND),
                 keyboardService.goBackCallbackButton(prevHistoryName, true, requestParams)
         );
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION);
+        messageService.sendMessage(
+                callbackQuery.getMessage().getChatId(),
+                localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND),
+                keyboardService.replyKeyboardRemove()
+        );
     }
 
     @Override

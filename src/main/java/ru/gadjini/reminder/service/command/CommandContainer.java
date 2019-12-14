@@ -50,7 +50,8 @@ public class CommandContainer {
         }
         for (CallbackBotCommand botCommand : getCallbackBotCommands(keyboardService, friendshipService,
                 commandNavigator, reminderService, reminderRequestService,
-                reminderMessageSender, messageService, callbackCommandNavigator, localisationService, messageBuilder, securityService)) {
+                reminderMessageSender, messageService, callbackCommandNavigator,
+                localisationService, messageBuilder, tgUserService, securityService)) {
             callbackBotCommandMap.put(botCommand.getName(), botCommand);
         }
         keyboardBotCommands = getKeyboardBotCommands(
@@ -107,12 +108,13 @@ public class CommandContainer {
                                                             CallbackCommandNavigator callbackCommandNavigator,
                                                             LocalisationService localisationService,
                                                             MessageBuilder messageBuilder,
+                                                            TgUserService userService,
                                                             SecurityService securityService) {
         return List.of(
                 new CompleteCommand(reminderService, reminderMessageSender),
                 new AcceptFriendRequestCommand(friendshipService, messageService),
                 new RejectFriendRequestCommand(friendshipService, messageService),
-                new DeleteFriendCommand(messageService, friendshipService),
+                new DeleteFriendCommand(messageService, friendshipService, keyboardService),
                 new CreateReminderCommand(reminderRequestService, messageService, keyboardService, commandNavigator, reminderMessageSender),
                 new ChangeReminderTimeCommand(reminderMessageSender, messageService, reminderRequestService, commandNavigator, keyboardService, localisationService),
                 new ChangeReminderTextCommand(reminderMessageSender, messageService, reminderService, commandNavigator, keyboardService, localisationService),
@@ -128,7 +130,8 @@ public class CommandContainer {
                 new ChangeReminderNoteCommand(reminderMessageSender, messageService, reminderService, commandNavigator, keyboardService, localisationService),
                 new DeleteReminderNoteCommand(reminderMessageSender, reminderService),
                 new EditReminderCommand(reminderMessageSender, messageService, keyboardService, messageBuilder, reminderService),
-                new ReceiverReminderCommand(reminderMessageSender, messageService, keyboardService, messageBuilder, reminderService, commandNavigator)
+                new ReceiverReminderCommand(reminderMessageSender, messageService, keyboardService, messageBuilder, reminderService, commandNavigator),
+                new FriendDetailsCommand(userService, messageService, keyboardService, localisationService)
         );
     }
 

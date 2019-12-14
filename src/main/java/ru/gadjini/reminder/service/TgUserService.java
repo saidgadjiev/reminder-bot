@@ -18,6 +18,10 @@ public class TgUserService {
         this.tgUserDao = tgUserDao;
     }
 
+    public TgUser getByUserId(int userId) {
+        return tgUserDao.getByUserId(userId);
+    }
+
     public void createOrUpdateUser(long chatId, User user) {
         TgUser tgUser = new TgUser();
 

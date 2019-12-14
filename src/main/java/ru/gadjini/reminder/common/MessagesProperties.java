@@ -76,6 +76,8 @@ public class MessagesProperties {
 
     public static final String GET_FRIENDS_COMMAND_NAME = "get.friends.command.name";
 
+    public static final String GET_FRIENDS_COMMAND_HISTORY_NAME = "friendslist";
+
     public static final String CREATE_REMINDER_COMMAND_NAME = "createreminder";
 
     public static final String CREATE_REMINDER_COMMAND_DESCRIPTION = "create.reminder.command.description";
@@ -100,7 +102,7 @@ public class MessagesProperties {
 
     public static final String GET_REMINDERS_COMMAND_NAME = "get.reminder.command.name";
 
-    public static final String GET_REMINDERS_COMMAND_HISTORY_NAME = "getreminders";
+    public static final String GET_REMINDERS_COMMAND_HISTORY_NAME = "reminders";
 
     public static final String EDIT_REMINDER_TIME_COMMAND_NAME = "editremindertime";
 
@@ -210,11 +212,11 @@ public class MessagesProperties {
 
     public static final String GET_COMPLETED_REMINDERS_COMMAND_DESCRIPTION = "get.completed.reminders.command.description";
 
-    public static final String GET_COMPLETED_REMINDERS_COMMAND_NAME = "getcompletedreminders";
+    public static final String GET_COMPLETED_REMINDERS_COMMAND_NAME = "completedreminders";
 
     public static final String GET_ACTIVE_REMINDERS_COMMAND_DESCRIPTION = "get.active.reminders.command.description";
 
-    public static final String GET_ACTIVE_REMINDERS_COMMAND_NAME = "getactivereminders";
+    public static final String GET_ACTIVE_REMINDERS_COMMAND_NAME = "activereminders";
 
     public static final String MESSAGE_LET_SEE_ON_REMINDERS = "message.let.see.on.reminders";
 
@@ -231,6 +233,8 @@ public class MessagesProperties {
     public static final String CHANGE_TIMEZONE_COMMAND_HISTORY_NAME = "changetimezone";
 
     public static final String CURRENT_TIMEZONE = "current.timezone";
+
+    public static final String TIMEZONE = "timezone";
 
     public static final String TIMEZONE_CHANGED = "timezone.changed";
 
@@ -297,4 +301,6 @@ public class MessagesProperties {
     public static final String DAY_AFTER_TOMORROW = "day.after.tomorrow";
 
     public static final String TIME_ARTICLE = "time.article";
+
+    public static final String FRIEND_DETAILS_COMMAND = "frienddetails";
 }

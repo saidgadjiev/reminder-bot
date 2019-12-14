@@ -29,6 +29,7 @@ public class ResultSetMapper {
         tgUser.setFirstName(resultSet.getString(TgUser.FIRST_NAME));
         tgUser.setLastName(resultSet.getString(TgUser.LAST_NAME));
         tgUser.setUserId(resultSet.getInt(TgUser.USER_ID));
+        tgUser.setZoneId(resultSet.getString(TgUser.ZONE_ID));
 
         return tgUser;
     }

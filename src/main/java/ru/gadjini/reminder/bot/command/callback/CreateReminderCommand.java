@@ -53,7 +53,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        reminderRequests.put(callbackQuery.getMessage().getChatId(), requestParams.getInt(Arg.REMINDER_ID.getKey()));
+        reminderRequests.put(callbackQuery.getMessage().getChatId(), requestParams.getInt(Arg.FRIEND_ID.getKey()));
         messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT, keyboardService.goBackCommand());
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_CREATE_REMINDER_CALLBACK_ANSWER);
     }

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
 import java.time.ZoneId;
 
@@ -12,9 +13,26 @@ public class TgUserDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    private ResultSetMapper resultSetMapper;
+
     @Autowired
-    public TgUserDao(JdbcTemplate jdbcTemplate) {
+    public TgUserDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.resultSetMapper = resultSetMapper;
+    }
+
+    public TgUser getByUserId(int userId) {
+        return jdbcTemplate.query(
+                "SELECT * FROM tg_user WHERE user_id = ?",
+                preparedStatement -> preparedStatement.setInt(1, userId),
+                resultSet -> {
+                    if (resultSet.next()) {
+                        return resultSetMapper.mapUser(resultSet);
+                    }
+
+                    return null;
+                }
+        );
     }
 
     public void createOrUpdate(TgUser tgUser) {

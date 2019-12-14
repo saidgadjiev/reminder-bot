@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandExecutor;
@@ -30,6 +31,29 @@ public class KeyboardService {
     public KeyboardService(LocalisationService localisationService, ButtonFactory buttonFactory) {
         this.localisationService = localisationService;
         this.buttonFactory = buttonFactory;
+    }
+
+    public InlineKeyboardMarkup getFriendsListKeyboard(List<Integer> friendsUserIds) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
+
+        int i = 1;
+        List<List<Integer>> lists = Lists.partition(friendsUserIds, 4);
+        for (List<Integer> list : lists) {
+            List<InlineKeyboardButton> row = new ArrayList<>();
+
+            for (int friendUserId : list) {
+                InlineKeyboardButton button = new InlineKeyboardButton();
+                button.setText(String.valueOf(i++));
+                button.setCallbackData(MessagesProperties.FRIEND_DETAILS_COMMAND + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
+                    add(Arg.FRIEND_ID.getKey(), friendUserId);
+                }}.serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
+                row.add(button);
+            }
+
+            inlineKeyboardMarkup.getKeyboard().add(row);
+        }
+
+        return inlineKeyboardMarkup;
     }
 
     public ReplyKeyboardMarkup getPostponeMessagesKeyboard() {
@@ -139,6 +163,9 @@ public class KeyboardService {
                 buttonFactory.createFriendReminderButton(friendUserId),
                 buttonFactory.deleteFriendButton(friendUserId))
         );
+        inlineKeyboardMarkup.getKeyboard().add(List.of(
+                buttonFactory.goBackCallbackButton(MessagesProperties.GET_FRIENDS_COMMAND_HISTORY_NAME)
+        ));
 
         return inlineKeyboardMarkup;
     }
