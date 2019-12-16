@@ -18,7 +18,7 @@ import ru.gadjini.reminder.service.reminder.MessageBuilder;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
-import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
+import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.service.security.SecurityService;
 
@@ -49,7 +49,7 @@ public class CommandContainer {
                             CallbackCommandNavigator callbackCommandNavigator,
                             MessageBuilder messageBuilder,
                             TimeBuilder timeBuilder,
-                            ReminderTimeService reminderTimeService,
+                            ReminderNotificationService reminderNotificationService,
                             TimezoneService timezoneService) {
         for (BotCommand botCommand : getBotCommands(keyboardService, reminderRequestService, tgUserService, reminderMessageSender, messageService)) {
             botCommandRegistryMap.put(botCommand.getCommandIdentifier(), botCommand);
@@ -57,7 +57,7 @@ public class CommandContainer {
         for (CallbackBotCommand botCommand : getCallbackBotCommands(keyboardService, friendshipService,
                 commandNavigator, reminderService, reminderRequestService,
                 reminderMessageSender, messageService, callbackCommandNavigator,
-                localisationService, messageBuilder, timeBuilder, tgUserService, reminderTimeService, securityService)) {
+                localisationService, messageBuilder, timeBuilder, tgUserService, reminderNotificationService, securityService)) {
             callbackBotCommandMap.put(botCommand.getName(), botCommand);
         }
         keyboardBotCommands = getKeyboardBotCommands(
@@ -116,7 +116,7 @@ public class CommandContainer {
                                                             MessageBuilder messageBuilder,
                                                             TimeBuilder timeBuilder,
                                                             TgUserService userService,
-                                                            ReminderTimeService reminderTimeService,
+                                                            ReminderNotificationService reminderNotificationService,
                                                             SecurityService securityService) {
         return List.of(
                 new CompleteCommand(reminderService, reminderMessageSender),
@@ -141,9 +141,9 @@ public class CommandContainer {
                 new ReceiverReminderCommand(reminderMessageSender, messageService, keyboardService, messageBuilder, reminderService, commandNavigator),
                 new FriendDetailsCommand(userService, messageService, keyboardService, localisationService),
                 new OkCommand(messageService),
-                new ReminderTimeScheduleCommand(reminderTimeService, messageService, keyboardService, timeBuilder),
-                new ReminderTimeDetailsCommand(reminderTimeService, messageBuilder, messageService, keyboardService),
-                new DeleteReminderTimeCommand(reminderTimeService, messageService, keyboardService)
+                new ReminderTimeScheduleCommand(reminderNotificationService, messageService, keyboardService, timeBuilder),
+                new ReminderTimeDetailsCommand(reminderNotificationService, messageBuilder, messageService, keyboardService),
+                new DeleteReminderTimeCommand(reminderNotificationService, messageService, keyboardService)
         );
     }
 

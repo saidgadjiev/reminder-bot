@@ -9,7 +9,7 @@ public class CustomRemindTime {
 
     private DateTime time;
 
-    private OffsetTime offsetTime;
+    private ParsedOffsetTime parsedOffsetTime;
 
     public RepeatTime getRepeatTime() {
         return repeatTime;
@@ -27,12 +27,12 @@ public class CustomRemindTime {
         this.time = time;
     }
 
-    public OffsetTime getRemindTime() {
-        return offsetTime;
+    public ParsedOffsetTime getRemindTime() {
+        return parsedOffsetTime;
     }
 
-    public void setOffsetTime(OffsetTime offsetTime) {
-        this.offsetTime = offsetTime;
+    public void setParsedOffsetTime(ParsedOffsetTime parsedOffsetTime) {
+        this.parsedOffsetTime = parsedOffsetTime;
     }
 
     public boolean isRepeatTime() {
@@ -43,7 +43,7 @@ public class CustomRemindTime {
         return time != null;
     }
 
-    public boolean getOffsetTime() {
-        return offsetTime != null;
+    public boolean getParsedOffsetTime() {
+        return parsedOffsetTime != null;
     }
 }

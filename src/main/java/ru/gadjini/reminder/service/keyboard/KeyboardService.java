@@ -154,10 +154,12 @@ public class KeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getRemindKeyboard(int reminderId, boolean repeatable) {
+    public InlineKeyboardMarkup getRemindKeyboard(int reminderId, boolean itsTime, boolean repeatable) {
         InlineKeyboardMarkup inlineKeyboardMarkup = getReceiverReminderKeyboard(reminderId, repeatable);
 
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.okButton()));
+        if (!itsTime) {
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.okButton()));
+        }
 
         return inlineKeyboardMarkup;
     }

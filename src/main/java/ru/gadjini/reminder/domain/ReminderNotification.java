@@ -2,10 +2,9 @@ package ru.gadjini.reminder.domain;
 
 import org.joda.time.Period;
 
-import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
-public class ReminderTime {
+public class ReminderNotification {
 
     public static final String TYPE = "reminder_time";
 
@@ -103,14 +102,14 @@ public class ReminderTime {
         this.reminder = reminder;
     }
 
-    public static ReminderTime repeatTime() {
-        return new ReminderTime() {{
+    public static ReminderNotification repeatTime() {
+        return new ReminderNotification() {{
             setType(Type.REPEAT);
         }};
     }
 
-    public static ReminderTime onceTime() {
-        return new ReminderTime() {{
+    public static ReminderNotification onceTime() {
+        return new ReminderNotification() {{
             setType(Type.ONCE);
         }};
     }

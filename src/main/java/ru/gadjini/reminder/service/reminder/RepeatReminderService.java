@@ -6,17 +6,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.ReminderTime;
+import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.RepeatTime;
+import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.service.TgUserService;
-import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeAI;
-import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
+import ru.gadjini.reminder.service.UserReminderNotificationService;
+import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
+import ru.gadjini.reminder.service.reminder.notification.ReminderTimeAI;
+import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
 
-import java.sql.Timestamp;
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -28,18 +30,24 @@ public class RepeatReminderService {
 
     private ReminderDao reminderDao;
 
-    private ReminderTimeService reminderTimeService;
+    private ReminderNotificationService reminderNotificationService;
 
     private TgUserService userService;
 
     private ReminderTimeAI reminderTimeAI;
 
+    private SecurityService securityService;
+
+    private UserReminderNotificationService userReminderNotificationService;
+
     @Autowired
-    public RepeatReminderService(ReminderDao reminderDao, ReminderTimeService reminderTimeService, TgUserService userService, ReminderTimeAI reminderTimeAI) {
+    public RepeatReminderService(ReminderDao reminderDao, ReminderNotificationService reminderNotificationService,
+                                 TgUserService userService, ReminderTimeAI reminderTimeAI, SecurityService securityService) {
         this.reminderDao = reminderDao;
-        this.reminderTimeService = reminderTimeService;
+        this.reminderNotificationService = reminderNotificationService;
         this.userService = userService;
         this.reminderTimeAI = reminderTimeAI;
+        this.securityService = securityService;
     }
 
     @Transactional
@@ -49,9 +57,9 @@ public class RepeatReminderService {
         reminder.setRemindAt(nextRemindAtInReceiverZone.withZoneSameInstant(ZoneOffset.UTC));
 
         Reminder created = reminderDao.create(reminder);
-        List<ReminderTime> reminderTimes = getRepeatReminderTimes(reminder.getRepeatRemindAt(), zoneId);
-        reminderTimes.forEach(reminderTime -> reminderTime.setReminderId(created.getId()));
-        reminderTimeService.create(reminderTimes);
+        List<ReminderNotification> reminderNotifications = getRepeatReminderNotifications(reminder.getRepeatRemindAt(), zoneId);
+        reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(created.getId()));
+        reminderNotificationService.create(reminderNotifications);
 
         return created;
     }
@@ -136,125 +144,135 @@ public class RepeatReminderService {
         return DateTime.of(LocalDate.now(zoneId).plusDays(repeatTime.getInterval().getDays()), null, zoneId);
     }
 
-    private List<ReminderTime> getRepeatReminderTimes(RepeatTime repeatTime, ZoneId zoneId) {
+    private List<ReminderNotification> getRepeatReminderNotifications(RepeatTime repeatTime, ZoneId zoneId) {
         if (!repeatTime.hasTime()) {
-            return getRepeatReminderTimesWithoutTime(repeatTime, zoneId);
+            return getRepeatReminderNotificationsWithoutTime(repeatTime, zoneId);
         }
 
-        return getRepeatReminderTimesWithTime(repeatTime, zoneId);
+        return getRepeatReminderNotificationsWithTime(repeatTime, zoneId);
     }
 
-    private List<ReminderTime> getRepeatReminderTimesWithoutTime(RepeatTime repeatTime, ZoneId zoneId) {
-        List<ReminderTime> reminderTimes = new ArrayList<>();
+    private List<ReminderNotification> getRepeatReminderNotificationsWithoutTime(RepeatTime repeatTime, ZoneId zoneId) {
+        List<ReminderNotification> reminderNotifications = new ArrayList<>();
 
         if (repeatTime.hasDayOfWeek()) {
-            addWeeklyReminderTimesWithoutTime(repeatTime, zoneId, reminderTimes);
+            addWeeklyReminderNotificationsWithoutTime(repeatTime, zoneId, reminderNotifications);
         } else {
-            addDailyReminderTimesWithoutTime(repeatTime, zoneId, reminderTimes);
+            addDailyReminderNotificationsWithoutTime(repeatTime, zoneId, reminderNotifications);
         }
 
-        return reminderTimes;
+        return reminderNotifications;
     }
 
-    private List<ReminderTime> getRepeatReminderTimesWithTime(RepeatTime repeatTime, ZoneId zoneId) {
-        List<ReminderTime> reminderTimes = new ArrayList<>();
+    private List<ReminderNotification> getRepeatReminderNotificationsWithTime(RepeatTime repeatTime, ZoneId zoneId) {
+        List<ReminderNotification> reminderNotifications = new ArrayList<>();
 
         if (repeatTime.getDayOfWeek() != null) {
-            addWeeklyReminderTimes(repeatTime, zoneId, reminderTimes);
+            addWeeklyReminderNotifications(repeatTime, zoneId, reminderNotifications);
         } else if (repeatTime.getInterval().getDays() > 0) {
-            addDailyReminderTimes(repeatTime, zoneId, reminderTimes);
+            addDailyReminderNotifications(repeatTime, zoneId, reminderNotifications);
         } else {
-            addIntervalReminderTimes(repeatTime, zoneId, reminderTimes);
+            addIntervalReminderNotifications(repeatTime, zoneId, reminderNotifications);
         }
 
-        return reminderTimes;
+        return reminderNotifications;
     }
 
-    private void addIntervalReminderTimes(RepeatTime repeatTime, ZoneId zoneId, List<ReminderTime> reminderTimes) {
+    private void addIntervalReminderNotifications(RepeatTime repeatTime, ZoneId zoneId, List<ReminderNotification> reminderNotifications) {
         ZonedDateTime now = TimeUtils.now(zoneId);
 
-        intervalReminderTime(now, repeatTime.getInterval(), reminderTimes, true);
+        intervalReminderNotification(now, repeatTime.getInterval(), reminderNotifications).setItsTime(true);
 
-        if (reminderTimeAI.isNeedCreateReminderTime(repeatTime.getInterval(), 20)) {
-            intervalReminderTime(now.minusMinutes(20), repeatTime.getInterval(), reminderTimes, false);
-        }
-        if (reminderTimeAI.isNeedCreateReminderTime(repeatTime.getInterval(), 60)) {
-            intervalReminderTime(now.minusMinutes(60), repeatTime.getInterval(), reminderTimes, false);
-        }
-        if (reminderTimeAI.isNeedCreateReminderTime(repeatTime.getInterval(), 120)) {
-            intervalReminderTime(now.minusMinutes(120), repeatTime.getInterval(), reminderTimes, false);
+        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getUserReminderNotifications(securityService.getAuthenticatedUser().getId(), UserReminderNotification.ReminderType.WITH_TIME);
+
+        for (UserReminderNotification userReminderNotification : userReminderNotifications) {
+            UserReminderNotification.OffsetTime offsetTime = userReminderNotification.getOffsetTime();
+            if (offsetTime.getLocalTime() == null && reminderTimeAI.isNeedCreateReminderNotification(repeatTime.getInterval(), offsetTime)) {
+                intervalReminderNotification(now.minusHours(offsetTime.getHour()).minusMinutes(offsetTime.getMinute()), repeatTime.getInterval(), reminderNotifications);
+            }
         }
     }
 
-    private void intervalReminderTime(ZonedDateTime remindAt, Period interval, List<ReminderTime> reminderTimes, boolean itsTime) {
-        ReminderTime reminderTime = ReminderTime.repeatTime();
-        reminderTime.setLastReminderAt(remindAt.withZoneSameInstant(ZoneOffset.UTC));
-        reminderTime.setDelayTime(interval);
-        reminderTime.setItsTime(itsTime);
-        reminderTimes.add(reminderTime);
+    private ReminderNotification intervalReminderNotification(ZonedDateTime remindAt, Period interval, List<ReminderNotification> reminderNotifications) {
+        ReminderNotification reminderNotification = ReminderNotification.repeatTime();
+        reminderNotification.setLastReminderAt(remindAt.withZoneSameInstant(ZoneOffset.UTC));
+        reminderNotification.setDelayTime(interval);
+        reminderNotifications.add(reminderNotification);
+
+        return reminderNotification;
     }
 
-    private void addDailyReminderTimes(RepeatTime repeatTime, ZoneId zoneId, List<ReminderTime> reminderTimes) {
+    private void addDailyReminderNotifications(RepeatTime repeatTime, ZoneId zoneId, List<ReminderNotification> reminderNotifications) {
         ZonedDateTime now = TimeUtils.now(zoneId);
         ZonedDateTime repeatReminder = now.with(repeatTime.getTime());
 
         if (repeatReminder.isBefore(now)) {
             repeatReminder.plusDays(repeatTime.getInterval().getDays());
         }
+        fixedReminderNotification(repeatReminder.toLocalDate(), zoneId, repeatTime.getInterval().getDays(), repeatTime.getTime(), reminderNotifications).setItsTime(true);
+        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getUserReminderNotifications(securityService.getAuthenticatedUser().getId(), UserReminderNotification.ReminderType.WITH_TIME);
 
-        fixedReminderTime(repeatReminder.toLocalDate(), zoneId, repeatTime.getInterval().getDays(), repeatTime.getTime(), reminderTimes).setItsTime(true);
-        fixedReminderTime(repeatReminder.toLocalDate(), zoneId, repeatTime.getInterval().getDays(), repeatTime.getTime().minusMinutes(20), reminderTimes);
-        fixedReminderTime(repeatReminder.toLocalDate(), zoneId, repeatTime.getInterval().getDays(), repeatTime.getTime().minusHours(1), reminderTimes);
-        fixedReminderTime(repeatReminder.toLocalDate(), zoneId, repeatTime.getInterval().getDays(), repeatTime.getTime().minusHours(2), reminderTimes);
-        fixedReminderTime(repeatReminder.toLocalDate().minusDays(1), zoneId, repeatTime.getInterval().getDays(), LocalTime.of(22, 0), reminderTimes);
+        for (UserReminderNotification userReminderNotification : userReminderNotifications) {
+            UserReminderNotification.OffsetTime offsetTime = userReminderNotification.getOffsetTime();
+
+            fixedReminderNotification(
+                    repeatReminder.toLocalDate().minusDays(offsetTime.getDay()),
+                    zoneId,
+                    repeatTime.getInterval().getDays(),
+                    offsetTime.getLocalTime() == null ? repeatTime.getTime().minusHours(offsetTime.getHour()).minusMinutes(offsetTime.getMinute()) : offsetTime.getLocalTime(),
+                    reminderNotifications
+            );
+        }
     }
 
-    private void addWeeklyReminderTimes(RepeatTime repeatTime, ZoneId zoneId, List<ReminderTime> reminderTimes) {
+    private void addWeeklyReminderNotifications(RepeatTime repeatTime, ZoneId zoneId, List<ReminderNotification> reminderNotifications) {
         ZonedDateTime now = TimeUtils.now(zoneId);
         ZonedDateTime repeatReminder = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek())).with(repeatTime.getTime());
 
-        fixedReminderTime(repeatReminder.toLocalDate(), zoneId, 7, repeatTime.getTime(), reminderTimes).setItsTime(true);
-        fixedReminderTime(repeatReminder.toLocalDate(), zoneId, 7, repeatTime.getTime().minusMinutes(20), reminderTimes);
-        fixedReminderTime(repeatReminder.toLocalDate(), zoneId, 7, repeatTime.getTime().minusHours(1), reminderTimes);
-        fixedReminderTime(repeatReminder.toLocalDate(), zoneId, 7, repeatTime.getTime().minusHours(2), reminderTimes);
-        fixedReminderTime(repeatReminder.toLocalDate().minusDays(1), zoneId, 7, LocalTime.of(22, 0), reminderTimes);
+        fixedReminderNotification(repeatReminder.toLocalDate(), zoneId, 7, repeatTime.getTime(), reminderNotifications).setItsTime(true);
+
+        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getUserReminderNotifications(securityService.getAuthenticatedUser().getId(), UserReminderNotification.ReminderType.WITH_TIME);
+        for (UserReminderNotification userReminderNotification : userReminderNotifications) {
+            UserReminderNotification.OffsetTime offsetTime = userReminderNotification.getOffsetTime();
+            fixedReminderNotification(
+                    repeatReminder.toLocalDate().minusDays(offsetTime.getDay()),
+                    zoneId,
+                    7,
+                    offsetTime.getLocalTime() == null ? repeatTime.getTime().minusHours(offsetTime.getHour()).minusMinutes(offsetTime.getMinute()) : offsetTime.getLocalTime(),
+                    reminderNotifications
+            );
+        }
     }
 
-    private void addWeeklyReminderTimesWithoutTime(RepeatTime repeatTime, ZoneId zoneId, List<ReminderTime> reminderTimes) {
+    private void addWeeklyReminderNotificationsWithoutTime(RepeatTime repeatTime, ZoneId zoneId, List<ReminderNotification> reminderNotifications) {
         LocalDate now = LocalDate.now(zoneId);
         LocalDate repeatReminder = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek()));
 
-        fixedReminderTime(repeatReminder.minusDays(1), zoneId, 7, LocalTime.of(22, 0), reminderTimes);
-        fixedReminderTime(repeatReminder, zoneId, 7, LocalTime.of(12, 0), reminderTimes);
-        fixedReminderTime(repeatReminder, zoneId, 7, LocalTime.of(22, 0), reminderTimes);
+        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getUserReminderNotifications(securityService.getAuthenticatedUser().getId(), UserReminderNotification.ReminderType.WITHOUT_TIME);
+        for (UserReminderNotification userReminderNotification : userReminderNotifications) {
+            UserReminderNotification.OffsetTime offsetTime = userReminderNotification.getOffsetTime();
+            fixedReminderNotification(repeatReminder.minusDays(offsetTime.getDay()), zoneId, 7, offsetTime.getLocalTime(), reminderNotifications);
+        }
     }
 
-    private void addDailyReminderTimesWithoutTime(RepeatTime repeatTime, ZoneId zoneId, List<ReminderTime> reminderTimes) {
+    private void addDailyReminderNotificationsWithoutTime(RepeatTime repeatTime, ZoneId zoneId, List<ReminderNotification> reminderNotifications) {
         LocalDate repeatReminder = LocalDate.now(zoneId);
 
-        if (reminderTimeAI.isNeedCreateNightBeforeReminderTime(repeatTime.getInterval())) {
-            fixedReminderTime(repeatReminder.minusDays(1), zoneId, repeatTime.getInterval().getDays(), LocalTime.of(22, 0), reminderTimes);
-        }
-        LocalTime now = LocalTime.now(zoneId);
-        if (now.isBefore(LocalTime.of(12, 0))) {
-            fixedReminderTime(repeatReminder.minusDays(1), zoneId, repeatTime.getInterval().getDays(), LocalTime.of(12, 0), reminderTimes);
-            fixedReminderTime(repeatReminder.minusDays(1), zoneId, repeatTime.getInterval().getDays(), LocalTime.of(22, 0), reminderTimes);
-        } else {
-            fixedReminderTime(repeatReminder, zoneId, repeatTime.getInterval().getDays(), LocalTime.of(12, 0), reminderTimes);
-            if (now.isBefore(LocalTime.of(23, 50))) {
-                fixedReminderTime(repeatReminder.minusDays(1), zoneId, repeatTime.getInterval().getDays(), LocalTime.of(22, 0), reminderTimes);
-            } else {
-                fixedReminderTime(repeatReminder, zoneId, repeatTime.getInterval().getDays(), LocalTime.of(22, 0), reminderTimes);
+        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getUserReminderNotifications(securityService.getAuthenticatedUser().getId(), UserReminderNotification.ReminderType.WITHOUT_TIME);
+        for (UserReminderNotification userReminderNotification : userReminderNotifications) {
+            UserReminderNotification.OffsetTime offsetTime = userReminderNotification.getOffsetTime();
+            if (offsetTime.getDay() == 0) {
+                fixedReminderNotification(repeatReminder.minusDays(offsetTime.getDay()), zoneId, repeatTime.getInterval().getDays(), offsetTime.getLocalTime(), reminderNotifications);
             }
         }
     }
 
-    private ReminderTime fixedReminderTime(LocalDate repeatAt, ZoneId zoneId, int repeatDays, LocalTime localTime, List<ReminderTime> reminderTimes) {
-        ReminderTime reminderTime = ReminderTime.repeatTime();
-        reminderTime.setLastReminderAt(ZonedDateTime.of(repeatAt.minusDays(repeatDays), localTime, zoneId).withZoneSameInstant(ZoneOffset.UTC));
-        reminderTime.setDelayTime(new Period().withDays(repeatDays));
-        reminderTimes.add(reminderTime);
+    private ReminderNotification fixedReminderNotification(LocalDate repeatAt, ZoneId zoneId, int repeatDays, LocalTime localTime, List<ReminderNotification> reminderNotifications) {
+        ReminderNotification reminderNotification = ReminderNotification.repeatTime();
+        reminderNotification.setLastReminderAt(ZonedDateTime.of(repeatAt.minusDays(repeatDays), localTime, zoneId).withZoneSameInstant(ZoneOffset.UTC));
+        reminderNotification.setDelayTime(new Period().withDays(repeatDays));
+        reminderNotifications.add(reminderNotification);
 
-        return reminderTime;
+        return reminderNotification;
     }
 }

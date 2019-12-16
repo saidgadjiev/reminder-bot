@@ -3,20 +3,17 @@ package ru.gadjini.reminder.bot.command.callback;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.domain.ReminderTime;
+import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
-import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.MessageBuilder;
-import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
-import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
-import ru.gadjini.reminder.util.JodaTimeUtils;
+import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 
 public class ReminderTimeDetailsCommand implements CallbackBotCommand {
 
-    private ReminderTimeService reminderTimeService;
+    private ReminderNotificationService reminderNotificationService;
 
     private MessageBuilder messageBuilder;
 
@@ -24,9 +21,9 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
 
     private KeyboardService keyboardService;
 
-    public ReminderTimeDetailsCommand(ReminderTimeService reminderTimeService, MessageBuilder messageBuilder,
+    public ReminderTimeDetailsCommand(ReminderNotificationService reminderNotificationService, MessageBuilder messageBuilder,
                                       MessageService messageService, KeyboardService keyboardService) {
-        this.reminderTimeService = reminderTimeService;
+        this.reminderNotificationService = reminderNotificationService;
         this.messageBuilder = messageBuilder;
         this.messageService = messageService;
         this.keyboardService = keyboardService;
@@ -39,13 +36,13 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        ReminderTime reminderTime = reminderTimeService.getReminderTime(requestParams.getInt(Arg.REMINDER_TIME_ID.getKey()));
+        ReminderNotification reminderNotification = reminderNotificationService.getReminderTime(requestParams.getInt(Arg.REMINDER_TIME_ID.getKey()));
 
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
-                messageBuilder.getReminderTimeMessage(reminderTime),
-                keyboardService.getReminderTimeKeyboard(requestParams.getInt(Arg.REMINDER_TIME_ID.getKey()), reminderTime.getReminderId())
+                messageBuilder.getReminderTimeMessage(reminderNotification),
+                keyboardService.getReminderTimeKeyboard(requestParams.getInt(Arg.REMINDER_TIME_ID.getKey()), reminderNotification.getReminderId())
         );
     }
 }

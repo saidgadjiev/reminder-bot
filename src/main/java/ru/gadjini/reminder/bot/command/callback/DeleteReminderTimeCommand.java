@@ -7,18 +7,18 @@ import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
+import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 
 public class DeleteReminderTimeCommand implements CallbackBotCommand {
 
-    private ReminderTimeService reminderTimeService;
+    private ReminderNotificationService reminderNotificationService;
 
     private MessageService messageService;
 
     private KeyboardService keyboardService;
 
-    public DeleteReminderTimeCommand(ReminderTimeService reminderTimeService, MessageService messageService, KeyboardService keyboardService) {
-        this.reminderTimeService = reminderTimeService;
+    public DeleteReminderTimeCommand(ReminderNotificationService reminderNotificationService, MessageService messageService, KeyboardService keyboardService) {
+        this.reminderNotificationService = reminderNotificationService;
         this.messageService = messageService;
         this.keyboardService = keyboardService;
     }
@@ -31,7 +31,7 @@ public class DeleteReminderTimeCommand implements CallbackBotCommand {
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         int reminderTimeId = requestParams.getInt(Arg.REMINDER_TIME_ID.getKey());
-        int reminderId = reminderTimeService.deleteReminderTime(reminderTimeId);
+        int reminderId = reminderNotificationService.deleteReminderTime(reminderTimeId);
         messageService.editMessageByMessageCode(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),

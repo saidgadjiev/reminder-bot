@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.gadjini.reminder.domain.ReminderTime;
+import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 
@@ -19,19 +19,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class ReminderTimeDao {
+public class ReminderNotificationDao {
 
     private JdbcTemplate jdbcTemplate;
 
     private ResultSetMapper resultSetMapper;
 
     @Autowired
-    public ReminderTimeDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper) {
+    public ReminderNotificationDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.resultSetMapper = resultSetMapper;
     }
 
-    public ReminderTime getById(int id) {
+    public ReminderNotification getById(int id) {
         return jdbcTemplate.query(
                 "SELECT rt.*, rc.zone_id AS rc_zone_id\n" +
                         "FROM reminder_time rt\n" +
@@ -48,7 +48,7 @@ public class ReminderTimeDao {
         );
     }
 
-    public List<ReminderTime> getReminderTimes(int reminderId) {
+    public List<ReminderNotification> getReminderTimes(int reminderId) {
         return jdbcTemplate.query(
                 "SELECT rt.*, rc.zone_id AS rc_zone_id\n" +
                         "FROM reminder_time rt\n" +
@@ -59,13 +59,13 @@ public class ReminderTimeDao {
         );
     }
 
-    public void create(ReminderTime reminderTime) {
+    public void create(ReminderNotification reminderNotification) {
         Number id = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(ReminderTime.TYPE)
-                .usingGeneratedKeyColumns(ReminderTime.ID)
-                .executeAndReturnKey(sqlParameterSource(reminderTime));
+                .withTableName(ReminderNotification.TYPE)
+                .usingGeneratedKeyColumns(ReminderNotification.ID)
+                .executeAndReturnKey(sqlParameterSource(reminderNotification));
 
-        reminderTime.setId(id.intValue());
+        reminderNotification.setId(id.intValue());
     }
 
     public int delete(int id) {
@@ -93,11 +93,11 @@ public class ReminderTimeDao {
         );
     }
 
-    public void create(List<ReminderTime> reminderTimes) {
+    public void create(List<ReminderNotification> reminderNotifications) {
         new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(ReminderTime.TYPE)
-                .usingGeneratedKeyColumns(ReminderTime.ID)
-                .executeBatch(sqlParameterSources(reminderTimes));
+                .withTableName(ReminderNotification.TYPE)
+                .usingGeneratedKeyColumns(ReminderNotification.ID)
+                .executeBatch(sqlParameterSources(reminderNotifications));
     }
 
     public void deleteByReminderId(int reminderId) {
@@ -107,21 +107,21 @@ public class ReminderTimeDao {
         );
     }
 
-    private SqlParameterSource sqlParameterSource(ReminderTime reminderTime) {
+    private SqlParameterSource sqlParameterSource(ReminderNotification reminderNotification) {
         return new MapSqlParameterSource()
-                .addValue(ReminderTime.TYPE_COL, reminderTime.getType().getCode())
-                .addValue(ReminderTime.FIXED_TIME, reminderTime.getFixedTime() != null ? Timestamp.valueOf(reminderTime.getFixedTime().toLocalDateTime()) : null)
-                .addValue(ReminderTime.DELAY_TIME, JodaTimeUtils.toPgInterval(reminderTime.getDelayTime()))
-                .addValue(ReminderTime.LAST_REMINDER_AT, reminderTime.getLastReminderAt() != null ? Timestamp.valueOf(reminderTime.getLastReminderAt().toLocalDateTime()) : null)
-                .addValue(ReminderTime.REMINDER_ID, reminderTime.getReminderId())
-                .addValue(ReminderTime.ITS_TIME, reminderTime.isItsTime());
+                .addValue(ReminderNotification.TYPE_COL, reminderNotification.getType().getCode())
+                .addValue(ReminderNotification.FIXED_TIME, reminderNotification.getFixedTime() != null ? Timestamp.valueOf(reminderNotification.getFixedTime().toLocalDateTime()) : null)
+                .addValue(ReminderNotification.DELAY_TIME, JodaTimeUtils.toPgInterval(reminderNotification.getDelayTime()))
+                .addValue(ReminderNotification.LAST_REMINDER_AT, reminderNotification.getLastReminderAt() != null ? Timestamp.valueOf(reminderNotification.getLastReminderAt().toLocalDateTime()) : null)
+                .addValue(ReminderNotification.REMINDER_ID, reminderNotification.getReminderId())
+                .addValue(ReminderNotification.ITS_TIME, reminderNotification.isItsTime());
     }
 
-    private SqlParameterSource[] sqlParameterSources(List<ReminderTime> reminderTimes) {
+    private SqlParameterSource[] sqlParameterSources(List<ReminderNotification> reminderNotifications) {
         List<SqlParameterSource> sqlParameterSources = new ArrayList<>();
 
-        for (ReminderTime reminderTime : reminderTimes) {
-            sqlParameterSources.add(sqlParameterSource(reminderTime));
+        for (ReminderNotification reminderNotification : reminderNotifications) {
+            sqlParameterSources.add(sqlParameterSource(reminderNotification));
         }
 
         return sqlParameterSources.toArray(new SqlParameterSource[0]);

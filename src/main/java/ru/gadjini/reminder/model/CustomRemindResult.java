@@ -1,6 +1,6 @@
 package ru.gadjini.reminder.model;
 
-import ru.gadjini.reminder.domain.ReminderTime;
+import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.RepeatTime;
 
 import java.time.ZonedDateTime;
@@ -13,7 +13,7 @@ public class CustomRemindResult {
 
     private ZonedDateTime lastRemindAt;
 
-    private ReminderTime reminderTime;
+    private ReminderNotification reminderNotification;
 
     public void setZonedDateTime(ZonedDateTime zonedDateTime) {
         this.zonedDateTime = zonedDateTime;
@@ -47,11 +47,11 @@ public class CustomRemindResult {
         return zonedDateTime != null;
     }
 
-    public ReminderTime getReminderTime() {
-        return reminderTime;
+    public ReminderNotification getReminderNotification() {
+        return reminderNotification;
     }
 
-    public void setReminderTime(ReminderTime reminderTime) {
-        this.reminderTime = reminderTime;
+    public void setReminderNotification(ReminderNotification reminderNotification) {
+        this.reminderNotification = reminderNotification;
     }
 }

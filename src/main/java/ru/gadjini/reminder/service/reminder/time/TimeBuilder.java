@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.ReminderTime;
+import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
@@ -32,21 +32,21 @@ public class TimeBuilder {
         this.intervalLocalisationService = intervalLocalisationService;
     }
 
-    public String time(ReminderTime reminderTime) {
-        if (reminderTime.getType().equals(ReminderTime.Type.ONCE)) {
-            return time(reminderTime.getFixedTime().withZoneSameInstant(reminderTime.getReminder().getReceiver().getZone()));
+    public String time(ReminderNotification reminderNotification) {
+        if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
+            return time(reminderNotification.getFixedTime().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone()));
         }
 
         StringBuilder time = new StringBuilder();
-        if (reminderTime.getDelayTime().getDays() == 7) {
-            ZonedDateTime lastRemindAt = reminderTime.getLastReminderAt().withZoneSameInstant(reminderTime.getReminder().getReceiver().getZone());
+        if (reminderNotification.getDelayTime().getDays() == 7) {
+            ZonedDateTime lastRemindAt = reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone());
             DayOfWeek dayOfWeek = lastRemindAt.getDayOfWeek();
 
             time.append(getRepeatWord(dayOfWeek)).append(" ");
             time.append(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())).append(" ");
             time.append(DATE_TIME_FORMATTER.format(lastRemindAt));
         } else {
-            time.append(intervalLocalisationService.get(reminderTime.getDelayTime()));
+            time.append(intervalLocalisationService.get(reminderNotification.getDelayTime()));
         }
 
         return time.toString();

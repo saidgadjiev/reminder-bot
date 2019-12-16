@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.ReminderTime;
+import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.RestoreReminderService;
-import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
+import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
@@ -28,7 +28,7 @@ public class ReminderJob {
 
     private ReminderService reminderService;
 
-    private ReminderTimeService reminderTimeService;
+    private ReminderNotificationService reminderNotificationService;
 
     private ReminderMessageSender reminderMessageSender;
 
@@ -38,12 +38,12 @@ public class ReminderJob {
 
     @Autowired
     public ReminderJob(ReminderService reminderService,
-                       ReminderTimeService reminderTimeService,
+                       ReminderNotificationService reminderNotificationService,
                        ReminderMessageSender reminderMessageSender,
                        RepeatReminderService repeatReminderService,
                        RestoreReminderService restoreReminderService) {
         this.reminderService = reminderService;
-        this.reminderTimeService = reminderTimeService;
+        this.reminderNotificationService = reminderNotificationService;
         this.reminderMessageSender = reminderMessageSender;
         this.repeatReminderService = repeatReminderService;
         this.restoreReminderService = restoreReminderService;
@@ -60,15 +60,19 @@ public class ReminderJob {
 
     @Scheduled(fixedDelay = 1000)
     public void sendReminders() {
-        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().minusSeconds(15).withNano(0), 30);
+        try {
+            List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().minusSeconds(15).withNano(0), 30);
 
-        for (Reminder reminder : reminders) {
-            if (restoreReminderService.isNeedRestore(reminder)) {
-                restoreReminderService.restore(reminder);
-                sendReminderRestored(reminder);
-            } else {
-                sendReminder(reminder);
+            for (Reminder reminder : reminders) {
+                if (restoreReminderService.isNeedRestore(reminder)) {
+                    restoreReminderService.restore(reminder);
+                    sendReminderRestored(reminder);
+                } else {
+                    sendReminder(reminder);
+                }
             }
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
         }
     }
 
@@ -81,29 +85,29 @@ public class ReminderJob {
     }
 
     private void sendStandardReminderRestored(Reminder reminder) {
-        reminderMessageSender.sendRemindMessage(reminder, reminder.getReminderTimes().stream().anyMatch(ReminderTime::isItsTime), null);
+        reminderMessageSender.sendRemindMessage(reminder, reminder.getReminderNotifications().stream().anyMatch(ReminderNotification::isItsTime), null);
     }
 
     private void sendRepeatableReminderRestored(Reminder reminder) {
         reminderMessageSender.sendRemindMessage(
                 reminder,
-                reminder.getReminderTimes().stream().anyMatch(ReminderTime::isItsTime),
+                reminder.getReminderNotifications().stream().anyMatch(ReminderNotification::isItsTime),
                 reminder.getRemindAt()
         );
     }
 
     private void sendReminder(Reminder reminder) {
-        for (ReminderTime reminderTime : reminder.getReminderTimes()) {
+        for (ReminderNotification reminderNotification : reminder.getReminderNotifications()) {
             try {
-                switch (reminderTime.getType()) {
+                switch (reminderNotification.getType()) {
                     case ONCE:
-                        sendOnceReminder(reminder, reminderTime);
+                        sendOnceReminder(reminder, reminderNotification);
                         break;
                     case REPEAT:
                         if (reminder.isRepeatable()) {
-                            sendRepeatReminderTimeForRepeatableReminder(reminder, reminderTime);
+                            sendRepeatReminderTimeForRepeatableReminder(reminder, reminderNotification);
                         } else {
-                            sendRepeatReminderTime(reminder, reminderTime);
+                            sendRepeatReminderTime(reminder, reminderNotification);
                         }
                         break;
                 }
@@ -113,35 +117,35 @@ public class ReminderJob {
         }
     }
 
-    private void sendOnceReminder(Reminder reminder, ReminderTime reminderTime) {
-        reminderMessageSender.sendRemindMessage(reminder, reminderTime.isItsTime(), null);
-        reminderTimeService.deleteReminderTime(reminderTime.getId());
+    private void sendOnceReminder(Reminder reminder, ReminderNotification reminderNotification) {
+        reminderMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), null);
+        reminderNotificationService.deleteReminderTime(reminderNotification.getId());
     }
 
-    private void sendRepeatReminderTime(Reminder reminder, ReminderTime reminderTime) {
-        reminderMessageSender.sendRemindMessage(reminder, reminderTime.isItsTime(), null);
+    private void sendRepeatReminderTime(Reminder reminder, ReminderNotification reminderNotification) {
+        reminderMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), null);
 
-        reminderTimeService.updateLastRemindAt(reminderTime.getId(), TimeUtils.now());
+        reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), TimeUtils.now());
     }
 
-    private void sendRepeatReminderTimeForRepeatableReminder(Reminder reminder, ReminderTime reminderTime) {
+    private void sendRepeatReminderTimeForRepeatableReminder(Reminder reminder, ReminderNotification reminderNotification) {
         DateTime nextRemindAt = reminder.getRemindAt();
 
-        if (isNeedUpdateNextRemindAt(reminder, reminderTime)) {
+        if (isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
             nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
             repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
             reminder.setRemindAt(nextRemindAt);
         }
 
-        reminderMessageSender.sendRemindMessage(reminder, reminderTime.isItsTime(), nextRemindAt);
+        reminderMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), nextRemindAt);
 
-        ZonedDateTime nextLastRemindAt = JodaTimeUtils.plus(reminderTime.getLastReminderAt(), reminderTime.getDelayTime());
-        reminderTimeService.updateLastRemindAt(reminderTime.getId(), nextLastRemindAt.toLocalDateTime());
+        ZonedDateTime nextLastRemindAt = JodaTimeUtils.plus(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime());
+        reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), nextLastRemindAt.toLocalDateTime());
     }
 
-    private boolean isNeedUpdateNextRemindAt(Reminder reminder, ReminderTime reminderTime) {
+    private boolean isNeedUpdateNextRemindAt(Reminder reminder, ReminderNotification reminderNotification) {
         LocalDate now = LocalDate.now(reminder.getRemindAt().getZone());
 
-        return reminderTime.isItsTime() || (!reminder.getRemindAt().hasTime() && reminder.getRemindAt().date().equals(now));
+        return reminderNotification.isItsTime() || (!reminder.getRemindAt().hasTime() && reminder.getRemindAt().date().equals(now));
     }
 }

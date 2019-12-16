@@ -68,7 +68,7 @@ public class ReminderMessageSender {
             message = messageBuilder.getRemindForReceiver(reminder, itsTime, nextRemindAt);
         }
 
-        InlineKeyboardMarkup keyboard = keyboardService.getRemindKeyboard(reminder.getId(), reminder.isRepeatable());
+        InlineKeyboardMarkup keyboard = keyboardService.getRemindKeyboard(reminder.getId(), itsTime, reminder.isRepeatable());
         int messageId = messageService.sendMessage(reminder.getReceiver().getChatId(), message, keyboard).getMessageId();
         remindMessageService.create(reminder.getId(), messageId);
     }
@@ -353,24 +353,24 @@ public class ReminderMessageSender {
     }
 
     public void sendCustomRemindCreated(long chatId, int messageId, CustomRemindResult customRemindResult, ReplyKeyboardMarkup replyKeyboardMarkup) {
-        String text = messageBuilder.getReminderMessage(customRemindResult.getReminderTime().getReminder());
+        String text = messageBuilder.getReminderMessage(customRemindResult.getReminderNotification().getReminder());
 
         messageService.editMessage(
                 chatId,
                 messageId,
                 text + "\n\n" + messageBuilder.getCustomRemindText(customRemindResult),
-                keyboardService.getReceiverReminderKeyboard(customRemindResult.getReminderTime().getReminderId(), customRemindResult.getReminderTime().getReminder().isRepeatable())
+                keyboardService.getReceiverReminderKeyboard(customRemindResult.getReminderNotification().getReminderId(), customRemindResult.getReminderNotification().getReminder().isRepeatable())
         );
     }
 
     public void sendCustomRemindCreatedFromReminderTimeDetails(long chatId, int messageId, CustomRemindResult customRemindResult, ReplyKeyboardMarkup replyKeyboardMarkup) {
-        String text = messageBuilder.getReminderTimeMessage(customRemindResult.getReminderTime());
+        String text = messageBuilder.getReminderTimeMessage(customRemindResult.getReminderNotification());
 
         messageService.editMessage(
                 chatId,
                 messageId,
                 text,
-                keyboardService.getReminderTimeKeyboard(customRemindResult.getReminderTime().getId(), customRemindResult.getReminderTime().getReminderId())
+                keyboardService.getReminderTimeKeyboard(customRemindResult.getReminderNotification().getId(), customRemindResult.getReminderNotification().getReminderId())
         );
     }
 

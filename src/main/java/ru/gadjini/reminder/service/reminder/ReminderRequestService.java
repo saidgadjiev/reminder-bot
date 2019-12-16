@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.ReminderTime;
+import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
@@ -95,27 +95,27 @@ public class ReminderRequestService {
 
         CustomRemindTime customRemind = parsedCustomRemind(text, reminder.getReceiver().getZone());
         CustomRemindResult customRemindResult = new CustomRemindResult();
-        ReminderTime reminderTime;
+        ReminderNotification reminderNotification;
 
-        if (customRemind.getOffsetTime()) {
+        if (customRemind.getParsedOffsetTime()) {
             ZonedDateTime remindTime = ReminderUtils.buildRemindTime(
                     customRemind.getRemindTime(),
                     reminder.getRemindAtInReceiverZone().toZonedDateTime(),
                     reminder.getReceiver().getZone()
             );
-            reminderTime = reminderService.customRemind(reminderId, remindTime);
+            reminderNotification = reminderService.customRemind(reminderId, remindTime);
             customRemindResult.setZonedDateTime(remindTime);
         } else if (customRemind.isRepeatTime()) {
-            reminderTime = reminderService.customRemind(reminderId, customRemind.getRepeatTime(), reminder.getReceiver().getZone());
+            reminderNotification = reminderService.customRemind(reminderId, customRemind.getRepeatTime(), reminder.getReceiver().getZone());
             customRemindResult.setRepeatTime(customRemind.getRepeatTime());
-            customRemindResult.setLastRemindAt(reminderTime.getLastReminderAt());
+            customRemindResult.setLastRemindAt(reminderNotification.getLastReminderAt());
         } else {
             ZonedDateTime remindTime = customRemind.getTime().toZonedDateTime();
-            reminderTime = reminderService.customRemind(reminderId, remindTime);
+            reminderNotification = reminderService.customRemind(reminderId, remindTime);
             customRemindResult.setZonedDateTime(remindTime);
         }
-        customRemindResult.setReminderTime(reminderTime);
-        reminderTime.setReminder(reminder);
+        customRemindResult.setReminderNotification(reminderNotification);
+        reminderNotification.setReminder(reminder);
 
         return customRemindResult;
     }

@@ -2,7 +2,7 @@ package ru.gadjini.reminder.util;
 
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 import ru.gadjini.reminder.service.parser.postpone.parser.PostponeOn;
-import ru.gadjini.reminder.service.parser.remind.parser.OffsetTime;
+import ru.gadjini.reminder.service.parser.remind.parser.ParsedOffsetTime;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.ZoneId;
@@ -33,7 +33,7 @@ public class ReminderUtils {
         }
     }
 
-    public static ZonedDateTime buildRemindTime(OffsetTime customRemind, ZonedDateTime remindAt, ZoneId zoneId) {
+    public static ZonedDateTime buildRemindTime(ParsedOffsetTime customRemind, ZonedDateTime remindAt, ZoneId zoneId) {
         switch (customRemind.getType()) {
             case AFTER: {
                 ZonedDateTime now = ZonedDateTime.now(zoneId);

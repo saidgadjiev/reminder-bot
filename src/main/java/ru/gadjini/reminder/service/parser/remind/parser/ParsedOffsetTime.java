@@ -1,6 +1,6 @@
 package ru.gadjini.reminder.service.parser.remind.parser;
 
-public class OffsetTime {
+public class ParsedOffsetTime {
 
     private Type type;
 

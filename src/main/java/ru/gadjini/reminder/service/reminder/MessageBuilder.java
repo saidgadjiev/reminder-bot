@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.ReminderTime;
+import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.CustomRemindResult;
@@ -31,14 +31,14 @@ public class MessageBuilder {
         this.timeBuilder = timeBuilder;
     }
 
-    public String getReminderTimeMessage(ReminderTime reminderTime) {
-        if (reminderTime.getType().equals(ReminderTime.Type.ONCE)) {
-            return timeBuilder.time(reminderTime);
+    public String getReminderTimeMessage(ReminderNotification reminderNotification) {
+        if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
+            return timeBuilder.time(reminderNotification);
         } else {
-            StringBuilder message = new StringBuilder(timeBuilder.time(reminderTime));
+            StringBuilder message = new StringBuilder(timeBuilder.time(reminderNotification));
 
             message.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{
-                    timeBuilder.time(JodaTimeUtils.plus(reminderTime.getLastReminderAt().withZoneSameInstant(reminderTime.getReminder().getReceiver().getZone()), reminderTime.getDelayTime()))
+                    timeBuilder.time(JodaTimeUtils.plus(reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone()), reminderNotification.getDelayTime()))
             }));
 
             return message.toString();

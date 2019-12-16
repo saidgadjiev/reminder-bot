@@ -44,7 +44,7 @@ public class Reminder {
 
     private DateTime initialRemindAt;
 
-    private List<ReminderTime> reminderTimes = new ArrayList<>();
+    private List<ReminderNotification> reminderNotifications = new ArrayList<>();
 
     private RemindMessage remindMessage;
 
@@ -114,12 +114,12 @@ public class Reminder {
         this.receiverId = receiverId;
     }
 
-    public List<ReminderTime> getReminderTimes() {
-        return reminderTimes;
+    public List<ReminderNotification> getReminderNotifications() {
+        return reminderNotifications;
     }
 
-    public void setReminderTimes(List<ReminderTime> reminderTimes) {
-        this.reminderTimes = reminderTimes;
+    public void setReminderNotifications(List<ReminderNotification> reminderNotifications) {
+        this.reminderNotifications = reminderNotifications;
     }
 
     public TgUser getReceiver() {

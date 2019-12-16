@@ -175,6 +175,7 @@ public class ReminderDao {
                         "       cr.first_name                                    as cr_first_name,\n" +
                         "       cr.last_name                                     as cr_last_name,\n" +
                         "       rt.last_reminder_at as rt_last_reminder_at,\n" +
+                        "       rt.reminder_id as rt_reminder_id,\n" +
                         "       rt.fixed_time as rt_fixed_time,\n" +
                         "       rt.delay_time as rt_delay_time,\n" +
                         "       rt.its_time as rt_its_time,\n" +
@@ -210,7 +211,7 @@ public class ReminderDao {
                         }
                     });
 
-                    reminder.getReminderTimes().add(resultSetMapper.mapReminderTime(rs, "rt_"));
+                    reminder.getReminderNotifications().add(resultSetMapper.mapReminderTime(rs, "rt_"));
                 }
         );
 

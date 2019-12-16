@@ -21,7 +21,7 @@ public class CustomRemindParser {
 
     private CustomRemindTime customRemindTime = new CustomRemindTime();
 
-    private OffsetTime offsetTime = null;
+    private ParsedOffsetTime parsedOffsetTime = null;
 
     private DateTime parsedTime = null;
 
@@ -55,7 +55,7 @@ public class CustomRemindParser {
         if (lexemsConsumer.getPosition() < lexems.size()) {
             throw new ParseException();
         }
-        customRemindTime.setOffsetTime(offsetTime);
+        customRemindTime.setParsedOffsetTime(parsedOffsetTime);
         customRemindTime.setRepeatTime(parsedRepeatTime);
         customRemindTime.setTime(parsedTime);
 
@@ -68,7 +68,7 @@ public class CustomRemindParser {
 
     private void consumeStandardTime(List<BaseLexem> lexems) {
         if (lexemsConsumer.check(lexems, CustomRemindToken.TYPE)) {
-            offsetTime = new OffsetTime();
+            parsedOffsetTime = new ParsedOffsetTime();
             consumeType(lexems);
         } else {
             parsedTime = timeParser.parseTime(lexems);
@@ -78,20 +78,20 @@ public class CustomRemindParser {
     private void consumeType(List<BaseLexem> lexems) {
         String type = lexemsConsumer.consume(lexems, CustomRemindToken.TYPE).getValue();
         if (type.equals(typeAfter)) {
-            offsetTime.setType(OffsetTime.Type.AFTER);
+            parsedOffsetTime.setType(ParsedOffsetTime.Type.AFTER);
         } else if (type.equals(typeBefore)) {
-            offsetTime.setType(OffsetTime.Type.BEFORE);
+            parsedOffsetTime.setType(ParsedOffsetTime.Type.BEFORE);
         } else {
             throw new ParseException();
         }
 
         if (lexemsConsumer.check(lexems, CustomRemindToken.HOUR)) {
             int hour = Integer.parseInt(lexemsConsumer.consume(lexems, CustomRemindToken.HOUR).getValue());
-            offsetTime.setHour(hour);
+            parsedOffsetTime.setHour(hour);
         }
         if (lexemsConsumer.check(lexems, CustomRemindToken.MINUTE)) {
             int minute = Integer.parseInt(lexemsConsumer.consume(lexems, CustomRemindToken.MINUTE).getValue());
-            offsetTime.setMinute(minute);
+            parsedOffsetTime.setMinute(minute);
         }
     }
 }
