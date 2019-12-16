@@ -6,6 +6,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.RepeatTime;
+import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
 
@@ -30,6 +31,26 @@ public class TimeBuilder {
     public TimeBuilder(LocalisationService localisationService, IntervalLocalisationService intervalLocalisationService) {
         this.localisationService = localisationService;
         this.intervalLocalisationService = intervalLocalisationService;
+    }
+
+    public String time(UserReminderNotification offsetTime) {
+        String typeBefore = localisationService.getMessage(MessagesProperties.CUSTOM_REMIND_BEFORE);
+        StringBuilder builder = new StringBuilder(typeBefore);
+
+        if (offsetTime.getDays() != 0) {
+            builder.append(offsetTime.getDays()).append(" дней ");
+        }
+        if (offsetTime.getHours() != 0) {
+            builder.append(offsetTime.getHours()).append(" часов ");
+        }
+        if (offsetTime.getMinutes() != 0) {
+            builder.append(offsetTime.getMinutes()).append(" минут ");
+        }
+        if (offsetTime.getTime() != null) {
+            builder.append("в ").append(DATE_TIME_FORMATTER.format(offsetTime.getTime()));
+        }
+
+        return builder.toString().trim();
     }
 
     public String time(ReminderNotification reminderNotification) {
@@ -147,7 +168,7 @@ public class TimeBuilder {
     public String postponeTime(DateTime remindAt) {
         String time = time(remindAt);
 
-        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[] {time});
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{time});
     }
 
     public String time(Reminder reminder) {

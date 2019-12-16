@@ -32,6 +32,8 @@ public enum TimeToken implements Token {
 
     DAYS,
 
-    REPEAT
+    REPEAT,
+
+    OFFSET
 
 }

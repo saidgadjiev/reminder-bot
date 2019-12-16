@@ -8,9 +8,12 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.callback.*;
 import ru.gadjini.reminder.bot.command.keyboard.*;
+import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.service.FriendshipService;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.TimezoneService;
+import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -49,15 +52,19 @@ public class CommandContainer {
                             CallbackCommandNavigator callbackCommandNavigator,
                             MessageBuilder messageBuilder,
                             TimeBuilder timeBuilder,
+                            UserReminderNotificationService userReminderNotificationService,
                             ReminderNotificationService reminderNotificationService,
                             TimezoneService timezoneService) {
         for (BotCommand botCommand : getBotCommands(keyboardService, reminderRequestService, tgUserService, reminderMessageSender, messageService)) {
             botCommandRegistryMap.put(botCommand.getCommandIdentifier(), botCommand);
         }
-        for (CallbackBotCommand botCommand : getCallbackBotCommands(keyboardService, friendshipService,
+        for (CallbackBotCommand botCommand : getCallbackBotCommands(
+                keyboardService, friendshipService,
                 commandNavigator, reminderService, reminderRequestService,
                 reminderMessageSender, messageService, callbackCommandNavigator,
-                localisationService, messageBuilder, timeBuilder, tgUserService, reminderNotificationService, securityService)) {
+                localisationService, messageBuilder, timeBuilder, tgUserService,
+                reminderNotificationService, userReminderNotificationService, securityService
+        )) {
             callbackBotCommandMap.put(botCommand.getName(), botCommand);
         }
         keyboardBotCommands = getKeyboardBotCommands(
@@ -67,6 +74,8 @@ public class CommandContainer {
                 commandNavigator,
                 tgUserService,
                 timezoneService,
+                userReminderNotificationService,
+                messageBuilder,
                 messageService
         );
 
@@ -92,6 +101,8 @@ public class CommandContainer {
                                                             CommandNavigator commandNavigator,
                                                             TgUserService tgUserService,
                                                             TimezoneService timezoneService,
+                                                            UserReminderNotificationService userReminderNotificationService,
+                                                            MessageBuilder messageBuilder,
                                                             MessageService messageService) {
         return List.of(
                 new GeFriendsCommand(keyboardService, friendshipService, messageService, localisationService),
@@ -101,7 +112,27 @@ public class CommandContainer {
                 new GoBackCommand(localisationService, commandNavigator),
                 new ChangeTimezoneCommand(localisationService, messageService, tgUserService, timezoneService,
                         commandNavigator, keyboardService),
-                new GetRemindersCommand(localisationService, messageService, keyboardService));
+                new GetRemindersCommand(localisationService, messageService, keyboardService),
+                new UserReminderNotificationScheduleCommand(
+                        UserReminderNotification.NotificationType.WITH_TIME,
+                        localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME),
+                        MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_HISTORY_NAME,
+                        userReminderNotificationService,
+                        messageBuilder,
+                        messageService,
+                        keyboardService
+                ),
+                new UserReminderNotificationScheduleCommand(
+                        UserReminderNotification.NotificationType.WITHOUT_TIME,
+                        localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME),
+                        MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_HISTORY_NAME,
+                        userReminderNotificationService,
+                        messageBuilder,
+                        messageService,
+                        keyboardService
+                ),
+                new UserReminderNotificationCommand(messageService, localisationService, keyboardService)
+        );
     }
 
     private List<CallbackBotCommand> getCallbackBotCommands(KeyboardService keyboardService,
@@ -117,6 +148,7 @@ public class CommandContainer {
                                                             TimeBuilder timeBuilder,
                                                             TgUserService userService,
                                                             ReminderNotificationService reminderNotificationService,
+                                                            UserReminderNotificationService userReminderNotificationService,
                                                             SecurityService securityService) {
         return List.of(
                 new CompleteCommand(reminderService, reminderMessageSender),
@@ -143,7 +175,8 @@ public class CommandContainer {
                 new OkCommand(messageService),
                 new ReminderTimeScheduleCommand(reminderNotificationService, messageService, keyboardService, timeBuilder),
                 new ReminderTimeDetailsCommand(reminderNotificationService, messageBuilder, messageService, keyboardService),
-                new DeleteReminderTimeCommand(reminderNotificationService, messageService, keyboardService)
+                new DeleteReminderTimeCommand(reminderNotificationService, messageService, keyboardService),
+                new DeleteUserReminderNotificationCommand(messageBuilder, keyboardService, messageService, userReminderNotificationService)
         );
     }
 

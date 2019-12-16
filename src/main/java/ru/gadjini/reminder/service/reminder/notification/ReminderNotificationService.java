@@ -39,7 +39,7 @@ public class ReminderNotificationService {
     }
 
     public List<ReminderNotification> getReminderTimes(int reminderId) {
-        return reminderNotificationDao.getReminderTimes(reminderId);
+        return reminderNotificationDao.getCustomReminderTimes(reminderId);
     }
 
     public ReminderNotification getReminderTime(int id) {

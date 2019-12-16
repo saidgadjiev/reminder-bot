@@ -4,55 +4,114 @@ import java.time.LocalTime;
 
 public class UserReminderNotification {
 
-    private OffsetTime offsetTime;
+    public static final String TABLE = "user_reminder_notification";
 
-    public OffsetTime getOffsetTime() {
-        return offsetTime;
+    public static final String ID = "id";
+
+    public static final String DAYS = "days";
+
+    public static final String HOURS = "hours";
+
+    public static final String MINUTES = "minutes";
+
+    public static final String TIME = "time";
+
+    public static final String USER_ID = "user_id";
+
+    public static final String TYPE = "type";
+
+    private int id;
+
+    private int days;
+
+    private int hours;
+
+    private int minutes;
+
+    private int userId;
+
+    private LocalTime time;
+
+    private NotificationType type;
+
+    public int getId() {
+        return id;
     }
 
-    public void setOffsetTime(OffsetTime offsetTime) {
-        this.offsetTime = offsetTime;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public enum ReminderType {
-        WITHOUT_TIME,
-        WITH_TIME
+    public int getDays() {
+        return days;
     }
 
-    public static class OffsetTime {
+    public void setDays(int days) {
+        this.days = days;
+    }
 
-        private int day;
+    public int getHours() {
+        return hours;
+    }
 
-        private int hour;
+    public void setHours(int hours) {
+        this.hours = hours;
+    }
 
-        private int minute;
+    public int getMinutes() {
+        return minutes;
+    }
 
-        private LocalTime localTime;
+    public void setMinutes(int minutes) {
+        this.minutes = minutes;
+    }
 
-        public OffsetTime(int hour, int minute) {
-            this.hour = hour;
-            this.minute = minute;
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public NotificationType getType() {
+        return type;
+    }
+
+    public void setType(NotificationType type) {
+        this.type = type;
+    }
+
+    public enum NotificationType {
+        WITHOUT_TIME(0),
+        WITH_TIME(1);
+
+        private final int code;
+
+        NotificationType(int code) {
+            this.code = code;
         }
 
-        public OffsetTime(int day, LocalTime localTime) {
-            this.day = day;
-            this.localTime = localTime;
+        public int getCode() {
+            return code;
         }
 
-        public int getDay() {
-            return day;
-        }
+        public static NotificationType fromCode(int code) {
+            for (NotificationType notificationType : values()) {
+                if (notificationType.code == code) {
+                    return notificationType;
+                }
+            }
 
-        public int getHour() {
-            return hour;
-        }
-
-        public int getMinute() {
-            return minute;
-        }
-
-        public LocalTime getLocalTime() {
-            return localTime;
+            throw new IllegalArgumentException();
         }
     }
 }

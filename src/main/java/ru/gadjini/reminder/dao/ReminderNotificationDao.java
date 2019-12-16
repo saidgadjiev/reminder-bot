@@ -48,12 +48,12 @@ public class ReminderNotificationDao {
         );
     }
 
-    public List<ReminderNotification> getReminderTimes(int reminderId) {
+    public List<ReminderNotification> getCustomReminderTimes(int reminderId) {
         return jdbcTemplate.query(
                 "SELECT rt.*, rc.zone_id AS rc_zone_id\n" +
                         "FROM reminder_time rt\n" +
                         "         INNER JOIN reminder r on rt.reminder_id = r.id\n" +
-                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id WHERE rt.reminder_id = ? AND rt.its_time = FALSE",
+                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id WHERE rt.reminder_id = ? AND rt.custom = TRUE",
                 prepared -> prepared.setInt(1, reminderId),
                 (rs, rowNum) -> resultSetMapper.mapReminderTime(rs, "")
         );
@@ -114,7 +114,8 @@ public class ReminderNotificationDao {
                 .addValue(ReminderNotification.DELAY_TIME, JodaTimeUtils.toPgInterval(reminderNotification.getDelayTime()))
                 .addValue(ReminderNotification.LAST_REMINDER_AT, reminderNotification.getLastReminderAt() != null ? Timestamp.valueOf(reminderNotification.getLastReminderAt().toLocalDateTime()) : null)
                 .addValue(ReminderNotification.REMINDER_ID, reminderNotification.getReminderId())
-                .addValue(ReminderNotification.ITS_TIME, reminderNotification.isItsTime());
+                .addValue(ReminderNotification.ITS_TIME, reminderNotification.isItsTime())
+                .addValue(ReminderNotification.CUSTOM, reminderNotification.isCustom());
     }
 
     private SqlParameterSource[] sqlParameterSources(List<ReminderNotification> reminderNotifications) {

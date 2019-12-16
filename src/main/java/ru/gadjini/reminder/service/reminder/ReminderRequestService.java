@@ -93,11 +93,11 @@ public class ReminderRequestService {
             setReceiverMapping(new Mapping());
         }});
 
-        CustomRemindTime customRemind = parsedCustomRemind(text, reminder.getReceiver().getZone());
+        CustomRemindTime customRemind = parseCustomRemind(text, reminder.getReceiver().getZone());
         CustomRemindResult customRemindResult = new CustomRemindResult();
         ReminderNotification reminderNotification;
 
-        if (customRemind.getParsedOffsetTime()) {
+        if (customRemind.isOffsetTime()) {
             ZonedDateTime remindTime = ReminderUtils.buildRemindTime(
                     customRemind.getRemindTime(),
                     reminder.getRemindAtInReceiverZone().toZonedDateTime(),
@@ -284,7 +284,7 @@ public class ReminderRequestService {
         }
     }
 
-    private CustomRemindTime parsedCustomRemind(String text, ZoneId zoneId) {
+    private CustomRemindTime parseCustomRemind(String text, ZoneId zoneId) {
         try {
             return requestParser.parseCustomRemind(text, zoneId);
         } catch (ParseException ex) {

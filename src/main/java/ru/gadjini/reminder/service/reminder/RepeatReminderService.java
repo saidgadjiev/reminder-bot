@@ -183,12 +183,11 @@ public class RepeatReminderService {
 
         intervalReminderNotification(now, repeatTime.getInterval(), reminderNotifications).setItsTime(true);
 
-        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getUserReminderNotifications(securityService.getAuthenticatedUser().getId(), UserReminderNotification.ReminderType.WITH_TIME);
+        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(securityService.getAuthenticatedUser().getId(), UserReminderNotification.NotificationType.WITH_TIME);
 
-        for (UserReminderNotification userReminderNotification : userReminderNotifications) {
-            UserReminderNotification.OffsetTime offsetTime = userReminderNotification.getOffsetTime();
-            if (offsetTime.getLocalTime() == null && reminderTimeAI.isNeedCreateReminderNotification(repeatTime.getInterval(), offsetTime)) {
-                intervalReminderNotification(now.minusHours(offsetTime.getHour()).minusMinutes(offsetTime.getMinute()), repeatTime.getInterval(), reminderNotifications);
+        for (UserReminderNotification offsetTime : userReminderNotifications) {
+            if (offsetTime.getTime() == null && reminderTimeAI.isNeedCreateReminderNotification(repeatTime.getInterval(), offsetTime)) {
+                intervalReminderNotification(now.minusHours(offsetTime.getHours()).minusMinutes(offsetTime.getMinutes()), repeatTime.getInterval(), reminderNotifications).setCustom(true);
             }
         }
     }
@@ -210,18 +209,16 @@ public class RepeatReminderService {
             repeatReminder.plusDays(repeatTime.getInterval().getDays());
         }
         fixedReminderNotification(repeatReminder.toLocalDate(), zoneId, repeatTime.getInterval().getDays(), repeatTime.getTime(), reminderNotifications).setItsTime(true);
-        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getUserReminderNotifications(securityService.getAuthenticatedUser().getId(), UserReminderNotification.ReminderType.WITH_TIME);
+        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(securityService.getAuthenticatedUser().getId(), UserReminderNotification.NotificationType.WITH_TIME);
 
-        for (UserReminderNotification userReminderNotification : userReminderNotifications) {
-            UserReminderNotification.OffsetTime offsetTime = userReminderNotification.getOffsetTime();
-
+        for (UserReminderNotification offsetTime : userReminderNotifications) {
             fixedReminderNotification(
-                    repeatReminder.toLocalDate().minusDays(offsetTime.getDay()),
+                    repeatReminder.toLocalDate().minusDays(offsetTime.getDays()),
                     zoneId,
                     repeatTime.getInterval().getDays(),
-                    offsetTime.getLocalTime() == null ? repeatTime.getTime().minusHours(offsetTime.getHour()).minusMinutes(offsetTime.getMinute()) : offsetTime.getLocalTime(),
+                    offsetTime.getTime() == null ? repeatTime.getTime().minusHours(offsetTime.getHours()).minusMinutes(offsetTime.getMinutes()) : offsetTime.getTime(),
                     reminderNotifications
-            );
+            ).setCustom(true);
         }
     }
 
@@ -231,16 +228,15 @@ public class RepeatReminderService {
 
         fixedReminderNotification(repeatReminder.toLocalDate(), zoneId, 7, repeatTime.getTime(), reminderNotifications).setItsTime(true);
 
-        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getUserReminderNotifications(securityService.getAuthenticatedUser().getId(), UserReminderNotification.ReminderType.WITH_TIME);
-        for (UserReminderNotification userReminderNotification : userReminderNotifications) {
-            UserReminderNotification.OffsetTime offsetTime = userReminderNotification.getOffsetTime();
+        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(securityService.getAuthenticatedUser().getId(), UserReminderNotification.NotificationType.WITH_TIME);
+        for (UserReminderNotification offsetTime : userReminderNotifications) {
             fixedReminderNotification(
-                    repeatReminder.toLocalDate().minusDays(offsetTime.getDay()),
+                    repeatReminder.toLocalDate().minusDays(offsetTime.getDays()),
                     zoneId,
                     7,
-                    offsetTime.getLocalTime() == null ? repeatTime.getTime().minusHours(offsetTime.getHour()).minusMinutes(offsetTime.getMinute()) : offsetTime.getLocalTime(),
+                    offsetTime.getTime() == null ? repeatTime.getTime().minusHours(offsetTime.getHours()).minusMinutes(offsetTime.getMinutes()) : offsetTime.getTime(),
                     reminderNotifications
-            );
+            ).setCustom(true);
         }
     }
 
@@ -248,21 +244,19 @@ public class RepeatReminderService {
         LocalDate now = LocalDate.now(zoneId);
         LocalDate repeatReminder = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek()));
 
-        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getUserReminderNotifications(securityService.getAuthenticatedUser().getId(), UserReminderNotification.ReminderType.WITHOUT_TIME);
-        for (UserReminderNotification userReminderNotification : userReminderNotifications) {
-            UserReminderNotification.OffsetTime offsetTime = userReminderNotification.getOffsetTime();
-            fixedReminderNotification(repeatReminder.minusDays(offsetTime.getDay()), zoneId, 7, offsetTime.getLocalTime(), reminderNotifications);
+        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(securityService.getAuthenticatedUser().getId(), UserReminderNotification.NotificationType.WITHOUT_TIME);
+        for (UserReminderNotification offsetTime : userReminderNotifications) {
+            fixedReminderNotification(repeatReminder.minusDays(offsetTime.getDays()), zoneId, 7, offsetTime.getTime(), reminderNotifications).setCustom(true);
         }
     }
 
     private void addDailyReminderNotificationsWithoutTime(RepeatTime repeatTime, ZoneId zoneId, List<ReminderNotification> reminderNotifications) {
         LocalDate repeatReminder = LocalDate.now(zoneId);
 
-        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getUserReminderNotifications(securityService.getAuthenticatedUser().getId(), UserReminderNotification.ReminderType.WITHOUT_TIME);
-        for (UserReminderNotification userReminderNotification : userReminderNotifications) {
-            UserReminderNotification.OffsetTime offsetTime = userReminderNotification.getOffsetTime();
-            if (offsetTime.getDay() == 0) {
-                fixedReminderNotification(repeatReminder.minusDays(offsetTime.getDay()), zoneId, repeatTime.getInterval().getDays(), offsetTime.getLocalTime(), reminderNotifications);
+        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(securityService.getAuthenticatedUser().getId(), UserReminderNotification.NotificationType.WITHOUT_TIME);
+        for (UserReminderNotification offsetTime : userReminderNotifications) {
+            if (offsetTime.getDays() == 0) {
+                fixedReminderNotification(repeatReminder.minusDays(offsetTime.getDays()), zoneId, repeatTime.getInterval().getDays(), offsetTime.getTime(), reminderNotifications).setCustom(true);
             }
         }
     }

@@ -32,4 +32,14 @@ class PatternBuilderTest {
         Assert.assertTrue(matcher.find());
         Assert.assertEquals("понедельник", matcher.group("dayofweek"));
     }
+
+    @Test
+    public void test3() {
+        Pattern p = Pattern.compile("(((?<type>через|за) )?(((?<days>\\d+)д)|(?<eve>накануне))?( )?((?<hours>\\d+)ч)?( )?((?<minutes>\\d+)мин)?)( )?(в )?((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))?");
+        String str = "за 2д в 19:00";
+        Matcher matcher = p.matcher(str);
+
+        System.out.println(matcher.matches());
+        System.out.println(matcher.group("days"));
+    }
 }

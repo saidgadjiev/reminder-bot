@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.service.parser.remind.lexer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Hours;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.regex.GroupMatcher;
 import ru.gadjini.reminder.regex.GroupPattern;
@@ -65,14 +66,25 @@ public class CustomRemindLexer {
             Map<String, String> values = matcher.values();
             List<BaseLexem> lexems = new ArrayList<>();
 
+            lexems.add(new TimeLexem(TimeToken.OFFSET, ""));
             if (values.containsKey(PatternBuilder.TYPE)) {
                 lexems.add(new CustomRemindLexem(CustomRemindToken.TYPE, values.get(PatternBuilder.TYPE)));
             }
-            if (values.containsKey(PatternBuilder.HOUR)) {
-                lexems.add(new CustomRemindLexem(CustomRemindToken.HOUR, values.get(PatternBuilder.HOUR)));
+            if (values.containsKey(PatternBuilder.DAYS)) {
+                lexems.add(new TimeLexem(TimeToken.DAYS, values.get(PatternBuilder.DAYS)));
             }
-            if (values.containsKey(PatternBuilder.MINUTE)) {
-                lexems.add(new CustomRemindLexem(CustomRemindToken.MINUTE, values.get(PatternBuilder.MINUTE)));
+            if (values.containsKey(PatternBuilder.EVE)) {
+                lexems.add(new TimeLexem(TimeToken.DAYS, "1"));
+            }
+            if (values.containsKey(PatternBuilder.HOURS)) {
+                lexems.add(new TimeLexem(TimeToken.HOURS, values.get(PatternBuilder.HOURS)));
+            }
+            if (values.containsKey(PatternBuilder.MINUTES)) {
+                lexems.add(new TimeLexem(TimeToken.MINUTES, values.get(PatternBuilder.MINUTES)));
+            }
+            if (values.containsKey(PatternBuilder.HOUR)) {
+                lexems.add(new TimeLexem(TimeToken.HOUR, values.get(PatternBuilder.HOUR)));
+                lexems.add(new TimeLexem(TimeToken.MINUTE, values.get(PatternBuilder.MINUTE)));
             }
 
             return lexems;

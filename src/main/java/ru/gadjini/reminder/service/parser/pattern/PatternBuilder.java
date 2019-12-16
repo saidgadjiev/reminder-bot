@@ -54,6 +54,8 @@ public class PatternBuilder {
 
     public static final String TYPE = "type";
 
+    public static final String EVE = "eve";
+
     private LocalisationService localisationService;
 
     private DayOfWeekService dayOfWeekService;
@@ -75,7 +77,7 @@ public class PatternBuilder {
         String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
         String regexpTimeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
         String regexRepeat = localisationService.getMessage(MessagesProperties.REGEXP_REPEAT);
-        String regexpEveryDay = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_DAY);
+        String regexpEveryDay = localisationService.getMessage(MessagesProperties.REGEXP_DAY);
         String regexpEveryMinute = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_MINUTE);
         String regexpEveryHour = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_HOUR);
         String regexpDays = localisationService.getMessage(MessagesProperties.REGEXP_DAYS);
@@ -133,14 +135,19 @@ public class PatternBuilder {
         StringBuilder patternBuilder = new StringBuilder();
 
         String typeAfter = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_AFTER);
-        String typeBefore = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_BEFORE);
+        String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX);
+        String typeBefore = localisationService.getMessage(MessagesProperties.CUSTOM_REMIND_BEFORE);
         String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
         String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX);
-        patternBuilder.append("((?<").append(TYPE).append(">").append(typeAfter).append("|")
-                .append(typeBefore).append(") ((?<").append(HOUR).append(">\\d+)").append(hourPrefix)
-                .append(")?( )?((?<").append(MINUTE).append(">\\d+)").append(minutePrefix).append(")?)");
+        String eve = localisationService.getMessage(MessagesProperties.EVE);
+        String at = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
+        patternBuilder.append("(((?<").append(TYPE).append(">").append(typeAfter).append("|")
+                .append(typeBefore).append(") )?(((?<").append(DAYS).append(">\\d+)").append(dayPrefix)
+                .append("|(?<").append(EVE).append(">").append(eve).append("))?( )?((?<").append(HOURS).append(">\\d+)").append(hourPrefix).append(")?( )?((?<")
+                .append(MINUTES).append(">\\d+)").append(minutePrefix).append(")?)")
+                .append("( )?(").append(at).append(" )?((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))?");
 
-        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, HOUR, MINUTE));
+        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, DAYS, EVE, HOURS, MINUTES, HOUR, MINUTE));
     }
 
     private String getDayOfWeekPattern(Locale locale) {

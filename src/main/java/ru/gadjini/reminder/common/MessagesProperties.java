@@ -198,7 +198,7 @@ public class MessagesProperties {
 
     public static final String REGEX_CUSTOM_REMIND_TYPE_AFTER = "regex.custom.remind.type.after";
 
-    public static final String REGEX_CUSTOM_REMIND_TYPE_BEFORE = "regex.custom.remind.type.before";
+    public static final String CUSTOM_REMIND_BEFORE = "custom.remind.before";
 
     public static final String REGEX_CUSTOM_REMIND_TYPE_AT = "regex.custom.remind.type.at";
 
@@ -282,7 +282,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_POSTPONE_WITHOUT_REASON = "message.postpone.without.reason";
 
-    public static final String REGEXP_EVERY_DAY = "regexp.every.day";
+    public static final String REGEXP_DAY = "regexp.day";
 
     public static final String REGEXP_EVERY_MINUTE = "regexp.every.minute";
 
@@ -297,6 +297,8 @@ public class MessagesProperties {
     public static final String TODAY = "today";
 
     public static final String TOMORROW = "tomorrow";
+
+    public static final String EVE = "eve";
 
     public static final String DAY_AFTER_TOMORROW = "day.after.tomorrow";
 
@@ -321,4 +323,20 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_TIME_DELETED = "message.reminder.time.deleted";
 
     public static final String CREATE_REMIND_TIME_COMMAND_DESCRIPTION = "create.remind.time.command.description";
+
+    public static final String USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME = "user.reminder.notification.with.time.command.name";
+
+    public static final String USER_REMINDER_NOTIFICATION_WITH_TIME_HISTORY_NAME = "urnwthn";
+
+    public static final String USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME = "user.reminder.notification.without.time.command.name";
+
+    public static final String USER_REMINDER_NOTIFICATION_WITHOUT_TIME_HISTORY_NAME = "urnwithn";
+
+    public static final String MESSAGE_USER_REMINDER_NOTIFICATION = "message.user.reminder.notification";
+
+    public static final String USER_REMINDER_NOTIFICATION_COMMAND_NAME = "user.reminder.notification.command.name";
+
+    public static final String USER_REMINDER_NOTIFICATION_HISTORY_NAME = "urnhn";
+
+    public static final String DELETE_USER_REMINDER_NOTIFICATION_COMMAND_NAME = "durn";
 }

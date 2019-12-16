@@ -22,6 +22,8 @@ public class ReminderNotification {
 
     public static final String ITS_TIME = "its_time";
 
+    public static final String CUSTOM = "custom";
+
     private int id;
 
     private ZonedDateTime fixedTime;
@@ -35,6 +37,8 @@ public class ReminderNotification {
     private int reminderId;
 
     private boolean itsTime = false;
+
+    private boolean custom = false;
 
     private Reminder reminder;
 
@@ -100,6 +104,14 @@ public class ReminderNotification {
 
     public void setReminder(Reminder reminder) {
         this.reminder = reminder;
+    }
+
+    public boolean isCustom() {
+        return custom;
+    }
+
+    public void setCustom(boolean custom) {
+        this.custom = custom;
     }
 
     public static ReminderNotification repeatTime() {

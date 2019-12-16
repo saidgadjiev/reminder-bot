@@ -13,6 +13,7 @@ import ru.gadjini.reminder.service.parser.time.parser.RepeatTimeParser;
 import ru.gadjini.reminder.service.parser.time.parser.TimeParser;
 import ru.gadjini.reminder.time.DateTime;
 
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
@@ -21,7 +22,7 @@ public class CustomRemindParser {
 
     private CustomRemindTime customRemindTime = new CustomRemindTime();
 
-    private ParsedOffsetTime parsedOffsetTime = null;
+    private OffsetTime offsetTime = null;
 
     private DateTime parsedTime = null;
 
@@ -38,7 +39,7 @@ public class CustomRemindParser {
     private LexemsConsumer lexemsConsumer;
 
     public CustomRemindParser(LocalisationService localisationService, Locale locale, ZoneId zoneId, DayOfWeekService dayOfWeekService) {
-        this.typeBefore = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_BEFORE);
+        this.typeBefore = localisationService.getMessage(MessagesProperties.CUSTOM_REMIND_BEFORE);
         this.typeAfter = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_AFTER);
         this.lexemsConsumer = new LexemsConsumer();
         this.timeParser = new TimeParser(localisationService, locale, lexemsConsumer, zoneId, dayOfWeekService);
@@ -49,13 +50,16 @@ public class CustomRemindParser {
         if (lexemsConsumer.check(lexems, TimeToken.REPEAT)) {
             lexemsConsumer.consume(lexems, TimeToken.REPEAT);
             consumeRepeatTime(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.OFFSET)) {
+            lexemsConsumer.consume(lexems, TimeToken.OFFSET);
+            consumeOffsetTime(lexems);
         } else {
             consumeStandardTime(lexems);
         }
         if (lexemsConsumer.getPosition() < lexems.size()) {
             throw new ParseException();
         }
-        customRemindTime.setParsedOffsetTime(parsedOffsetTime);
+        customRemindTime.setOffsetTime(offsetTime);
         customRemindTime.setRepeatTime(parsedRepeatTime);
         customRemindTime.setTime(parsedTime);
 
@@ -66,32 +70,67 @@ public class CustomRemindParser {
         parsedRepeatTime = repeatTimeParser.parse(lexems);
     }
 
-    private void consumeStandardTime(List<BaseLexem> lexems) {
+    private void consumeOffsetTime(List<BaseLexem> lexems) {
+        offsetTime = new OffsetTime();
         if (lexemsConsumer.check(lexems, CustomRemindToken.TYPE)) {
-            parsedOffsetTime = new ParsedOffsetTime();
             consumeType(lexems);
-        } else {
-            parsedTime = timeParser.parseTime(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
+            consumeDays(lexems);
         }
+    }
+
+    private void consumeStandardTime(List<BaseLexem> lexems) {
+        parsedTime = timeParser.parseTime(lexems);
+    }
+
+    private void consumeDays(List<BaseLexem> lexems) {
+        int days = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAYS).getValue());
+        offsetTime.setDays(days);
+
+        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            offsetTime.setTime(consumeTime(lexems));
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
+            consumeHours(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
+            consumeMinutes(lexems);
+        }
+    }
+
+    private void consumeHours(List<BaseLexem> lexems) {
+        int hours = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.HOURS).getValue());
+        offsetTime.setHours(hours);
+
+        if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
+            consumeMinutes(lexems);
+        }
+    }
+
+    private void consumeMinutes(List<BaseLexem> lexems) {
+        int minutes = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MINUTES).getValue());
+        offsetTime.setMinutes(minutes);
     }
 
     private void consumeType(List<BaseLexem> lexems) {
         String type = lexemsConsumer.consume(lexems, CustomRemindToken.TYPE).getValue();
         if (type.equals(typeAfter)) {
-            parsedOffsetTime.setType(ParsedOffsetTime.Type.AFTER);
+            offsetTime.setType(OffsetTime.Type.AFTER);
         } else if (type.equals(typeBefore)) {
-            parsedOffsetTime.setType(ParsedOffsetTime.Type.BEFORE);
-        } else {
-            throw new ParseException();
+            offsetTime.setType(OffsetTime.Type.BEFORE);
         }
 
-        if (lexemsConsumer.check(lexems, CustomRemindToken.HOUR)) {
-            int hour = Integer.parseInt(lexemsConsumer.consume(lexems, CustomRemindToken.HOUR).getValue());
-            parsedOffsetTime.setHour(hour);
+        if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
+            consumeDays(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
+            consumeHours(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
+            consumeMinutes(lexems);
         }
-        if (lexemsConsumer.check(lexems, CustomRemindToken.MINUTE)) {
-            int minute = Integer.parseInt(lexemsConsumer.consume(lexems, CustomRemindToken.MINUTE).getValue());
-            parsedOffsetTime.setMinute(minute);
-        }
+    }
+
+    private LocalTime consumeTime(List<BaseLexem> lexems) {
+        int hour = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.HOUR).getValue());
+        int minute = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MINUTE).getValue());
+
+        return LocalTime.of(hour, minute);
     }
 }

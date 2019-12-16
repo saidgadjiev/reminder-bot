@@ -19,7 +19,7 @@ public class CommandExecutor {
 
     public static final String COMMAND_ARG_SEPARATOR = "=";
 
-    public static final String COMMAND_NAME_SEPARATOR = "_";
+    public static final String COMMAND_NAME_SEPARATOR = ":";
 
     private CommandContainer commandContainer;
 

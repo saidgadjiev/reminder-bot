@@ -208,7 +208,7 @@ public class ButtonFactory {
         return new InlineKeyboardButton() {{
             setText(localisationService.getMessage(MessagesProperties.DELETE_REMINDER_TIME_COMMAND_DESCRIPTION));
             setCallbackData(MessagesProperties.DELETE_REMINDER_TIME_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
-                add(Arg.REMINDER_TIME_ID.getKey(), reminderTimeId);
+                add(Arg.REMINDER_NOTIFICATION_ID.getKey(), reminderTimeId);
             }}.serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
         }};
     }

@@ -2,7 +2,7 @@ package ru.gadjini.reminder.util;
 
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 import ru.gadjini.reminder.service.parser.postpone.parser.PostponeOn;
-import ru.gadjini.reminder.service.parser.remind.parser.ParsedOffsetTime;
+import ru.gadjini.reminder.service.parser.remind.parser.OffsetTime;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.ZoneId;
@@ -33,16 +33,16 @@ public class ReminderUtils {
         }
     }
 
-    public static ZonedDateTime buildRemindTime(ParsedOffsetTime customRemind, ZonedDateTime remindAt, ZoneId zoneId) {
+    public static ZonedDateTime buildRemindTime(OffsetTime customRemind, ZonedDateTime remindAt, ZoneId zoneId) {
         switch (customRemind.getType()) {
             case AFTER: {
                 ZonedDateTime now = ZonedDateTime.now(zoneId);
 
-                if (customRemind.getHour() != null) {
-                    now = now.plusHours(customRemind.getHour());
+                if (customRemind.getHours() != 0) {
+                    now = now.plusHours(customRemind.getHours());
                 }
-                if (customRemind.getMinute() != null) {
-                    now = now.plusMinutes(customRemind.getMinute());
+                if (customRemind.getMinutes() != 0) {
+                    now = now.plusMinutes(customRemind.getMinutes());
                 }
 
                 return now;
@@ -50,11 +50,11 @@ public class ReminderUtils {
             case BEFORE: {
                 ZonedDateTime reminderTime = remindAt;
 
-                if (customRemind.getHour() != null) {
-                    reminderTime = reminderTime.minusHours(customRemind.getHour());
+                if (customRemind.getHours() != 0) {
+                    reminderTime = reminderTime.minusHours(customRemind.getHours());
                 }
-                if (customRemind.getMinute() != null) {
-                    reminderTime = reminderTime.minusMinutes(customRemind.getMinute());
+                if (customRemind.getMinutes() != 0) {
+                    reminderTime = reminderTime.minusMinutes(customRemind.getMinutes());
                 }
 
                 return reminderTime;

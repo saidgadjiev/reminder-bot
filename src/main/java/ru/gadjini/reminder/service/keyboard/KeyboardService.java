@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandExecutor;
@@ -30,6 +31,46 @@ public class KeyboardService {
     public KeyboardService(LocalisationService localisationService, ButtonFactory buttonFactory) {
         this.localisationService = localisationService;
         this.buttonFactory = buttonFactory;
+    }
+
+    public InlineKeyboardMarkup getUserReminderNotificationInlineKeyboard(List<Integer> reminderNotificationsIds, UserReminderNotification.NotificationType notificationType) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
+
+        int i = 1;
+        List<List<Integer>> lists = Lists.partition(reminderNotificationsIds, 4);
+        for (List<Integer> list : lists) {
+            List<InlineKeyboardButton> row = new ArrayList<>();
+
+            for (int id : list) {
+                InlineKeyboardButton button = new InlineKeyboardButton();
+                button.setText(String.valueOf(i++));
+                button.setCallbackData(MessagesProperties.DELETE_USER_REMINDER_NOTIFICATION_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
+                    add(Arg.USER_REMINDER_NOTIFICATION_ID.getKey(), id);
+                    add(Arg.USER_REMINDER_NOTIFICATION_TYPE.getKey(), notificationType.getCode());
+                }}.serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
+                row.add(button);
+            }
+
+            inlineKeyboardMarkup.getKeyboard().add(row);
+        }
+
+        return inlineKeyboardMarkup;
+    }
+
+    public ReplyKeyboardMarkup getUserReminderNotificationKeyboard() {
+        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
+
+        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
+            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME)));
+        }});
+        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
+            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME)));
+        }});
+        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
+            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
+        }});
+
+        return replyKeyboardMarkup;
     }
 
     public InlineKeyboardMarkup getReminderTimeKeyboard(int reminderTimeId, int reminderId) {
@@ -55,7 +96,7 @@ public class KeyboardService {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(i++));
                 button.setCallbackData(MessagesProperties.REMINDER_TIME_DETAILS_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
-                    add(Arg.REMINDER_TIME_ID.getKey(), reminderTimeId);
+                    add(Arg.REMINDER_NOTIFICATION_ID.getKey(), reminderTimeId);
                 }}.serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
                 row.add(button);
             }

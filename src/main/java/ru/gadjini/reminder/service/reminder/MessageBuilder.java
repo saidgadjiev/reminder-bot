@@ -4,10 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.ReminderNotification;
-import ru.gadjini.reminder.domain.RepeatTime;
-import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.domain.*;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
@@ -29,6 +26,20 @@ public class MessageBuilder {
     public MessageBuilder(LocalisationService localisationService, TimeBuilder timeBuilder) {
         this.localisationService = localisationService;
         this.timeBuilder = timeBuilder;
+    }
+
+    public String getUserReminderNotificationsMessage(List<UserReminderNotification> userReminderNotifications) {
+        StringBuilder message = new StringBuilder();
+
+        int i = 1;
+        for (UserReminderNotification userReminderNotification: userReminderNotifications) {
+            if (message.length() > 0) {
+                message.append("\n");
+            }
+            message.append(i++).append(timeBuilder.time(userReminderNotification));
+        }
+
+        return message.toString();
     }
 
     public String getReminderTimeMessage(ReminderNotification reminderNotification) {

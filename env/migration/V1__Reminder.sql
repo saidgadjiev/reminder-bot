@@ -44,5 +44,6 @@ CREATE TABLE IF NOT EXISTS reminder_time
     fixed_time       TIMESTAMP(0),
     delay_time       INTERVAL,
     last_reminder_at TIMESTAMP(0),
+    custom           BOOLEAN NOT NULL DEFAULT FALSE,
     reminder_id      INTEGER NOT NULL REFERENCES reminder (id) ON DELETE CASCADE
 );
