@@ -37,6 +37,8 @@ public class ReminderTime {
 
     private boolean itsTime = false;
 
+    private Reminder reminder;
+
     public Type getType() {
         return type;
     }
@@ -91,6 +93,14 @@ public class ReminderTime {
 
     public void setItsTime(boolean itsTime) {
         this.itsTime = itsTime;
+    }
+
+    public Reminder getReminder() {
+        return reminder;
+    }
+
+    public void setReminder(Reminder reminder) {
+        this.reminder = reminder;
     }
 
     public static ReminderTime repeatTime() {

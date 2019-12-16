@@ -2,10 +2,9 @@ package ru.gadjini.reminder.util;
 
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 import ru.gadjini.reminder.service.parser.postpone.parser.PostponeOn;
-import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;
+import ru.gadjini.reminder.service.parser.remind.parser.OffsetTime;
 import ru.gadjini.reminder.time.DateTime;
 
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -34,7 +33,7 @@ public class ReminderUtils {
         }
     }
 
-    public static ZonedDateTime buildCustomRemindTime(ParsedCustomRemind customRemind, ZonedDateTime remindAt, ZoneId zoneId) {
+    public static ZonedDateTime buildRemindTime(OffsetTime customRemind, ZonedDateTime remindAt, ZoneId zoneId) {
         switch (customRemind.getType()) {
             case AFTER: {
                 ZonedDateTime now = ZonedDateTime.now(zoneId);
@@ -59,16 +58,6 @@ public class ReminderUtils {
                 }
 
                 return reminderTime;
-            }
-            case AT: {
-                ZonedDateTime now = ZonedDateTime.now(zoneId);
-
-                if (now.getHour() > customRemind.getHour()) {
-                    now.plusDays(1);
-                }
-                now.with(LocalTime.of(customRemind.getHour(), customRemind.getMinute()));
-
-                return now;
             }
             default:
                 throw new UnsupportedOperationException();

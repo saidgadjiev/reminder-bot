@@ -173,22 +173,22 @@ public class RepeatReminderService {
     private void addIntervalReminderTimes(RepeatTime repeatTime, ZoneId zoneId, List<ReminderTime> reminderTimes) {
         ZonedDateTime now = TimeUtils.now(zoneId);
 
-        intervalReminderTime(now, repeatTime.getInterval(), 0, reminderTimes, true);
+        intervalReminderTime(now, repeatTime.getInterval(), reminderTimes, true);
 
         if (reminderTimeAI.isNeedCreateReminderTime(repeatTime.getInterval(), 20)) {
-            intervalReminderTime(now, repeatTime.getInterval(), 20, reminderTimes, false);
+            intervalReminderTime(now.minusMinutes(20), repeatTime.getInterval(), reminderTimes, false);
         }
         if (reminderTimeAI.isNeedCreateReminderTime(repeatTime.getInterval(), 60)) {
-            intervalReminderTime(now, repeatTime.getInterval(), 60, reminderTimes, false);
+            intervalReminderTime(now.minusMinutes(60), repeatTime.getInterval(), reminderTimes, false);
         }
         if (reminderTimeAI.isNeedCreateReminderTime(repeatTime.getInterval(), 120)) {
-            intervalReminderTime(now, repeatTime.getInterval(), 120, reminderTimes, false);
+            intervalReminderTime(now.minusMinutes(120), repeatTime.getInterval(), reminderTimes, false);
         }
     }
 
-    private void intervalReminderTime(ZonedDateTime remindAt, Period interval, int minutes, List<ReminderTime> reminderTimes, boolean itsTime) {
+    private void intervalReminderTime(ZonedDateTime remindAt, Period interval, List<ReminderTime> reminderTimes, boolean itsTime) {
         ReminderTime reminderTime = ReminderTime.repeatTime();
-        reminderTime.setLastReminderAt(remindAt.minusMinutes(minutes).withZoneSameInstant(ZoneOffset.UTC));
+        reminderTime.setLastReminderAt(remindAt.withZoneSameInstant(ZoneOffset.UTC));
         reminderTime.setDelayTime(interval);
         reminderTime.setItsTime(itsTime);
         reminderTimes.add(reminderTime);

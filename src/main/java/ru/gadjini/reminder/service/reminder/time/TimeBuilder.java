@@ -34,21 +34,19 @@ public class TimeBuilder {
 
     public String time(ReminderTime reminderTime) {
         if (reminderTime.getType().equals(ReminderTime.Type.ONCE)) {
-            return time(reminderTime.getFixedTime());
+            return time(reminderTime.getFixedTime().withZoneSameInstant(reminderTime.getReminder().getReceiver().getZone()));
         }
 
         StringBuilder time = new StringBuilder();
         if (reminderTime.getDelayTime().getDays() == 7) {
-            DayOfWeek dayOfWeek = reminderTime.getLastReminderAt().getDayOfWeek();
+            ZonedDateTime lastRemindAt = reminderTime.getLastReminderAt().withZoneSameInstant(reminderTime.getReminder().getReceiver().getZone());
+            DayOfWeek dayOfWeek = lastRemindAt.getDayOfWeek();
 
             time.append(getRepeatWord(dayOfWeek)).append(" ");
             time.append(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())).append(" ");
-            time.append(DATE_TIME_FORMATTER.format(reminderTime.getLastReminderAt()));
+            time.append(DATE_TIME_FORMATTER.format(lastRemindAt));
         } else {
             time.append(intervalLocalisationService.get(reminderTime.getDelayTime()));
-            if (reminderTime.getLastReminderAt() != null) {
-                time.append(" ").append(DATE_TIME_FORMATTER.format(reminderTime.getLastReminderAt()));
-            }
         }
 
         return time.toString();

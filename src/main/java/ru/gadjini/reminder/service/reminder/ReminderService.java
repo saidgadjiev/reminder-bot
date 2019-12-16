@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
+import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.mapping.Mapping;
@@ -17,9 +18,11 @@ import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeAI;
 import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.time.DateTime;
+import ru.gadjini.reminder.util.TimeUtils;
 
 import java.sql.Timestamp;
 import java.time.*;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -258,14 +261,38 @@ public class ReminderService {
     }
 
     @Transactional
-    public ZonedDateTime customRemind(int reminderId, ZonedDateTime remindTime) {
+    public ReminderTime customRemind(int reminderId, ZonedDateTime remindTime) {
         ReminderTime reminderTime = new ReminderTime();
         reminderTime.setType(ReminderTime.Type.ONCE);
         reminderTime.setReminderId(reminderId);
         reminderTime.setFixedTime(remindTime.withZoneSameInstant(ZoneOffset.UTC));
         reminderTimeService.create(reminderTime);
 
-        return remindTime;
+        return reminderTime;
+    }
+
+    @Transactional
+    public ReminderTime customRemind(int reminderId, RepeatTime repeatTime, ZoneId zoneId) {
+        ReminderTime reminderTime;
+        ZonedDateTime now = TimeUtils.now(zoneId);
+
+        if (repeatTime.getDayOfWeek() != null) {
+            ZonedDateTime repeatReminder = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek())).with(repeatTime.getTime());
+            reminderTime = fixedRepeatReminderTime(repeatReminder.toLocalDate(), zoneId, 7, repeatTime.getTime());
+        } else if (repeatTime.getInterval().getDays() > 0) {
+            ZonedDateTime repeatReminder = now.with(repeatTime.getTime());
+
+            if (repeatReminder.isBefore(now)) {
+                repeatReminder.plusDays(repeatTime.getInterval().getDays());
+            }
+            reminderTime = fixedRepeatReminderTime(repeatReminder.toLocalDate(), zoneId, repeatTime.getInterval().getDays(), repeatTime.getTime());
+        } else {
+            reminderTime = intervalReminderTime(now, repeatTime.getInterval());
+        }
+        reminderTime.setReminderId(reminderId);
+        reminderTimeService.create(reminderTime);
+
+        return reminderTime;
     }
 
     private List<ReminderTime> getReminderTimes(DateTime dateTime) {
@@ -307,7 +334,7 @@ public class ReminderService {
         if (reminderTimeAI.isNeedCreateReminderTime(remindAt, 20)) {
             fixedReminderTime(remindAt.toLocalDate(), remindAt.toLocalTime().minusMinutes(20), remindAt.getZone(), reminderTimes);
         }
-        addDelayTime(remindAt, 20, reminderTimes);
+        reminderTimes.add(intervalReminderTime(remindAt.minusMinutes(20), new Period().withMinutes(20)));
         fixedReminderTime(remindAt.toLocalDate(), remindAt.toLocalTime(), remindAt.getZone(), reminderTimes).setItsTime(true);
 
         return reminderTimes;
@@ -321,10 +348,19 @@ public class ReminderService {
         return fixedTime;
     }
 
-    private void addDelayTime(ZonedDateTime remindAt, int delayMinute, List<ReminderTime> reminderTimes) {
-        ReminderTime delayTime = ReminderTime.repeatTime();
-        delayTime.setDelayTime(new Period().withMinutes(delayMinute));
-        delayTime.setLastReminderAt(remindAt.withZoneSameInstant(ZoneOffset.UTC));
-        reminderTimes.add(delayTime);
+    private ReminderTime fixedRepeatReminderTime(LocalDate repeatAt, ZoneId zoneId, int repeatDays, LocalTime localTime) {
+        ReminderTime reminderTime = ReminderTime.repeatTime();
+        reminderTime.setLastReminderAt(ZonedDateTime.of(repeatAt.minusDays(repeatDays), localTime, zoneId).withZoneSameInstant(ZoneOffset.UTC));
+        reminderTime.setDelayTime(new Period().withDays(repeatDays));
+
+        return reminderTime;
+    }
+
+    private ReminderTime intervalReminderTime(ZonedDateTime remindAt, Period interval) {
+        ReminderTime reminderTime = ReminderTime.repeatTime();
+        reminderTime.setLastReminderAt(remindAt.withZoneSameInstant(ZoneOffset.UTC));
+        reminderTime.setDelayTime(interval);
+
+        return reminderTime;
     }
 }

@@ -7,23 +7,27 @@ import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.reminder.MessageBuilder;
 import ru.gadjini.reminder.service.reminder.remindertime.ReminderTimeService;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
+import ru.gadjini.reminder.util.JodaTimeUtils;
 
 public class ReminderTimeDetailsCommand implements CallbackBotCommand {
 
     private ReminderTimeService reminderTimeService;
 
-    private TimeBuilder timeBuilder;
+    private MessageBuilder messageBuilder;
 
     private MessageService messageService;
 
     private KeyboardService keyboardService;
 
-    public ReminderTimeDetailsCommand(ReminderTimeService reminderTimeService, TimeBuilder timeBuilder, MessageService messageService, KeyboardService keyboardService) {
+    public ReminderTimeDetailsCommand(ReminderTimeService reminderTimeService, MessageBuilder messageBuilder,
+                                      MessageService messageService, KeyboardService keyboardService) {
         this.reminderTimeService = reminderTimeService;
-        this.timeBuilder = timeBuilder;
+        this.messageBuilder = messageBuilder;
         this.messageService = messageService;
         this.keyboardService = keyboardService;
     }
@@ -40,7 +44,7 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
-                timeBuilder.time(reminderTime),
+                messageBuilder.getReminderTimeMessage(reminderTime),
                 keyboardService.getReminderTimeKeyboard(requestParams.getInt(Arg.REMINDER_TIME_ID.getKey()), reminderTime.getReminderId())
         );
     }

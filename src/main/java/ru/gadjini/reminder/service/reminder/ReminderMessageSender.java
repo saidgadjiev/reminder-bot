@@ -353,13 +353,24 @@ public class ReminderMessageSender {
     }
 
     public void sendCustomRemindCreated(long chatId, int messageId, CustomRemindResult customRemindResult, ReplyKeyboardMarkup replyKeyboardMarkup) {
-        String text = messageBuilder.getReminderMessage(customRemindResult.getReminder());
+        String text = messageBuilder.getReminderMessage(customRemindResult.getReminderTime().getReminder());
 
         messageService.editMessage(
                 chatId,
                 messageId,
-                text + "\n\n" + messageBuilder.getCustomRemindText(customRemindResult.getZonedDateTime()),
-                keyboardService.getReceiverReminderKeyboard(customRemindResult.getReminder().getId(), customRemindResult.getReminder().isRepeatable())
+                text + "\n\n" + messageBuilder.getCustomRemindText(customRemindResult),
+                keyboardService.getReceiverReminderKeyboard(customRemindResult.getReminderTime().getReminderId(), customRemindResult.getReminderTime().getReminder().isRepeatable())
+        );
+    }
+
+    public void sendCustomRemindCreatedFromReminderTimeDetails(long chatId, int messageId, CustomRemindResult customRemindResult, ReplyKeyboardMarkup replyKeyboardMarkup) {
+        String text = messageBuilder.getReminderTimeMessage(customRemindResult.getReminderTime());
+
+        messageService.editMessage(
+                chatId,
+                messageId,
+                text,
+                keyboardService.getReminderTimeKeyboard(customRemindResult.getReminderTime().getId(), customRemindResult.getReminderTime().getReminderId())
         );
     }
 

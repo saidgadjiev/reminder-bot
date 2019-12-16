@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderTime;
+import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
@@ -29,18 +31,18 @@ public class MessageBuilder {
         this.timeBuilder = timeBuilder;
     }
 
-    public String getReminderTimesListMessage(List<ReminderTime> reminderTimes) {
-        StringBuilder message = new StringBuilder();
+    public String getReminderTimeMessage(ReminderTime reminderTime) {
+        if (reminderTime.getType().equals(ReminderTime.Type.ONCE)) {
+            return timeBuilder.time(reminderTime);
+        } else {
+            StringBuilder message = new StringBuilder(timeBuilder.time(reminderTime));
 
-        int i = 1;
-        for (ReminderTime reminderTime : reminderTimes) {
-            if (message.length() > 0) {
-                message.append("\n");
-            }
-            message.append(i++).append(") ").append(timeBuilder.time(reminderTime));
+            message.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMIND_AT, new Object[]{
+                    timeBuilder.time(JodaTimeUtils.plus(reminderTime.getLastReminderAt().withZoneSameInstant(reminderTime.getReminder().getReceiver().getZone()), reminderTime.getDelayTime()))
+            }));
+
+            return message.toString();
         }
-
-        return message.toString();
     }
 
     public String getReminderMessage(Reminder reminder) {
@@ -224,9 +226,23 @@ public class MessageBuilder {
         });
     }
 
-    public String getCustomRemindText(ZonedDateTime remindAt) {
+    public String getCustomRemindText(CustomRemindResult customRemindResult) {
+        if (customRemindResult.isStandard()) {
+            return getCustomRemindText(customRemindResult.getZonedDateTime());
+        } else {
+            return getCustomRemindText(customRemindResult.getRepeatTime());
+        }
+    }
+
+    private String getCustomRemindText(ZonedDateTime remindAt) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND_CREATED, new Object[]{
                 timeBuilder.time(remindAt)
+        });
+    }
+
+    private String getCustomRemindText(RepeatTime repeatTime) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND_CREATED, new Object[]{
+                timeBuilder.time(repeatTime)
         });
     }
 

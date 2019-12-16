@@ -46,6 +46,9 @@ public class CommandNavigator {
 
     public ReplyKeyboardMarkup silentPop(long chatId) {
         NavigableBotCommand navigableBotCommand = currentCommand.get(chatId);
+        if (navigableBotCommand == null) {
+            return null;
+        }
         String parentHistoryName = navigableBotCommand.getParentHistoryName();
         NavigableBotCommand parentCommand = navigableBotCommands.get(parentHistoryName);
 

@@ -9,11 +9,10 @@ import ru.gadjini.reminder.service.parser.postpone.lexer.PostponeLexerConfig;
 import ru.gadjini.reminder.service.parser.postpone.lexer.PostponeRequestLexer;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 import ru.gadjini.reminder.service.parser.postpone.parser.PostponeRequestParser;
-import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexem;
 import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexer;
 import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexerConfig;
 import ru.gadjini.reminder.service.parser.remind.parser.CustomRemindParser;
-import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;
+import ru.gadjini.reminder.service.parser.remind.parser.CustomRemindTime;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderRequestLexer;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderRequestLexerConfig;
 import ru.gadjini.reminder.service.parser.reminder.parser.ParsedRequest;
@@ -73,9 +72,9 @@ public class RequestParser {
         return new PostponeRequestParser(localisationService, Locale.getDefault(), zoneId, dayOfWeekService).parse(lexems);
     }
 
-    public ParsedCustomRemind parseCustomRemind(String text) {
-        List<CustomRemindLexem> lexems = new CustomRemindLexer(customRemindLexerConfig, text).tokenize();
+    public CustomRemindTime parseCustomRemind(String text, ZoneId zoneId) {
+        List<BaseLexem> lexems = new CustomRemindLexer(customRemindLexerConfig, timeLexerConfig, text).tokenize();
 
-        return new CustomRemindParser(localisationService).parse(lexems);
+        return new CustomRemindParser(localisationService, Locale.getDefault(), zoneId, dayOfWeekService).parse(lexems);
     }
 }

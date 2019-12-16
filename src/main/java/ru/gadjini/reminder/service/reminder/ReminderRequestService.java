@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.ReminderTime;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
@@ -17,7 +18,7 @@ import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
-import ru.gadjini.reminder.service.parser.remind.parser.ParsedCustomRemind;
+import ru.gadjini.reminder.service.parser.remind.parser.CustomRemindTime;
 import ru.gadjini.reminder.service.parser.reminder.parser.ParsedRequest;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.validation.ValidationService;
@@ -92,14 +93,31 @@ public class ReminderRequestService {
             setReceiverMapping(new Mapping());
         }});
 
-        ParsedCustomRemind customRemind = parsedCustomRemind(text);
-        ZonedDateTime remindTime = ReminderUtils.buildCustomRemindTime(
-                customRemind,
-                reminder.getRemindAtInReceiverZone().toZonedDateTime(),
-                reminder.getReceiver().getZone()
-        );
+        CustomRemindTime customRemind = parsedCustomRemind(text, reminder.getReceiver().getZone());
+        CustomRemindResult customRemindResult = new CustomRemindResult();
+        ReminderTime reminderTime;
 
-        return new CustomRemindResult(reminderService.customRemind(reminderId, remindTime), reminder);
+        if (customRemind.getOffsetTime()) {
+            ZonedDateTime remindTime = ReminderUtils.buildRemindTime(
+                    customRemind.getRemindTime(),
+                    reminder.getRemindAtInReceiverZone().toZonedDateTime(),
+                    reminder.getReceiver().getZone()
+            );
+            reminderTime = reminderService.customRemind(reminderId, remindTime);
+            customRemindResult.setZonedDateTime(remindTime);
+        } else if (customRemind.isRepeatTime()) {
+            reminderTime = reminderService.customRemind(reminderId, customRemind.getRepeatTime(), reminder.getReceiver().getZone());
+            customRemindResult.setRepeatTime(customRemind.getRepeatTime());
+            customRemindResult.setLastRemindAt(reminderTime.getLastReminderAt());
+        } else {
+            ZonedDateTime remindTime = customRemind.getTime().toZonedDateTime();
+            reminderTime = reminderService.customRemind(reminderId, remindTime);
+            customRemindResult.setZonedDateTime(remindTime);
+        }
+        customRemindResult.setReminderTime(reminderTime);
+        reminderTime.setReminder(reminder);
+
+        return customRemindResult;
     }
 
     public UpdateReminderResult changeReminderTime(int reminderId, String timeText) {
@@ -266,9 +284,9 @@ public class ReminderRequestService {
         }
     }
 
-    private ParsedCustomRemind parsedCustomRemind(String text) {
+    private CustomRemindTime parsedCustomRemind(String text, ZoneId zoneId) {
         try {
-            return requestParser.parseCustomRemind(text);
+            return requestParser.parseCustomRemind(text, zoneId);
         } catch (ParseException ex) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND));
         }

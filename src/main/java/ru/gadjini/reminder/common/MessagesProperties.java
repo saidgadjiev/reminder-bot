@@ -319,4 +319,6 @@ public class MessagesProperties {
     public static final String DELETE_REMINDER_TIME_COMMAND_DESCRIPTION = "delete.reminder.time.command.description";
 
     public static final String MESSAGE_REMINDER_TIME_DELETED = "message.reminder.time.deleted";
+
+    public static final String CREATE_REMIND_TIME_COMMAND_DESCRIPTION = "create.remind.time.command.description";
 }

@@ -141,8 +141,8 @@ public class CommandContainer {
                 new ReceiverReminderCommand(reminderMessageSender, messageService, keyboardService, messageBuilder, reminderService, commandNavigator),
                 new FriendDetailsCommand(userService, messageService, keyboardService, localisationService),
                 new OkCommand(messageService),
-                new ReminderTimeScheduleCommand(reminderTimeService, messageService, keyboardService, messageBuilder),
-                new ReminderTimeDetailsCommand(reminderTimeService, timeBuilder, messageService, keyboardService),
+                new ReminderTimeScheduleCommand(reminderTimeService, messageService, keyboardService, timeBuilder),
+                new ReminderTimeDetailsCommand(reminderTimeService, messageBuilder, messageService, keyboardService),
                 new DeleteReminderTimeCommand(reminderTimeService, messageService, keyboardService)
         );
     }

@@ -13,11 +13,18 @@ public class TimeLexerConfig {
 
     private Map<Locale, GroupPattern> patterns = new HashMap<>();
 
+    private final Map<Locale, GroupPattern> repeatTimePatterns = new HashMap<>();
+
     public TimeLexerConfig(PatternBuilder patternBuilder) {
         patterns.put(Locale.getDefault(), patternBuilder.buildTimePattern(Locale.getDefault()));
+        repeatTimePatterns.put(Locale.getDefault(), patternBuilder.buildRepeatTimePattern(Locale.getDefault()));
     }
 
     public GroupPattern getPattern() {
         return patterns.get(Locale.getDefault());
+    }
+
+    public GroupPattern getRepeatTimePattern() {
+        return repeatTimePatterns.get(Locale.getDefault());
     }
 }

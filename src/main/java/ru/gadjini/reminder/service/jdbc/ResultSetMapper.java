@@ -7,16 +7,15 @@ import ru.gadjini.reminder.domain.*;
 import ru.gadjini.reminder.domain.mapping.FriendshipMapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.time.DateTime;
+import ru.gadjini.reminder.util.JdbcUtils;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.DayOfWeek;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Set;
 
 @Service
 public class ResultSetMapper {
@@ -111,6 +110,7 @@ public class ResultSetMapper {
         ReminderTime reminderTime = new ReminderTime();
         reminderTime.setId(rs.getInt(prefix + ReminderTime.ID));
         reminderTime.setType(ReminderTime.Type.fromCode(rs.getInt(prefix + ReminderTime.TYPE_COL)));
+        reminderTime.setReminderId(rs.getInt(prefix + ReminderTime.REMINDER_ID));
         Timestamp lastRemindAt = rs.getTimestamp(prefix + ReminderTime.LAST_REMINDER_AT);
         reminderTime.setLastReminderAt(lastRemindAt == null ? null : ZonedDateTime.of(lastRemindAt.toLocalDateTime(), ZoneOffset.UTC));
 
@@ -120,6 +120,18 @@ public class ResultSetMapper {
         PGInterval delayTime = (PGInterval) rs.getObject(prefix + ReminderTime.DELAY_TIME);
         reminderTime.setDelayTime(JodaTimeUtils.toPeriod(delayTime));
         reminderTime.setItsTime(rs.getBoolean(prefix + ReminderTime.ITS_TIME));
+
+        Reminder reminder = new Reminder();
+        reminder.setId(reminderTime.getReminderId());
+        reminderTime.setReminder(reminder);
+
+        Set<String> columnNames = JdbcUtils.getColumnNames(rs.getMetaData());
+        if (columnNames.contains("rc_zone_id")) {
+            TgUser receiver = new TgUser();
+
+            receiver.setZoneId(rs.getString("rc_zone_id"));
+            reminder.setReceiver(receiver);
+        }
 
         return reminderTime;
     }

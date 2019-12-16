@@ -54,12 +54,6 @@ public class PatternBuilder {
 
     public static final String TYPE = "type";
 
-    public static final String TTYPE = "ttype";
-
-    public static final String THOUR = "thour";
-
-    public static final String TMINUTE = "tminute";
-
     private LocalisationService localisationService;
 
     private DayOfWeekService dayOfWeekService;
@@ -140,15 +134,13 @@ public class PatternBuilder {
 
         String typeAfter = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_AFTER);
         String typeBefore = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_BEFORE);
-        String at = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_AT);
         String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
         String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX);
         patternBuilder.append("((?<").append(TYPE).append(">").append(typeAfter).append("|")
                 .append(typeBefore).append(") ((?<").append(HOUR).append(">\\d+)").append(hourPrefix)
-                .append(")?( )?((?<").append(MINUTE).append(">\\d+)").append(minutePrefix).append(")?)|")
-                .append("((?<").append(TTYPE).append(">").append(at).append(") (?<").append(THOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(TMINUTE).append(">[0-5]?[0-9]))");
+                .append(")?( )?((?<").append(MINUTE).append(">\\d+)").append(minutePrefix).append(")?)");
 
-        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, HOUR, MINUTE, TTYPE, THOUR, TMINUTE));
+        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, HOUR, MINUTE));
     }
 
     private String getDayOfWeekPattern(Locale locale) {

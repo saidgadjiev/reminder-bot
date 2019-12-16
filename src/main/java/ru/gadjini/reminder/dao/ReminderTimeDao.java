@@ -33,7 +33,10 @@ public class ReminderTimeDao {
 
     public ReminderTime getById(int id) {
         return jdbcTemplate.query(
-                "SELECT * FROM reminder_time WHERE id = ?",
+                "SELECT rt.*, rc.zone_id AS rc_zone_id\n" +
+                        "FROM reminder_time rt\n" +
+                        "         INNER JOIN reminder r on rt.reminder_id = r.id\n" +
+                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id WHERE rt.id = ? AND rt.its_time = FALSE",
                 prepared -> prepared.setInt(1, id),
                 rs -> {
                     if (rs.next()) {
@@ -47,17 +50,22 @@ public class ReminderTimeDao {
 
     public List<ReminderTime> getReminderTimes(int reminderId) {
         return jdbcTemplate.query(
-                "SELECT * FROM reminder_time WHERE reminder_id = ?",
+                "SELECT rt.*, rc.zone_id AS rc_zone_id\n" +
+                        "FROM reminder_time rt\n" +
+                        "         INNER JOIN reminder r on rt.reminder_id = r.id\n" +
+                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id WHERE rt.reminder_id = ? AND rt.its_time = FALSE",
                 prepared -> prepared.setInt(1, reminderId),
                 (rs, rowNum) -> resultSetMapper.mapReminderTime(rs, "")
         );
     }
 
     public void create(ReminderTime reminderTime) {
-        new SimpleJdbcInsert(jdbcTemplate)
+        Number id = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(ReminderTime.TYPE)
                 .usingGeneratedKeyColumns(ReminderTime.ID)
-                .execute(sqlParameterSource(reminderTime));
+                .executeAndReturnKey(sqlParameterSource(reminderTime));
+
+        reminderTime.setId(id.intValue());
     }
 
     public int delete(int id) {

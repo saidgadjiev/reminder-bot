@@ -66,8 +66,8 @@ public class ButtonFactory {
         return cancelReminderButton;
     }
 
-    public InlineKeyboardButton customReminderTimeButton(int reminderId, String prevHistoryName) {
-        InlineKeyboardButton customRemindButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION));
+    public InlineKeyboardButton customReminderTimeButton(String name, int reminderId, String prevHistoryName) {
+        InlineKeyboardButton customRemindButton = new InlineKeyboardButton(name);
         customRemindButton.setCallbackData(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
             add(Arg.REMINDER_ID.getKey(), reminderId);
             add(Arg.PREV_HISTORY_NAME.getKey(), prevHistoryName);

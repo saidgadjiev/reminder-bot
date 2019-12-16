@@ -20,4 +20,18 @@ public enum TimeToken implements Token {
 
     MINUTE,
 
+    MINUTES,
+
+    HOURS,
+
+    EVERY_DAY,
+
+    EVERY_MINUTE,
+
+    EVERY_HOUR,
+
+    DAYS,
+
+    REPEAT
+
 }

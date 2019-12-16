@@ -1,102 +1,97 @@
 package ru.gadjini.reminder.service.parser.remind.parser;
 
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.exception.ParseException;
-import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexem;
+import ru.gadjini.reminder.service.DayOfWeekService;
+import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.parser.api.BaseLexem;
+import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindToken;
+import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
+import ru.gadjini.reminder.service.parser.time.parser.RepeatTimeParser;
+import ru.gadjini.reminder.service.parser.time.parser.TimeParser;
+import ru.gadjini.reminder.time.DateTime;
 
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Locale;
 
 public class CustomRemindParser {
 
-    private ParsedCustomRemind parsedCustomRemind = new ParsedCustomRemind();
+    private CustomRemindTime customRemindTime = new CustomRemindTime();
+
+    private OffsetTime offsetTime = null;
+
+    private DateTime parsedTime = null;
+
+    private RepeatTime parsedRepeatTime = null;
+
+    private TimeParser timeParser;
+
+    private RepeatTimeParser repeatTimeParser;
 
     private String typeBefore;
 
     private String typeAfter;
 
-    private String typeAt;
+    private LexemsConsumer lexemsConsumer;
 
-    private int position;
-
-    public CustomRemindParser(LocalisationService localisationService) {
+    public CustomRemindParser(LocalisationService localisationService, Locale locale, ZoneId zoneId, DayOfWeekService dayOfWeekService) {
         this.typeBefore = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_BEFORE);
         this.typeAfter = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_AFTER);
-        this.typeAt = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_AT);
+        this.lexemsConsumer = new LexemsConsumer();
+        this.timeParser = new TimeParser(localisationService, locale, lexemsConsumer, zoneId, dayOfWeekService);
+        this.repeatTimeParser = new RepeatTimeParser(lexemsConsumer, dayOfWeekService, locale);
     }
 
-    public ParsedCustomRemind parse(List<CustomRemindLexem> lexems) {
-        if (check(lexems, CustomRemindToken.TYPE)) {
-            consumeType(lexems);
-
-            return parsedCustomRemind;
-        } else if (check(lexems, CustomRemindToken.TTYPE)) {
-            consumeTType(lexems);
-
-            return parsedCustomRemind;
+    public CustomRemindTime parse(List<BaseLexem> lexems) {
+        if (lexemsConsumer.check(lexems, TimeToken.REPEAT)) {
+            lexemsConsumer.consume(lexems, TimeToken.REPEAT);
+            consumeRepeatTime(lexems);
+        } else {
+            consumeStandardTime(lexems);
         }
+        if (lexemsConsumer.getPosition() < lexems.size()) {
+            throw new ParseException();
+        }
+        customRemindTime.setOffsetTime(offsetTime);
+        customRemindTime.setRepeatTime(parsedRepeatTime);
+        customRemindTime.setTime(parsedTime);
 
-        throw new ParseException();
+        return customRemindTime;
     }
 
-    private void consumeType(List<CustomRemindLexem> lexems) {
-        String type = consume(lexems, CustomRemindToken.TYPE).getValue();
+    private void consumeRepeatTime(List<BaseLexem> lexems) {
+        parsedRepeatTime = repeatTimeParser.parse(lexems);
+    }
+
+    private void consumeStandardTime(List<BaseLexem> lexems) {
+        if (lexemsConsumer.check(lexems, CustomRemindToken.TYPE)) {
+            offsetTime = new OffsetTime();
+            consumeType(lexems);
+        } else {
+            parsedTime = timeParser.parseTime(lexems);
+        }
+    }
+
+    private void consumeType(List<BaseLexem> lexems) {
+        String type = lexemsConsumer.consume(lexems, CustomRemindToken.TYPE).getValue();
         if (type.equals(typeAfter)) {
-            parsedCustomRemind.setType(ParsedCustomRemind.Type.AFTER);
+            offsetTime.setType(OffsetTime.Type.AFTER);
         } else if (type.equals(typeBefore)) {
-            parsedCustomRemind.setType(ParsedCustomRemind.Type.BEFORE);
+            offsetTime.setType(OffsetTime.Type.BEFORE);
         } else {
             throw new ParseException();
         }
 
-        if (check(lexems, CustomRemindToken.HOUR)) {
-            int hour = Integer.parseInt(consume(lexems, CustomRemindToken.HOUR).getValue());
-            parsedCustomRemind.setHour(hour);
+        if (lexemsConsumer.check(lexems, CustomRemindToken.HOUR)) {
+            int hour = Integer.parseInt(lexemsConsumer.consume(lexems, CustomRemindToken.HOUR).getValue());
+            offsetTime.setHour(hour);
         }
-        if (check(lexems, CustomRemindToken.MINUTE)) {
-            int minute = Integer.parseInt(consume(lexems, CustomRemindToken.MINUTE).getValue());
-            parsedCustomRemind.setMinute(minute);
+        if (lexemsConsumer.check(lexems, CustomRemindToken.MINUTE)) {
+            int minute = Integer.parseInt(lexemsConsumer.consume(lexems, CustomRemindToken.MINUTE).getValue());
+            offsetTime.setMinute(minute);
         }
-    }
-
-    private void consumeTType(List<CustomRemindLexem> lexems) {
-        String type = consume(lexems, CustomRemindToken.TTYPE).getValue();
-
-        if (!type.equals(typeAt)) {
-            throw new ParseException();
-        }
-        parsedCustomRemind.setType(ParsedCustomRemind.Type.AT);
-
-        if (check(lexems, CustomRemindToken.THOUR)) {
-            int hour = Integer.parseInt(consume(lexems, CustomRemindToken.THOUR).getValue());
-            parsedCustomRemind.setHour(hour);
-        }
-        if (check(lexems, CustomRemindToken.TMINUTE)) {
-            int minute = Integer.parseInt(consume(lexems, CustomRemindToken.TMINUTE).getValue());
-            parsedCustomRemind.setMinute(minute);
-        }
-    }
-
-    private CustomRemindLexem consume(List<CustomRemindLexem> lexems, CustomRemindToken token) {
-        CustomRemindLexem lexem = get(lexems);
-
-        if (lexem != null && lexem.getToken().equals(token)) {
-            ++position;
-
-            return lexem;
-        }
-
-        throw new ParseException();
-    }
-
-    private boolean check(List<CustomRemindLexem> lexems, CustomRemindToken token) {
-        CustomRemindLexem lexem = get(lexems);
-
-        return lexem!= null && lexem.getToken().equals(token);
-    }
-
-    private CustomRemindLexem get(List<CustomRemindLexem> lexems) {
-        return position >= lexems.size() ? null : lexems.get(position);
     }
 }

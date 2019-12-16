@@ -6,6 +6,7 @@ import ru.gadjini.reminder.regex.GroupMatcher;
 import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
+import ru.gadjini.reminder.service.parser.time.lexer.RepeatTimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
 
@@ -21,6 +22,8 @@ public class ReminderRequestLexer {
 
     private final ReminderRequestLexerConfig lexerConfig;
 
+    private RepeatTimeLexer repeatTimeLexer;
+
     private TimeLexer timeLexer;
 
     private String[] parts;
@@ -33,7 +36,9 @@ public class ReminderRequestLexer {
             this.parts[i] = this.parts[i].trim();
         }
 
-        this.timeLexer = new TimeLexer(timeLexerConfig, StringUtils.reverseDelimited(parts[0], ' '));
+        String timeStartStr = StringUtils.reverseDelimited(parts[0], ' ');
+        this.timeLexer = new TimeLexer(timeLexerConfig, timeStartStr);
+        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, timeStartStr);
     }
 
     public List<BaseLexem> tokenize() {
@@ -63,53 +68,26 @@ public class ReminderRequestLexer {
     }
 
     private LinkedList<BaseLexem> tokenizeRepeatRequest() {
-        LinkedList<BaseLexem> lexems = new LinkedList<>();
+        List<BaseLexem> timeLexems = repeatTimeLexer.tokenize();
+
+        if (timeLexems == null) {
+            return null;
+        }
+        LinkedList<BaseLexem> lexems = new LinkedList<>(timeLexems);
 
         String tokenizeStr = StringUtils.reverseDelimited(parts[0], ' ');
-        GroupMatcher repeatTimeMatcher = lexerConfig.getRepeatTimePattern().matcher(tokenizeStr);
+        tokenizeStr = StringUtils.reverseDelimited(tokenizeStr.substring(repeatTimeLexer.end()).trim(), ' ');
 
-        if (repeatTimeMatcher.find()) {
-            Map<String, String> repeatTimeValues = repeatTimeMatcher.values();
-
-            lexems.add(new ReminderLexem(ReminderToken.REPEAT, ""));
-            if (repeatTimeValues.containsKey(PatternBuilder.HOURS)) {
-                lexems.add(new ReminderLexem(ReminderToken.HOURS, repeatTimeValues.get(PatternBuilder.HOURS)));
-            }
-            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_HOUR)) {
-                lexems.add(new ReminderLexem(ReminderToken.EVERY_HOUR, repeatTimeValues.get(PatternBuilder.EVERY_HOUR)));
-            }
-            if (repeatTimeValues.containsKey(PatternBuilder.MINUTES)) {
-                lexems.add(new ReminderLexem(ReminderToken.MINUTES, repeatTimeValues.get(PatternBuilder.MINUTES)));
-            }
-            if (repeatTimeValues.containsKey(PatternBuilder.DAY_OF_WEEK_WORD)) {
-                lexems.add(new ReminderLexem(ReminderToken.DAY_OF_WEEK, repeatTimeValues.get(PatternBuilder.DAY_OF_WEEK_WORD)));
-            }
-            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_DAY)) {
-                lexems.add(new ReminderLexem(ReminderToken.EVERY_DAY, repeatTimeValues.get(PatternBuilder.EVERY_DAY)));
-            }
-            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_MINUTE)) {
-                lexems.add(new ReminderLexem(ReminderToken.EVERY_MINUTE, repeatTimeValues.get(PatternBuilder.EVERY_MINUTE)));
-            }
-            if (repeatTimeValues.containsKey(PatternBuilder.DAYS)) {
-                lexems.add(new ReminderLexem(ReminderToken.DAYS, repeatTimeValues.get(PatternBuilder.DAYS)));
-            }
-            if (repeatTimeValues.containsKey(PatternBuilder.HOUR)) {
-                lexems.add(new ReminderLexem(ReminderToken.HOUR, repeatTimeValues.get(PatternBuilder.HOUR)));
-            }
-            if (repeatTimeValues.containsKey(PatternBuilder.MINUTE)) {
-                lexems.add(new ReminderLexem(ReminderToken.MINUTE, repeatTimeValues.get(PatternBuilder.MINUTE)));
-            }
-            tokenizeStr = StringUtils.reverseDelimited(tokenizeStr.substring(repeatTimeMatcher.end()).trim(), ' ');
-            tokenizeReminderTextAndNote(tokenizeStr, lexems);
-
-            return lexems;
-        }
-
-        return null;
+        return tokenizeReminderTextAndNote(tokenizeStr, lexems);
     }
 
     private LinkedList<BaseLexem> tokenizeStandardRequest() {
-        LinkedList<BaseLexem> lexems = new LinkedList<>(timeLexer.tokenize());
+        List<BaseLexem> timeLexems = timeLexer.tokenize();
+
+        if (timeLexems == null) {
+            return null;
+        }
+        LinkedList<BaseLexem> lexems = new LinkedList<>(timeLexems);
 
         String tokenizeStr = StringUtils.reverseDelimited(parts[0], ' ');
         tokenizeStr = StringUtils.reverseDelimited(tokenizeStr.substring(timeLexer.end()).trim(), ' ');

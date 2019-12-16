@@ -1,14 +1,16 @@
 package ru.gadjini.reminder.service.parser.remind.lexer;
 
-public class CustomRemindLexem {
+import ru.gadjini.reminder.service.parser.api.BaseLexem;
+
+public class CustomRemindLexem extends BaseLexem {
 
     private CustomRemindToken token;
 
     private String value;
 
     public CustomRemindLexem(CustomRemindToken token, String value) {
+        super(value);
         this.token = token;
-        this.value = value;
     }
 
     public CustomRemindToken getToken() {
@@ -17,10 +19,6 @@ public class CustomRemindLexem {
 
     public void setToken(CustomRemindToken token) {
         this.token = token;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     public void setValue(String value) {
