@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.bot.command.keyboard;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -17,6 +19,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Component
 public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableCallbackBotCommand {
 
     private String name;
@@ -31,6 +34,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableCallb
 
     private KeyboardService keyboardService;
 
+    @Autowired
     public ChangeTimezoneCommand(LocalisationService localisationService,
                                  MessageService messageService,
                                  TgUserService tgUserService,

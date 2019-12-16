@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.bot.command.callback;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -15,6 +17,7 @@ import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.ZonedDateTime;
 
+@Component
 public class FriendDetailsCommand implements CallbackBotCommand {
 
     private final String name = MessagesProperties.FRIEND_DETAILS_COMMAND;
@@ -27,6 +30,7 @@ public class FriendDetailsCommand implements CallbackBotCommand {
 
     private LocalisationService localisationService;
 
+    @Autowired
     public FriendDetailsCommand(TgUserService userService, MessageService messageService,
                                 KeyboardService keyboardService, LocalisationService localisationService) {
         this.userService = userService;

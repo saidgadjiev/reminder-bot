@@ -39,12 +39,14 @@ public class UserReminderNotificationService {
         this.requestParser = requestParser;
     }
 
-    public void create(String text) {
+    public void create(String text, UserReminderNotification.NotificationType notificationType) {
         ZoneId zoneId = userService.getTimeZone(securityService.getAuthenticatedUser().getId());
         CustomRemindTime customRemindTime = parseCustomRemind(text, zoneId);
         UserReminderNotification userReminderNotification = new UserReminderNotification();
         userReminderNotification.setHours(customRemindTime.getOffsetTime().getHours());
         userReminderNotification.setMinutes(customRemindTime.getOffsetTime().getMinutes());
+        userReminderNotification.setType(notificationType);
+        dao.create(userReminderNotification);
     }
 
     public List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType) {

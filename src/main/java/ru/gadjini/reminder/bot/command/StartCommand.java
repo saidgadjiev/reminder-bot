@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.bot.command;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -9,12 +11,13 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.ReminderRequestService;
-import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 
+@Component
 public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     private final MessageService messageService;
@@ -27,6 +30,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     private ReminderMessageSender reminderMessageSender;
 
+    @Autowired
     public StartCommand(MessageService messageService,
                         ReminderRequestService reminderService,
                         TgUserService tgUserService,

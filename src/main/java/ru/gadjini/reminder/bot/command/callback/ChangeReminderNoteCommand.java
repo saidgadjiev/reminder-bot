@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.bot.command.callback;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
@@ -19,6 +21,7 @@ import ru.gadjini.reminder.service.reminder.ReminderService;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
 public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableBotCommand {
 
     private ConcurrentHashMap<Long, CallbackRequest> changeReminderTimeRequests = new ConcurrentHashMap<>();
@@ -37,6 +40,7 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
 
     private final LocalisationService localisationService;
 
+    @Autowired
     public ChangeReminderNoteCommand(ReminderMessageSender reminderMessageSender,
                                      MessageService messageService,
                                      ReminderService reminderService,

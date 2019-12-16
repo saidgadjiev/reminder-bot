@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.bot.command.callback;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -9,6 +11,7 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 
+@Component
 public class DeleteReminderNoteCommand implements CallbackBotCommand {
 
     private String name;
@@ -17,6 +20,7 @@ public class DeleteReminderNoteCommand implements CallbackBotCommand {
 
     private ReminderService reminderService;
 
+    @Autowired
     public DeleteReminderNoteCommand(ReminderMessageSender reminderMessageSender, ReminderService reminderService) {
         this.reminderMessageSender = reminderMessageSender;
         this.reminderService = reminderService;

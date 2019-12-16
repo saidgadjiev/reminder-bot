@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.bot.command.keyboard;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -12,6 +14,7 @@ import ru.gadjini.reminder.util.UserUtils;
 
 import java.util.List;
 
+@Component
 public class GetFriendRequestsCommand implements KeyboardBotCommand {
 
     private KeyboardService keyboardService;
@@ -22,6 +25,7 @@ public class GetFriendRequestsCommand implements KeyboardBotCommand {
 
     private String name;
 
+    @Autowired
     public GetFriendRequestsCommand(KeyboardService keyboardService, LocalisationService localisationService, FriendshipService friendshipService, MessageService messageService) {
         this.keyboardService = keyboardService;
         this.friendshipService = friendshipService;
