@@ -8,6 +8,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.domain.UserReminderNotification;
+import ru.gadjini.reminder.service.declension.TimeDeclensionService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
 
@@ -17,7 +18,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 @Service
 public class TimeBuilder {
@@ -26,12 +30,12 @@ public class TimeBuilder {
 
     private LocalisationService localisationService;
 
-    private IntervalLocalisationService intervalLocalisationService;
+    private Map<String, TimeDeclensionService> declensionServiceMap = new HashMap<>();
 
     @Autowired
-    public TimeBuilder(LocalisationService localisationService, IntervalLocalisationService intervalLocalisationService) {
+    public TimeBuilder(LocalisationService localisationService, Collection<TimeDeclensionService> declensionServices) {
         this.localisationService = localisationService;
-        this.intervalLocalisationService = intervalLocalisationService;
+        declensionServices.forEach(timeDeclensionService -> declensionServiceMap.put(timeDeclensionService.getLanguage(), timeDeclensionService));
     }
 
     public String time(UserReminderNotification offsetTime) {
@@ -59,19 +63,20 @@ public class TimeBuilder {
             return time(reminderNotification.getFixedTime().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone()));
         }
 
+        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
         StringBuilder time = new StringBuilder();
         if (reminderNotification.getDelayTime().getDays() == 7) {
             ZonedDateTime lastRemindAt = reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone());
             DayOfWeek dayOfWeek = lastRemindAt.getDayOfWeek();
 
-            time.append(getRepeatWord(dayOfWeek)).append(" ");
+            time.append(declensionService.getRepeatWord(dayOfWeek)).append(" ");
             time.append(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())).append(" ");
             time.append(DATE_TIME_FORMATTER.format(lastRemindAt));
         } else if (reminderNotification.getDelayTime().getDays() != 0) {
-            time.append(getRepeatWord(reminderNotification.getDelayTime())).append(" ");
+            time.append(declensionService.getRepeatWord(reminderNotification.getDelayTime())).append(" ");
             time.append(DATE_TIME_FORMATTER.format(reminderNotification.getLastReminderAt()));
         } else {
-            time.append(intervalLocalisationService.get(reminderNotification.getDelayTime()));
+            time.append(time(reminderNotification.getDelayTime()));
         }
 
         return time.toString();
@@ -115,6 +120,24 @@ public class TimeBuilder {
         }
 
         return fixedDay(remindAt);
+    }
+
+    private String time(Period period) {
+        StringBuilder time = new StringBuilder();
+
+        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
+        time.append(declensionService.getRepeatWord(period)).append(" ");
+        if (period.getDays() != 0) {
+            time.append(declensionService.day(period.getDays()));
+        }
+        if (period.getHours() != 0) {
+            time.append(declensionService.hour(period.getHours())).append(" ");
+        }
+        if (period.getMinutes() != 0) {
+            time.append(declensionService.minute(period.getMinutes())).append(" ");
+        }
+
+        return time.toString().trim();
     }
 
     private String todayDate(LocalDate remindAt) {
@@ -187,44 +210,17 @@ public class TimeBuilder {
         StringBuilder time = new StringBuilder();
 
         if (repeatTime.getInterval() != null) {
-            time.append(intervalLocalisationService.get(repeatTime.getInterval()));
+            time.append(time(repeatTime.getInterval()));
             if (repeatTime.getTime() != null) {
                 time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
             }
         } else {
-            time.append(getRepeatWord(repeatTime.getDayOfWeek())).append(" ");
+            TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
+            time.append(declensionService.getRepeatWord(repeatTime.getDayOfWeek())).append(" ");
             time.append(repeatTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault())).append(" ");
             time.append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
         }
 
         return time.toString();
-    }
-
-    private String getRepeatWord(Period period) {
-        if (period.getHours() == 1) {
-            return "каждый";
-        }
-        if (period.getMinutes() == 1) {
-            return "каждую";
-        }
-
-        return "каждые";
-    }
-
-    private String getRepeatWord(DayOfWeek dayOfWeek) {
-        switch (dayOfWeek) {
-            case MONDAY:
-            case TUESDAY:
-            case THURSDAY:
-                return "каждый";
-            case WEDNESDAY:
-            case FRIDAY:
-            case SATURDAY:
-                return "каждую";
-            case SUNDAY:
-                return "каждое";
-        }
-
-        throw new UnsupportedOperationException();
     }
 }
