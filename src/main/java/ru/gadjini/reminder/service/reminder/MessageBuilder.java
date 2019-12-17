@@ -29,14 +29,17 @@ public class MessageBuilder {
     }
 
     public String getUserReminderNotificationsMessage(List<UserReminderNotification> userReminderNotifications) {
+        if (userReminderNotifications.isEmpty()) {
+            return localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION_NOT_EXISTS);
+        }
         StringBuilder message = new StringBuilder();
 
         int i = 1;
-        for (UserReminderNotification userReminderNotification: userReminderNotifications) {
+        for (UserReminderNotification userReminderNotification : userReminderNotifications) {
             if (message.length() > 0) {
                 message.append("\n");
             }
-            message.append(i++).append(timeBuilder.time(userReminderNotification));
+            message.append(i++).append(") ").append(timeBuilder.time(userReminderNotification));
         }
 
         return message.toString();

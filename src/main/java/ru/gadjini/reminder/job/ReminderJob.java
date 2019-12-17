@@ -146,6 +146,6 @@ public class ReminderJob {
     private boolean isNeedUpdateNextRemindAt(Reminder reminder, ReminderNotification reminderNotification) {
         LocalDate now = LocalDate.now(reminder.getRemindAt().getZone());
 
-        return reminderNotification.isItsTime() || (!reminder.getRemindAt().hasTime() && reminder.getRemindAt().date().equals(now));
+        return reminderNotification.isItsTime() || (!reminder.getRemindAt().hasTime() && (reminder.getRemindAt().date().equals(now) || reminder.getRemindAt().date().isBefore(now)));
     }
 }

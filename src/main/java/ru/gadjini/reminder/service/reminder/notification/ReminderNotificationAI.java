@@ -10,7 +10,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Service
-public class ReminderTimeAI {
+public class ReminderNotificationAI {
 
     private static final int MINUTE_DIFF = 20;
 

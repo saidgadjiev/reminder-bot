@@ -13,6 +13,9 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.request.RequestParamsParser;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class CommandExecutor {
@@ -21,21 +24,39 @@ public class CommandExecutor {
 
     public static final String COMMAND_NAME_SEPARATOR = ":";
 
-    private CommandContainer commandContainer;
+    private Map<String, BotCommand> botCommandMap = new HashMap<>();
+
+    private final Map<String, CallbackBotCommand> callbackBotCommandMap = new HashMap<>();
+
+    private Collection<KeyboardBotCommand> keyboardBotCommands;
 
     private CommandNavigator commandNavigator;
 
     private RequestParamsParser requestParamsParser;
 
     @Autowired
-    public CommandExecutor(CommandContainer commandContainer, CommandNavigator commandNavigator, RequestParamsParser requestParamsParser) {
-        this.commandContainer = commandContainer;
+    public CommandExecutor(CommandNavigator commandNavigator, RequestParamsParser requestParamsParser) {
         this.commandNavigator = commandNavigator;
         this.requestParamsParser = requestParamsParser;
     }
 
+    @Autowired
+    public void setKeyboardCommands(Collection<KeyboardBotCommand> keyboardCommands) {
+        this.keyboardBotCommands = keyboardCommands;
+    }
+
+    @Autowired
+    public void setCallbackCommands(Collection<CallbackBotCommand> callbackCommands) {
+        callbackCommands.forEach(callbackBotCommand -> callbackBotCommandMap.put(callbackBotCommand.getName(), callbackBotCommand));
+    }
+
+    @Autowired
+    public void setBotCommands(Collection<BotCommand> botCommands) {
+        botCommands.forEach(botCommand -> botCommandMap.put(botCommand.getCommandIdentifier(), botCommand));
+    }
+
     public BotCommand getBotCommand(String startCommandName) {
-        return commandContainer.getBotCommandRegistryMap().get(startCommandName);
+        return botCommandMap.get(startCommandName);
     }
 
     public boolean isCommand(Message message) {
@@ -43,7 +64,7 @@ public class CommandExecutor {
             return true;
         }
 
-        return commandContainer.getKeyboardBotCommands().stream().anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(message.getText()));
+        return keyboardBotCommands.stream().anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(message.getText()));
     }
 
     public void processNonCommandUpdate(Message message) {
@@ -65,7 +86,7 @@ public class CommandExecutor {
     public void executeCallbackCommand(CallbackQuery callbackQuery) {
         String text = callbackQuery.getData();
         String[] commandSplit = text.split(COMMAND_NAME_SEPARATOR);
-        CallbackBotCommand botCommand = commandContainer.getCallbackBotCommandMap().get(commandSplit[0]);
+        CallbackBotCommand botCommand = callbackBotCommandMap.get(commandSplit[0]);
         RequestParams requestParams = new RequestParams();
 
         if (commandSplit.length > 1) {
@@ -81,7 +102,7 @@ public class CommandExecutor {
     private boolean executeBotCommand(AbsSender absSender, Message message) {
         String text = message.getText().trim();
         String[] commandSplit = text.split(COMMAND_ARG_SEPARATOR);
-        BotCommand botCommand = commandContainer.getBotCommandRegistryMap().get(commandSplit[0].substring(1));
+        BotCommand botCommand = botCommandMap.get(commandSplit[0].substring(1));
 
         if (botCommand != null) {
             String[] parameters = Arrays.copyOfRange(commandSplit, 1, commandSplit.length);
@@ -100,7 +121,7 @@ public class CommandExecutor {
 
     private boolean executeKeyBoardCommand(Message message) {
         String command = message.getText();
-        KeyboardBotCommand botCommand = commandContainer.getKeyboardBotCommands().stream()
+        KeyboardBotCommand botCommand = keyboardBotCommands.stream()
                 .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(command))
                 .findFirst()
                 .orElseThrow();

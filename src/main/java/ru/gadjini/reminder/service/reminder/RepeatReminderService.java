@@ -13,7 +13,7 @@ import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
-import ru.gadjini.reminder.service.reminder.notification.ReminderTimeAI;
+import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationAI;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
@@ -34,7 +34,7 @@ public class RepeatReminderService {
 
     private TgUserService userService;
 
-    private ReminderTimeAI reminderTimeAI;
+    private ReminderNotificationAI reminderNotificationAI;
 
     private SecurityService securityService;
 
@@ -42,12 +42,14 @@ public class RepeatReminderService {
 
     @Autowired
     public RepeatReminderService(ReminderDao reminderDao, ReminderNotificationService reminderNotificationService,
-                                 TgUserService userService, ReminderTimeAI reminderTimeAI, SecurityService securityService) {
+                                 TgUserService userService, ReminderNotificationAI reminderNotificationAI,
+                                 SecurityService securityService, UserReminderNotificationService userReminderNotificationService) {
         this.reminderDao = reminderDao;
         this.reminderNotificationService = reminderNotificationService;
         this.userService = userService;
-        this.reminderTimeAI = reminderTimeAI;
+        this.reminderNotificationAI = reminderNotificationAI;
         this.securityService = securityService;
+        this.userReminderNotificationService = userReminderNotificationService;
     }
 
     @Transactional
@@ -186,7 +188,7 @@ public class RepeatReminderService {
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(securityService.getAuthenticatedUser().getId(), UserReminderNotification.NotificationType.WITH_TIME);
 
         for (UserReminderNotification offsetTime : userReminderNotifications) {
-            if (offsetTime.getTime() == null && reminderTimeAI.isNeedCreateReminderNotification(repeatTime.getInterval(), offsetTime)) {
+            if (offsetTime.getTime() == null && reminderNotificationAI.isNeedCreateReminderNotification(repeatTime.getInterval(), offsetTime)) {
                 intervalReminderNotification(now.minusHours(offsetTime.getHours()).minusMinutes(offsetTime.getMinutes()), repeatTime.getInterval(), reminderNotifications).setCustom(true);
             }
         }
@@ -251,12 +253,22 @@ public class RepeatReminderService {
     }
 
     private void addDailyReminderNotificationsWithoutTime(RepeatTime repeatTime, ZoneId zoneId, List<ReminderNotification> reminderNotifications) {
-        LocalDate repeatReminder = LocalDate.now(zoneId);
+        ZonedDateTime now = ZonedDateTime.now(zoneId);
 
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(securityService.getAuthenticatedUser().getId(), UserReminderNotification.NotificationType.WITHOUT_TIME);
         for (UserReminderNotification offsetTime : userReminderNotifications) {
-            if (offsetTime.getDays() == 0) {
-                fixedReminderNotification(repeatReminder.minusDays(offsetTime.getDays()), zoneId, repeatTime.getInterval().getDays(), offsetTime.getTime(), reminderNotifications).setCustom(true);
+            if (repeatTime.getInterval().getDays() > offsetTime.getDays()) {
+                ZonedDateTime offsetDateTime = now.minusDays(offsetTime.getDays());
+
+                if (offsetTime.getTime() != null) {
+                    offsetDateTime = offsetDateTime.with(offsetTime.getTime());
+                }
+
+                ReminderNotification notification = fixedReminderNotification(now.minusDays(offsetTime.getDays()).toLocalDate(), zoneId, repeatTime.getInterval().getDays(), offsetTime.getTime(), reminderNotifications);
+                notification.setCustom(true);
+                if (offsetDateTime.isBefore(now)) {
+                    notification.setLastReminderAt(offsetDateTime.withZoneSameInstant(ZoneOffset.UTC));
+                }
             }
         }
     }

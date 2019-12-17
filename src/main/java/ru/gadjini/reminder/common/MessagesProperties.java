@@ -339,4 +339,16 @@ public class MessagesProperties {
     public static final String USER_REMINDER_NOTIFICATION_HISTORY_NAME = "urnhn";
 
     public static final String DELETE_USER_REMINDER_NOTIFICATION_COMMAND_NAME = "durn";
+
+    public static final String USER_SETTINGS_COMMAND_NAME = "user.settings.command.name";
+
+    public static final String USER_SETTINGS_COMMAND_HISTORY_NAME = "uscn";
+
+    public static final String MESSAGE_USER_SETTINGS = "message.user.settings";
+
+    public static final String MESSAGE_USER_REMINDER_NOTIFICATION_NOT_EXISTS = "message.user.reminder.notification.not.exists";
+
+    public static final String MESSAGE_USER_REMINDER_NOTIFICATION_DELETED = "message.user.reminder.notification.deleted";
+
+    public static final String MESSAGE_EDIT_USER_REMINDER_NOTIFICATION = "message.edit.user.reminder.notification";
 }

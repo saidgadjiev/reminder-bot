@@ -37,9 +37,26 @@ public class UserReminderNotificationDao {
                 .execute(parameterSource(userReminderNotification));
     }
 
+    public Integer count(int userId, UserReminderNotification.NotificationType notificationType) {
+        return jdbcTemplate.query(
+                "SELECT COUNT(*) as cnt FROM user_reminder_notification WHERE user_id = ? AND type = ?",
+                ps -> {
+                    ps.setInt(1, userId);
+                    ps.setInt(2, notificationType.getCode());
+                },
+                rs -> {
+                    if (rs.next()) {
+                        return rs.getInt("cnt");
+                    }
+
+                    return 0;
+                }
+        );
+    }
+
     public List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType) {
         return jdbcTemplate.query(
-                "SELECT * FROM user_reminder_notification WHERE user_id = ? AND type = ?",
+                "SELECT * FROM user_reminder_notification WHERE user_id = ? AND type = ? ORDER BY days DESC, time DESC, hours DESC, minutes DESC",
                 ps -> {
                     ps.setInt(1, userId);
                     ps.setInt(2, notificationType.getCode());
@@ -54,7 +71,7 @@ public class UserReminderNotificationDao {
                 .addValue(UserReminderNotification.HOURS, userReminderNotification.getHours())
                 .addValue(UserReminderNotification.MINUTES, userReminderNotification.getMinutes())
                 .addValue(UserReminderNotification.USER_ID, userReminderNotification.getUserId())
-                .addValue(UserReminderNotification.TYPE, userReminderNotification.getType())
+                .addValue(UserReminderNotification.TYPE, userReminderNotification.getType().getCode())
                 .addValue(UserReminderNotification.TIME, userReminderNotification.getTime() == null ? null : Time.valueOf(userReminderNotification.getTime()));
     }
 }

@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Location;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
+import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.*;
@@ -20,7 +21,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Component
-public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableCallbackBotCommand {
+public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCommand {
 
     private String name;
 
@@ -68,6 +69,11 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableCallb
     @Override
     public String getHistoryName() {
         return MessagesProperties.CHANGE_TIMEZONE_COMMAND_HISTORY_NAME;
+    }
+
+    @Override
+    public String getParentHistoryName() {
+        return MessagesProperties.START_COMMAND_NAME;
     }
 
     @Override

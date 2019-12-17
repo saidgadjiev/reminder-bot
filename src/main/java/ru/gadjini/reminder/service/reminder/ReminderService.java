@@ -12,7 +12,7 @@ import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
-import ru.gadjini.reminder.service.reminder.notification.ReminderTimeAI;
+import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationAI;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.time.DateTime;
@@ -37,18 +37,18 @@ public class ReminderService {
 
     private UserReminderNotificationService userReminderNotificationService;
 
-    private ReminderTimeAI reminderTimeAI;
+    private ReminderNotificationAI reminderNotificationAI;
 
     @Autowired
     public ReminderService(ReminderDao reminderDao, SecurityService securityService,
                            ReminderNotificationService reminderNotificationService,
                            UserReminderNotificationService userReminderNotificationService,
-                           ReminderTimeAI reminderTimeAI) {
+                           ReminderNotificationAI reminderNotificationAI) {
         this.reminderDao = reminderDao;
         this.securityService = securityService;
         this.reminderNotificationService = reminderNotificationService;
         this.userReminderNotificationService = userReminderNotificationService;
-        this.reminderTimeAI = reminderTimeAI;
+        this.reminderNotificationAI = reminderNotificationAI;
     }
 
     @Transactional
@@ -312,7 +312,7 @@ public class ReminderService {
 
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(securityService.getAuthenticatedUser().getId(), UserReminderNotification.NotificationType.WITH_TIME);
         for (UserReminderNotification userReminderNotification: userReminderNotifications) {
-            if (reminderTimeAI.isNeedCreateReminderNotification(localDate, zoneId, userReminderNotification)) {
+            if (reminderNotificationAI.isNeedCreateReminderNotification(localDate, zoneId, userReminderNotification)) {
                 fixedReminderTime(localDate.minusDays(userReminderNotification.getDays()), userReminderNotification.getTime(), zoneId, reminderNotifications).setCustom(true);
             }
         }
@@ -325,7 +325,7 @@ public class ReminderService {
 
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(securityService.getAuthenticatedUser().getId(), UserReminderNotification.NotificationType.WITH_TIME);
         for (UserReminderNotification userReminderNotification : userReminderNotifications) {
-            if (reminderTimeAI.isNeedCreateReminderNotification(remindAt, userReminderNotification)) {
+            if (reminderNotificationAI.isNeedCreateReminderNotification(remindAt, userReminderNotification)) {
                 fixedReminderTime(
                         remindAt.toLocalDate().minusDays(userReminderNotification.getDays()),
                         userReminderNotification.getTime() == null ? remindAt.toLocalTime().minusHours(userReminderNotification.getHours()).minusMinutes(userReminderNotification.getMinutes()) : userReminderNotification.getTime(),
@@ -335,7 +335,7 @@ public class ReminderService {
             }
         }
 
-        reminderNotifications.add(intervalReminderTime(remindAt.minusMinutes(20), new Period().withMinutes(20), true));
+        reminderNotifications.add(intervalReminderTime(remindAt, new Period().withMinutes(20), true));
         fixedReminderTime(remindAt.toLocalDate(), remindAt.toLocalTime(), remindAt.getZone(), reminderNotifications).setItsTime(true);
 
         return reminderNotifications;

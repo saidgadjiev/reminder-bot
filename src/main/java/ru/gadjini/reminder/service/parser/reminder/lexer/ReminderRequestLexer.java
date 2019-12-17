@@ -6,9 +6,7 @@ import ru.gadjini.reminder.regex.GroupMatcher;
 import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
-import ru.gadjini.reminder.service.parser.time.lexer.RepeatTimeLexer;
-import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
-import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
+import ru.gadjini.reminder.service.parser.time.lexer.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -73,7 +71,9 @@ public class ReminderRequestLexer {
         if (timeLexems == null) {
             return null;
         }
-        LinkedList<BaseLexem> lexems = new LinkedList<>(timeLexems);
+        LinkedList<BaseLexem> lexems = new LinkedList<>();
+        lexems.add(new TimeLexem(TimeToken.REPEAT, ""));
+        lexems.addAll(timeLexems);
 
         String tokenizeStr = StringUtils.reverseDelimited(parts[0], ' ');
         tokenizeStr = StringUtils.reverseDelimited(tokenizeStr.substring(repeatTimeLexer.end()).trim(), ' ');

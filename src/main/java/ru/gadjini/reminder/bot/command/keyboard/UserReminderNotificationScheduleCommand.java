@@ -62,6 +62,11 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
                 messageBuilder.getUserReminderNotificationsMessage(userReminderNotifications),
                 keyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)
         ).getMessageId();
+        messageService.sendMessageByCode(
+                message.getChatId(),
+                MessagesProperties.MESSAGE_EDIT_USER_REMINDER_NOTIFICATION,
+                keyboardService.goBackCommand()
+        );
 
         messagesByChat.put(message.getChatId(), messageId);
     }
@@ -78,6 +83,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
                 messageBuilder.getUserReminderNotificationsMessage(userReminderNotifications),
                 keyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)
         );
+        messageService.deleteMessage(message.getChatId(), message.getMessageId());
     }
 
     @Override

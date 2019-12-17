@@ -21,8 +21,12 @@ public class GoBackCallbackCommand implements CallbackBotCommand {
     private CommandNavigator commandNavigator;
 
     @Autowired
-    public GoBackCallbackCommand(CallbackCommandNavigator callbackCommandNavigator, CommandNavigator commandNavigator) {
+    public void setCallbackCommandNavigator(CallbackCommandNavigator callbackCommandNavigator) {
         this.callbackCommandNavigator = callbackCommandNavigator;
+    }
+
+    @Autowired
+    public void setCommandNavigator(CommandNavigator commandNavigator) {
         this.commandNavigator = commandNavigator;
     }
 

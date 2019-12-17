@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.reminder.time;
 
+import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -35,13 +36,13 @@ public class TimeBuilder {
 
     public String time(UserReminderNotification offsetTime) {
         String typeBefore = localisationService.getMessage(MessagesProperties.CUSTOM_REMIND_BEFORE);
-        StringBuilder builder = new StringBuilder(typeBefore);
+        StringBuilder builder = new StringBuilder(typeBefore).append(" ");
 
         if (offsetTime.getDays() != 0) {
             builder.append(offsetTime.getDays()).append(" дней ");
         }
         if (offsetTime.getHours() != 0) {
-            builder.append(offsetTime.getHours()).append(" часов ");
+            builder.append(offsetTime.getHours()).append(" часа ");
         }
         if (offsetTime.getMinutes() != 0) {
             builder.append(offsetTime.getMinutes()).append(" минут ");
@@ -66,6 +67,9 @@ public class TimeBuilder {
             time.append(getRepeatWord(dayOfWeek)).append(" ");
             time.append(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())).append(" ");
             time.append(DATE_TIME_FORMATTER.format(lastRemindAt));
+        } else if (reminderNotification.getDelayTime().getDays() != 0) {
+            time.append(getRepeatWord(reminderNotification.getDelayTime())).append(" ");
+            time.append(DATE_TIME_FORMATTER.format(reminderNotification.getLastReminderAt()));
         } else {
             time.append(intervalLocalisationService.get(reminderNotification.getDelayTime()));
         }
@@ -194,6 +198,17 @@ public class TimeBuilder {
         }
 
         return time.toString();
+    }
+
+    private String getRepeatWord(Period period) {
+        if (period.getHours() == 1) {
+            return "каждый";
+        }
+        if (period.getMinutes() == 1) {
+            return "каждую";
+        }
+
+        return "каждые";
     }
 
     private String getRepeatWord(DayOfWeek dayOfWeek) {

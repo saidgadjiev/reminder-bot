@@ -57,7 +57,29 @@ public class KeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public ReplyKeyboardMarkup getUserReminderNotificationKeyboard() {
+    public ReplyKeyboardMarkup getUserSettingsKeyboard() {
+        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
+
+        replyKeyboardMarkup.getKeyboard().add(
+                new KeyboardRow() {{
+                    add(new KeyboardButton(localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME)));
+                }}
+        );
+        replyKeyboardMarkup.getKeyboard().add(
+                new KeyboardRow() {{
+                    add(new KeyboardButton(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME)));
+                }}
+        );
+        replyKeyboardMarkup.getKeyboard().add(
+                new KeyboardRow() {{
+                    add(new KeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
+                }}
+        );
+
+        return replyKeyboardMarkup;
+    }
+
+    public ReplyKeyboardMarkup getUserReminderNotificationSettingsKeyboard() {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
@@ -286,7 +308,7 @@ public class KeyboardService {
         }});
 
         replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME));
+            add(localisationService.getMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME));
         }});
 
         return replyKeyboardMarkup;
