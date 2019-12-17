@@ -10,11 +10,7 @@ public class MessagesProperties {
 
     public static final String HELP_COMMAND_NAME = "help";
 
-    public static final String MESSAGE_REMINDER_CREATED_RECEIVER = "message.reminder.created.receiver";
-
-    public static final String MESSAGE_REMINDER_CREATED_CREATOR = "message.reminder.created.creator";
-
-    public static final String MESSAGE_REMINDER_CREATED_ME = "message.reminder.created.me";
+    public static final String MESSAGE_NEW_REMINDER = "message.new.reminder";
 
     public static final String MESSAGE_REMINDER_FORMAT = "message.reminder.format";
 
@@ -22,15 +18,11 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMIND = "message.remind";
 
-    public static final String MESSAGE_REMIND_ME = "message.remind.me";
-
     public static final String MESSAGE_REMIND_ITS_TIME = "message.remind.its.time";
 
     public static final String COMPLETE_REMINDER_COMMAND_NAME = "completereminder";
 
     public static final String COMPLETE_REMINDER_COMMAND_DESCRIPTION = "complete.reminder.command.description";
-
-    public static final String MESSAGE_REMINDER_COMPLETED_RECEIVER = "message.reminder.completed.receiver";
 
     public static final String MESSAGE_REMINDER_COMPLETE_ANSWER = "message.reminder.complete.answer";
 
@@ -38,9 +30,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMIND_NOT_FRIEND = "message.remind.not.friend";
 
-    public static final String MESSAGE_REMINDER_COMPLETED_CREATOR = "message.reminder.completed.creator";
-
-    public static final String MESSAGE_REMINDER_ME_COMPLETED = "message.reminder.me.completed";
+    public static final String MESSAGE_REMINDER_COMPLETED = "message.reminder.completed";
 
     public static final String GET_FRIEND_REQUESTS_COMMAND_NAME = "get.friend.requests.command.name";
 
@@ -90,8 +80,6 @@ public class MessagesProperties {
 
     public static final String MESSAGE_CREATE_REMINDER_TEXT = "message.create.reminder.text";
 
-    public static final String MESSAGE_MAIN_MENU = "message.main.menu";
-
     public static final String MESSAGE_CREATE_REMINDER_CALLBACK_ANSWER = "message.create.reminder.callback.answer";
 
     public static final String MESSAGE_FRIEND_DELETED = "message.friend.deleted";
@@ -126,29 +114,19 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_TIME_EDITED_RECEIVER = "message.reminder.time.edited.receiver";
 
-    public static final String MESSAGE_REMINDER_TIME_EDITED_CREATOR = "message.reminder.time.edited.creator";
-
     public static final String MESSAGE_REMINDER_TEXT_EDITED_RECEIVER = "message.reminder.text.edited.receiver";
-
-    public static final String MESSAGE_REMINDER_TEXT_EDITED_CREATOR = "message.reminder.text.edited.creator";
 
     public static final String DELETE_REMINDER_COMMAND_NAME = "deletereminder";
 
     public static final String DELETE_REMINDER_COMMAND_DESCRIPTION = "delete.reminder.command.description";
 
-    public static final String MESSAGE_REMINDER_DELETED_RECEIVER = "message.reminder.deleted.receiver";
-
-    public static final String MESSAGE_REMINDER_DELETED_CREATOR = "message.reminder.deleted.creator";
+    public static final String MESSAGE_REMINDER_DELETED = "message.reminder.deleted";
 
     public static final String CANCEL_REMINDER_COMMAND_NAME = "cancelreminder";
 
     public static final String CANCEL_REMINDER_COMMAND_DESCRIPTION = "cancel.reminder.command.description";
 
-    public static final String MESSAGE_REMINDER_CANCELED_RECEIVER = "message.reminder.canceled.receiver";
-
-    public static final String MESSAGE_REMINDER_CANCELED_CREATOR = "message.reminder.canceled.creator";
-
-    public static final String MESSAGE_REMINDER_CANCELED_ME = "message.reminder.canceled.me";
+    public static final String MESSAGE_REMINDER_CANCELED = "message.reminder.canceled";
 
     public static final String MESSAGE_REMINDER_CANCELED_ANSWER = "message.reminder.canceled.answer";
 
@@ -163,10 +141,6 @@ public class MessagesProperties {
     public static final String MESSAGE_POSTPONE_TIME = "message.postpone.time";
 
     public static final String MESSAGE_REMINDER_POSTPONED = "message.reminder.postponed";
-
-    public static final String MESSAGE_REMINDER_POSTPONED_CREATOR = "message.reminder.postponed.creator";
-
-    public static final String MESSAGE_REMINDER_POSTPONED_RECEIVER = "message.reminder.postponed.receiver";
 
     public static final String REGEX_POSTPONE_TYPE_ON = "regex.postpone.type.on";
 
@@ -186,12 +160,6 @@ public class MessagesProperties {
 
     public static final String DELETE_COMPLETED_REMINDERS_COMMAND_NAME = "deletecompletedreminders";
 
-    public static final String MESSAGE_COMPLETED_REMINDERS_COUNT = "message.completed.reminders.count";
-
-    public static final String MESSAGE_COMPLETED_DELETED = "message.completed.deleted";
-
-    public static final String MESSAGE_ACTIVE_REMINDERS_COUNT = "message.active.reminders.count";
-
     public static final String CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION = "custom.reminder.time.command.description";
 
     public static final String MESSAGE_CUSTOM_REMIND = "message.custom.remind";
@@ -199,8 +167,6 @@ public class MessagesProperties {
     public static final String REGEX_CUSTOM_REMIND_TYPE_AFTER = "regex.custom.remind.type.after";
 
     public static final String CUSTOM_REMIND_BEFORE = "custom.remind.before";
-
-    public static final String REGEX_CUSTOM_REMIND_TYPE_AT = "regex.custom.remind.type.at";
 
     public static final String MESSAGE_CUSTOM_REMIND_CREATED = "message.custom.remind.created";
 
@@ -242,8 +208,6 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_NOTE = "message.reminder.note";
 
-    public static final String MESSAGE_REMINDER_NOTE_EDITED_CREATOR = "message.reminder.note.edited.creator";
-
     public static final String MESSAGE_REMINDER_CREATOR = "message.reminder.creator";
 
     public static final String MESSAGE_REMINDER_RECEIVER = "message.reminder.receiver";
@@ -270,8 +234,6 @@ public class MessagesProperties {
 
     public static final String REGEXP_REPEAT = "regexp.repeat";
 
-    public static final String COMPLETE_REMINDER_FROM_LIST_COMMAND_NAME = "completereminderfromlist";
-
     public static final String MESSAGE_POSTPONE_MESSAGE = "message.postpone.message";
 
     public static final String MESSAGE_POSTPONE_15_MIN = "message.postpone.15min";
@@ -288,11 +250,7 @@ public class MessagesProperties {
 
     public static final String REGEXP_EVERY_HOUR = "regexp.every.hour";
 
-    public static final String REGEXP_DAYS = "regexp.days";
-
     public static final String MESSAGE_NEXT_REMIND_AT = "message.next.remind.at";
-
-    public static final String MESSAGE_REMIND_ME_ITS_TIME = "message.remind.me.its.time";
 
     public static final String TODAY = "today";
 

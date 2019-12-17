@@ -41,18 +41,20 @@ public class TimeBuilder {
     public String time(UserReminderNotification offsetTime) {
         String typeBefore = localisationService.getMessage(MessagesProperties.CUSTOM_REMIND_BEFORE);
         StringBuilder builder = new StringBuilder(typeBefore).append(" ");
+        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
 
         if (offsetTime.getDays() != 0) {
-            builder.append(offsetTime.getDays()).append(" дней ");
+            builder.append(declensionService.day(offsetTime.getDays())).append(" ");
         }
         if (offsetTime.getHours() != 0) {
-            builder.append(offsetTime.getHours()).append(" часа ");
+            builder.append(declensionService.hour(offsetTime.getHours())).append(" ");
         }
         if (offsetTime.getMinutes() != 0) {
-            builder.append(offsetTime.getMinutes()).append(" минут ");
+            builder.append(declensionService.minute(offsetTime.getMinutes())).append(" ");
         }
         if (offsetTime.getTime() != null) {
-            builder.append("в ").append(DATE_TIME_FORMATTER.format(offsetTime.getTime()));
+            String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
+            builder.append(timeArticle).append(" ").append(DATE_TIME_FORMATTER.format(offsetTime.getTime()));
         }
 
         return builder.toString().trim();

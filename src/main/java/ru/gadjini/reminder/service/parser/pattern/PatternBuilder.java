@@ -75,20 +75,19 @@ public class PatternBuilder {
 
         String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX);
         String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
-        String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX);
         String regexpTimeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
         String regexRepeat = localisationService.getMessage(MessagesProperties.REGEXP_REPEAT);
         String regexpEveryDay = localisationService.getMessage(MessagesProperties.REGEXP_DAY);
         String regexpEveryMinute = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_MINUTE);
         String regexpEveryHour = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_HOUR);
-        String days = localisationService.getMessage(MessagesProperties.REGEXP_DAYS);
-        pattern.append("((((?<").append(MINUTES).append(">\\d+)").append(minutePrefix).append(")?( )?");
-        pattern.append("(((?<").append(HOURS).append(">\\d+)").append(hourPrefix).append(")|").append("(?<").append(EVERY_HOUR).append(">")
+        String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX);
+        pattern.append("((((?<").append(MINUTES).append(">\\d+)( )?").append(minutePrefix).append(")?( )?");
+        pattern.append("(((?<").append(HOURS).append(">\\d+)( )?").append(hourPrefix).append(")|").append("(?<").append(EVERY_HOUR).append(">")
                 .append(regexpEveryHour).append("))?( )?)|(?<").append(EVERY_MINUTE).append(">").append(regexpEveryMinute).append(")|");
         pattern.append("(((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))?( )?(").append(regexpTimeArticle).append(" )?((?<");
         pattern.append(DAY_OF_WEEK_WORD).append(">").append(getDayOfWeekPattern(locale));
         pattern.append(")|((?<").append(EVERY_DAY).append(">").append(regexpEveryDay)
-                .append(")|((?<").append(DAYS).append(">\\d+)(").append(days).append("|").append(dayPrefix).append(")))))) ").append(regexRepeat);
+                .append(")|((?<").append(DAYS).append(">\\d+)(").append(dayPrefix).append(")))))) ").append(regexRepeat);
 
         return new GroupPattern(Pattern.compile(pattern.toString()), List.of(MINUTES, HOURS, EVERY_HOUR, EVERY_MINUTE, HOUR, MINUTE, DAY_OF_WEEK_WORD, EVERY_DAY, DAYS));
     }
