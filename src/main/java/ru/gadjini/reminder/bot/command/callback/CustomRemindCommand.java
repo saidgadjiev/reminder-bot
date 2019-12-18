@@ -16,8 +16,7 @@ import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
-import ru.gadjini.reminder.service.reminder.ReminderNotificationMessageSender;
+import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 
 import java.util.concurrent.ConcurrentHashMap;

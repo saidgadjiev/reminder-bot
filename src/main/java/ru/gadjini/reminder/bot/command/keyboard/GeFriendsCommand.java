@@ -53,19 +53,6 @@ public class GeFriendsCommand implements KeyboardBotCommand, NavigableCallbackBo
         );
     }
 
-    private String friendsMessage(List<TgUser> friends) {
-        StringBuilder message = new StringBuilder();
-        int i = 1;
-        for (TgUser friend : friends) {
-            if (message.length() > 0) {
-                message.append("\n");
-            }
-            message.append(i++).append(") ").append(UserUtils.userLink(friend));
-        }
-
-        return message.toString();
-    }
-
     @Override
     public String getHistoryName() {
         return MessagesProperties.GET_FRIENDS_COMMAND_HISTORY_NAME;
@@ -81,5 +68,18 @@ public class GeFriendsCommand implements KeyboardBotCommand, NavigableCallbackBo
                 friendsMessage(friends),
                 keyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()))
         );
+    }
+
+    private String friendsMessage(List<TgUser> friends) {
+        StringBuilder message = new StringBuilder();
+        int i = 1;
+        for (TgUser friend : friends) {
+            if (message.length() > 0) {
+                message.append("\n");
+            }
+            message.append(i++).append(") ").append(UserUtils.userLink(friend));
+        }
+
+        return message.toString();
     }
 }

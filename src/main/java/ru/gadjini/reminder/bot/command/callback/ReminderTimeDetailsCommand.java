@@ -10,9 +10,7 @@ import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.MessageBuilder;
-import ru.gadjini.reminder.service.reminder.ReminderMessageBuilder;
-import ru.gadjini.reminder.service.reminder.ReminderNotificationMessageBuilder;
+import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 
 @Component

@@ -77,6 +77,10 @@ public class MessageService {
         }
     }
 
+    public Message sendMessage(long chatId, String message) {
+        return sendMessage(chatId, message, null);
+    }
+
     public void sendMessageByCode(long chatId, String messageCode) {
         sendMessage(chatId, localisationService.getMessage(messageCode), null);
     }

@@ -37,6 +37,7 @@ public class DeleteReminderTimeCommand implements CallbackBotCommand {
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         int reminderTimeId = requestParams.getInt(Arg.REMINDER_NOTIFICATION_ID.getKey());
         int reminderId = reminderNotificationService.deleteReminderTime(reminderTimeId);
+
         messageService.editMessageByMessageCode(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),

@@ -8,8 +8,7 @@ import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.ReminderMessageBuilder;
-import ru.gadjini.reminder.service.reminder.ReminderNotificationMessageBuilder;
+import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 
 import java.util.List;
 import java.util.Map;

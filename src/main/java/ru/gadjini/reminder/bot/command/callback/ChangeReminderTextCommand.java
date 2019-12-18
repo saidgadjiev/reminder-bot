@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -16,8 +15,8 @@ import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
+import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -90,8 +89,8 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableB
         UpdateReminderResult updateReminderResult = reminderService.changeReminderText(request.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), text);
         updateReminderResult.getOldReminder().getCreator().setChatId(message.getChatId());
 
-        ReplyKeyboard replyKeyboard = commandNavigator.silentPop(message.getChatId());
-        reminderMessageSender.sendReminderTextChanged(request.getMessageId(), updateReminderResult, replyKeyboard);
+        commandNavigator.silentPop(message.getChatId());
+        reminderMessageSender.sendReminderTextChanged(request.getMessageId(), updateReminderResult);
         messageService.deleteMessage(message.getChatId(), message.getMessageId());
     }
 }

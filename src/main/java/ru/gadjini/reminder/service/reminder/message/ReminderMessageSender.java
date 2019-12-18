@@ -1,6 +1,5 @@
-package ru.gadjini.reminder.service.reminder;
+package ru.gadjini.reminder.service.reminder.message;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -10,13 +9,11 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.RemindMessage;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
-import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.reminder.RemindMessageService;
 import ru.gadjini.reminder.service.security.SecurityService;
-import ru.gadjini.reminder.util.UserUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,21 +31,17 @@ public class ReminderMessageSender {
 
     private SecurityService securityService;
 
-    private LocalisationService localisationService;
-
     @Autowired
     public ReminderMessageSender(ReminderMessageBuilder reminderMessageBuilder,
                                  MessageService messageService,
                                  KeyboardService keyboardService,
                                  RemindMessageService remindMessageService,
-                                 SecurityService securityService,
-                                 LocalisationService localisationService) {
+                                 SecurityService securityService) {
         this.reminderMessageBuilder = reminderMessageBuilder;
         this.messageService = messageService;
         this.keyboardService = keyboardService;
         this.remindMessageService = remindMessageService;
         this.securityService = securityService;
-        this.localisationService = localisationService;
     }
 
     public void sendRepeatReminderSkipped(String queryId, Reminder reminder) {
@@ -147,7 +140,8 @@ public class ReminderMessageSender {
             messageService.sendMessage(
                     reminder.getCreator().getChatId(),
                     reminderMessageBuilder.getNewReminder(reminder, reminder.getCreatorId()),
-                    replyKeyboardMarkup);
+                    replyKeyboardMarkup
+            );
         }
         InlineKeyboardMarkup keyboard = keyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable());
         int messageId = messageService.sendMessage(reminder.getReceiver().getChatId(), messageForReceiver, keyboard).getMessageId();
@@ -155,7 +149,7 @@ public class ReminderMessageSender {
         remindMessageService.create(reminder.getId(), messageId);
     }
 
-    public void sendReminderTimeChanged(int messageId, UpdateReminderResult updateReminderResult, ReplyKeyboard replyKeyboard) {
+    public void sendReminderTimeChanged(int messageId, UpdateReminderResult updateReminderResult) {
         Reminder oldReminder = updateReminderResult.getOldReminder();
         RemindMessage remindMessage = oldReminder.getRemindMessage();
         if (remindMessage != null) {
@@ -193,24 +187,13 @@ public class ReminderMessageSender {
             );
         }
         if (!reminder.isMySelf()) {
-            StringBuilder messageBuilder = new StringBuilder();
-
-            messageBuilder.append(reminderMessageBuilder.getReminderPostponedForCreator(reminder.getText(), reminder.getReceiver(), updateReminderResult.getNewReminder().getRemindAtInReceiverZone()));
-
-            if (StringUtils.isNotBlank(reason)) {
-                messageBuilder.append("\n\n").append(reason);
-            }
-
-            messageService.sendMessage(
-                    reminder.getCreator().getChatId(),
-                    messageBuilder.toString(),
-                    null
-            );
+            String message = reminderMessageBuilder.getReminderPostponedForCreator(reminder.getText(), reminder.getReceiver(), updateReminderResult.getNewReminder().getRemindAtInReceiverZone(), reason);
+            messageService.sendMessage(reminder.getCreator().getChatId(), message);
         }
         messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_POSTPONED, replyKeyboard);
     }
 
-    public void sendReminderTextChanged(int messageId, UpdateReminderResult updateReminderResult, ReplyKeyboard replyKeyboard) {
+    public void sendReminderTextChanged(int messageId, UpdateReminderResult updateReminderResult) {
         Reminder oldReminder = updateReminderResult.getOldReminder();
 
         RemindMessage remindMessage = oldReminder.getRemindMessage();
@@ -225,7 +208,7 @@ public class ReminderMessageSender {
                     updateReminderResult.getNewReminder().getText(),
                     oldReminder.getCreator()
             );
-            messageService.sendMessage(oldReminder.getReceiver().getChatId(), message, null);
+            messageService.sendMessage(oldReminder.getReceiver().getChatId(), message);
         }
         String newReminderText = reminderMessageBuilder.getReminderMessage(updateReminderResult.getNewReminder());
         InlineKeyboardMarkup keyboard = keyboardService.getEditReminderKeyboard(oldReminder.getId(), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME);
@@ -256,31 +239,10 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.sendMessageByCode(
-                    reminder.getReceiver().getChatId(),
-                    MessagesProperties.MESSAGE_REMINDER_STOPPED,
-                    new Object[]{reminder.getText()}
-            );
+            messageService.sendMessageByCode(reminder.getReceiver().getChatId(), reminderMessageBuilder.getMySelfRepeatReminderStopped(reminder));
         } else {
-            StringBuilder messageForReceiver = new StringBuilder();
-            messageForReceiver
-                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_STOPPED, new Object[]{reminder.getText()}))
-                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATOR, new Object[]{UserUtils.userLink(reminder.getCreator())}));
-            messageService.sendMessage(
-                    reminder.getReceiver().getChatId(),
-                    messageForReceiver.toString(),
-                    null
-            );
-
-            StringBuilder messageForCreator = new StringBuilder();
-            messageForCreator
-                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_STOPPED, new Object[]{reminder.getText()}))
-                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_RECEIVER, new Object[]{UserUtils.userLink(reminder.getReceiver())}));
-            messageService.sendMessage(
-                    reminder.getCreator().getChatId(),
-                    messageForCreator.toString(),
-                    null
-            );
+            messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getRepeatReminderStoppedForReceiver(reminder));
+            messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getRepeatReminderStoppedForCreator(reminder));
         }
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_STOPPED_ANSWER);
     }
@@ -293,17 +255,13 @@ public class ReminderMessageSender {
         }
 
         if (!reminder.isMySelf()) {
-            StringBuilder messageForReceiver = new StringBuilder();
-            messageForReceiver
-                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_DELETED, new Object[]{reminder.getText()}))
-                    .append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATOR, new Object[]{UserUtils.userLink(reminder.getCreator())}));
-            messageService.sendMessage(reminder.getReceiver().getChatId(), messageForReceiver.toString(), null);
+            messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getReminderDeletedForReceiver(reminder), null);
         }
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_DELETED);
         messageService.editMessageByMessageCode(
                 reminder.getCreator().getChatId(),
                 messageId,
-                MessagesProperties.MESSAGE_REMINDER_DELETED,
+                reminderMessageBuilder.getReminderDeletedForCreator(reminder),
                 keyboardService.goBackCallbackButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)
         );
     }
@@ -315,29 +273,16 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.sendMessageByCode(
-                    reminder.getReceiver().getChatId(),
-                    MessagesProperties.MESSAGE_REMINDER_CANCELED,
-                    new Object[]{reminder.getText()}
-            );
+            messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getMySelfReminderCanceled(reminder), null);
         } else {
-            StringBuilder messageForReceiver = new StringBuilder();
-            messageForReceiver
-                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CANCELED, new Object[]{reminder.getText()}))
-                    .append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATOR, new Object[]{UserUtils.userLink(reminder.getCreator())}));
             messageService.sendMessage(
                     reminder.getReceiver().getChatId(),
-                    messageForReceiver.toString(),
+                    reminderMessageBuilder.getReminderCanceledForReceiver(reminder),
                     null
             );
-
-            StringBuilder messageForCreator = new StringBuilder();
-            messageForCreator
-                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CANCELED, new Object[]{reminder.getText()}))
-                    .append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_RECEIVER, new Object[]{UserUtils.userLink(reminder.getReceiver())}));
             messageService.sendMessage(
                     reminder.getCreator().getChatId(),
-                    messageForCreator.toString(),
+                    reminderMessageBuilder.getReminderCanceledForCreator(reminder),
                     null
             );
         }
@@ -354,29 +299,19 @@ public class ReminderMessageSender {
             messageService.editMessageByMessageCode(
                     reminder.getReceiver().getChatId(),
                     messageId,
-                    MessagesProperties.MESSAGE_REMINDER_CANCELED,
-                    new Object[]{reminder.getText()},
+                    reminderMessageBuilder.getMySelfReminderCanceled(reminder),
                     keyboardService.goBackCallbackButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)
             );
         } else {
-            StringBuilder messageForReceiver = new StringBuilder();
-            messageForReceiver
-                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CANCELED, new Object[]{reminder.getText()}))
-                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATOR, new Object[]{UserUtils.userLink(reminder.getCreator())}));
             messageService.editMessage(
                     reminder.getReceiver().getChatId(),
                     messageId,
-                    messageForReceiver.toString(),
+                    reminderMessageBuilder.getReminderCanceledForReceiver(reminder),
                     keyboardService.goBackCallbackButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)
             );
-
-            StringBuilder messageForCreator = new StringBuilder();
-            messageForCreator
-                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CANCELED, new Object[]{reminder.getText()}))
-                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_RECEIVER, new Object[]{UserUtils.userLink(reminder.getReceiver())}));
             messageService.sendMessage(
                     reminder.getCreator().getChatId(),
-                    messageForCreator.toString(),
+                    reminderMessageBuilder.getReminderCanceledForCreator(reminder),
                     null
             );
         }
@@ -394,12 +329,10 @@ public class ReminderMessageSender {
         } else {
             User user = securityService.getAuthenticatedUser();
 
-            String text = reminderMessageBuilder.getRemindersList(user.getId(), reminders);
-
             messageService.editMessage(
                     chatId,
                     messageId,
-                    text,
+                    reminderMessageBuilder.getRemindersList(user.getId(), reminders),
                     keyboardService.getCompletedRemindersListKeyboard(MessagesProperties.GET_REMINDERS_COMMAND_HISTORY_NAME)
             );
         }
@@ -416,12 +349,10 @@ public class ReminderMessageSender {
         } else {
             User user = securityService.getAuthenticatedUser();
 
-            String text = reminderMessageBuilder.getRemindersList(user.getId(), reminders);
-
             messageService.editMessage(
                     chatId,
                     messageId,
-                    text,
+                    reminderMessageBuilder.getRemindersList(user.getId(), reminders),
                     keyboardService.getActiveRemindersListKeyboard(reminders.stream().map(Reminder::getId).collect(Collectors.toList()), MessagesProperties.GET_REMINDERS_COMMAND_HISTORY_NAME)
             );
         }
@@ -456,18 +387,16 @@ public class ReminderMessageSender {
         );
     }
 
-    public void sendReminderNoteChanged(Reminder reminder, int messageId, ReplyKeyboard replyKeyboard) {
+    public void sendReminderNoteChanged(Reminder reminder, int messageId) {
         if (!reminder.isMySelf()) {
             String text = reminderMessageBuilder.getReminderNoteChangedForReceiver(reminder.getText(), reminder.getNote(), reminder.getCreator(), reminder.getRemindAtInReceiverZone());
-
             messageService.sendMessage(reminder.getReceiver().getChatId(), text, null);
         }
-        String reminderText = reminderMessageBuilder.getReminderMessage(reminder);
 
         messageService.editMessage(
                 reminder.getCreator().getChatId(),
                 messageId,
-                reminderText,
+                reminderMessageBuilder.getReminderMessage(reminder),
                 keyboardService.getEditReminderKeyboard(reminder.getId(), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)
         );
     }
@@ -475,15 +404,13 @@ public class ReminderMessageSender {
     public void sendReminderNoteDeleted(String queryId, int messageId, Reminder reminder) {
         if (!reminder.isMySelf()) {
             String text = reminderMessageBuilder.getReminderNoteDeletedReceiver(reminder.getText(), reminder.getCreator(), reminder.getRemindAtInReceiverZone());
-
             messageService.sendMessage(reminder.getReceiver().getChatId(), text, null);
         }
-        String reminderText = reminderMessageBuilder.getReminderMessage(reminder);
 
         messageService.editMessage(
                 reminder.getCreator().getChatId(),
                 messageId,
-                reminderText,
+                reminderMessageBuilder.getReminderMessage(reminder),
                 keyboardService.getReminderDetailsKeyboard(securityService.getAuthenticatedUser().getId(), reminder)
         );
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_NOTE_DELETED);

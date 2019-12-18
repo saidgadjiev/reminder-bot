@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service.reminder;
+package ru.gadjini.reminder.service.reminder.message;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +9,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.reminder.RemindMessageService;
 import ru.gadjini.reminder.time.DateTime;
 
 @Service

@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service.reminder;
+package ru.gadjini.reminder.service.reminder.message;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,6 +105,52 @@ public class ReminderMessageBuilder {
         return message.toString();
     }
 
+    public String getReminderDeletedForReceiver(Reminder reminder) {
+        StringBuilder message = new StringBuilder();
+
+        message
+                .append(messageBuilder.getReminderDeleted(reminder.getText())).append("\n")
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAt())).append("\n")
+                .append(messageBuilder.getReminderReceiver(reminder.getCreator()));
+
+        return message.toString();
+    }
+
+    public String getReminderDeletedForCreator(Reminder reminder) {
+        return messageBuilder.getReminderDeleted(reminder.getText());
+    }
+
+    public String getRepeatReminderStoppedForReceiver(Reminder reminder) {
+        StringBuilder message = new StringBuilder();
+
+        message
+                .append(messageBuilder.getReminderStopped(reminder.getText())).append("\n")
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAt())).append("\n")
+                .append(messageBuilder.getReminderReceiver(reminder.getCreator()));
+
+        return message.toString();
+    }
+
+    public String getRepeatReminderStoppedForCreator(Reminder reminder) {
+        StringBuilder message = new StringBuilder();
+
+        message
+                .append(messageBuilder.getReminderStopped(reminder.getText())).append("\n")
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAt())).append("\n")
+                .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
+
+        return message.toString();
+    }
+
+    public String getMySelfRepeatReminderStopped(Reminder reminder) {
+        StringBuilder message = new StringBuilder();
+
+        message
+                .append(messageBuilder.getReminderStopped(reminder.getText())).append("\n")
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAt()));
+
+        return message.toString();
+    }
 
     public String getRepeatReminderSkippedForReceiver(Reminder reminder) {
         StringBuilder message = new StringBuilder();
@@ -175,12 +221,16 @@ public class ReminderMessageBuilder {
         return messageBuilder.getReminderNoteDeletedReceiver(creator, text, remindAt);
     }
 
-    public String getReminderPostponedForCreator(String text, TgUser receiver, DateTime remindAt) {
+    public String getReminderPostponedForCreator(String text, TgUser receiver, DateTime remindAt, String reason) {
         StringBuilder message = new StringBuilder();
 
         message
                 .append(messageBuilder.getReminderPostponed(text, remindAt))
                 .append("\n").append(messageBuilder.getReminderReceiver(receiver));
+
+        if (StringUtils.isNotBlank(reason)) {
+            message.append("\n\n").append(reason);
+        }
 
         return message.toString();
     }
@@ -207,5 +257,29 @@ public class ReminderMessageBuilder {
 
     public String getReminderTextChanged(String oldText, String newText, TgUser creator) {
         return messageBuilder.getReminderTextEditedReceiver(oldText, newText, creator);
+    }
+
+    public String getMySelfReminderCanceled(Reminder reminder) {
+        return messageBuilder.getReminderCanceled(reminder.getText());
+    }
+
+    public String getReminderCanceledForReceiver(Reminder reminder) {
+        StringBuilder message = new StringBuilder();
+
+        message
+                .append(messageBuilder.getReminderCanceled(reminder.getText())).append("\n")
+                .append(messageBuilder.getReminderCreator(reminder.getCreator()));
+
+        return message.toString();
+    }
+
+    public String getReminderCanceledForCreator(Reminder reminder) {
+        StringBuilder message = new StringBuilder();
+
+        message
+                .append(messageBuilder.getReminderCanceled(reminder.getText())).append("\n")
+                .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
+
+        return message.toString();
     }
 }

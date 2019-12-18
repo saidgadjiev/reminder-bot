@@ -21,8 +21,7 @@ import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.MessageBuilder;
-import ru.gadjini.reminder.service.reminder.ReminderNotificationMessageBuilder;
+import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 
 @Configuration
 public class BotConfiguration {

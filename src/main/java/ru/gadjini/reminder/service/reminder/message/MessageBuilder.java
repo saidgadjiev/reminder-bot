@@ -1,11 +1,10 @@
-package ru.gadjini.reminder.service.reminder;
+package ru.gadjini.reminder.service.reminder.message;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.domain.TgUser;
-import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
@@ -51,6 +50,10 @@ public class MessageBuilder {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_SKIPPED, new Object[]{reminderText});
     }
 
+    public String getReminderStopped(String reminderText) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_STOPPED, new Object[]{reminderText});
+    }
+
     public String getNextReminderNotificationAt(ZonedDateTime remindAt) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMINDER_NOTIFICATION_AT, new Object[]{timeBuilder.time(remindAt)});
     }
@@ -64,7 +67,7 @@ public class MessageBuilder {
     }
 
     public String getReminderPostponed(String text, DateTime remindAt) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED, new Object[] {text, timeBuilder.time(remindAt)});
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED, new Object[]{text, timeBuilder.time(remindAt)});
     }
 
     public String getReminderNoteEditedReceiver(TgUser creator, String text, DateTime remindAt, String note) {
@@ -114,5 +117,13 @@ public class MessageBuilder {
 
     public String getItsTimeReminderNotification(String reminderText) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_ITS_TIME, new Object[]{reminderText});
+    }
+
+    public String getReminderCanceled(String text) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CANCELED, new Object[]{text});
+    }
+
+    public String getReminderDeleted(String text) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_DELETED, new Object[]{text});
     }
 }
