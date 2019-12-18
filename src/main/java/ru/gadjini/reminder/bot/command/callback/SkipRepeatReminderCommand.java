@@ -11,6 +11,8 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 
+import java.util.Objects;
+
 @Component
 public class SkipRepeatReminderCommand implements CallbackBotCommand {
 
@@ -33,6 +35,11 @@ public class SkipRepeatReminderCommand implements CallbackBotCommand {
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Reminder reminder = repeatReminderService.skip(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
-        reminderMessageSender.sendRepeatReminderSkipped(callbackQuery.getId(), reminder);
+        String currHistoryName = requestParams.getString(Arg.CURR_HISTORY_NAME.getKey());
+        if (Objects.equals(currHistoryName, MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)) {
+            reminderMessageSender.sendRepeatReminderSkippedFromList(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
+        } else {
+            reminderMessageSender.sendRepeatReminderSkipped(callbackQuery.getId(), reminder);
+        }
     }
 }

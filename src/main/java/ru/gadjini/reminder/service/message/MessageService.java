@@ -128,6 +128,10 @@ public class MessageService {
         }
     }
 
+    public void editMessage(long chatId, int messageId, String text) {
+        editMessage(chatId, messageId, text, null);
+    }
+
     public void editReplyKeyboard(long chatId, int messageId, InlineKeyboardMarkup replyKeyboard) {
         EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
 

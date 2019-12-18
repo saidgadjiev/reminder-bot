@@ -11,6 +11,8 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 
+import java.util.Objects;
+
 @Component
 public class CompleteRepeatReminderCommand implements CallbackBotCommand {
 
@@ -31,8 +33,13 @@ public class CompleteRepeatReminderCommand implements CallbackBotCommand {
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        Reminder completed = repeatReminderService.complete(requestParams.getInt(Arg.REMINDER_ID.getKey()));
+        Reminder reminder = repeatReminderService.complete(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
-        reminderMessageSender.sendRepeatReminderCompleted(callbackQuery.getId(), completed);
+        String currHistoryName = requestParams.getString(Arg.CURR_HISTORY_NAME.getKey());
+        if (Objects.equals(currHistoryName, MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)) {
+            reminderMessageSender.sendRepeatReminderCompletedFromList(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
+        } else {
+            reminderMessageSender.sendRepeatReminderCompleted(callbackQuery.getId(), reminder);
+        }
     }
 }

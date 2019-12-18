@@ -44,6 +44,22 @@ public class ReminderMessageSender {
         this.securityService = securityService;
     }
 
+    public void sendRepeatReminderSkippedFromList(String queryId, int messageId, Reminder reminder) {
+        RemindMessage remindMessage = reminder.getRemindMessage();
+        if (remindMessage != null) {
+            messageService.deleteMessage(reminder.getReceiver().getChatId(), remindMessage.getMessageId());
+            remindMessageService.delete(reminder.getId());
+        }
+
+        if (reminder.isMySelf()) {
+            messageService.editMessage(reminder.getReceiver().getChatId(), messageId, reminderMessageBuilder.getMySelfRepeatReminderSkipped(reminder));
+        } else {
+            messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getRepeatReminderSkippedForCreator(reminder));
+            messageService.editMessage(reminder.getReceiver().getChatId(), messageId, reminderMessageBuilder.getRepeatReminderSkippedForReceiver(reminder));
+        }
+        messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_SKIPPED_ANSWER);
+    }
+
     public void sendRepeatReminderSkipped(String queryId, Reminder reminder) {
         RemindMessage remindMessage = reminder.getRemindMessage();
         if (remindMessage != null) {
@@ -52,14 +68,10 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.sendMessage(
-                    reminder.getReceiver().getChatId(),
-                    reminderMessageBuilder.getMySelfRepeatReminderSkipped(reminder),
-                    null
-            );
+            messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getMySelfRepeatReminderSkipped(reminder));
         } else {
-            messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getRepeatReminderSkippedForCreator(reminder), null);
-            messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getRepeatReminderSkippedForReceiver(reminder), null);
+            messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getRepeatReminderSkippedForCreator(reminder));
+            messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getRepeatReminderSkippedForReceiver(reminder));
         }
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_SKIPPED_ANSWER);
     }
@@ -80,6 +92,22 @@ public class ReminderMessageSender {
         } else {
             messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getRepeatReminderCompletedForCreator(reminder), null);
             messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getRepeatReminderCompletedForReceiver(reminder), null);
+        }
+        messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
+    }
+
+    public void sendRepeatReminderCompletedFromList(String queryId, int messageId, Reminder reminder) {
+        RemindMessage remindMessage = reminder.getRemindMessage();
+        if (remindMessage != null) {
+            messageService.deleteMessage(reminder.getReceiver().getChatId(), remindMessage.getMessageId());
+            remindMessageService.delete(reminder.getId());
+        }
+
+        if (reminder.isMySelf()) {
+            messageService.editMessage(reminder.getReceiver().getChatId(), messageId, reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminder));
+        } else {
+            messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getRepeatReminderCompletedForCreator(reminder));
+            messageService.editMessage(reminder.getReceiver().getChatId(), messageId, reminderMessageBuilder.getRepeatReminderCompletedForReceiver(reminder));
         }
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
     }
@@ -232,6 +260,22 @@ public class ReminderMessageSender {
         messageService.editMessageByMessageCode(chatId, messageId, MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED, keyboardService.goBackCallbackButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME));
     }
 
+    public void sendRepeatReminderStoppedFromList(String queryId, int messageId, Reminder reminder) {
+        RemindMessage remindMessage = reminder.getRemindMessage();
+        if (remindMessage != null) {
+            messageService.deleteMessage(reminder.getReceiver().getChatId(), remindMessage.getMessageId());
+            remindMessageService.delete(reminder.getId());
+        }
+
+        if (reminder.isMySelf()) {
+            messageService.editMessage(reminder.getReceiver().getChatId(), messageId, reminderMessageBuilder.getMySelfRepeatReminderStopped(reminder));
+        } else {
+            messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getRepeatReminderStoppedForReceiver(reminder));
+            messageService.editMessage(reminder.getReceiver().getChatId(), messageId, reminderMessageBuilder.getRepeatReminderStoppedForCreator(reminder));
+        }
+        messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_STOPPED_ANSWER);
+    }
+
     public void sendRepeatReminderStopped(String queryId, Reminder reminder) {
         if (reminder.getRemindMessage() != null) {
             messageService.deleteMessage(reminder.getReceiver().getChatId(), reminder.getRemindMessage().getMessageId());
@@ -239,7 +283,7 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.sendMessageByCode(reminder.getReceiver().getChatId(), reminderMessageBuilder.getMySelfRepeatReminderStopped(reminder));
+            messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getMySelfRepeatReminderStopped(reminder));
         } else {
             messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getRepeatReminderStoppedForReceiver(reminder));
             messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getRepeatReminderStoppedForCreator(reminder));

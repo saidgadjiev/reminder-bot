@@ -11,6 +11,8 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 
+import java.util.Objects;
+
 @Component
 public class StopRepeatReminderCommand implements CallbackBotCommand {
 
@@ -32,6 +34,12 @@ public class StopRepeatReminderCommand implements CallbackBotCommand {
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Reminder reminder = reminderService.delete(requestParams.getInt(Arg.REMINDER_ID.getKey()));
-        reminderMessageSender.sendRepeatReminderStopped(callbackQuery.getId(), reminder);
+
+        String currHistoryName = requestParams.getString(Arg.CURR_HISTORY_NAME.getKey());
+        if (Objects.equals(currHistoryName, MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)) {
+            reminderMessageSender.sendRepeatReminderStoppedFromList(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
+        } else {
+            reminderMessageSender.sendRepeatReminderStopped(callbackQuery.getId(), reminder);
+        }
     }
 }
