@@ -1,7 +1,5 @@
 package ru.gadjini.reminder.domain;
 
-import ru.gadjini.reminder.service.parser.remind.parser.OffsetTime;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -34,6 +32,8 @@ public class UserReminderNotification {
     private int minutes;
 
     private int userId;
+
+    private TgUser user;
 
     private LocalTime time;
 
@@ -109,10 +109,19 @@ public class UserReminderNotification {
         this.zoneId = zoneId;
     }
 
+    public TgUser getUser() {
+        return user;
+    }
+
+    public void setUser(TgUser user) {
+        this.user = user;
+    }
+
     public UserReminderNotification withZone(ZoneId target) {
         UserReminderNotification userReminderNotification = new UserReminderNotification(target);
         userReminderNotification.setMinutes(getMinutes());
         userReminderNotification.setHours(getHours());
+        setUser(getUser());
         userReminderNotification.setType(getType());
         userReminderNotification.setDays(getDays());
         if (getTime() != null) {

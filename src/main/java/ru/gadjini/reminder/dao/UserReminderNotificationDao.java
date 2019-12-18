@@ -56,7 +56,8 @@ public class UserReminderNotificationDao {
 
     public List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType) {
         return jdbcTemplate.query(
-                "SELECT * FROM user_reminder_notification WHERE user_id = ? AND type = ? ORDER BY days DESC, time DESC, hours DESC, minutes DESC",
+                "SELECT urn.*, rc.zone_id AS rc_zone_id FROM user_reminder_notification urn INNER JOIN tg_user rc ON urn.user_id = rc.user_id " +
+                        "WHERE urn.user_id = ? AND urn.type = ? ORDER BY days DESC, time DESC, hours DESC, minutes DESC",
                 ps -> {
                     ps.setInt(1, userId);
                     ps.setInt(2, notificationType.getCode());

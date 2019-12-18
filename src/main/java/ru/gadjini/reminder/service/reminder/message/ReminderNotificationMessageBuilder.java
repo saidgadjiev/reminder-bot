@@ -28,7 +28,8 @@ public class ReminderNotificationMessageBuilder {
     private LocalisationService localisationService;
 
     @Autowired
-    public ReminderNotificationMessageBuilder(MessageBuilder messageBuilder, TimeBuilder timeBuilder, ReminderMessageBuilder reminderMessageBuilder, LocalisationService localisationService) {
+    public ReminderNotificationMessageBuilder(MessageBuilder messageBuilder, TimeBuilder timeBuilder,
+                                              ReminderMessageBuilder reminderMessageBuilder, LocalisationService localisationService) {
         this.messageBuilder = messageBuilder;
         this.timeBuilder = timeBuilder;
         this.reminderMessageBuilder = reminderMessageBuilder;
@@ -37,7 +38,7 @@ public class ReminderNotificationMessageBuilder {
 
     public String getReminderNotificationForReceiver(Reminder reminder, boolean itsTime, DateTime nextRemindAt) {
         if (itsTime) {
-            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId()));
+            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId(), nextRemindAt));
         } else {
             return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId()));
         }
@@ -45,7 +46,7 @@ public class ReminderNotificationMessageBuilder {
 
     public String getReminderNotificationMySelf(Reminder reminder, boolean itsTime, DateTime nextRemindAt) {
         if (itsTime) {
-            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, reminder.getCreatorId()));
+            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, reminder.getCreatorId(), nextRemindAt));
         } else {
             return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, reminder.getCreatorId()));
         }
@@ -75,7 +76,7 @@ public class ReminderNotificationMessageBuilder {
             if (message.length() > 0) {
                 message.append("\n");
             }
-            message.append(i++).append(") ").append(timeBuilder.time(userReminderNotification));
+            message.append(i++).append(") ").append(timeBuilder.time(userReminderNotification.withZone(userReminderNotification.getUser().getZone())));
         }
 
         return message.toString();

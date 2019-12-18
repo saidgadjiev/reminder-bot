@@ -39,8 +39,12 @@ public class TimeBuilder {
     }
 
     public String time(UserReminderNotification offsetTime) {
-        String typeBefore = localisationService.getMessage(MessagesProperties.CUSTOM_REMIND_BEFORE);
-        StringBuilder builder = new StringBuilder(typeBefore).append(" ");
+        StringBuilder builder = new StringBuilder();
+
+        if (offsetTime.getDays() > 0 || offsetTime.getHours() > 0 || offsetTime.getMinutes() > 0) {
+            String typeBefore = localisationService.getMessage(MessagesProperties.CUSTOM_REMIND_BEFORE);
+            builder.append(typeBefore).append(" ");
+        }
         TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
 
         if (offsetTime.getDays() != 0) {
@@ -213,7 +217,7 @@ public class TimeBuilder {
         } else {
             TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
             time.append(declensionService.getRepeatWord(repeatTime.getDayOfWeek())).append(" ");
-            time.append(repeatTime.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault())).append(" ");
+            time.append(declensionService.dayOfWeek(repeatTime.getDayOfWeek())).append(" ");
             time.append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
         }
 

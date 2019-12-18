@@ -103,7 +103,7 @@ public class UserReminderNotificationService {
 
         UserReminderNotification eveNotification = new UserReminderNotification(ZoneOffset.UTC);
         eveNotification.setType(UserReminderNotification.NotificationType.WITHOUT_TIME);
-        eveNotification.setTime(LocalTime.of(9, 0));
+        eveNotification.setTime(LocalTime.of(19, 0));
         eveNotification.setDays(1);
         eveNotification.setUserId(userId);
         dao.create(eveNotification);

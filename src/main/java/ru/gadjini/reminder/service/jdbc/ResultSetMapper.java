@@ -168,6 +168,10 @@ public class ResultSetMapper {
         Time time = rs.getTime(UserReminderNotification.TIME);
         userReminderNotification.setTime(time != null ? time.toLocalTime() : null);
 
+        TgUser user = new TgUser();
+        user.setZoneId(rs.getString("rc_zone_id"));
+        userReminderNotification.setUser(user);
+
         return userReminderNotification;
     }
 

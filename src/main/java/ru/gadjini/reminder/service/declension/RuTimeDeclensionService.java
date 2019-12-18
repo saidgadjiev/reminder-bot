@@ -5,12 +5,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
+import java.time.format.TextStyle;
+import java.util.Locale;
 
 @Service
 @Qualifier(RuTimeDeclensionService.LANG)
 public class RuTimeDeclensionService implements TimeDeclensionService {
 
     public static final String LANG = "ru";
+
+    private static final Locale LOCALE = new Locale(LANG);
 
     @Override
     public String getLanguage() {
@@ -66,6 +70,24 @@ public class RuTimeDeclensionService implements TimeDeclensionService {
                 return "каждую";
             case SUNDAY:
                 return "каждое";
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String dayOfWeek(DayOfWeek dayOfWeek) {
+        switch (dayOfWeek) {
+            case MONDAY:
+            case TUESDAY:
+            case WEDNESDAY:
+            case SUNDAY:
+                return dayOfWeek.getDisplayName(TextStyle.FULL, LOCALE);
+            case THURSDAY:
+            case FRIDAY:
+            case SATURDAY:
+                String thursday = dayOfWeek.getDisplayName(TextStyle.FULL, LOCALE);
+                return thursday.substring(0, thursday.length() - 1) + "у";
         }
 
         throw new UnsupportedOperationException();
