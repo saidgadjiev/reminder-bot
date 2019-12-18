@@ -11,6 +11,8 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.MessageBuilder;
+import ru.gadjini.reminder.service.reminder.ReminderMessageBuilder;
+import ru.gadjini.reminder.service.reminder.ReminderNotificationMessageBuilder;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 
 @Component
@@ -18,15 +20,17 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
 
     private ReminderNotificationService reminderNotificationService;
 
-    private MessageBuilder messageBuilder;
+    private ReminderNotificationMessageBuilder messageBuilder;
 
     private MessageService messageService;
 
     private KeyboardService keyboardService;
 
     @Autowired
-    public ReminderTimeDetailsCommand(ReminderNotificationService reminderNotificationService, MessageBuilder messageBuilder,
-                                      MessageService messageService, KeyboardService keyboardService) {
+    public ReminderTimeDetailsCommand(ReminderNotificationService reminderNotificationService,
+                                      ReminderNotificationMessageBuilder messageBuilder,
+                                      MessageService messageService,
+                                      KeyboardService keyboardService) {
         this.reminderNotificationService = reminderNotificationService;
         this.messageBuilder = messageBuilder;
         this.messageService = messageService;

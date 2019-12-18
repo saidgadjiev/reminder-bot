@@ -7,10 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
-import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
-import ru.gadjini.reminder.service.reminder.ReminderService;
-import ru.gadjini.reminder.service.reminder.RepeatReminderService;
-import ru.gadjini.reminder.service.reminder.RestoreReminderService;
+import ru.gadjini.reminder.service.reminder.*;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
@@ -32,6 +29,8 @@ public class ReminderJob {
 
     private ReminderMessageSender reminderMessageSender;
 
+    private ReminderNotificationMessageSender reminderNotificationMessageSender;
+
     private RepeatReminderService repeatReminderService;
 
     private RestoreReminderService restoreReminderService;
@@ -40,11 +39,13 @@ public class ReminderJob {
     public ReminderJob(ReminderService reminderService,
                        ReminderNotificationService reminderNotificationService,
                        ReminderMessageSender reminderMessageSender,
+                       ReminderNotificationMessageSender reminderNotificationMessageSender,
                        RepeatReminderService repeatReminderService,
                        RestoreReminderService restoreReminderService) {
         this.reminderService = reminderService;
         this.reminderNotificationService = reminderNotificationService;
         this.reminderMessageSender = reminderMessageSender;
+        this.reminderNotificationMessageSender = reminderNotificationMessageSender;
         this.repeatReminderService = repeatReminderService;
         this.restoreReminderService = restoreReminderService;
     }
@@ -85,14 +86,13 @@ public class ReminderJob {
     }
 
     private void sendStandardReminderRestored(Reminder reminder) {
-        reminderMessageSender.sendRemindMessage(reminder, reminder.getReminderNotifications().stream().anyMatch(ReminderNotification::isItsTime), null);
+        reminderNotificationMessageSender.sendRemindMessage(reminder, reminder.getReminderNotifications().stream().anyMatch(ReminderNotification::isItsTime));
     }
 
     private void sendRepeatableReminderRestored(Reminder reminder) {
-        reminderMessageSender.sendRemindMessage(
+        reminderNotificationMessageSender.sendRemindMessage(
                 reminder,
-                reminder.getReminderNotifications().stream().anyMatch(ReminderNotification::isItsTime),
-                reminder.getRemindAt()
+                reminder.getReminderNotifications().stream().anyMatch(ReminderNotification::isItsTime)
         );
     }
 
@@ -118,12 +118,12 @@ public class ReminderJob {
     }
 
     private void sendOnceReminder(Reminder reminder, ReminderNotification reminderNotification) {
-        reminderMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), null);
+        reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime());
         reminderNotificationService.deleteReminderTime(reminderNotification.getId());
     }
 
     private void sendRepeatReminderTime(Reminder reminder, ReminderNotification reminderNotification) {
-        reminderMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), null);
+        reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime());
 
         reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), TimeUtils.now());
     }
@@ -137,7 +137,7 @@ public class ReminderJob {
             reminder.setRemindAt(nextRemindAt);
         }
 
-        reminderMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), nextRemindAt);
+        reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), nextRemindAt);
 
         ZonedDateTime nextLastRemindAt = JodaTimeUtils.plus(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime());
         reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), nextLastRemindAt.toLocalDateTime());

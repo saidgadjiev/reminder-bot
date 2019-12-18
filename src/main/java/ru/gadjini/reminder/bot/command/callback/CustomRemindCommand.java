@@ -17,6 +17,7 @@ import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.ReminderNotificationMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,7 +35,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
 
     private ReminderRequestService reminderService;
 
-    private ReminderMessageSender reminderMessageSender;
+    private ReminderNotificationMessageSender reminderMessageSender;
 
     private CommandNavigator commandNavigator;
 
@@ -44,7 +45,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
     public CustomRemindCommand(MessageService messageService,
                                KeyboardService keyboardService,
                                ReminderRequestService reminderService,
-                               ReminderMessageSender reminderMessageSender,
+                               ReminderNotificationMessageSender reminderMessageSender,
                                CommandNavigator commandNavigator,
                                LocalisationService localisationService) {
         this.messageService = messageService;

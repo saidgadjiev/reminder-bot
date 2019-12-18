@@ -8,7 +8,8 @@ import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.MessageBuilder;
+import ru.gadjini.reminder.service.reminder.ReminderMessageBuilder;
+import ru.gadjini.reminder.service.reminder.ReminderNotificationMessageBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
 
     private UserReminderNotificationService userReminderNotificationService;
 
-    private MessageBuilder messageBuilder;
+    private ReminderNotificationMessageBuilder messageBuilder;
 
     private MessageService messageService;
 
@@ -36,7 +37,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
     public UserReminderNotificationScheduleCommand(String name, String historyName,
                                                    UserReminderNotification.NotificationType notificationType,
                                                    UserReminderNotificationService userReminderNotificationService,
-                                                   MessageBuilder messageBuilder,
+                                                   ReminderNotificationMessageBuilder messageBuilder,
                                                    MessageService messageService,
                                                    KeyboardService keyboardService) {
         this.notificationType = notificationType;
@@ -59,7 +60,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
 
         int messageId = messageService.sendMessage(
                 message.getChatId(),
-                messageBuilder.getUserReminderNotificationsMessage(userReminderNotifications),
+                messageBuilder.getUserReminderNotifications(userReminderNotifications),
                 keyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)
         ).getMessageId();
         messageService.sendMessageByCode(
@@ -80,7 +81,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
         messageService.editMessage(
                 message.getChatId(),
                 messageId,
-                messageBuilder.getUserReminderNotificationsMessage(userReminderNotifications),
+                messageBuilder.getUserReminderNotifications(userReminderNotifications),
                 keyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)
         );
         messageService.deleteMessage(message.getChatId(), message.getMessageId());

@@ -13,6 +13,7 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.reminder.ReminderMessageBuilder;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.MessageBuilder;
@@ -28,7 +29,7 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
 
     private KeyboardService keyboardService;
 
-    private MessageBuilder messageBuilder;
+    private ReminderMessageBuilder messageBuilder;
 
     private ReminderService reminderService;
 
@@ -36,7 +37,7 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
 
     @Autowired
     public ReceiverReminderCommand(ReminderMessageSender reminderMessageSender, MessageService messageService,
-                                   KeyboardService keyboardService, MessageBuilder messageBuilder,
+                                   KeyboardService keyboardService, ReminderMessageBuilder messageBuilder,
                                    ReminderService reminderService, CommandNavigator commandNavigator) {
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;

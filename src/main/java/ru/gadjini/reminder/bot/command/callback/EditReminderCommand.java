@@ -13,6 +13,7 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.MessageBuilder;
+import ru.gadjini.reminder.service.reminder.ReminderMessageBuilder;
 import ru.gadjini.reminder.service.reminder.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 
@@ -27,13 +28,13 @@ public class EditReminderCommand implements CallbackBotCommand, NavigableCallbac
 
     private KeyboardService keyboardService;
 
-    private MessageBuilder messageBuilder;
+    private ReminderMessageBuilder messageBuilder;
 
     private ReminderService reminderService;
 
     @Autowired
     public EditReminderCommand(ReminderMessageSender reminderMessageSender, MessageService messageService,
-                               KeyboardService keyboardService, MessageBuilder messageBuilder, ReminderService reminderService) {
+                               KeyboardService keyboardService, ReminderMessageBuilder messageBuilder, ReminderService reminderService) {
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.keyboardService = keyboardService;

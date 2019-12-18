@@ -11,7 +11,7 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.keyboard.KeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.MessageBuilder;
+import ru.gadjini.reminder.service.reminder.ReminderNotificationMessageBuilder;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Component
 public class DeleteUserReminderNotificationCommand implements CallbackBotCommand {
 
-    private MessageBuilder messageBuilder;
+    private ReminderNotificationMessageBuilder reminderNotificationMessageBuilder;
 
     private KeyboardService keyboardService;
 
@@ -28,9 +28,11 @@ public class DeleteUserReminderNotificationCommand implements CallbackBotCommand
     private UserReminderNotificationService userReminderNotificationService;
 
     @Autowired
-    public DeleteUserReminderNotificationCommand(MessageBuilder messageBuilder, KeyboardService keyboardService, MessageService messageService,
+    public DeleteUserReminderNotificationCommand( ReminderNotificationMessageBuilder reminderNotificationMessageBuilder,
+                                                  KeyboardService keyboardService,
+                                                  MessageService messageService,
                                                  UserReminderNotificationService userReminderNotificationService) {
-        this.messageBuilder = messageBuilder;
+        this.reminderNotificationMessageBuilder = reminderNotificationMessageBuilder;
         this.keyboardService = keyboardService;
         this.messageService = messageService;
         this.userReminderNotificationService = userReminderNotificationService;
@@ -50,7 +52,7 @@ public class DeleteUserReminderNotificationCommand implements CallbackBotCommand
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
-                messageBuilder.getUserReminderNotificationsMessage(userReminderNotifications),
+                reminderNotificationMessageBuilder.getUserReminderNotifications(userReminderNotifications),
                 keyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)
         );
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION_DELETED);
