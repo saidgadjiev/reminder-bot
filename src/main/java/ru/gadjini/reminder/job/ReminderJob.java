@@ -127,15 +127,7 @@ public class ReminderJob {
     }
 
     private void sendRepeatReminderTimeForRepeatableReminder(Reminder reminder, ReminderNotification reminderNotification) {
-        DateTime nextRemindAt = reminder.getRemindAt();
-
-        if (isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
-            nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
-            repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
-            reminder.setRemindAt(nextRemindAt);
-        }
-
-        reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), nextRemindAt);
+        reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), reminder.getRemindAt());
 
         ZonedDateTime nextLastRemindAt = JodaTimeUtils.plus(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime());
         reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), nextLastRemindAt.toLocalDateTime());
