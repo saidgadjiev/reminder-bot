@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
@@ -20,14 +20,14 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
 
     private LocalisationService localisationService;
 
-    private KeyboardService keyboardService;
+    private ReplyKeyboardService replyKeyboardService;
 
     @Autowired
-    public UserReminderNotificationCommand(MessageService messageService, LocalisationService localisationService, KeyboardService keyboardService) {
+    public UserReminderNotificationCommand(MessageService messageService, LocalisationService localisationService, ReplyKeyboardService replyKeyboardService) {
         this.name = localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME);
         this.messageService = messageService;
         this.localisationService = localisationService;
-        this.keyboardService = keyboardService;
+        this.replyKeyboardService = replyKeyboardService;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
         messageService.sendMessage(
                 message.getChatId(),
                 localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION),
-                keyboardService.getUserReminderNotificationSettingsKeyboard()
+                replyKeyboardService.getUserReminderNotificationSettingsKeyboard()
         );
     }
 
@@ -59,12 +59,12 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
         messageService.sendMessage(
                 chatId,
                 localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION),
-                keyboardService.getUserReminderNotificationSettingsKeyboard()
+                replyKeyboardService.getUserReminderNotificationSettingsKeyboard()
         );
     }
 
     @Override
     public ReplyKeyboardMarkup silentRestore() {
-        return keyboardService.getUserReminderNotificationSettingsKeyboard();
+        return replyKeyboardService.getUserReminderNotificationSettingsKeyboard();
     }
 }

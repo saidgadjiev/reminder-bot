@@ -8,7 +8,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
@@ -22,17 +22,17 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
 
     private MessageService messageService;
 
-    private KeyboardService keyboardService;
+    private InlineKeyboardService inlineKeyboardService;
 
     @Autowired
     public ReminderTimeDetailsCommand(ReminderNotificationService reminderNotificationService,
                                       ReminderNotificationMessageBuilder messageBuilder,
                                       MessageService messageService,
-                                      KeyboardService keyboardService) {
+                                      InlineKeyboardService inlineKeyboardService) {
         this.reminderNotificationService = reminderNotificationService;
         this.messageBuilder = messageBuilder;
         this.messageService = messageService;
-        this.keyboardService = keyboardService;
+        this.inlineKeyboardService = inlineKeyboardService;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 messageBuilder.getReminderTimeMessage(reminderNotification),
-                keyboardService.getReminderTimeKeyboard(requestParams.getInt(Arg.REMINDER_NOTIFICATION_ID.getKey()), reminderNotification.getReminderId())
+                inlineKeyboardService.getReminderTimeKeyboard(requestParams.getInt(Arg.REMINDER_NOTIFICATION_ID.getKey()), reminderNotification.getReminderId())
         );
     }
 }

@@ -11,7 +11,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageBuilder;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
@@ -26,7 +26,7 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
 
     private MessageService messageService;
 
-    private KeyboardService keyboardService;
+    private InlineKeyboardService inlineKeyboardService;
 
     private ReminderMessageBuilder messageBuilder;
 
@@ -36,11 +36,11 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
 
     @Autowired
     public ReceiverReminderCommand(ReminderMessageSender reminderMessageSender, MessageService messageService,
-                                   KeyboardService keyboardService, ReminderMessageBuilder messageBuilder,
+                                   InlineKeyboardService inlineKeyboardService, ReminderMessageBuilder messageBuilder,
                                    ReminderService reminderService, CommandNavigator commandNavigator) {
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
-        this.keyboardService = keyboardService;
+        this.inlineKeyboardService = inlineKeyboardService;
         this.messageBuilder = messageBuilder;
         this.reminderService = reminderService;
         this.commandNavigator = commandNavigator;
@@ -69,7 +69,7 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
                 chatId,
                 messageId,
                 messageBuilder.getReminderMessage(reminder),
-                keyboardService.getReceiverReminderKeyboard(requestParams.getInt(Arg.REMINDER_ID.getKey()), reminder.isRepeatable())
+                inlineKeyboardService.getReceiverReminderKeyboard(requestParams.getInt(Arg.REMINDER_ID.getKey()), reminder.isRepeatable())
         );
         if (replyKeyboard != null) {
             messageService.sendMessageByCode(chatId, MessagesProperties.MESSAGE_HOW_HELP, replyKeyboard);

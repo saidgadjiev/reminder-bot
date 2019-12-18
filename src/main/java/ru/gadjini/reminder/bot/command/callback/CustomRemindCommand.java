@@ -13,7 +13,7 @@ import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageSender;
@@ -30,7 +30,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
 
     private MessageService messageService;
 
-    private KeyboardService keyboardService;
+    private InlineKeyboardService inlineKeyboardService;
 
     private ReminderRequestService reminderService;
 
@@ -42,13 +42,13 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
 
     @Autowired
     public CustomRemindCommand(MessageService messageService,
-                               KeyboardService keyboardService,
+                               InlineKeyboardService inlineKeyboardService,
                                ReminderRequestService reminderService,
                                ReminderNotificationMessageSender reminderMessageSender,
                                CommandNavigator commandNavigator,
                                LocalisationService localisationService) {
         this.messageService = messageService;
-        this.keyboardService = keyboardService;
+        this.inlineKeyboardService = inlineKeyboardService;
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
         this.commandNavigator = commandNavigator;
@@ -76,7 +76,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 callbackQuery.getMessage().getText() + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND),
-                keyboardService.goBackCallbackButton(prevHistoryName, true, requestParams)
+                inlineKeyboardService.goBackCallbackButton(prevHistoryName, true, requestParams)
         );
 
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION);

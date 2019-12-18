@@ -11,9 +11,10 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
-import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.service.FriendshipService;
 import ru.gadjini.reminder.service.command.CommandNavigator;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
+import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
@@ -27,7 +28,9 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
 
     private String name;
 
-    private KeyboardService keyboardService;
+    private InlineKeyboardService inlineKeyboardService;
+
+    private ReplyKeyboardService replyKeyboardService;
 
     private CommandNavigator commandNavigator;
 
@@ -35,12 +38,14 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
     public SendFriendRequestCommand(LocalisationService localisationService,
                                     FriendshipService friendshipService,
                                     MessageService messageService,
-                                    KeyboardService keyboardService,
+                                    InlineKeyboardService inlineKeyboardService,
+                                    ReplyKeyboardService replyKeyboardService,
                                     CommandNavigator commandNavigator) {
         this.friendshipService = friendshipService;
         this.messageService = messageService;
         this.name = localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME);
-        this.keyboardService = keyboardService;
+        this.inlineKeyboardService = inlineKeyboardService;
+        this.replyKeyboardService = replyKeyboardService;
         this.commandNavigator = commandNavigator;
     }
 
@@ -56,7 +61,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
 
     @Override
     public void processMessage(Message message) {
-        messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME, keyboardService.goBackCommand());
+        messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME, replyKeyboardService.goBackCommand());
     }
 
     @Override
@@ -98,7 +103,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
                         friendship.getUserTwo().getChatId(),
                         MessagesProperties.MESSAGE_NEW_FRIEND_REQUEST,
                         new Object[]{UserUtils.userLink(friendship.getUserOne())},
-                        keyboardService.getFriendRequestKeyboard(friendship.getUserOne().getUserId())
+                        inlineKeyboardService.getFriendRequestKeyboard(friendship.getUserOne().getUserId())
                 );
                 break;
         }

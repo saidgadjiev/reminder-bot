@@ -12,10 +12,10 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
+import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,7 +30,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
 
     private String name;
 
-    private KeyboardService keyboardService;
+    private ReplyKeyboardService replyKeyboardService;
 
     private CommandNavigator commandNavigator;
 
@@ -39,13 +39,13 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
     @Autowired
     public CreateReminderCommand(ReminderRequestService reminderService,
                                  MessageService messageService,
-                                 KeyboardService keyboardService,
+                                 ReplyKeyboardService replyKeyboardService,
                                  CommandNavigator commandNavigator,
                                  ReminderMessageSender reminderMessageSender) {
         this.reminderService = reminderService;
         this.name = MessagesProperties.CREATE_REMINDER_COMMAND_NAME;
         this.messageService = messageService;
-        this.keyboardService = keyboardService;
+        this.replyKeyboardService = replyKeyboardService;
         this.commandNavigator = commandNavigator;
         this.reminderMessageSender = reminderMessageSender;
     }
@@ -58,7 +58,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         reminderRequests.put(callbackQuery.getMessage().getChatId(), requestParams.getInt(Arg.FRIEND_ID.getKey()));
-        messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT, keyboardService.goBackCommand());
+        messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT, replyKeyboardService.goBackCommand());
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_CREATE_REMINDER_CALLBACK_ANSWER);
     }
 

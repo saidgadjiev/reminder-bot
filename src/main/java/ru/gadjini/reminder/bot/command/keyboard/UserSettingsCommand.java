@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
@@ -17,13 +17,13 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
 
     private MessageService messageService;
 
-    private KeyboardService keyboardService;
+    private ReplyKeyboardService replyKeyboardService;
 
     @Autowired
-    public UserSettingsCommand(LocalisationService localisationService, MessageService messageService, KeyboardService keyboardService) {
+    public UserSettingsCommand(LocalisationService localisationService, MessageService messageService, ReplyKeyboardService replyKeyboardService) {
         this.name = localisationService.getMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME);
         this.messageService = messageService;
-        this.keyboardService = keyboardService;
+        this.replyKeyboardService = replyKeyboardService;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
         messageService.sendMessageByCode(
                 message.getChatId(),
                 MessagesProperties.MESSAGE_USER_SETTINGS,
-                keyboardService.getUserSettingsKeyboard()
+                replyKeyboardService.getUserSettingsKeyboard()
         );
     }
 
@@ -55,7 +55,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
         messageService.sendMessageByCode(
                 chatId,
                 MessagesProperties.MESSAGE_USER_SETTINGS,
-                keyboardService.getUserSettingsKeyboard()
+                replyKeyboardService.getUserSettingsKeyboard()
         );
     }
 }

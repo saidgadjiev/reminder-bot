@@ -9,7 +9,7 @@ import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 
@@ -21,19 +21,19 @@ public class DeleteUserReminderNotificationCommand implements CallbackBotCommand
 
     private ReminderNotificationMessageBuilder reminderNotificationMessageBuilder;
 
-    private KeyboardService keyboardService;
+    private InlineKeyboardService inlineKeyboardService;
 
     private MessageService messageService;
 
     private UserReminderNotificationService userReminderNotificationService;
 
     @Autowired
-    public DeleteUserReminderNotificationCommand( ReminderNotificationMessageBuilder reminderNotificationMessageBuilder,
-                                                  KeyboardService keyboardService,
-                                                  MessageService messageService,
+    public DeleteUserReminderNotificationCommand(ReminderNotificationMessageBuilder reminderNotificationMessageBuilder,
+                                                 InlineKeyboardService inlineKeyboardService,
+                                                 MessageService messageService,
                                                  UserReminderNotificationService userReminderNotificationService) {
         this.reminderNotificationMessageBuilder = reminderNotificationMessageBuilder;
-        this.keyboardService = keyboardService;
+        this.inlineKeyboardService = inlineKeyboardService;
         this.messageService = messageService;
         this.userReminderNotificationService = userReminderNotificationService;
     }
@@ -53,7 +53,7 @@ public class DeleteUserReminderNotificationCommand implements CallbackBotCommand
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 reminderNotificationMessageBuilder.getUserReminderNotifications(userReminderNotifications),
-                keyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)
+                inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)
         );
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION_DELETED);
     }

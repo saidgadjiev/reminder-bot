@@ -14,7 +14,8 @@ import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
+import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
@@ -32,7 +33,9 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     private MessageService messageService;
 
-    private KeyboardService keyboardService;
+    private InlineKeyboardService inlineKeyboardService;
+
+    private ReplyKeyboardService replyKeyboardService;
 
     private ReminderRequestService reminderRequestService;
 
@@ -44,15 +47,17 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     @Autowired
     public PostponeReminderCommand(MessageService messageService,
-                                   KeyboardService keyboardService,
+                                   InlineKeyboardService inlineKeyboardService,
+                                   ReplyKeyboardService replyKeyboardService,
                                    ReminderRequestService reminderRequestService,
                                    ReminderMessageSender reminderMessageSender,
                                    CommandNavigator commandNavigator,
                                    LocalisationService localisationService) {
+        this.replyKeyboardService = replyKeyboardService;
         this.localisationService = localisationService;
         this.name = MessagesProperties.POSTPONE_REMINDER_COMMAND_NAME;
         this.messageService = messageService;
-        this.keyboardService = keyboardService;
+        this.inlineKeyboardService = inlineKeyboardService;
         this.reminderRequestService = reminderRequestService;
         this.reminderMessageSender = reminderMessageSender;
         this.commandNavigator = commandNavigator;
@@ -71,10 +76,10 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         messageService.editReplyKeyboard(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
-                keyboardService.goBackCallbackButton(prevHistoryName, true, requestParams)
+                inlineKeyboardService.goBackCallbackButton(prevHistoryName, true, requestParams)
         );
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION);
-        messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_POSTPONE_TIME, keyboardService.postponeTimeKeyboard());
+        messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_POSTPONE_TIME, replyKeyboardService.postponeTimeKeyboard());
     }
 
     @Override
@@ -113,7 +118,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         postponeCommandState.state = State.REASON;
 
         if (reminder.getReceiverId() != reminder.getCreatorId()) {
-            messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_POSTPONE_MESSAGE, keyboardService.getPostponeMessagesKeyboard());
+            messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_POSTPONE_MESSAGE, replyKeyboardService.getPostponeMessagesKeyboard());
         } else {
             postpone(message.getChatId(), null, postponeCommandState);
         }

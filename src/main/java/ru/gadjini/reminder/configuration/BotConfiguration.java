@@ -18,7 +18,8 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.properties.WebHookProperties;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
+import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
@@ -55,7 +56,9 @@ public class BotConfiguration {
                                                                       UserReminderNotificationService userReminderNotificationService,
                                                                       ReminderNotificationMessageBuilder messageBuilder,
                                                                       MessageService messageService,
-                                                                      KeyboardService keyboardService) {
+                                                                      InlineKeyboardService inlineKeyboardService,
+                                                                      ReplyKeyboardService replyKeyboardService
+    ) {
         return new UserReminderNotificationScheduleCommand(
                 localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME),
                 MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_HISTORY_NAME,
@@ -63,7 +66,8 @@ public class BotConfiguration {
                 userReminderNotificationService,
                 messageBuilder,
                 messageService,
-                keyboardService
+                inlineKeyboardService,
+                replyKeyboardService
         );
     }
 
@@ -73,7 +77,9 @@ public class BotConfiguration {
                                                                          UserReminderNotificationService userReminderNotificationService,
                                                                          ReminderNotificationMessageBuilder messageBuilder,
                                                                          MessageService messageService,
-                                                                         KeyboardService keyboardService) {
+                                                                         InlineKeyboardService inlineKeyboardService,
+                                                                         ReplyKeyboardService replyKeyboardService
+    ) {
         return new UserReminderNotificationScheduleCommand(
                 localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME),
                 MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_HISTORY_NAME,
@@ -81,7 +87,8 @@ public class BotConfiguration {
                 userReminderNotificationService,
                 messageBuilder,
                 messageService,
-                keyboardService
+                inlineKeyboardService,
+                replyKeyboardService
         );
     }
 }

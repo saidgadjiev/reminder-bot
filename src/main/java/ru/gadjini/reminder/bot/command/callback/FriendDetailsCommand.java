@@ -9,7 +9,7 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.TgUserService;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.time.DateTimeFormats;
@@ -26,16 +26,16 @@ public class FriendDetailsCommand implements CallbackBotCommand {
 
     private MessageService messageService;
 
-    private KeyboardService keyboardService;
+    private InlineKeyboardService inlineKeyboardService;
 
     private LocalisationService localisationService;
 
     @Autowired
     public FriendDetailsCommand(TgUserService userService, MessageService messageService,
-                                KeyboardService keyboardService, LocalisationService localisationService) {
+                                InlineKeyboardService inlineKeyboardService, LocalisationService localisationService) {
         this.userService = userService;
         this.messageService = messageService;
-        this.keyboardService = keyboardService;
+        this.inlineKeyboardService = inlineKeyboardService;
         this.localisationService = localisationService;
     }
 
@@ -52,7 +52,7 @@ public class FriendDetailsCommand implements CallbackBotCommand {
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 getMessage(friend),
-                keyboardService.getFriendKeyboard(friendUserId)
+                inlineKeyboardService.getFriendKeyboard(friendUserId)
         );
     }
 

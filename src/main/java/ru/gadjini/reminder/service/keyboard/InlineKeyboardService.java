@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.UserReminderNotification;
@@ -20,14 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class KeyboardService {
+public class InlineKeyboardService {
 
     private LocalisationService localisationService;
 
     private ButtonFactory buttonFactory;
 
     @Autowired
-    public KeyboardService(LocalisationService localisationService, ButtonFactory buttonFactory) {
+    public InlineKeyboardService(LocalisationService localisationService, ButtonFactory buttonFactory) {
         this.localisationService = localisationService;
         this.buttonFactory = buttonFactory;
     }
@@ -54,44 +51,6 @@ public class KeyboardService {
         }
 
         return inlineKeyboardMarkup;
-    }
-
-    public ReplyKeyboardMarkup getUserSettingsKeyboard() {
-        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
-
-        replyKeyboardMarkup.getKeyboard().add(
-                new KeyboardRow() {{
-                    add(new KeyboardButton(localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME)));
-                }}
-        );
-        replyKeyboardMarkup.getKeyboard().add(
-                new KeyboardRow() {{
-                    add(new KeyboardButton(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME)));
-                }}
-        );
-        replyKeyboardMarkup.getKeyboard().add(
-                new KeyboardRow() {{
-                    add(new KeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
-                }}
-        );
-
-        return replyKeyboardMarkup;
-    }
-
-    public ReplyKeyboardMarkup getUserReminderNotificationSettingsKeyboard() {
-        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME)));
-        }});
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME)));
-        }});
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
-        }});
-
-        return replyKeyboardMarkup;
     }
 
     public InlineKeyboardMarkup getReminderTimeKeyboard(int reminderTimeId, int reminderId) {
@@ -153,20 +112,6 @@ public class KeyboardService {
         }
 
         return inlineKeyboardMarkup;
-    }
-
-    public ReplyKeyboardMarkup getPostponeMessagesKeyboard() {
-        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING)));
-        }});
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON)));
-        }});
-
-        return replyKeyboardMarkup;
     }
 
     public InlineKeyboardMarkup getActiveRemindersListKeyboard(List<Integer> reminderIds, String prevHistoryName) {
@@ -284,53 +229,6 @@ public class KeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public ReplyKeyboardMarkup getMainMenu() {
-        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME));
-        }});
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME));
-        }});
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.GET_FRIEND_REQUESTS_COMMAND_NAME));
-        }});
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME));
-        }});
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME));
-        }});
-
-        return replyKeyboardMarkup;
-    }
-
-    public ReplyKeyboardMarkup postponeTimeKeyboard() {
-        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN)));
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN)));
-        }});
-
-        return replyKeyboardMarkup;
-    }
-
-    public ReplyKeyboardMarkup goBackCommand() {
-        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME));
-        }});
-
-        return replyKeyboardMarkup;
-    }
-
     public InlineKeyboardMarkup goBackCallbackButton(String prevHistoryName) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
@@ -395,15 +293,6 @@ public class KeyboardService {
         }
 
         return keyboardMarkup;
-    }
-
-    private ReplyKeyboardMarkup replyKeyboardMarkup() {
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-
-        replyKeyboardMarkup.setKeyboard(new ArrayList<>());
-        replyKeyboardMarkup.setResizeKeyboard(true);
-
-        return replyKeyboardMarkup;
     }
 
     private InlineKeyboardMarkup inlineKeyboardMarkup() {

@@ -8,7 +8,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.FriendshipService;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 
 @Component
@@ -18,15 +18,15 @@ public class DeleteFriendCommand implements CallbackBotCommand {
 
     private FriendshipService friendshipService;
 
-    private KeyboardService keyboardService;
+    private InlineKeyboardService inlineKeyboardService;
 
     private String name;
 
     @Autowired
-    public DeleteFriendCommand(MessageService messageService, FriendshipService friendshipService, KeyboardService keyboardService) {
+    public DeleteFriendCommand(MessageService messageService, FriendshipService friendshipService, InlineKeyboardService inlineKeyboardService) {
         this.messageService = messageService;
         this.friendshipService = friendshipService;
-        this.keyboardService = keyboardService;
+        this.inlineKeyboardService = inlineKeyboardService;
         name = MessagesProperties.DELETE_FRIEND_COMMAND_NAME;
     }
 
@@ -44,7 +44,7 @@ public class DeleteFriendCommand implements CallbackBotCommand {
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 MessagesProperties.MESSAGE_FRIEND_DELETED,
-                keyboardService.goBackCallbackButton(MessagesProperties.GET_FRIENDS_COMMAND_HISTORY_NAME)
+                inlineKeyboardService.goBackCallbackButton(MessagesProperties.GET_FRIENDS_COMMAND_HISTORY_NAME)
         );
     }
 }

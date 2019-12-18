@@ -14,8 +14,8 @@ import ru.gadjini.reminder.exception.ValidationException;
 import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.service.command.CommandExecutor;
 import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
 
 @Component
 public class ReminderBot extends WorkerUpdatesBot {
@@ -30,19 +30,19 @@ public class ReminderBot extends WorkerUpdatesBot {
 
     private MessageService messageService;
 
-    private KeyboardService keyboardService;
+    private ReplyKeyboardService replyKeyboardService;
 
     @Autowired
     public ReminderBot(BotProperties botProperties,
                        CommandExecutor commandExecutor,
                        CommandNavigator commandNavigator,
                        MessageService messageService,
-                       KeyboardService keyboardService) {
+                       ReplyKeyboardService replyKeyboardService) {
         this.botProperties = botProperties;
         this.commandExecutor = commandExecutor;
         this.commandNavigator = commandNavigator;
         this.messageService = messageService;
-        this.keyboardService = keyboardService;
+        this.replyKeyboardService = replyKeyboardService;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class ReminderBot extends WorkerUpdatesBot {
         }
         if (commandNavigator.isEmpty(chatId)) {
             commandNavigator.zeroRestore(chatId, (NavigableBotCommand) commandExecutor.getBotCommand(MessagesProperties.START_COMMAND_NAME));
-            messageService.sendBotRestartedMessage(chatId, keyboardService.getMainMenu());
+            messageService.sendBotRestartedMessage(chatId, replyKeyboardService.getMainMenu());
 
             return true;
         }

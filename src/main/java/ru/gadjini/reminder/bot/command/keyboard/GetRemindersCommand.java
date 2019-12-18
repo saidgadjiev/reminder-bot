@@ -8,7 +8,7 @@ import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
@@ -19,13 +19,13 @@ public class GetRemindersCommand implements KeyboardBotCommand, NavigableCallbac
 
     private MessageService messageService;
 
-    private KeyboardService keyboardService;
+    private InlineKeyboardService inlineKeyboardService;
 
     @Autowired
-    public GetRemindersCommand(LocalisationService localisationService, MessageService messageService, KeyboardService keyboardService) {
+    public GetRemindersCommand(LocalisationService localisationService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
         this.name = localisationService.getMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME);
         this.messageService = messageService;
-        this.keyboardService = keyboardService;
+        this.inlineKeyboardService = inlineKeyboardService;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class GetRemindersCommand implements KeyboardBotCommand, NavigableCallbac
         messageService.sendMessageByCode(
                 message.getChatId(),
                 MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS,
-                keyboardService.getRemindersMenu()
+                inlineKeyboardService.getRemindersMenu()
         );
     }
 
@@ -53,7 +53,7 @@ public class GetRemindersCommand implements KeyboardBotCommand, NavigableCallbac
                 chatId,
                 messageId,
                 MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS,
-                keyboardService.getRemindersMenu()
+                inlineKeyboardService.getRemindersMenu()
         );
     }
 }

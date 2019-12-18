@@ -10,7 +10,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.FriendshipService;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Component
 public class GeFriendsCommand implements KeyboardBotCommand, NavigableCallbackBotCommand {
 
-    private KeyboardService keyboardService;
+    private InlineKeyboardService inlineKeyboardService;
 
     private FriendshipService friendshipService;
 
@@ -30,8 +30,8 @@ public class GeFriendsCommand implements KeyboardBotCommand, NavigableCallbackBo
     private String name;
 
     @Autowired
-    public GeFriendsCommand(KeyboardService keyboardService, FriendshipService friendshipService, MessageService messageService, LocalisationService localisationService) {
-        this.keyboardService = keyboardService;
+    public GeFriendsCommand(InlineKeyboardService inlineKeyboardService, FriendshipService friendshipService, MessageService messageService, LocalisationService localisationService) {
+        this.inlineKeyboardService = inlineKeyboardService;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
         this.name = localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME);
@@ -49,7 +49,7 @@ public class GeFriendsCommand implements KeyboardBotCommand, NavigableCallbackBo
         messageService.sendMessage(
                 message.getChatId(),
                 friendsMessage(friends),
-                keyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()))
+                inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()))
         );
     }
 
@@ -66,7 +66,7 @@ public class GeFriendsCommand implements KeyboardBotCommand, NavigableCallbackBo
                 chatId,
                 messageId,
                 friendsMessage(friends),
-                keyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()))
+                inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()))
         );
     }
 

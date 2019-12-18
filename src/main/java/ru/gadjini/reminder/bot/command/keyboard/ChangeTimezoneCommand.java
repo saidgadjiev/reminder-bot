@@ -7,18 +7,16 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
-import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.command.CommandNavigator;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.time.DateTimeFormats;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Component
 public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCommand {
@@ -33,7 +31,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
 
     private CommandNavigator commandNavigator;
 
-    private KeyboardService keyboardService;
+    private ReplyKeyboardService replyKeyboardService;
 
     @Autowired
     public ChangeTimezoneCommand(LocalisationService localisationService,
@@ -41,13 +39,13 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                                  TgUserService tgUserService,
                                  TimezoneService timezoneService,
                                  CommandNavigator commandNavigator,
-                                 KeyboardService keyboardService) {
+                                 ReplyKeyboardService replyKeyboardService) {
         name = localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME);
         this.messageService = messageService;
         this.tgUserService = tgUserService;
         this.timezoneService = timezoneService;
         this.commandNavigator = commandNavigator;
-        this.keyboardService = keyboardService;
+        this.replyKeyboardService = replyKeyboardService;
     }
 
     @Override
@@ -63,7 +61,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                         zoneId.toString(),
                         DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(ZonedDateTime.now(zoneId))
                 },
-                keyboardService.goBackCommand());
+                replyKeyboardService.goBackCommand());
     }
 
     @Override

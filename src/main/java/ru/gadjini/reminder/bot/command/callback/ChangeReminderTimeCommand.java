@@ -12,7 +12,7 @@ import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
@@ -35,7 +35,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
 
     private CommandNavigator commandNavigator;
 
-    private KeyboardService keyboardService;
+    private InlineKeyboardService inlineKeyboardService;
 
     private LocalisationService localisationService;
 
@@ -44,7 +44,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
                                      MessageService messageService,
                                      ReminderRequestService reminderService,
                                      CommandNavigator commandNavigator,
-                                     KeyboardService keyboardService,
+                                     InlineKeyboardService inlineKeyboardService,
                                      LocalisationService localisationService) {
         this.localisationService = localisationService;
         this.name = MessagesProperties.EDIT_REMINDER_TIME_COMMAND_NAME;
@@ -52,7 +52,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
         this.messageService = messageService;
         this.reminderService = reminderService;
         this.commandNavigator = commandNavigator;
-        this.keyboardService = keyboardService;
+        this.inlineKeyboardService = inlineKeyboardService;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 callbackQuery.getMessage().getText() + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME),
-                keyboardService.goBackCallbackButton(MessagesProperties.EDIT_REMINDER_COMMAND_NAME, true, requestParams)
+                inlineKeyboardService.goBackCallbackButton(MessagesProperties.EDIT_REMINDER_COMMAND_NAME, true, requestParams)
         );
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_REMINDER_TIME_ANSWER);
     }

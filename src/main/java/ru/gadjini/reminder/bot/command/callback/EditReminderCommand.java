@@ -10,7 +10,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.keyboard.KeyboardService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageBuilder;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
@@ -25,7 +25,7 @@ public class EditReminderCommand implements CallbackBotCommand, NavigableCallbac
 
     private MessageService messageService;
 
-    private KeyboardService keyboardService;
+    private InlineKeyboardService inlineKeyboardService;
 
     private ReminderMessageBuilder messageBuilder;
 
@@ -33,10 +33,10 @@ public class EditReminderCommand implements CallbackBotCommand, NavigableCallbac
 
     @Autowired
     public EditReminderCommand(ReminderMessageSender reminderMessageSender, MessageService messageService,
-                               KeyboardService keyboardService, ReminderMessageBuilder messageBuilder, ReminderService reminderService) {
+                               InlineKeyboardService inlineKeyboardService, ReminderMessageBuilder messageBuilder, ReminderService reminderService) {
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
-        this.keyboardService = keyboardService;
+        this.inlineKeyboardService = inlineKeyboardService;
         this.messageBuilder = messageBuilder;
         this.reminderService = reminderService;
     }
@@ -62,6 +62,6 @@ public class EditReminderCommand implements CallbackBotCommand, NavigableCallbac
 
         messageService.editMessage(chatId,
                 messageId, messageBuilder.getReminderMessage(reminder),
-                keyboardService.getEditReminderKeyboard(requestParams.getInt(Arg.REMINDER_ID.getKey()), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME));
+                inlineKeyboardService.getEditReminderKeyboard(requestParams.getInt(Arg.REMINDER_ID.getKey()), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME));
     }
 }
