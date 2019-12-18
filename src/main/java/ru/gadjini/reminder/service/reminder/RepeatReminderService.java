@@ -182,16 +182,23 @@ public class RepeatReminderService {
     private DateTime getWeeklyFirstRemindAt(RepeatTime repeatTime) {
         if (repeatTime.hasTime()) {
             ZonedDateTime now = TimeUtils.nowZoned();
+            ZonedDateTime repeatReminder = now.with(repeatTime.getTime());
 
-            return DateTime.of(now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek())).with(repeatTime.getTime()));
+            if (repeatReminder.isBefore(now)) {
+                repeatReminder = repeatReminder.with(TemporalAdjusters.next(repeatTime.getDayOfWeek()));
+            }
+
+            return DateTime.of(repeatReminder);
         }
         LocalDate now = LocalDate.now();
 
+        if (now.getDayOfWeek().equals(repeatTime.getDayOfWeek())) {
+            DateTime.of(now, null, ZoneOffset.UTC);
+        }
         now = (LocalDate) TemporalAdjusters.next(repeatTime.getDayOfWeek()).adjustInto(now);
 
         return DateTime.of(now, null, ZoneOffset.UTC);
     }
-
 
     private DateTime getWeeklyNextRemindAt(DateTime reminderAt, RepeatTime repeatTime) {
         ZoneId zoneId = reminderAt.getZone();
@@ -215,13 +222,13 @@ public class RepeatReminderService {
             ZonedDateTime repeatReminder = now.with(repeatTime.getTime());
 
             if (repeatReminder.isBefore(now)) {
-                repeatReminder.plusDays(repeatTime.getInterval().getDays());
+                repeatReminder = repeatReminder.plusDays(repeatTime.getInterval().getDays());
             }
 
             return DateTime.of(repeatReminder);
         }
 
-        return DateTime.of(LocalDate.now().plusDays(repeatTime.getInterval().getDays()), null, ZoneOffset.UTC);
+        return DateTime.of(LocalDate.now(), null, ZoneOffset.UTC);
     }
 
     private List<ReminderNotification> getRepeatReminderNotifications(RepeatTime repeatTime, int receiverId) {
@@ -285,9 +292,6 @@ public class RepeatReminderService {
         ZonedDateTime now = TimeUtils.nowZoned();
         ZonedDateTime repeatReminder = now.with(repeatTime.getTime());
 
-        if (repeatReminder.isBefore(now)) {
-            repeatReminder.plusDays(repeatTime.getInterval().getDays());
-        }
         fixedReminderNotification(repeatReminder.toLocalDate(), repeatTime.getInterval().getDays(), repeatTime.getTime(), reminderNotifications).setItsTime(true);
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITH_TIME);
 
@@ -295,12 +299,13 @@ public class RepeatReminderService {
             if (repeatTime.getInterval().getDays() == 1 && offsetTime.getDays() != 0) {
                 continue;
             }
-            fixedReminderNotification(
+            ReminderNotification reminderNotification = fixedReminderNotification(
                     repeatReminder.toLocalDate().minusDays(offsetTime.getDays()),
                     repeatTime.getInterval().getDays(),
                     offsetTime.getTime() == null ? repeatTime.getTime().minusHours(offsetTime.getHours()).minusMinutes(offsetTime.getMinutes()) : offsetTime.getTime(),
                     reminderNotifications
-            ).setCustom(true);
+            );
+            reminderNotification.setCustom(true);
         }
     }
 
@@ -339,23 +344,24 @@ public class RepeatReminderService {
             if (repeatTime.getInterval().getDays() == 1 && offsetTime.getDays() != 0) {
                 continue;
             }
-            ZonedDateTime offsetDateTime = now.minusDays(offsetTime.getDays());
 
-            if (offsetTime.getTime() != null) {
-                offsetDateTime = offsetDateTime.with(offsetTime.getTime());
-            }
-
-            ReminderNotification notification = fixedReminderNotification(now.minusDays(offsetTime.getDays()).toLocalDate(), repeatTime.getInterval().getDays(), offsetTime.getTime(), reminderNotifications);
+            ReminderNotification notification = fixedReminderNotification(
+                    now.minusDays(offsetTime.getDays()).toLocalDate(),
+                    repeatTime.getInterval().getDays(),
+                    offsetTime.getTime(),
+                    reminderNotifications
+            );
             notification.setCustom(true);
-            if (offsetDateTime.isBefore(now)) {
-                notification.setLastReminderAt(offsetDateTime.withZoneSameInstant(ZoneOffset.UTC));
-            }
         }
     }
 
     private ReminderNotification fixedReminderNotification(LocalDate repeatAt, int repeatDays, LocalTime localTime, List<ReminderNotification> reminderNotifications) {
         ReminderNotification reminderNotification = ReminderNotification.repeatTime();
-        reminderNotification.setLastReminderAt(ZonedDateTime.of(repeatAt.minusDays(repeatDays), localTime, ZoneOffset.UTC));
+        ZonedDateTime lastRemindAt = ZonedDateTime.of(repeatAt, localTime, ZoneOffset.UTC);
+        if (lastRemindAt.isAfter(ZonedDateTime.now())) {
+            lastRemindAt.minusDays(repeatDays);
+        }
+        reminderNotification.setLastReminderAt(lastRemindAt);
         reminderNotification.setDelayTime(new Period().withDays(repeatDays));
         reminderNotifications.add(reminderNotification);
 

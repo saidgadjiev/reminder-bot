@@ -336,7 +336,7 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.editMessageByMessageCode(
+            messageService.editMessage(
                     reminder.getReceiver().getChatId(),
                     messageId,
                     reminderMessageBuilder.getMySelfReminderCanceled(reminder),
