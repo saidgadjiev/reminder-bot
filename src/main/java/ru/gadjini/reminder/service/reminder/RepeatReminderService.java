@@ -70,7 +70,9 @@ public class RepeatReminderService {
         Reminder toComplete = reminderDao.getReminder(
                 id,
                 new ReminderMapping() {{
-                    setReceiverMapping(new Mapping());
+                    setReceiverMapping(new Mapping() {{
+                        setFields(List.of(ReminderMapping.RC_CHAT_ID));
+                    }});
                     setCreatorMapping(new Mapping() {{
                         setFields(Collections.singletonList(CR_CHAT_ID));
                     }});
@@ -143,7 +145,7 @@ public class RepeatReminderService {
                 reminder.setRemindAt(nextRemindAt);
             }
         }
-        if (!reminder.getRemindAt().hasTime() && (now.toLocalDate().isBefore(reminder.getRemindAt().date()) || now.toLocalDate().isEqual(reminder.getRemindAt().date()))) {
+        if (!reminder.getRemindAt().hasTime() && (now.toLocalDate().isAfter(reminder.getRemindAt().date()) || now.toLocalDate().isEqual(reminder.getRemindAt().date()))) {
             DateTime nextRemindAt = getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
             updateNextRemindAt(id, nextRemindAt);
             reminder.setRemindAt(nextRemindAt);
@@ -334,18 +336,19 @@ public class RepeatReminderService {
 
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITHOUT_TIME);
         for (UserReminderNotification offsetTime : userReminderNotifications) {
-            if (repeatTime.getInterval().getDays() > offsetTime.getDays()) {
-                ZonedDateTime offsetDateTime = now.minusDays(offsetTime.getDays());
+            if (repeatTime.getInterval().getDays() == 1 && offsetTime.getDays() != 0) {
+                continue;
+            }
+            ZonedDateTime offsetDateTime = now.minusDays(offsetTime.getDays());
 
-                if (offsetTime.getTime() != null) {
-                    offsetDateTime = offsetDateTime.with(offsetTime.getTime());
-                }
+            if (offsetTime.getTime() != null) {
+                offsetDateTime = offsetDateTime.with(offsetTime.getTime());
+            }
 
-                ReminderNotification notification = fixedReminderNotification(now.minusDays(offsetTime.getDays()).toLocalDate(), repeatTime.getInterval().getDays(), offsetTime.getTime(), reminderNotifications);
-                notification.setCustom(true);
-                if (offsetDateTime.isBefore(now)) {
-                    notification.setLastReminderAt(offsetDateTime.withZoneSameInstant(ZoneOffset.UTC));
-                }
+            ReminderNotification notification = fixedReminderNotification(now.minusDays(offsetTime.getDays()).toLocalDate(), repeatTime.getInterval().getDays(), offsetTime.getTime(), reminderNotifications);
+            notification.setCustom(true);
+            if (offsetDateTime.isBefore(now)) {
+                notification.setLastReminderAt(offsetDateTime.withZoneSameInstant(ZoneOffset.UTC));
             }
         }
     }

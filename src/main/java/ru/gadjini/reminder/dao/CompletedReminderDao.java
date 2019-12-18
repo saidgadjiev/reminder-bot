@@ -39,9 +39,9 @@ public class CompletedReminderDao {
                 .addValue(Reminder.RECEIVER_ID, reminder.getReceiverId())
                 .addValue(Reminder.COMPLETED_AT, Timestamp.valueOf(TimeUtils.now()))
                 .addValue(Reminder.NOTE, reminder.getNote())
-                .addValue(Reminder.REMIND_AT, reminder.getRemindAt().sqlObject())
-                .addValue(Reminder.INITIAL_REMIND_AT, reminder.getInitialRemindAt().sqlObject())
-                .addValue(Reminder.REPEAT_REMIND_AT, new SqlParameterValue(Types.OTHER, reminder.getRepeatRemindAt() != null ? reminder.getRepeatRemindAt().sql() : null));
+                .addValue(Reminder.REMIND_AT, reminder.getRemindAt().sql(), Types.OTHER)
+                .addValue(Reminder.INITIAL_REMIND_AT, reminder.getRemindAt().sql(), Types.OTHER)
+                .addValue(Reminder.REPEAT_REMIND_AT, reminder.getRepeatRemindAt() != null ? reminder.getRepeatRemindAt().sql() : null, Types.OTHER);
 
     }
 }

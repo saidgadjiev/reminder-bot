@@ -84,11 +84,7 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.sendMessage(
-                    reminder.getReceiver().getChatId(),
-                    reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminder),
-                    null
-            );
+            messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminder));
         } else {
             messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getRepeatReminderCompletedForCreator(reminder), null);
             messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getRepeatReminderCompletedForReceiver(reminder), null);
