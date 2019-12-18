@@ -29,8 +29,6 @@ public class ReminderJob {
 
     private ReminderNotificationService reminderNotificationService;
 
-    private ReminderMessageSender reminderMessageSender;
-
     private ReminderNotificationMessageSender reminderNotificationMessageSender;
 
     private RepeatReminderService repeatReminderService;
@@ -40,13 +38,11 @@ public class ReminderJob {
     @Autowired
     public ReminderJob(ReminderService reminderService,
                        ReminderNotificationService reminderNotificationService,
-                       ReminderMessageSender reminderMessageSender,
                        ReminderNotificationMessageSender reminderNotificationMessageSender,
                        RepeatReminderService repeatReminderService,
                        RestoreReminderService restoreReminderService) {
         this.reminderService = reminderService;
         this.reminderNotificationService = reminderNotificationService;
-        this.reminderMessageSender = reminderMessageSender;
         this.reminderNotificationMessageSender = reminderNotificationMessageSender;
         this.repeatReminderService = repeatReminderService;
         this.restoreReminderService = restoreReminderService;

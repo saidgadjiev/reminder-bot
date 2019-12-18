@@ -10,7 +10,10 @@ import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JdbcUtils;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -45,20 +48,7 @@ public class ResultSetMapper {
         String repeatRemindAt = rs.getString(Reminder.REPEAT_REMIND_AT);
 
         if (StringUtils.isNotBlank(repeatRemindAt)) {
-            RepeatTime repeatTime = new RepeatTime();
-            String weekDay = rs.getString(RepeatTime.WEEK_DAY);
-            if (StringUtils.isNotBlank(weekDay)) {
-                repeatTime.setDayOfWeek(DayOfWeek.valueOf(weekDay));
-            }
-            Time time = rs.getTime(RepeatTime.TIME);
-            if (time != null) {
-                repeatTime.setTime(time.toLocalTime());
-            }
-            PGInterval interval = (PGInterval) rs.getObject(RepeatTime.INTERVAL);
-            if (interval != null) {
-                repeatTime.setInterval(JodaTimeUtils.toPeriod(interval));
-            }
-            reminder.setRepeatRemindAt(repeatTime);
+            reminder.setRepeatRemindAt(mapRepeatTime(rs));
         }
         reminder.setRemindAt(mapDateTime(rs));
 
@@ -167,7 +157,7 @@ public class ResultSetMapper {
     }
 
     public UserReminderNotification mapUserReminderNotification(ResultSet rs) throws SQLException {
-        UserReminderNotification userReminderNotification = new UserReminderNotification();
+        UserReminderNotification userReminderNotification = new UserReminderNotification(ZoneOffset.UTC);
 
         userReminderNotification.setId(rs.getInt(UserReminderNotification.ID));
         userReminderNotification.setDays(rs.getInt(UserReminderNotification.DAYS));
@@ -185,5 +175,23 @@ public class ResultSetMapper {
         Time time = rs.getTime(DateTime.TIME);
 
         return DateTime.of(rs.getDate(DateTime.DATE).toLocalDate(), time == null ? null : time.toLocalTime(), ZoneOffset.UTC);
+    }
+
+    private RepeatTime mapRepeatTime(ResultSet rs) throws SQLException {
+        RepeatTime repeatTime = new RepeatTime(ZoneOffset.UTC);
+        String weekDay = rs.getString(RepeatTime.WEEK_DAY);
+        if (StringUtils.isNotBlank(weekDay)) {
+            repeatTime.setDayOfWeek(DayOfWeek.valueOf(weekDay));
+        }
+        Time time = rs.getTime(RepeatTime.TIME);
+        if (time != null) {
+            repeatTime.setTime(time.toLocalTime());
+        }
+        PGInterval interval = (PGInterval) rs.getObject(RepeatTime.INTERVAL);
+        if (interval != null) {
+            repeatTime.setInterval(JodaTimeUtils.toPeriod(interval));
+        }
+
+        return repeatTime;
     }
 }

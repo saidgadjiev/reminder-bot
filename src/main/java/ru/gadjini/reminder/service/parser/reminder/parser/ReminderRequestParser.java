@@ -34,7 +34,7 @@ public class ReminderRequestParser {
                                  Locale locale, ZoneId zoneId, DayOfWeekService dayOfWeekService) {
         lexemsConsumer = new LexemsConsumer();
         timeParser = new TimeParser(localisationService, locale, lexemsConsumer, zoneId, dayOfWeekService);
-        repeatTimeParser = new RepeatTimeParser(lexemsConsumer, dayOfWeekService, locale);
+        repeatTimeParser = new RepeatTimeParser(lexemsConsumer, dayOfWeekService, locale, zoneId);
     }
 
     public ParsedRequest parse(List<BaseLexem> lexems) {
@@ -70,7 +70,6 @@ public class ReminderRequestParser {
         parsedRequest.setText(lexemsConsumer.consume(lexems, ReminderToken.TEXT).getValue());
 
         if (lexemsConsumer.check(lexems, TimeToken.REPEAT)) {
-            repeatTime = new RepeatTime();
             lexemsConsumer.consume(lexems, TimeToken.REPEAT);
             consumeRepeatTime(lexems);
         } else {

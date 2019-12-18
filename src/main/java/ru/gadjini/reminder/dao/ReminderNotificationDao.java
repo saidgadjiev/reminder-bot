@@ -1,5 +1,10 @@
 package ru.gadjini.reminder.dao;
 
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.SelectConditionStep;
+import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -8,6 +13,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.ReminderNotification;
+import ru.gadjini.reminder.domain.jooq.ReminderNotificationTable;
+import ru.gadjini.reminder.domain.jooq.ReminderTable;
+import ru.gadjini.reminder.domain.jooq.TgUserTable;
+import ru.gadjini.reminder.jdbc.JooqPreparedSetter;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 
@@ -25,10 +34,13 @@ public class ReminderNotificationDao {
 
     private ResultSetMapper resultSetMapper;
 
+    private DSLContext dslContext;
+
     @Autowired
-    public ReminderNotificationDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper) {
+    public ReminderNotificationDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper, DSLContext dslContext) {
         this.jdbcTemplate = jdbcTemplate;
         this.resultSetMapper = resultSetMapper;
+        this.dslContext = dslContext;
     }
 
     public ReminderNotification getById(int id) {
@@ -48,13 +60,21 @@ public class ReminderNotificationDao {
         );
     }
 
-    public List<ReminderNotification> getCustomReminderTimes(int reminderId) {
+    public List<ReminderNotification> getList(Condition condition) {
+        ReminderNotificationTable rt = ReminderNotificationTable.TABLE.as("rt");
+        TgUserTable rc = TgUserTable.TABLE.as("rc");
+        ReminderTable r = ReminderTable.TABLE.as("r");
+
+        SelectConditionStep<Record> select = dslContext
+                .select(rt.asterisk(), rc.ZONE_ID.as("rc_zone_id"))
+                .from(rt)
+                .innerJoin(r).on(rt.REMINDER_ID.equal(r.ID))
+                .innerJoin(rc).on(r.RECEIVER_ID.equal(rc.USER_ID))
+                .where(condition);
+
         return jdbcTemplate.query(
-                "SELECT rt.*, rc.zone_id AS rc_zone_id\n" +
-                        "FROM reminder_time rt\n" +
-                        "         INNER JOIN reminder r on rt.reminder_id = r.id\n" +
-                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id WHERE rt.reminder_id = ? AND rt.custom = TRUE",
-                prepared -> prepared.setInt(1, reminderId),
+                select.getSQL(),
+                new JooqPreparedSetter(select.getParams()),
                 (rs, rowNum) -> resultSetMapper.mapReminderTime(rs, "")
         );
     }

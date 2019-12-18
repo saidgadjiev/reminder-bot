@@ -184,6 +184,10 @@ public class Reminder {
         return repeatRemindAt;
     }
 
+    public RepeatTime getRepeatRemindAtInReceiverZone() {
+        return repeatRemindAt == null ? null : repeatRemindAt.withZone(receiver.getZone());
+    }
+
     public void setRepeatRemindAt(RepeatTime repeatRemindAt) {
         this.repeatRemindAt = repeatRemindAt;
     }

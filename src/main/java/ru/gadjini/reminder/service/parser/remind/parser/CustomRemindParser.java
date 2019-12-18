@@ -36,14 +36,17 @@ public class CustomRemindParser {
 
     private String typeAfter;
 
+    private final ZoneId zoneId;
+
     private LexemsConsumer lexemsConsumer;
 
     public CustomRemindParser(LocalisationService localisationService, Locale locale, ZoneId zoneId, DayOfWeekService dayOfWeekService) {
         this.typeBefore = localisationService.getMessage(MessagesProperties.CUSTOM_REMIND_BEFORE);
         this.typeAfter = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_AFTER);
+        this.zoneId = zoneId;
         this.lexemsConsumer = new LexemsConsumer();
         this.timeParser = new TimeParser(localisationService, locale, lexemsConsumer, zoneId, dayOfWeekService);
-        this.repeatTimeParser = new RepeatTimeParser(lexemsConsumer, dayOfWeekService, locale);
+        this.repeatTimeParser = new RepeatTimeParser(lexemsConsumer, dayOfWeekService, locale, zoneId);
     }
 
     public CustomRemindTime parse(List<BaseLexem> lexems) {
@@ -71,7 +74,7 @@ public class CustomRemindParser {
     }
 
     private void consumeOffsetTime(List<BaseLexem> lexems) {
-        offsetTime = new OffsetTime();
+        offsetTime = new OffsetTime(zoneId);
         if (lexemsConsumer.check(lexems, CustomRemindToken.TYPE)) {
             consumeType(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {

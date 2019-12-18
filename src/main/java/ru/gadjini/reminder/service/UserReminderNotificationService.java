@@ -15,6 +15,7 @@ import ru.gadjini.reminder.service.security.SecurityService;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Service
@@ -50,11 +51,15 @@ public class UserReminderNotificationService {
         ZoneId zoneId = userService.getTimeZone(user.getId());
 
         CustomRemindTime customRemindTime = parseCustomRemind(text, zoneId);
-        UserReminderNotification userReminderNotification = new UserReminderNotification();
+        customRemindTime.setOffsetTime(customRemindTime.getOffsetTime().withZone(ZoneOffset.UTC));
+        UserReminderNotification userReminderNotification = new UserReminderNotification(ZoneOffset.UTC);
+        userReminderNotification.setDays(customRemindTime.getOffsetTime().getDays());
+        userReminderNotification.setTime(customRemindTime.getOffsetTime().getTime());
         userReminderNotification.setHours(customRemindTime.getOffsetTime().getHours());
         userReminderNotification.setMinutes(customRemindTime.getOffsetTime().getMinutes());
         userReminderNotification.setUserId(user.getId());
         userReminderNotification.setType(notificationType);
+
         dao.create(userReminderNotification);
     }
 
@@ -71,11 +76,11 @@ public class UserReminderNotificationService {
     }
 
     public void createDefaultNotificationsForWithTime(int userId) {
-        UserReminderNotification eveNotification = new UserReminderNotification();
+        UserReminderNotification eveNotification = new UserReminderNotification(ZoneOffset.UTC);
         eveNotification.setType(UserReminderNotification.NotificationType.WITH_TIME);
         eveNotification.setUserId(userId);
         eveNotification.setDays(1);
-        eveNotification.setTime(LocalTime.of(22, 0));
+        eveNotification.setTime(LocalTime.of(19, 0));
         dao.create(eveNotification);
 
         dao.create(buildOffsetNotification(userId, 2, 0));
@@ -84,27 +89,27 @@ public class UserReminderNotificationService {
     }
 
     public void createDefaultNotificationsForWithoutTime(int userId) {
-        UserReminderNotification noonNotification = new UserReminderNotification();
+        UserReminderNotification noonNotification = new UserReminderNotification(ZoneOffset.UTC);
         noonNotification.setType(UserReminderNotification.NotificationType.WITHOUT_TIME);
-        noonNotification.setTime(LocalTime.of(12, 0));
+        noonNotification.setTime(LocalTime.of(9, 0));
         noonNotification.setUserId(userId);
         dao.create(noonNotification);
 
-        UserReminderNotification eveningNotification = new UserReminderNotification();
+        UserReminderNotification eveningNotification = new UserReminderNotification(ZoneOffset.UTC);
         eveningNotification.setType(UserReminderNotification.NotificationType.WITHOUT_TIME);
-        eveningNotification.setTime(LocalTime.of(22, 0));
+        eveningNotification.setTime(LocalTime.of(19, 0));
         eveningNotification.setUserId(userId);
         dao.create(eveningNotification);
 
-        UserReminderNotification eveNotification = new UserReminderNotification();
+        UserReminderNotification eveNotification = new UserReminderNotification(ZoneOffset.UTC);
         eveNotification.setType(UserReminderNotification.NotificationType.WITHOUT_TIME);
-        eveNotification.setTime(LocalTime.of(22, 0));
+        eveNotification.setTime(LocalTime.of(9, 0));
         eveNotification.setDays(1);
         eveNotification.setUserId(userId);
         dao.create(eveNotification);
     }
     private UserReminderNotification buildOffsetNotification(int userId, int hours, int minutes) {
-        UserReminderNotification notification = new UserReminderNotification();
+        UserReminderNotification notification = new UserReminderNotification(ZoneOffset.UTC);
         notification.setType(UserReminderNotification.NotificationType.WITH_TIME);
         notification.setUserId(userId);
         notification.setHours(hours);

@@ -44,7 +44,7 @@ public class ReminderTable extends TableImpl<Record> {
 
     private void createFields() {
         ID = createField(Reminder.ID, SQLDataType.INTEGER);
-        createField(Reminder.TEXT, SQLDataType.VARCHAR);
+        TEXT = createField(Reminder.TEXT, SQLDataType.VARCHAR);
         CREATOR_ID = createField(Reminder.CREATOR_ID, SQLDataType.INTEGER);
         RECEIVER_ID = createField(Reminder.RECEIVER_ID, SQLDataType.INTEGER);
         TEXT = createField(Reminder.TEXT, SQLDataType.VARCHAR);
@@ -57,11 +57,5 @@ public class ReminderTable extends TableImpl<Record> {
     @Override
     public ReminderTable as(String alias) {
         return new ReminderTable(DSL.name(alias), this);
-    }
-
-    public static void main(String[] args) {
-        SelectSelectStep<Record> select = DSL.using(SQLDialect.POSTGRES).select(ReminderTable.TABLE.as("r").asterisk());
-
-        System.out.println(select.getSQL());
     }
 }

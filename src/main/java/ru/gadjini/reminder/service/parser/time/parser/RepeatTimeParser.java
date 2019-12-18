@@ -9,13 +9,14 @@ import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
 
 public class RepeatTimeParser {
 
-    private RepeatTime repeatTime = new RepeatTime();
+    private RepeatTime repeatTime;
 
     private DayOfWeekService dayOfWeekService;
 
@@ -23,10 +24,11 @@ public class RepeatTimeParser {
 
     private LexemsConsumer lexemsConsumer;
 
-    public RepeatTimeParser(LexemsConsumer lexemsConsumer, DayOfWeekService dayOfWeekService, Locale locale) {
+    public RepeatTimeParser(LexemsConsumer lexemsConsumer, DayOfWeekService dayOfWeekService, Locale locale, ZoneId zoneId) {
         this.dayOfWeekService = dayOfWeekService;
         this.locale = locale;
         this.lexemsConsumer = lexemsConsumer;
+        this.repeatTime = new RepeatTime(zoneId);
     }
 
     public RepeatTime parse(List<BaseLexem> lexems) {

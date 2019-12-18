@@ -4,12 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.dao.ReminderNotificationDao;
 import ru.gadjini.reminder.domain.ReminderNotification;
+import ru.gadjini.reminder.domain.jooq.ReminderNotificationTable;
+import ru.gadjini.reminder.domain.jooq.ReminderTable;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class ReminderNotificationService {
+
+    private ReminderNotificationTable reminderNotificationTable = ReminderNotificationTable.TABLE.as("rt");
 
     private ReminderNotificationDao reminderNotificationDao;
 
@@ -38,8 +42,12 @@ public class ReminderNotificationService {
         reminderNotificationDao.updateLastRemindAt(id, lastReminderAt);
     }
 
+    public List<ReminderNotification> getCustomRemindersList(int reminderId) {
+        return reminderNotificationDao.getList(reminderNotificationTable.REMINDER_ID.equal(reminderId).and(reminderNotificationTable.CUSTOM.equal(Boolean.TRUE)));
+    }
+
     public List<ReminderNotification> getList(int reminderId) {
-        return reminderNotificationDao.getCustomReminderTimes(reminderId);
+        return reminderNotificationDao.getList(reminderNotificationTable.REMINDER_ID.equal(reminderId));
     }
 
     public ReminderNotification getReminderTime(int id) {

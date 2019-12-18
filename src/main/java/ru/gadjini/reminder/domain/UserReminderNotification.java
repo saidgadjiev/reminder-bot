@@ -1,6 +1,11 @@
 package ru.gadjini.reminder.domain;
 
+import ru.gadjini.reminder.service.parser.remind.parser.OffsetTime;
+
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class UserReminderNotification {
 
@@ -33,6 +38,12 @@ public class UserReminderNotification {
     private LocalTime time;
 
     private NotificationType type;
+
+    private ZoneId zoneId;
+
+    public UserReminderNotification(ZoneId zoneId) {
+        this.zoneId = zoneId;
+    }
 
     public int getId() {
         return id;
@@ -88,6 +99,29 @@ public class UserReminderNotification {
 
     public void setType(NotificationType type) {
         this.type = type;
+    }
+
+    public ZoneId getZoneId() {
+        return zoneId;
+    }
+
+    public void setZoneId(ZoneId zoneId) {
+        this.zoneId = zoneId;
+    }
+
+    public UserReminderNotification withZone(ZoneId target) {
+        UserReminderNotification userReminderNotification = new UserReminderNotification(target);
+        userReminderNotification.setMinutes(getMinutes());
+        userReminderNotification.setHours(getHours());
+        userReminderNotification.setType(getType());
+        userReminderNotification.setDays(getDays());
+        if (getTime() != null) {
+            LocalTime time = ZonedDateTime.of(LocalDate.now(getZoneId()), getTime(), getZoneId()).withZoneSameInstant(target).toLocalTime();
+            userReminderNotification.setTime(time);
+        }
+        userReminderNotification.setUserId(getUserId());
+
+        return userReminderNotification;
     }
 
     public enum NotificationType {

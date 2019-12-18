@@ -1,6 +1,9 @@
 package ru.gadjini.reminder.service.parser.remind.parser;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class OffsetTime {
 
@@ -13,6 +16,12 @@ public class OffsetTime {
     private int minutes;
 
     private LocalTime time;
+
+    private ZoneId zoneId;
+
+    public OffsetTime(ZoneId zoneId) {
+        this.zoneId = zoneId;
+    }
 
     public Type getType() {
         return type;
@@ -52,6 +61,28 @@ public class OffsetTime {
 
     public void setTime(LocalTime time) {
         this.time = time;
+    }
+
+    public ZoneId getZoneId() {
+        return zoneId;
+    }
+
+    public void setZoneId(ZoneId zoneId) {
+        this.zoneId = zoneId;
+    }
+
+    public OffsetTime withZone(ZoneId target) {
+        OffsetTime offsetTime = new OffsetTime(target);
+        offsetTime.setMinutes(getMinutes());
+        offsetTime.setHours(getHours());
+        offsetTime.setType(getType());
+        offsetTime.setDays(getDays());
+        if (getTime() != null) {
+            LocalTime time = ZonedDateTime.of(LocalDate.now(getZoneId()), getTime(), getZoneId()).withZoneSameInstant(target).toLocalTime();
+            offsetTime.setTime(time);
+        }
+
+        return offsetTime;
     }
 
     public enum Type {

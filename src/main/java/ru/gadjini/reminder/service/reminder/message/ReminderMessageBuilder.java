@@ -41,7 +41,7 @@ public class ReminderMessageBuilder {
 
         if (reminder.isRepeatable()) {
             result
-                    .append(timeBuilder.time(reminder.getRepeatRemindAt())).append("\n")
+                    .append(timeBuilder.time(reminder.getRepeatRemindAtInReceiverZone())).append("\n")
                     .append(messageBuilder.getNextRemindAt(nextRemindAt == null ? reminder.getRemindAtInReceiverZone() : nextRemindAt));
         } else {
             result.append(timeBuilder.time(reminder.getRemindAtInReceiverZone()));
@@ -68,7 +68,7 @@ public class ReminderMessageBuilder {
     public String getMySelfRepeatReminderCompleted(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderCompleted(reminder.getText())).append("\n").append(messageBuilder.getNextRemindAt(reminder.getRemindAt()));
+        message.append(messageBuilder.getReminderCompleted(reminder.getText())).append("\n").append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone()));
 
         return message.toString();
     }
@@ -78,7 +78,7 @@ public class ReminderMessageBuilder {
 
         message
                 .append(messageBuilder.getReminderCompleted(reminder.getText())).append("\n")
-                .append(messageBuilder.getNextRemindAt(reminder.getRemindAt())).append("\n")
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n")
                 .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
 
         return message.toString();
@@ -89,7 +89,7 @@ public class ReminderMessageBuilder {
 
         message
                 .append(messageBuilder.getReminderCompleted(reminder.getText())).append("\n")
-                .append(messageBuilder.getNextRemindAt(reminder.getRemindAt())).append("\n")
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n")
                 .append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
         return message.toString();
@@ -100,7 +100,7 @@ public class ReminderMessageBuilder {
 
         message
                 .append(messageBuilder.getReminderSkipped(reminder.getText())).append("\n")
-                .append(messageBuilder.getNextRemindAt(reminder.getRemindAt()));
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone()));
 
         return message.toString();
     }
@@ -110,7 +110,7 @@ public class ReminderMessageBuilder {
 
         message
                 .append(messageBuilder.getReminderDeleted(reminder.getText())).append("\n")
-                .append(messageBuilder.getNextRemindAt(reminder.getRemindAt())).append("\n")
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n")
                 .append(messageBuilder.getReminderReceiver(reminder.getCreator()));
 
         return message.toString();
@@ -125,7 +125,7 @@ public class ReminderMessageBuilder {
 
         message
                 .append(messageBuilder.getReminderStopped(reminder.getText())).append("\n")
-                .append(messageBuilder.getNextRemindAt(reminder.getRemindAt())).append("\n")
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n")
                 .append(messageBuilder.getReminderReceiver(reminder.getCreator()));
 
         return message.toString();
@@ -136,7 +136,7 @@ public class ReminderMessageBuilder {
 
         message
                 .append(messageBuilder.getReminderStopped(reminder.getText())).append("\n")
-                .append(messageBuilder.getNextRemindAt(reminder.getRemindAt())).append("\n")
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n")
                 .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
 
         return message.toString();
@@ -147,7 +147,7 @@ public class ReminderMessageBuilder {
 
         message
                 .append(messageBuilder.getReminderStopped(reminder.getText())).append("\n")
-                .append(messageBuilder.getNextRemindAt(reminder.getRemindAt()));
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone()));
 
         return message.toString();
     }
@@ -157,7 +157,7 @@ public class ReminderMessageBuilder {
 
         message
                 .append(messageBuilder.getReminderSkipped(reminder.getText())).append("\n")
-                .append(messageBuilder.getNextRemindAt(reminder.getRemindAt())).append("\n")
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n")
                 .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
 
         return message.toString();
@@ -168,7 +168,7 @@ public class ReminderMessageBuilder {
 
         message
                 .append(messageBuilder.getReminderSkipped(reminder.getText())).append("\n")
-                .append(messageBuilder.getNextRemindAt(reminder.getRemindAt())).append("\n")
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n")
                 .append(messageBuilder.getReminderReceiver(reminder.getCreator()));
 
         return message.toString();
@@ -186,7 +186,7 @@ public class ReminderMessageBuilder {
             String number = i++ + ") ";
             text.append(number).append(reminder.getText()).append("(").append(timeBuilder.time(reminder)).append(")\n");
 
-            if (reminder.getRepeatRemindAt() != null) {
+            if (reminder.isRepeatable()) {
                 text
                         .append(" ".repeat(number.length() + 2))
                         .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n");
@@ -247,7 +247,7 @@ public class ReminderMessageBuilder {
         if (customRemindResult.isStandard()) {
             return messageBuilder.getCustomRemindCreated(customRemindResult.getZonedDateTime());
         } else {
-            return messageBuilder.getCustomRemindCreated(customRemindResult.getRepeatTime());
+            return messageBuilder.getCustomRemindCreated(customRemindResult.getRepeatTime().withZone(customRemindResult.getReminderNotification().getReminder().getReceiverZoneId()));
         }
     }
 

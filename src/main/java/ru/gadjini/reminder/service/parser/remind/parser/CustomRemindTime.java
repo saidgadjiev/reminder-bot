@@ -27,10 +27,6 @@ public class CustomRemindTime {
         this.time = time;
     }
 
-    public OffsetTime getRemindTime() {
-        return offsetTime;
-    }
-
     public void setOffsetTime(OffsetTime offsetTime) {
         this.offsetTime = offsetTime;
     }

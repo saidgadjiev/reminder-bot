@@ -194,15 +194,9 @@ public class TimeBuilder {
         return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
     }
 
-    public String postponeTime(DateTime remindAt) {
-        String time = time(remindAt);
-
-        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_TIME, new Object[]{time});
-    }
-
     public String time(Reminder reminder) {
         if (reminder.isRepeatable()) {
-            return time(reminder.getRepeatRemindAt());
+            return time(reminder.getRepeatRemindAtInReceiverZone());
         } else {
             return time(reminder.getRemindAtInReceiverZone());
         }

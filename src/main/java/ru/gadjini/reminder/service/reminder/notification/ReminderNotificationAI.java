@@ -4,10 +4,7 @@ import org.joda.time.Period;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 
 @Service
 public class ReminderNotificationAI {
@@ -29,9 +26,9 @@ public class ReminderNotificationAI {
         }
     }
 
-    public boolean isNeedCreateReminderNotification(LocalDate remindAt, ZoneId zoneId, UserReminderNotification offsetTime) {
-        ZonedDateTime now = ZonedDateTime.now(zoneId);
-        ZonedDateTime zonedDateTime = ZonedDateTime.of(remindAt, offsetTime.getTime(), zoneId);
+    public boolean isNeedCreateReminderNotification(LocalDate remindAt, UserReminderNotification offsetTime) {
+        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(remindAt, offsetTime.getTime(), ZoneOffset.UTC);
 
         return now.isBefore(zonedDateTime);
     }

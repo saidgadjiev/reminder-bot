@@ -3,8 +3,7 @@ package ru.gadjini.reminder.domain;
 import org.joda.time.Period;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 
-import java.time.DayOfWeek;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 public class RepeatTime {
@@ -22,6 +21,16 @@ public class RepeatTime {
     private LocalTime time;
 
     private Period interval;
+
+    private ZoneId zoneId;
+
+    public RepeatTime(ZoneId zoneId) {
+        this.zoneId = zoneId;
+    }
+
+    public ZoneId getZoneId() {
+        return zoneId;
+    }
 
     public DayOfWeek getDayOfWeek() {
         return dayOfWeek;
@@ -53,6 +62,18 @@ public class RepeatTime {
 
     public boolean hasTime() {
         return time != null;
+    }
+
+    public RepeatTime withZone(ZoneId target) {
+        RepeatTime repeatTime = new RepeatTime(target);
+        repeatTime.setDayOfWeek(getDayOfWeek());
+        repeatTime.setInterval(getInterval());
+        if (hasTime()) {
+            LocalTime time = ZonedDateTime.of(LocalDate.now(zoneId), getTime(), zoneId).withZoneSameInstant(target).toLocalTime();
+            repeatTime.setTime(time);
+        }
+
+        return repeatTime;
     }
 
     public String sql() {
