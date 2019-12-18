@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -242,8 +241,8 @@ public class KeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getReceiverReminderDetailsKeyboard(int reminderId, boolean repeatable) {
-        InlineKeyboardMarkup inlineKeyboardMarkup = getInitialReminderKeyboard(reminderId, repeatable, MessagesProperties.RECEIVER_REMINDER_COMMAND_NAME);
+    private InlineKeyboardMarkup getReceiverReminderDetailsKeyboard(int reminderId, boolean repeatable) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = getInitialReminderDetailsKeyboard(reminderId, repeatable);
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderTimesScheduleButton(reminderId)));
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME)));
@@ -322,10 +321,6 @@ public class KeyboardService {
         return replyKeyboardMarkup;
     }
 
-    public ReplyKeyboardRemove replyKeyboardRemove() {
-        return new ReplyKeyboardRemove();
-    }
-
     public ReplyKeyboardMarkup goBackCommand() {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
@@ -364,7 +359,7 @@ public class KeyboardService {
     }
 
     private InlineKeyboardMarkup getMySelfReminderDetailsKeyboard(int reminderId, boolean repeatable) {
-        InlineKeyboardMarkup keyboardMarkup = getInitialReminderKeyboard(reminderId, repeatable, MessagesProperties.REMINDER_DETAILS_COMMAND_NAME);
+        InlineKeyboardMarkup keyboardMarkup = getInitialReminderDetailsKeyboard(reminderId, repeatable);
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminder(reminderId)));
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderTimesScheduleButton(reminderId)));
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderButton(reminderId)));
@@ -419,9 +414,10 @@ public class KeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    private InlineKeyboardMarkup getInitialReminderKeyboard(int reminderId, boolean repeatable, String currHistoryName) {
+    private InlineKeyboardMarkup getInitialReminderDetailsKeyboard(int reminderId, boolean repeatable) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
+        String currHistoryName = MessagesProperties.REMINDER_DETAILS_COMMAND_NAME;
         if (repeatable) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminderId, currHistoryName), buttonFactory.cancelReminderButton(reminderId, currHistoryName)));
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.skipRepeatReminderButton(reminderId, currHistoryName), buttonFactory.stopRepeatReminderButton(reminderId, currHistoryName)));
