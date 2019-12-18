@@ -250,6 +250,8 @@ public class MessagesProperties {
 
     public static final String REGEXP_EVERY_HOUR = "regexp.every.hour";
 
+    public static final String MESSAGE_NEXT_REMINDER_NOTIFICATION_AT = "message.next.reminder.notification.at";
+
     public static final String MESSAGE_NEXT_REMIND_AT = "message.next.remind.at";
 
     public static final String TODAY = "today";
@@ -309,4 +311,24 @@ public class MessagesProperties {
     public static final String MESSAGE_USER_REMINDER_NOTIFICATION_DELETED = "message.user.reminder.notification.deleted";
 
     public static final String MESSAGE_EDIT_USER_REMINDER_NOTIFICATION = "message.edit.user.reminder.notification";
+
+    public static final String COMPLETE_REPEAT_REMINDER_COMMAND_DESCRIPTION = "complete.repeat.reminder.command.description";
+
+    public static final String COMPLETE_REPEAT_REMINDER_COMMAND_NAME = "crrc";
+
+    public static final String SKIP_REPEAT_REMINDER_COMMAND_DESCRIPTION = "skip.repeat.reminder.command.description";
+
+    public static final String SKIP_REPEAT_REMINDER_COMMAND_NAME = "srrca";
+
+    public static final String STOP_REPEAT_REMINDER_COMMAND_DESCRIPTION = "stop.repeat.reminder.command.description";
+
+    public static final String STOP_REPEAT_REMINDER_COMMAND_NAME = "srrcb";
+
+    public static final String MESSAGE_REMINDER_SKIPPED = "message.reminder.skipped";
+
+    public static final String MESSAGE_REMINDER_STOPPED = "message.reminder.stopped";
+
+    public static final String MESSAGE_REMINDER_STOPPED_ANSWER = "message.reminder.stopped.answer";
+
+    public static final String MESSAGE_REMINDER_SKIPPED_ANSWER = "message.reminder.skipped.answer";
 }

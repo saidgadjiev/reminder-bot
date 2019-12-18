@@ -22,6 +22,8 @@ public class Reminder {
 
     public static final String INITIAL_REMIND_AT = "initial_remind_at";
 
+    public static final String COMPLETED_AT = "completed_at";
+
     public static final String STATUS = "status";
 
     public static final String NOTE = "note";

@@ -4,16 +4,19 @@ import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.gadjini.reminder.dao.CompletedReminderDao;
 import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
+import ru.gadjini.reminder.domain.mapping.Mapping;
+import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
-import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationAI;
+import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
@@ -22,6 +25,7 @@ import ru.gadjini.reminder.util.TimeUtils;
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,6 +33,8 @@ import java.util.List;
 public class RepeatReminderService {
 
     private ReminderDao reminderDao;
+
+    private CompletedReminderDao completedReminderDao;
 
     private ReminderNotificationService reminderNotificationService;
 
@@ -66,6 +72,42 @@ public class RepeatReminderService {
         return created;
     }
 
+    @Transactional
+    public Reminder complete(int id) {
+        Reminder toComplete = reminderDao.getReminder(
+                id,
+                new ReminderMapping() {{
+                    setReceiverMapping(new Mapping());
+                    setCreatorMapping(new Mapping() {{
+                        setFields(Collections.singletonList(CR_CHAT_ID));
+                    }});
+                    setRemindMessageMapping(new Mapping());
+                }}
+        );
+        completedReminderDao.create(toComplete);
+        moveReminderNotificationToNextPeriod(toComplete);
+
+        return toComplete;
+    }
+
+    @Transactional
+    public Reminder skip(int id) {
+        Reminder toSkip = reminderDao.getReminder(
+                id,
+                new ReminderMapping() {{
+                    setReceiverMapping(new Mapping());
+                    setCreatorMapping(new Mapping() {{
+                        setFields(Collections.singletonList(CR_CHAT_ID));
+                    }});
+                    setRemindMessageMapping(new Mapping());
+                }}
+        );
+
+        moveReminderNotificationToNextPeriod(toSkip);
+
+        return toSkip;
+    }
+
     public void updateNextRemindAt(int reminderId, DateTime nextRemindAt) {
         reminderDao.update(
                 new HashMap<>() {{
@@ -84,6 +126,32 @@ public class RepeatReminderService {
             return getDailyNextRemindAt(remindAt, repeatTime);
         } else {
             return getIntervalNextRemindAt(remindAt, repeatTime);
+        }
+    }
+
+    private void moveReminderNotificationToNextPeriod(Reminder reminder) {
+        int id = reminder.getId();
+        ZonedDateTime now = TimeUtils.nowZoned();
+        List<ReminderNotification> reminderNotifications = reminderNotificationService.getList(id);
+        for (ReminderNotification reminderNotification : reminderNotifications) {
+            if (reminderNotification.getType().equals(ReminderNotification.Type.REPEAT)) {
+                if (JodaTimeUtils.plus(now, reminderNotification.getDelayTime()).isAfter(reminderNotification.getLastReminderAt())) {
+                    ZonedDateTime nextLastRemindAt = JodaTimeUtils.plus(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime());
+                    reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), nextLastRemindAt.toLocalDateTime());
+                }
+                if (reminderNotification.isItsTime()) {
+                    DateTime nextRemindAt = getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
+                    updateNextRemindAt(id, nextRemindAt);
+                    reminder.setRemindAt(nextRemindAt);
+                }
+            } else {
+                reminderNotificationService.deleteReminderTime(reminderNotification.getId());
+            }
+        }
+        if (!reminder.getRemindAt().hasTime() && (now.toLocalDate().isBefore(reminder.getRemindAt().date()) || now.toLocalDate().isEqual(reminder.getRemindAt().date()))) {
+            DateTime nextRemindAt = getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
+            updateNextRemindAt(id, nextRemindAt);
+            reminder.setRemindAt(nextRemindAt);
         }
     }
 

@@ -38,7 +38,7 @@ public class ReminderNotificationService {
         reminderNotificationDao.updateLastRemindAt(id, lastReminderAt);
     }
 
-    public List<ReminderNotification> getReminderTimes(int reminderId) {
+    public List<ReminderNotification> getList(int reminderId) {
         return reminderNotificationDao.getCustomReminderTimes(reminderId);
     }
 
