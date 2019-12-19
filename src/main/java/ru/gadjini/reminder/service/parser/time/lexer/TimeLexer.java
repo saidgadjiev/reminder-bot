@@ -26,9 +26,9 @@ public class TimeLexer {
 
     public List<BaseLexem> tokenize() {
         GroupPattern pattern = lexerConfig.getPattern();
-        GroupMatcher timeMatcher = pattern.matcher(str);
+        GroupMatcher timeMatcher = pattern.maxMatcher(str);
 
-        if (timeMatcher.find()) {
+        if (timeMatcher.matches()) {
             Map<String, String> values = timeMatcher.values();
 
             matchEnd = timeMatcher.end();
@@ -70,17 +70,5 @@ public class TimeLexer {
         }
 
         return lexems;
-    }
-
-    public static void main(String[] args) {
-        Pattern pattern = Pattern.compile("((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]))( )?(в )?((?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс)( (?<nextweek>следующ(ий|ей|ую|ее)|след))?( (во|в))?( )?)?((?<monthword>января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря) )?(((?<month>1[0-2]|[1-9])\\.)?(?<day>0[1-9]|[12]\\d|3[01]|0?[1-9])|(?<dayword>завтра|послезавтра))?");
-
-        Matcher matcher = pattern.matcher("17:30 Физиотерапевт");
-
-        if (matcher.find()) {
-            System.out.println(matcher.group("hour"));
-            System.out.println(matcher.group("minute"));
-            System.out.println(matcher.end());
-        }
     }
 }

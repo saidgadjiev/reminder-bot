@@ -33,10 +33,8 @@ public class ReminderRequestLexer {
         for (int i = 0; i < parts.length; ++i) {
             this.parts[i] = this.parts[i].trim();
         }
-
-        String timeStartStr = StringUtils.reverseDelimited(parts[0], ' ');
-        this.timeLexer = new TimeLexer(timeLexerConfig, timeStartStr);
-        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, timeStartStr);
+        this.timeLexer = new TimeLexer(timeLexerConfig, parts[0]);
+        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, parts[0]);
     }
 
     public List<BaseLexem> tokenize() {
@@ -75,8 +73,7 @@ public class ReminderRequestLexer {
         lexems.add(new TimeLexem(TimeToken.REPEAT, ""));
         lexems.addAll(timeLexems);
 
-        String tokenizeStr = StringUtils.reverseDelimited(parts[0], ' ');
-        tokenizeStr = StringUtils.reverseDelimited(tokenizeStr.substring(repeatTimeLexer.end()).trim(), ' ');
+        String tokenizeStr = parts[0].substring(repeatTimeLexer.end()).trim();
 
         return tokenizeReminderTextAndNote(tokenizeStr, lexems);
     }
@@ -89,8 +86,7 @@ public class ReminderRequestLexer {
         }
         LinkedList<BaseLexem> lexems = new LinkedList<>(timeLexems);
 
-        String tokenizeStr = StringUtils.reverseDelimited(parts[0], ' ');
-        tokenizeStr = StringUtils.reverseDelimited(tokenizeStr.substring(timeLexer.end()).trim(), ' ');
+        String tokenizeStr = parts[0].substring(timeLexer.end()).trim();
 
         return tokenizeReminderTextAndNote(tokenizeStr, lexems);
     }

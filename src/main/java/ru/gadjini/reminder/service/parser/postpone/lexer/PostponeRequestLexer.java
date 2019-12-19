@@ -25,7 +25,7 @@ public class PostponeRequestLexer {
     public PostponeRequestLexer(PostponeLexerConfig lexerConfig, TimeLexerConfig timeLexerConfig, String str) {
         this.lexerConfig = lexerConfig;
         this.str = str.toLowerCase();
-        this.timeLexer = new TimeLexer(timeLexerConfig, StringUtils.reverseDelimited(str, ' '));
+        this.timeLexer = new TimeLexer(timeLexerConfig, str);
     }
 
     public List<BaseLexem> tokenize() {

@@ -26,10 +26,8 @@ public class CustomRemindLexer {
     public CustomRemindLexer(CustomRemindLexerConfig lexerConfig, TimeLexerConfig timeLexerConfig, String str) {
         this.lexerConfig = lexerConfig;
         this.str = str.toLowerCase();
-
-        String reversed = StringUtils.reverseDelimited(this.str, ' ');
-        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, reversed);
-        this.timeLexer = new TimeLexer(timeLexerConfig, reversed);
+        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, this.str);
+        this.timeLexer = new TimeLexer(timeLexerConfig, this.str);
     }
 
     public List<BaseLexem> tokenize() {

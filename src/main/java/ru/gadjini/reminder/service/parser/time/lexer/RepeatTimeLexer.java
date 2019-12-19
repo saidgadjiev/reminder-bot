@@ -24,9 +24,9 @@ public class RepeatTimeLexer {
     public List<BaseLexem> tokenize() {
         LinkedList<BaseLexem> lexems = new LinkedList<>();
 
-        GroupMatcher repeatTimeMatcher = lexerConfig.getRepeatTimePattern().matcher(str);
+        GroupMatcher repeatTimeMatcher = lexerConfig.getRepeatTimePattern().maxMatcher(str);
 
-        if (repeatTimeMatcher.find()) {
+        if (repeatTimeMatcher.matches()) {
             Map<String, String> repeatTimeValues = repeatTimeMatcher.values();
 
             if (repeatTimeValues.containsKey(PatternBuilder.HOURS)) {
