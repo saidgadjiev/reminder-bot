@@ -9,7 +9,9 @@ import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
+import ru.gadjini.reminder.util.JodaTimeUtils;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -54,7 +56,8 @@ public class ReminderNotificationMessageBuilder {
         } else {
             StringBuilder message = new StringBuilder(timeBuilder.time(reminderNotification));
 
-            message.append("\n").append(messageBuilder.getNextReminderNotificationAt(reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone())));
+            ZonedDateTime nextRemindAt = JodaTimeUtils.plus(reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone()), reminderNotification.getDelayTime());
+            message.append("\n").append(messageBuilder.getNextReminderNotificationAt(nextRemindAt));
 
             return message.toString();
         }

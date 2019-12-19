@@ -382,7 +382,7 @@ public class RepeatReminderService {
         ReminderNotification reminderNotification = ReminderNotification.repeatTime();
         ZonedDateTime lastRemindAt = ZonedDateTime.of(repeatAt, localTime, ZoneOffset.UTC);
         if (lastRemindAt.isAfter(ZonedDateTime.now())) {
-            lastRemindAt.minusDays(repeatDays);
+            lastRemindAt = lastRemindAt.minusDays(repeatDays);
         }
         reminderNotification.setLastReminderAt(lastRemindAt);
         reminderNotification.setDelayTime(new Period().withDays(repeatDays));
