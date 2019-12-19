@@ -123,10 +123,7 @@ public class ReminderMessageBuilder {
     public String getRepeatReminderStoppedForReceiver(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message
-                .append(messageBuilder.getReminderStopped(reminder.getText())).append("\n")
-                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n")
-                .append(messageBuilder.getReminderReceiver(reminder.getCreator()));
+        message.append(messageBuilder.getReminderStopped(reminder.getText())).append("\n").append(messageBuilder.getReminderReceiver(reminder.getCreator()));
 
         return message.toString();
     }
@@ -134,22 +131,13 @@ public class ReminderMessageBuilder {
     public String getRepeatReminderStoppedForCreator(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message
-                .append(messageBuilder.getReminderStopped(reminder.getText())).append("\n")
-                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n")
-                .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
+        message.append(messageBuilder.getReminderStopped(reminder.getText())).append("\n").append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
 
         return message.toString();
     }
 
     public String getMySelfRepeatReminderStopped(Reminder reminder) {
-        StringBuilder message = new StringBuilder();
-
-        message
-                .append(messageBuilder.getReminderStopped(reminder.getText())).append("\n")
-                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone()));
-
-        return message.toString();
+        return messageBuilder.getReminderStopped(reminder.getText());
     }
 
     public String getRepeatReminderSkippedForReceiver(Reminder reminder) {

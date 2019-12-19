@@ -81,6 +81,16 @@ public class ReminderDao {
         );
     }
 
+    public List<Reminder> getOverdueRepeatReminders() {
+        return jdbcTemplate.query(
+                "SELECT *, (remind_at).*, (repeat_remind_at).*\n" +
+                        "FROM reminder\n" +
+                        "WHERE repeat_remind_at::varchar IS NOT NULL\n" +
+                        "  AND (remind_at).dt_date < CURRENT_DATE",
+                (rs, rowNum) -> resultSetMapper.mapReminder(rs, new ReminderMapping())
+        );
+    }
+
     public List<Reminder> getCompletedReminders(int userId) {
         return namedParameterJdbcTemplate.query(
                 "SELECT r.id,\n" +

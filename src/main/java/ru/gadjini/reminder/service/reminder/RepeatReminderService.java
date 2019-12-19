@@ -85,6 +85,10 @@ public class RepeatReminderService {
         return toComplete;
     }
 
+    public List<Reminder> getOverdueRepeatReminders() {
+        return reminderDao.getOverdueRepeatReminders();
+    }
+
     @Transactional
     public Reminder skip(int id) {
         Reminder toSkip = reminderDao.getReminder(
@@ -187,18 +191,14 @@ public class RepeatReminderService {
     }
 
     private DateTime getIntervalNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
-        ZonedDateTime lastRemindAt = remindAt.toZonedDateTime();
-        ZonedDateTime now = ZonedDateTime.now(lastRemindAt.getZone());
+        ZonedDateTime nextRemindAt = JodaTimeUtils.plus(remindAt.toZonedDateTime(), repeatTime.getInterval());
+        ZonedDateTime now = ZonedDateTime.now(nextRemindAt.getZone());
 
-        if (now.isAfter(lastRemindAt)) {
-            while (now.isAfter(lastRemindAt)) {
-                lastRemindAt = JodaTimeUtils.plus(lastRemindAt, repeatTime.getInterval());
-            }
-        } else {
-            lastRemindAt = JodaTimeUtils.plus(lastRemindAt, repeatTime.getInterval());
+        while (now.isAfter(nextRemindAt)) {
+            nextRemindAt = JodaTimeUtils.plus(nextRemindAt, repeatTime.getInterval());
         }
 
-        return DateTime.of(lastRemindAt);
+        return DateTime.of(nextRemindAt);
     }
 
     private DateTime getIntervalFirstRemindAt(RepeatTime repeatTime) {
@@ -229,26 +229,29 @@ public class RepeatReminderService {
 
     private DateTime getWeeklyNextRemindAt(DateTime reminderAt, RepeatTime repeatTime) {
         ZoneId zoneId = reminderAt.getZone();
-        if (repeatTime.hasTime()) {
-            ZonedDateTime zonedReminderAt = reminderAt.toZonedDateTime();
-
-            return DateTime.of(zonedReminderAt.with(TemporalAdjusters.next(repeatTime.getDayOfWeek())).with(repeatTime.getTime()));
-        }
         LocalDate nextDate = (LocalDate) TemporalAdjusters.next(repeatTime.getDayOfWeek()).adjustInto(reminderAt.date());
+        LocalDate now = LocalDate.now();
 
-        return DateTime.of(nextDate, null, zoneId);
+        while (now.isAfter(nextDate)) {
+            nextDate = (LocalDate) TemporalAdjusters.next(repeatTime.getDayOfWeek()).adjustInto(nextDate);
+        }
+
+        return DateTime.of(nextDate, repeatTime.getTime(), zoneId);
     }
 
     private DateTime getDailyNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
-        return remindAt.plusDays(repeatTime.getInterval().getDays());
+        LocalDate localDate = remindAt.date().plusDays(repeatTime.getInterval().getDays());
+        LocalDate now = LocalDate.now();
+
+        while (now.isAfter(localDate)) {
+            localDate = localDate.plusDays(repeatTime.getInterval().getDays());
+        }
+
+        return DateTime.of(localDate, remindAt.time(), remindAt.getZone());
     }
 
     private DateTime getDailyFirstRemindAt(RepeatTime repeatTime) {
-        if (repeatTime.hasTime()) {
-            return DateTime.of(TimeUtils.nowZoned().with(repeatTime.getTime()));
-        }
-
-        return DateTime.of(LocalDate.now(), null, ZoneOffset.UTC);
+        return DateTime.of(LocalDate.now(), repeatTime.getTime(), ZoneOffset.UTC);
     }
 
     private List<ReminderNotification> getRepeatReminderNotifications(RepeatTime repeatTime, int receiverId) {

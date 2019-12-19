@@ -7,15 +7,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
-import ru.gadjini.reminder.service.reminder.*;
-import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.ReminderService;
+import ru.gadjini.reminder.service.reminder.RepeatReminderService;
+import ru.gadjini.reminder.service.reminder.RestoreReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageSender;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -55,6 +55,17 @@ public class ReminderJob {
         int deleted = reminderService.deleteCompletedReminders(now);
 
         LOGGER.debug("Delete " + deleted + " completed reminders at " + now);
+    }
+
+    @Scheduled(cron = "0 5 0 * * *")
+    //@Scheduled(fixedDelay = 1000)
+    public void moveReminders() {
+        List<Reminder> overdueReminders = repeatReminderService.getOverdueRepeatReminders();
+
+        for (Reminder reminder: overdueReminders) {
+            DateTime nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
+            repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
+        }
     }
 
     @Scheduled(fixedDelay = 1000)
@@ -127,15 +138,27 @@ public class ReminderJob {
     }
 
     private void sendRepeatReminderTimeForRepeatableReminder(Reminder reminder, ReminderNotification reminderNotification) {
-        reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), reminder.getRemindAt());
+        DateTime nextRemindAt = reminder.getRemindAt();
+
+        if (isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
+            nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
+            repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
+            reminder.setRemindAt(nextRemindAt);
+        }
+        reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), nextRemindAt);
 
         ZonedDateTime nextLastRemindAt = JodaTimeUtils.plus(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime());
         reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), nextLastRemindAt.toLocalDateTime());
     }
 
     private boolean isNeedUpdateNextRemindAt(Reminder reminder, ReminderNotification reminderNotification) {
-        LocalDate now = LocalDate.now(reminder.getRemindAt().getZone());
+        if (reminder.getRepeatRemindAt().hasTime()) {
+            return false;
+        }
+        if (reminder.getRepeatRemindAt().getDayOfWeek() != null) {
+            return false;
+        }
 
-        return reminderNotification.isItsTime() || (!reminder.getRemindAt().hasTime() && (reminder.getRemindAt().date().equals(now) || reminder.getRemindAt().date().isBefore(now)));
+        return reminderNotification.isItsTime();
     }
 }
