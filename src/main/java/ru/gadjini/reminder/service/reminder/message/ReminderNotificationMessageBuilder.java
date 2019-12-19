@@ -7,13 +7,9 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.reminder.message.MessageBuilder;
-import ru.gadjini.reminder.service.reminder.message.ReminderMessageBuilder;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.JodaTimeUtils;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
@@ -58,16 +54,32 @@ public class ReminderNotificationMessageBuilder {
         } else {
             StringBuilder message = new StringBuilder(timeBuilder.time(reminderNotification));
 
-            ZonedDateTime nextRemindAt = JodaTimeUtils.plus(reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone()), reminderNotification.getDelayTime());
-            message.append("\n").append(messageBuilder.getNextReminderNotificationAt(nextRemindAt));
+            message.append("\n").append(messageBuilder.getNextReminderNotificationAt(reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone())));
 
             return message.toString();
         }
     }
 
+    public String getReminderNotifications(List<ReminderNotification> reminderNotifications) {
+        if (reminderNotifications.isEmpty()) {
+            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS);
+        }
+        StringBuilder message = new StringBuilder();
+
+        int i = 1;
+        for (ReminderNotification reminderNotification : reminderNotifications) {
+            if (message.length() > 0) {
+                message.append("\n");
+            }
+            message.append(i++).append(") ").append(timeBuilder.time(reminderNotification));
+        }
+
+        return message.toString();
+    }
+
     public String getUserReminderNotifications(List<UserReminderNotification> userReminderNotifications) {
         if (userReminderNotifications.isEmpty()) {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION_NOT_EXISTS);
+            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS);
         }
         StringBuilder message = new StringBuilder();
 

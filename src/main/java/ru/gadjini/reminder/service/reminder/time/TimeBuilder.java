@@ -80,7 +80,8 @@ public class TimeBuilder {
             time.append(DATE_TIME_FORMATTER.format(lastRemindAt));
         } else if (reminderNotification.getDelayTime().getDays() != 0) {
             time.append(declensionService.getRepeatWord(reminderNotification.getDelayTime())).append(" ");
-            time.append(DATE_TIME_FORMATTER.format(reminderNotification.getLastReminderAt()));
+            time.append(declensionService.day(reminderNotification.getDelayTime().getDays())).append(" ");
+            time.append(DATE_TIME_FORMATTER.format(reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone())));
         } else {
             time.append(time(reminderNotification.getDelayTime()));
         }

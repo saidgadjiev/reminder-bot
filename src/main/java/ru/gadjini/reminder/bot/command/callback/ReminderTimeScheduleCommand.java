@@ -12,6 +12,7 @@ import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 
@@ -27,14 +28,14 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
 
     private InlineKeyboardService inlineKeyboardService;
 
-    private TimeBuilder timeBuilder;
+    private ReminderNotificationMessageBuilder reminderNotificationMessageBuilder;
 
     @Autowired
-    public ReminderTimeScheduleCommand(ReminderNotificationService reminderNotificationService, MessageService messageService, InlineKeyboardService inlineKeyboardService, TimeBuilder timeBuilder) {
+    public ReminderTimeScheduleCommand(ReminderNotificationService reminderNotificationService, MessageService messageService, InlineKeyboardService inlineKeyboardService, ReminderNotificationMessageBuilder reminderNotificationMessageBuilder) {
         this.reminderNotificationService = reminderNotificationService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
-        this.timeBuilder = timeBuilder;
+        this.reminderNotificationMessageBuilder = reminderNotificationMessageBuilder;
     }
 
     @Override
@@ -49,7 +50,7 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
-                message(reminderNotifications),
+                reminderNotificationMessageBuilder.getReminderNotifications(reminderNotifications),
                 inlineKeyboardService.getReminderTimesListKeyboard(reminderNotifications.stream().map(ReminderNotification::getId).collect(Collectors.toList()), requestParams.getInt(Arg.REMINDER_ID.getKey()))
         );
     }
@@ -66,22 +67,9 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
         messageService.editMessage(
                 chatId,
                 messageId,
-                message(reminderNotifications),
+                reminderNotificationMessageBuilder.getReminderNotifications(reminderNotifications),
                 inlineKeyboardService.getReminderTimesListKeyboard(reminderNotifications.stream().map(ReminderNotification::getId).collect(Collectors.toList()), requestParams.getInt(Arg.REMINDER_ID.getKey()))
         );
     }
 
-    private String message(List<ReminderNotification> reminderNotifications) {
-        StringBuilder message = new StringBuilder();
-
-        int i = 1;
-        for (ReminderNotification reminderNotification : reminderNotifications) {
-            if (message.length() > 0) {
-                message.append("\n");
-            }
-            message.append(i++).append(") ").append(timeBuilder.time(reminderNotification));
-        }
-
-        return message.toString();
-    }
 }

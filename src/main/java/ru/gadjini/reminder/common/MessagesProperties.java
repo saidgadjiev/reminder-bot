@@ -306,7 +306,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_USER_SETTINGS = "message.user.settings";
 
-    public static final String MESSAGE_USER_REMINDER_NOTIFICATION_NOT_EXISTS = "message.user.reminder.notification.not.exists";
+    public static final String MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS = "message.reminder.notification.not.exists";
 
     public static final String MESSAGE_USER_REMINDER_NOTIFICATION_DELETED = "message.user.reminder.notification.deleted";
 
