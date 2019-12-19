@@ -101,6 +101,7 @@ public class ReminderDao {
                         "       r.repeat_remind_at,\n" +
                         "       (r.remind_at).*,\n" +
                         "       (r.repeat_remind_at).*,\n" +
+                        "       r.completed_at,\n" +
                         "       r.note,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.first_name                                    AS rc_first_name,\n" +
@@ -121,6 +122,7 @@ public class ReminderDao {
                         "       r.repeat_remind_at,\n" +
                         "       (r.remind_at).*,\n" +
                         "       (r.repeat_remind_at).*,\n" +
+                        "       r.completed_at,\n" +
                         "       r.note,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.first_name                                    as rc_first_name,\n" +

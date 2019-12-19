@@ -118,12 +118,12 @@ public class ReminderMessageSender {
         if (reminder.isMySelf()) {
             messageService.sendMessage(
                     reminder.getReceiver().getChatId(),
-                    reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminder),
+                    reminderMessageBuilder.getMySelfReminderCompleted(reminder),
                     null
             );
         } else {
-            messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getRepeatReminderCompletedForCreator(reminder), null);
-            messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getRepeatReminderCompletedForReceiver(reminder), null);
+            messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getReminderCompletedForCreator(reminder), null);
+            messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getReminderCompletedForReceiver(reminder), null);
         }
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
     }
@@ -372,7 +372,7 @@ public class ReminderMessageSender {
             messageService.editMessage(
                     chatId,
                     messageId,
-                    reminderMessageBuilder.getRemindersList(user.getId(), reminders),
+                    reminderMessageBuilder.getCompletedRemindersList(user.getId(), reminders),
                     inlineKeyboardService.getCompletedRemindersListKeyboard(MessagesProperties.GET_REMINDERS_COMMAND_HISTORY_NAME)
             );
         }
@@ -392,7 +392,7 @@ public class ReminderMessageSender {
             messageService.editMessage(
                     chatId,
                     messageId,
-                    reminderMessageBuilder.getRemindersList(user.getId(), reminders),
+                    reminderMessageBuilder.getActiveRemindersList(user.getId(), reminders),
                     inlineKeyboardService.getActiveRemindersListKeyboard(reminders.stream().map(Reminder::getId).collect(Collectors.toList()), MessagesProperties.GET_REMINDERS_COMMAND_HISTORY_NAME)
             );
         }

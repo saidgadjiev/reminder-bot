@@ -111,6 +111,10 @@ public class MessageBuilder {
         return localisationService.getMessage(MessagesProperties.MESSAGE_NEXT_REMINDER_NOTIFICATION_AT, new Object[]{timeBuilder.time(remindAt)});
     }
 
+    public String getCompletedAt(ZonedDateTime completedAt) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_COMPLETED_AT, new Object[] {timeBuilder.time(completedAt)});
+    }
+
     public String getReminderNotification(String reminderText) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMIND, new Object[]{reminderText});
     }

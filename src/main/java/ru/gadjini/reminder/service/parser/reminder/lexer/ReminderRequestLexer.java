@@ -36,7 +36,7 @@ public class ReminderRequestLexer {
 
         String timeStartStr = StringUtils.reverseDelimited(parts[0], ' ');
         this.timeLexer = new TimeLexer(timeLexerConfig, timeStartStr);
-        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, timeStartStr);
+        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, parts[0]);
     }
 
     public List<BaseLexem> tokenize() {

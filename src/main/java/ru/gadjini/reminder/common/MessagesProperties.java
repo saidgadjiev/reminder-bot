@@ -331,4 +331,6 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_STOPPED_ANSWER = "message.reminder.stopped.answer";
 
     public static final String MESSAGE_REMINDER_SKIPPED_ANSWER = "message.reminder.skipped.answer";
+
+    public static final String MESSAGE_COMPLETED_AT = "message.completed.at";
 }

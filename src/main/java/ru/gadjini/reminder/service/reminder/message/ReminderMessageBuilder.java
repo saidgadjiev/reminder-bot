@@ -65,6 +65,30 @@ public class ReminderMessageBuilder {
         return result.toString();
     }
 
+    public String getReminderCompletedForReceiver(Reminder reminder) {
+        StringBuilder message = new StringBuilder();
+
+        message
+                .append(messageBuilder.getReminderCompleted(reminder.getText())).append("\n")
+                .append(messageBuilder.getReminderCreator(reminder.getCreator()));
+
+        return message.toString();
+    }
+
+    public String getReminderCompletedForCreator(Reminder reminder) {
+        StringBuilder message = new StringBuilder();
+
+        message
+                .append(messageBuilder.getReminderCompleted(reminder.getText())).append("\n")
+                .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
+
+        return message.toString();
+    }
+
+    public String getMySelfReminderCompleted(Reminder reminder) {
+        return messageBuilder.getReminderCompleted(reminder.getText());
+    }
+
     public String getMySelfRepeatReminderCompleted(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
@@ -166,7 +190,37 @@ public class ReminderMessageBuilder {
         return messageBuilder.getNewReminder(getReminderMessage(reminder, messageReceiverId));
     }
 
-    public String getRemindersList(int requesterId, List<Reminder> reminders) {
+    public String getCompletedRemindersList(int requesterId, List<Reminder> reminders) {
+        StringBuilder text = new StringBuilder();
+
+        int i = 1;
+        for (Reminder reminder : reminders) {
+            String number = i++ + ") ";
+            text.append(number).append(reminder.getText()).append("(").append(timeBuilder.time(reminder)).append(")\n");
+
+            text
+                    .append(" ".repeat(number.length() + 2))
+                    .append(messageBuilder.getCompletedAt(reminder.getCompletedAtInReceiverZone())).append("\n");
+
+            if (reminder.getReceiverId() != reminder.getCreatorId()) {
+                if (requesterId == reminder.getReceiverId()) {
+                    text
+                            .append(" ".repeat(number.length() + 2))
+                            .append(messageBuilder.getReminderCreator(reminder.getCreator()));
+                } else {
+                    text
+                            .append(" ".repeat(number.length() + 2))
+                            .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
+                }
+                text.append("\n");
+            }
+        }
+
+        return text.toString();
+    }
+
+
+    public String getActiveRemindersList(int requesterId, List<Reminder> reminders) {
         StringBuilder text = new StringBuilder();
 
         int i = 1;

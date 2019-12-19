@@ -3,6 +3,7 @@ package ru.gadjini.reminder.domain;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +56,8 @@ public class Reminder {
     private String note;
 
     private RepeatTime repeatRemindAt;
+
+    private ZonedDateTime completedAt;
 
     public Reminder() {
     }
@@ -190,6 +193,18 @@ public class Reminder {
 
     public void setRepeatRemindAt(RepeatTime repeatRemindAt) {
         this.repeatRemindAt = repeatRemindAt;
+    }
+
+    public ZonedDateTime getCompletedAt() {
+        return completedAt;
+    }
+
+    public ZonedDateTime getCompletedAtInReceiverZone() {
+        return completedAt.withZoneSameInstant(receiver.getZone());
+    }
+
+    public void setCompletedAt(ZonedDateTime completedAt) {
+        this.completedAt = completedAt;
     }
 
     public boolean isMySelf() {
