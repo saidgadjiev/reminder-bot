@@ -3,7 +3,9 @@ package ru.gadjini.reminder.job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.task.TaskSchedulerCustomizer;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
@@ -21,7 +23,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @Component
-public class ReminderJob {
+public class ReminderJob implements TaskSchedulerCustomizer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReminderJob.class);
 
@@ -48,41 +50,45 @@ public class ReminderJob {
         this.restoreReminderService = restoreReminderService;
     }
 
+    @Override
+    public void customize(ThreadPoolTaskScheduler taskScheduler) {
+        taskScheduler.setErrorHandler(throwable -> LOGGER.error(throwable.getMessage(), throwable));
+    }
+
     @Scheduled(cron = "0 0 0 * * *")
-    //@Scheduled(fixedDelay = 1000)
     public void deleteCompletedReminders() {
         LocalDateTime now = LocalDateTime.now();
+        LOGGER.debug("Start delete completed reminders: " + now);
+
         int deleted = reminderService.deleteCompletedReminders(now);
 
         LOGGER.debug("Delete " + deleted + " completed reminders at " + now);
     }
 
-    @Scheduled(cron = "0 5 0 * * *")
-    //@Scheduled(fixedDelay = 1000)
+    @Scheduled(cron = "0 0 * * * *")
     public void moveReminders() {
+        LocalDateTime now = LocalDateTime.now();
+        LOGGER.debug("Start move overdue reminders: " + now);
         List<Reminder> overdueReminders = repeatReminderService.getOverdueRepeatReminders();
 
-        for (Reminder reminder: overdueReminders) {
+        for (Reminder reminder : overdueReminders) {
             DateTime nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
             repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
         }
+        LOGGER.debug("Finish move overdue reminders: " + now);
     }
 
     @Scheduled(fixedDelay = 1000)
     public void sendReminders() {
-        try {
-            List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().minusSeconds(15).withNano(0), 30);
+        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().minusSeconds(15).withNano(0), 30);
 
-            for (Reminder reminder : reminders) {
-                if (restoreReminderService.isNeedRestore(reminder)) {
-                    restoreReminderService.restore(reminder);
-                    sendReminderRestored(reminder);
-                } else {
-                    sendReminder(reminder);
-                }
+        for (Reminder reminder : reminders) {
+            if (restoreReminderService.isNeedRestore(reminder)) {
+                restoreReminderService.restore(reminder);
+                sendReminderRestored(reminder);
+            } else {
+                sendReminder(reminder);
             }
-        } catch (Exception ex) {
-            LOGGER.error(ex.getMessage(), ex);
         }
     }
 

@@ -161,18 +161,6 @@ public class ReminderDao {
         return IntStream.of(updated).sum();
     }
 
-    public List<Reminder> getReminders(ReminderMapping reminderMapping, Condition condition) {
-        SelectSelectStep<Record> select = buildSelect(reminderMapping);
-
-        select.where(condition);
-
-        return jdbcTemplate.query(
-                select.getSQL(),
-                new JooqPreparedSetter(select.getParams()),
-                (rs, rowNum) -> resultSetMapper.mapReminder(rs, reminderMapping)
-        );
-    }
-
     public List<Reminder> getRemindersWithReminderTimes(LocalDateTime localDateTime, int limit) {
         Map<Integer, Reminder> reminders = new LinkedHashMap<>();
 
@@ -247,22 +235,12 @@ public class ReminderDao {
             update.returning(ReminderTable.TABLE.asterisk());
 
             StringBuilder sql = new StringBuilder();
-
             sql.append("WITH reminder AS (\n").append(update.getSQL()).append("\n)\n");
-
             SelectSelectStep<Record> select = buildSelect(reminderMapping);
-            sql.append(select.getSQL());
-
             return jdbcTemplate.query(
-                    sql.toString(),
+                    sql.append(select.getSQL()).toString(),
                     new JooqPreparedSetter(update.getParams()),
-                    rs -> {
-                        if (rs.next()) {
-                            return resultSetMapper.mapReminder(rs, reminderMapping);
-                        }
-
-                        return null;
-                    }
+                    rs -> rs.next() ? resultSetMapper.mapReminder(rs, reminderMapping) : null
             );
         }
     }
@@ -335,22 +313,11 @@ public class ReminderDao {
         }
         delete.returning(ReminderTable.TABLE.asterisk());
 
-        StringBuilder sql = new StringBuilder();
-        sql.append("WITH reminder AS(\n").append(delete.getSQL()).append("\n").append(")\n");
-
-        SelectSelectStep<Record> select = buildSelect(reminderMapping);
-        sql.append(select.getSQL());
-
+        StringBuilder sql = new StringBuilder().append("WITH reminder AS(\n").append(delete.getSQL()).append("\n").append(")\n");
         return jdbcTemplate.query(
-                sql.toString(),
+                sql.append(buildSelect(reminderMapping).getSQL()).toString(),
                 new JooqPreparedSetter(delete.getParams()),
-                rs -> {
-                    if (rs.next()) {
-                        return resultSetMapper.mapReminder(rs, reminderMapping);
-                    }
-
-                    return null;
-                }
+                rs -> rs.next() ? resultSetMapper.mapReminder(rs, reminderMapping) : null
         );
     }
 
@@ -365,7 +332,7 @@ public class ReminderDao {
                         "       rc.chat_id    as rc_chat_id\n" +
                         "FROM r\n" +
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id",
-                new SqlParameterValue[] {
+                new SqlParameterValue[]{
                         new SqlParameterValue(Types.VARCHAR, reminder.getText()),
                         new SqlParameterValue(Types.INTEGER, reminder.getCreatorId()),
                         new SqlParameterValue(Types.INTEGER, reminder.getReceiverId()),
@@ -395,7 +362,7 @@ public class ReminderDao {
                         "       rc.last_name  as rc_last_name,\n" +
                         "       rc.chat_id    as rc_chat_id\n" +
                         "FROM r INNER JOIN tg_user rc ON r.receiver_id = rc.user_id",
-                new SqlParameterValue[] {
+                new SqlParameterValue[]{
                         new SqlParameterValue(Types.VARCHAR, reminder.getText()),
                         new SqlParameterValue(Types.INTEGER, reminder.getCreatorId()),
                         new SqlParameterValue(Types.OTHER, reminder.getRemindAt().sql()),

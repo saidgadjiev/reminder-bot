@@ -198,19 +198,13 @@ public class ReminderMessageBuilder {
             String number = i++ + ") ";
             text.append(number).append(reminder.getText()).append("(").append(timeBuilder.time(reminder)).append(")\n");
 
-            text
-                    .append(" ".repeat(number.length() + 2))
-                    .append(messageBuilder.getCompletedAt(reminder.getCompletedAtInReceiverZone())).append("\n");
+            text.append(messageBuilder.getCompletedAt(reminder.getCompletedAtInReceiverZone())).append("\n");
 
             if (reminder.getReceiverId() != reminder.getCreatorId()) {
                 if (requesterId == reminder.getReceiverId()) {
-                    text
-                            .append(" ".repeat(number.length() + 2))
-                            .append(messageBuilder.getReminderCreator(reminder.getCreator()));
+                    text.append(messageBuilder.getReminderCreator(reminder.getCreator()));
                 } else {
-                    text
-                            .append(" ".repeat(number.length() + 2))
-                            .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
+                    text.append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
                 }
                 text.append("\n");
             }
@@ -229,20 +223,14 @@ public class ReminderMessageBuilder {
             text.append(number).append(reminder.getText()).append("(").append(timeBuilder.time(reminder)).append(")\n");
 
             if (reminder.isRepeatable()) {
-                text
-                        .append(" ".repeat(number.length() + 2))
-                        .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n");
+                text.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n");
             }
 
             if (reminder.getReceiverId() != reminder.getCreatorId()) {
                 if (requesterId == reminder.getReceiverId()) {
-                    text
-                            .append(" ".repeat(number.length() + 2))
-                            .append(messageBuilder.getReminderCreator(reminder.getCreator()));
+                    text.append(messageBuilder.getReminderCreator(reminder.getCreator()));
                 } else {
-                    text
-                            .append(" ".repeat(number.length() + 2))
-                            .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
+                    text.append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
                 }
                 text.append("\n");
             }

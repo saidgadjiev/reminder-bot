@@ -1,9 +1,7 @@
 package ru.gadjini.reminder.dao;
 
-import org.glassfish.grizzly.http.util.TimeStamp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -13,7 +11,6 @@ import ru.gadjini.reminder.util.TimeUtils;
 
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.time.LocalDateTime;
 
 @Repository
 public class CompletedReminderDao {

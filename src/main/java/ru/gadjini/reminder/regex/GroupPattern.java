@@ -30,14 +30,11 @@ public class GroupPattern {
             toMatch.insert(0, words[i]);
             Matcher matcher = pattern.matcher(toMatch.toString());
 
-            if (maxMatcher == null) {
-                maxMatcher = matcher;
-            }
             if (matcher.matches()) {
                 maxMatcher = matcher;
             }
         }
 
-        return new GroupMatcher(groups, maxMatcher);
+        return maxMatcher == null ? null : new GroupMatcher(groups, maxMatcher);
     }
 }

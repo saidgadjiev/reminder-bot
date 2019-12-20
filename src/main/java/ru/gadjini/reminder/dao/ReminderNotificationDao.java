@@ -4,7 +4,6 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.SelectConditionStep;
-import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -98,9 +97,14 @@ public class ReminderNotificationDao {
 
                     return ps;
                 },
-                generatedKeyHolder);
+                generatedKeyHolder
+        );
 
-        return (int) generatedKeyHolder.getKeys().get("reminder_id");
+        if (generatedKeyHolder.getKeys() != null) {
+            return (int) generatedKeyHolder.getKeys().get("reminder_id");
+        }
+
+        return 0;
     }
 
     public void updateLastRemindAt(int id, LocalDateTime lastReminderAt) {

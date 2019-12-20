@@ -1,7 +1,5 @@
 package ru.gadjini.reminder.domain.mapping;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class ReminderMapping {
 
@@ -11,17 +9,11 @@ public class ReminderMapping {
 
     public static final String CR_CHAT_ID = "cr_chat_id";
 
-    public static final String OLD_REMINDER_TEXT = "old_reminder_text";
-
-    public static final String OLD_REMIND_AT = "old_remind_at";
-
     private Mapping receiverMapping;
 
     private Mapping creatorMapping;
 
     private Mapping remindMessageMapping;
-
-    private List<String> fields = new ArrayList<>();
 
     public Mapping getReceiverMapping() {
         return receiverMapping;
@@ -37,14 +29,6 @@ public class ReminderMapping {
 
     public void setCreatorMapping(Mapping creatorMapping) {
         this.creatorMapping = creatorMapping;
-    }
-
-    public List<String> fields() {
-        return fields;
-    }
-
-    public void setFields(List<String> fields) {
-        this.fields = fields;
     }
 
     public Mapping getRemindMessageMapping() {

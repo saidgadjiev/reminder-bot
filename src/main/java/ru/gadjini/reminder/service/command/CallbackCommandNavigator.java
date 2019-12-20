@@ -37,24 +37,4 @@ public class CallbackCommandNavigator {
 
         callbackBotCommand.restore(chatId, messageId, queryId, replyKeyboard, requestParams);
     }
-
-    private Collection<NavigableCallbackBotCommand> findNavigableBotCommands(Collection<KeyboardBotCommand> keyboardBotCommands,
-                                                                         Collection<BotCommand> botCommands,
-                                                                         Collection<CallbackBotCommand> callbackBotCommands) {
-        List<NavigableCallbackBotCommand> navigableBotCommands = new ArrayList<>();
-
-        keyboardBotCommands.stream()
-                .filter(botCommand -> botCommand instanceof NavigableCallbackBotCommand)
-                .forEach(botCommand -> navigableBotCommands.add((NavigableCallbackBotCommand) botCommand));
-
-        botCommands.stream()
-                .filter(botCommand -> botCommand instanceof NavigableCallbackBotCommand)
-                .forEach(botCommand -> navigableBotCommands.add((NavigableCallbackBotCommand) botCommand));
-
-        callbackBotCommands.stream()
-                .filter(botCommand -> botCommand instanceof NavigableCallbackBotCommand)
-                .forEach(botCommand -> navigableBotCommands.add((NavigableCallbackBotCommand) botCommand));
-
-        return navigableBotCommands;
-    }
 }

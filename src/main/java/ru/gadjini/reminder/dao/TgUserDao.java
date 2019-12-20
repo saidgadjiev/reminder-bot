@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
-import java.sql.ResultSet;
 import java.time.ZoneId;
 
 @Repository

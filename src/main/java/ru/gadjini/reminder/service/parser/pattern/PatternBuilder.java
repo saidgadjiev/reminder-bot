@@ -83,13 +83,14 @@ public class PatternBuilder {
         String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX);
 
         pattern
-                .append(regexRepeat).append(" (((((?<").append(HOURS).append(">\\d+)( )?").append(hourPrefix).append(")|(?<")
-                .append(EVERY_HOUR).append(">").append(regexpEveryHour).append("))?( )?((?<").append(MINUTES).append(">\\d+)( )?")
-                .append(minutePrefix).append(")?( )?)|(?<").append(EVERY_MINUTE).append(">").append(regexpEveryMinute)
-                .append(")|(((?<").append(EVERY_DAY).append(">").append(regexpEveryDay).append(")|((?<").append(DAYS)
-                .append(">\\d+)( )?").append(dayPrefix).append("))|(?<").append(DAY_OF_WEEK_WORD).append(">")
-                .append(getDayOfWeekPattern(locale)).append("))( )?(").append(regexpTimeArticle).append(" )?((?<")
-                .append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))?))");
+                .append(regexRepeat).append(" (((((?<" + HOURS + ">\\d+)( )?").append(hourPrefix).append(")|(?<")
+                .append(EVERY_HOUR).append(">").append(regexpEveryHour).append("))?( )?((?<").append(MINUTES)
+                .append(">\\d+)( )?").append(minutePrefix).append(")?( )?)|(?<").append(EVERY_MINUTE).append(">")
+                .append(regexpEveryMinute).append(")|(((?<").append(EVERY_DAY).append(">").append(regexpEveryDay)
+                .append(")|((?<").append(DAYS).append(">\\d+)( )?").append(dayPrefix).append("))|(?<")
+                .append(DAY_OF_WEEK_WORD).append(">").append(getDayOfWeekPattern(locale)).append("))( )?(")
+                .append(regexpTimeArticle).append(" )?((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<")
+                .append(MINUTE).append(">[0-5]?[0-9]))?)");
 
         return new GroupPattern(Pattern.compile(pattern.toString()), List.of(HOURS, EVERY_HOUR, MINUTES, EVERY_MINUTE, EVERY_DAY, DAYS, DAY_OF_WEEK_WORD, HOUR, MINUTE));
     }
@@ -142,8 +143,8 @@ public class PatternBuilder {
         String at = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
         patternBuilder.append("(((?<").append(TYPE).append(">").append(typeAfter).append("|")
                 .append(typeBefore).append(") )?(((?<").append(DAYS).append(">\\d+)").append(dayPrefix)
-                .append(")|(?<").append(EVE).append(">").append(eve).append("))?( )?((?<").append(HOURS).append(">\\d+)").append(hourPrefix).append(")?( )?((?<")
-                .append(MINUTES).append(">\\d+)").append(minutePrefix).append(")?)")
+                .append(")|(?<").append(EVE).append(">").append(eve).append("))?( )?((?<").append(HOURS).append(">\\d+)")
+                .append(hourPrefix).append(")?( )?((?<").append(MINUTES).append(">\\d+)").append(minutePrefix).append(")?)")
                 .append("( )?(").append(at).append(" )?((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))?");
 
         return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, DAYS, EVE, HOURS, MINUTES, HOUR, MINUTE));

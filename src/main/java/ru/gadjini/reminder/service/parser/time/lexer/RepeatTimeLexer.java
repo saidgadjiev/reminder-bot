@@ -26,7 +26,7 @@ public class RepeatTimeLexer {
 
         GroupMatcher repeatTimeMatcher = lexerConfig.getRepeatTimePattern().maxMatcher(str);
 
-        if (repeatTimeMatcher.matches()) {
+        if (repeatTimeMatcher != null) {
             Map<String, String> repeatTimeValues = repeatTimeMatcher.values();
 
             if (repeatTimeValues.containsKey(PatternBuilder.HOURS)) {

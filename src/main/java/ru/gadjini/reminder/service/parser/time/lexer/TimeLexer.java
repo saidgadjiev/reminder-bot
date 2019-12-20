@@ -28,7 +28,7 @@ public class TimeLexer {
         GroupPattern pattern = lexerConfig.getPattern();
         GroupMatcher timeMatcher = pattern.maxMatcher(str);
 
-        if (timeMatcher.matches()) {
+        if (timeMatcher != null) {
             Map<String, String> values = timeMatcher.values();
 
             matchEnd = timeMatcher.end();

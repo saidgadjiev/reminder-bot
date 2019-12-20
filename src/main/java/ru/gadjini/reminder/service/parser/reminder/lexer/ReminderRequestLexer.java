@@ -73,7 +73,7 @@ public class ReminderRequestLexer {
         lexems.add(new TimeLexem(TimeToken.REPEAT, ""));
         lexems.addAll(timeLexems);
 
-        String tokenizeStr = parts[0].substring(repeatTimeLexer.end()).trim();
+        String tokenizeStr = parts[0].substring(0, parts[0].length() - repeatTimeLexer.end()).trim();
 
         return tokenizeReminderTextAndNote(tokenizeStr, lexems);
     }
@@ -86,7 +86,7 @@ public class ReminderRequestLexer {
         }
         LinkedList<BaseLexem> lexems = new LinkedList<>(timeLexems);
 
-        String tokenizeStr = parts[0].substring(timeLexer.end()).trim();
+        String tokenizeStr = parts[0].substring(0, parts[0].length() - timeLexer.end()).trim();
 
         return tokenizeReminderTextAndNote(tokenizeStr, lexems);
     }
