@@ -142,8 +142,6 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_POSTPONED = "message.reminder.postponed";
 
-    public static final String REGEX_POSTPONE_TYPE_ON = "regex.postpone.type.on";
-
     public static final String REGEX_POSTPONE_TYPE_AT = "regex.postpone.type.at";
 
     public static final String REGEX_DAY_PREFIX = "regex.day.prefix";
@@ -164,9 +162,9 @@ public class MessagesProperties {
 
     public static final String MESSAGE_CUSTOM_REMIND = "message.custom.remind";
 
-    public static final String REGEX_CUSTOM_REMIND_TYPE_AFTER = "regex.custom.remind.type.after";
+    public static final String OFFSET_TIME_TYPE_AFTER = "offset.time.type.after";
 
-    public static final String CUSTOM_REMIND_BEFORE = "custom.remind.before";
+    public static final String OFFSET_TIME_TYPE_BEFORE = "offset.time.type.before";
 
     public static final String MESSAGE_CUSTOM_REMIND_CREATED = "message.custom.remind.created";
 

@@ -4,8 +4,6 @@ import ru.gadjini.reminder.regex.GroupMatcher;
 import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
-import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexem;
-import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +31,7 @@ public class OffsetTimeLexer {
             List<BaseLexem> lexems = new ArrayList<>();
 
             if (values.containsKey(PatternBuilder.TYPE)) {
-                lexems.add(new CustomRemindLexem(CustomRemindToken.TYPE, values.get(PatternBuilder.TYPE)));
+                lexems.add(new TimeLexem(TimeToken.TYPE, values.get(PatternBuilder.TYPE)));
             }
             if (values.containsKey(PatternBuilder.DAYS)) {
                 lexems.add(new TimeLexem(TimeToken.DAYS, values.get(PatternBuilder.DAYS)));

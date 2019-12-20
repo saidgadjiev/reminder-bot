@@ -5,7 +5,6 @@ import ru.gadjini.reminder.domain.OffsetTime;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
-import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindToken;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 
 import java.time.LocalTime;
@@ -23,14 +22,14 @@ public class OffsetTimeParser {
     private LexemsConsumer lexemsConsumer;
 
     public OffsetTimeParser(LocalisationService localisationService, ZoneId zoneId, LexemsConsumer lexemsConsumer) {
-        this.typeBefore = localisationService.getMessage(MessagesProperties.CUSTOM_REMIND_BEFORE);
-        this.typeAfter = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_AFTER);
+        this.typeBefore = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE);
+        this.typeAfter = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_AFTER);
         this.lexemsConsumer = lexemsConsumer;
         this.offsetTime = new OffsetTime(zoneId);
     }
 
     public OffsetTime parse(List<BaseLexem> lexems) {
-        if (lexemsConsumer.check(lexems, CustomRemindToken.TYPE)) {
+        if (lexemsConsumer.check(lexems, TimeToken.TYPE)) {
             consumeType(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
             consumeDays(lexems);
@@ -40,7 +39,7 @@ public class OffsetTimeParser {
     }
 
     private void consumeType(List<BaseLexem> lexems) {
-        String type = lexemsConsumer.consume(lexems, CustomRemindToken.TYPE).getValue();
+        String type = lexemsConsumer.consume(lexems, TimeToken.TYPE).getValue();
         if (type.equals(typeAfter)) {
             offsetTime.setType(OffsetTime.Type.AFTER);
         } else if (type.equals(typeBefore)) {

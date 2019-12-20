@@ -42,7 +42,7 @@ public class TimeBuilder {
         StringBuilder builder = new StringBuilder();
 
         if (offsetTime.getDays() > 0 || offsetTime.getHours() > 0 || offsetTime.getMinutes() > 0) {
-            String typeBefore = localisationService.getMessage(MessagesProperties.CUSTOM_REMIND_BEFORE);
+            String typeBefore = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE);
             builder.append(typeBefore).append(" ");
         }
         TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());

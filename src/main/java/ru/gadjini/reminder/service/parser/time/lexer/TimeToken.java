@@ -34,6 +34,7 @@ public enum TimeToken implements Token {
 
     REPEAT,
 
-    OFFSET
+    OFFSET,
 
+    TYPE
 }

@@ -1,72 +1,59 @@
 package ru.gadjini.reminder.service.parser.time.lexer;
 
-import ru.gadjini.reminder.regex.GroupMatcher;
-import ru.gadjini.reminder.regex.GroupPattern;
+import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
-import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
+import ru.gadjini.reminder.service.parser.time.lexer.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class TimeLexer {
 
-    private TimeLexerConfig lexerConfig;
+    private RepeatTimeLexer repeatTimeLexer;
 
-    private String str;
+    private OffsetTimeLexer offsetTimeLexer;
 
-    private int matchEnd;
+    private FixedTimeLexer fixedTimeLexer;
 
-    public TimeLexer(TimeLexerConfig lexerConfig, String str) {
-        this.lexerConfig = lexerConfig;
-        this.str = str;
+    private int end;
+
+    public TimeLexer(TimeLexerConfig timeLexerConfig, String str) {
+        str = str.toLowerCase();
+        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, str);
+        this.fixedTimeLexer = new FixedTimeLexer(timeLexerConfig, str);
+        this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, str);
     }
 
     public List<BaseLexem> tokenize() {
-        GroupPattern pattern = lexerConfig.getTimePattern();
-        GroupMatcher timeMatcher = pattern.maxMatcher(str);
+        List<BaseLexem> lexems = offsetTimeLexer.tokenize();
 
-        if (timeMatcher != null) {
-            Map<String, String> values = timeMatcher.values();
-
-            matchEnd = timeMatcher.end();
-
-            return toLexems(values);
+        if (lexems != null) {
+            end = offsetTimeLexer.end();
+            return lexems;
         }
 
-        return null;
+        lexems = repeatTimeLexer.tokenize();
+
+        if (lexems != null) {
+            end = repeatTimeLexer.end();
+            List<BaseLexem> toReturn = new ArrayList<>();
+            toReturn.add(new TimeLexem(TimeToken.REPEAT, ""));
+            toReturn.addAll(lexems);
+
+            return toReturn;
+        }
+
+        lexems = fixedTimeLexer.tokenize();
+
+        if (lexems != null) {
+            end = fixedTimeLexer.end();
+            return lexems;
+        }
+
+        throw new ParseException();
     }
 
     public int end() {
-        return matchEnd;
-    }
-
-    private List<BaseLexem> toLexems(Map<String, String> values) {
-        List<BaseLexem> lexems = new ArrayList<>();
-
-        if (values.containsKey(PatternBuilder.DAY_WORD)) {
-            lexems.add(new TimeLexem(TimeToken.DAY_WORD, values.get(PatternBuilder.DAY_WORD)));
-        }
-        if (values.containsKey(PatternBuilder.MONTH)) {
-            lexems.add(new TimeLexem(TimeToken.MONTH, values.get(PatternBuilder.MONTH)));
-        }
-        if (values.containsKey(PatternBuilder.DAY)) {
-            lexems.add(new TimeLexem(TimeToken.DAY, values.get(PatternBuilder.DAY)));
-        }
-        if (values.containsKey(PatternBuilder.MONTH_WORD)) {
-            lexems.add(new TimeLexem(TimeToken.MONTH_WORD, values.get(PatternBuilder.MONTH_WORD)));
-        }
-        if (values.containsKey(PatternBuilder.NEXT_WEEK)) {
-            lexems.add(new TimeLexem(TimeToken.NEXT_WEEK, values.get(PatternBuilder.NEXT_WEEK)));
-        }
-        if (values.containsKey(PatternBuilder.DAY_OF_WEEK_WORD)) {
-            lexems.add(new TimeLexem(TimeToken.DAY_OF_WEEK, values.get(PatternBuilder.DAY_OF_WEEK_WORD)));
-        }
-        if (values.containsKey(PatternBuilder.HOUR)) {
-            lexems.add(new TimeLexem(TimeToken.HOUR, values.get(PatternBuilder.HOUR)));
-            lexems.add(new TimeLexem(TimeToken.MINUTE, values.get(PatternBuilder.MINUTE)));
-        }
-
-        return lexems;
+        return end;
     }
 }

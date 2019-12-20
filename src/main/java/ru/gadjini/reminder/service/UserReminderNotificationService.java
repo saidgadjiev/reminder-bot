@@ -10,7 +10,7 @@ import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
-import ru.gadjini.reminder.service.parser.remind.parser.CustomRemindTime;
+import ru.gadjini.reminder.domain.Time;
 import ru.gadjini.reminder.service.security.SecurityService;
 
 import java.time.LocalTime;
@@ -50,13 +50,13 @@ public class UserReminderNotificationService {
         User user = securityService.getAuthenticatedUser();
         ZoneId zoneId = userService.getTimeZone(user.getId());
 
-        CustomRemindTime customRemindTime = parseCustomRemind(text, zoneId);
-        customRemindTime.setOffsetTime(customRemindTime.getOffsetTime().withZone(ZoneOffset.UTC));
+        Time time = parseCustomRemind(text, zoneId);
+        time.setOffsetTime(time.getOffsetTime().withZone(ZoneOffset.UTC));
         UserReminderNotification userReminderNotification = new UserReminderNotification(ZoneOffset.UTC);
-        userReminderNotification.setDays(customRemindTime.getOffsetTime().getDays());
-        userReminderNotification.setTime(customRemindTime.getOffsetTime().getTime());
-        userReminderNotification.setHours(customRemindTime.getOffsetTime().getHours());
-        userReminderNotification.setMinutes(customRemindTime.getOffsetTime().getMinutes());
+        userReminderNotification.setDays(time.getOffsetTime().getDays());
+        userReminderNotification.setTime(time.getOffsetTime().getTime());
+        userReminderNotification.setHours(time.getOffsetTime().getHours());
+        userReminderNotification.setMinutes(time.getOffsetTime().getMinutes());
         userReminderNotification.setUserId(user.getId());
         userReminderNotification.setType(notificationType);
 
@@ -118,7 +118,7 @@ public class UserReminderNotificationService {
         return notification;
     }
 
-    private CustomRemindTime parseCustomRemind(String text, ZoneId zoneId) {
+    private Time parseCustomRemind(String text, ZoneId zoneId) {
         try {
             return requestParser.parseCustomRemind(text, zoneId);
         } catch (ParseException ex) {

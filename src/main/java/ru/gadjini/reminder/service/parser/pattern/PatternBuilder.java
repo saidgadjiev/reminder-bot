@@ -102,9 +102,11 @@ public class PatternBuilder {
         String tomorrow = localisationService.getMessage(MessagesProperties.TOMORROW);
         String dayAfterTomorrow = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
         String today = localisationService.getMessage(MessagesProperties.TODAY);
+        String at = localisationService.getMessage(MessagesProperties.REGEX_POSTPONE_TYPE_AT);
         StringBuilder patternBuilder = new StringBuilder();
 
         patternBuilder
+                .append("(").append(at).append(")? ")
                 .append("(((?<").append(MONTH).append(">1[0-2]|[1-9])\\.)?((?<").append(DAY).append(">0[1-9]|[12]\\d|3[01]|0?[1-9])|(?<").append(DAY_WORD).append(">")
                 .append(tomorrow).append("|").append(dayAfterTomorrow).append("|").append(today).append(")) )?((?<").append(MONTH_WORD).append(">")
                 .append(Stream.of(Month.values()).map(month -> month.getDisplayName(TextStyle.FULL, locale)).collect(Collectors.joining("|")))
@@ -116,36 +118,22 @@ public class PatternBuilder {
         return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(MONTH, DAY, DAY_WORD, MONTH_WORD, NEXT_WEEK, DAY_OF_WEEK_WORD, HOUR, MINUTE));
     }
 
-    public GroupPattern buildPostponePattern() {
-        StringBuilder patternTypeOn = new StringBuilder();
-
-        String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX);
-        patternTypeOn.append("((?<").append(DAYS).append(">\\d+)").append(dayPrefix).append(")?( )?");
-
-        String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
-        patternTypeOn.append("((?<").append(HOURS).append(">\\d+)").append(hourPrefix).append(")?( )?");
-
-        String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX);
-        patternTypeOn.append("((?<").append(MINUTES).append(">\\d+)").append(minutePrefix).append(")?");
-
-        return new GroupPattern(Pattern.compile(patternTypeOn.toString()), List.of(DAYS, HOURS, MINUTES));
-    }
-
     public GroupPattern buildOffsetTimePattern() {
         StringBuilder patternBuilder = new StringBuilder();
 
-        String typeAfter = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_AFTER);
         String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX);
-        String typeBefore = localisationService.getMessage(MessagesProperties.CUSTOM_REMIND_BEFORE);
         String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
         String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX);
         String eve = localisationService.getMessage(MessagesProperties.EVE);
-        String at = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
+        String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
+        String typeAfter = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_AFTER);
+        String typeBefore = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE);
+
         patternBuilder.append("(((?<").append(TYPE).append(">").append(typeAfter).append("|")
                 .append(typeBefore).append(") )?(((?<").append(DAYS).append(">\\d+)").append(dayPrefix)
                 .append(")|(?<").append(EVE).append(">").append(eve).append("))?( )?((?<").append(HOURS).append(">\\d+)")
                 .append(hourPrefix).append(")?( )?((?<").append(MINUTES).append(">\\d+)").append(minutePrefix).append(")?)")
-                .append("( )?(").append(at).append(" )?((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))?");
+                .append("( )?(").append(timeArticle).append(" )?((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))?");
 
         return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, DAYS, EVE, HOURS, MINUTES, HOUR, MINUTE));
     }

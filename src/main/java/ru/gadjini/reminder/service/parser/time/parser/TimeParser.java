@@ -1,152 +1,61 @@
 package ru.gadjini.reminder.service.parser.time.parser;
 
-import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.domain.Time;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
-import ru.gadjini.reminder.time.DateTime;
+import ru.gadjini.reminder.service.parser.time.parser.OffsetTimeParser;
+import ru.gadjini.reminder.service.parser.time.parser.RepeatTimeParser;
+import ru.gadjini.reminder.service.parser.time.parser.FixedTimeParser;
 
-import java.time.*;
-import java.time.format.TextStyle;
-import java.time.temporal.TemporalAdjusters;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Stream;
 
 public class TimeParser {
 
-    private DateTime parsedTime;
+    private Time time;
 
-    private String tomorrow;
+    private FixedTimeParser fixedTimeParser;
 
-    private String dayAfterTomorrow;
+    private RepeatTimeParser repeatTimeParser;
 
-    private Locale locale;
+    private OffsetTimeParser offsetTimeParser;
 
-    private DayOfWeekService dayOfWeekService;
+    private LexemsConsumer lexemsConsumer;
 
-    private final LexemsConsumer lexemsConsumer;
-
-    public TimeParser(LocalisationService localisationService, Locale locale, LexemsConsumer lexemsConsumer,
-                      ZoneId zoneId, DayOfWeekService dayOfWeekService) {
-        this.tomorrow = localisationService.getMessage(MessagesProperties.TOMORROW);
-        this.dayAfterTomorrow = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
-        this.locale = locale;
+    public TimeParser(LocalisationService localisationService, Locale locale, ZoneId zoneId, DayOfWeekService dayOfWeekService, LexemsConsumer lexemsConsumer) {
         this.lexemsConsumer = lexemsConsumer;
-        this.parsedTime = DateTime.now(zoneId).time(null);
-        this.dayOfWeekService = dayOfWeekService;
+        this.fixedTimeParser = new FixedTimeParser(localisationService, locale, lexemsConsumer, zoneId, dayOfWeekService);
+        this.repeatTimeParser = new RepeatTimeParser(lexemsConsumer, dayOfWeekService, locale, zoneId);
+        this.offsetTimeParser = new OffsetTimeParser(localisationService, zoneId, lexemsConsumer);
+        this.time = new Time(zoneId);
     }
 
-    public DateTime parse(List<BaseLexem> lexems) {
-        if (lexemsConsumer.check(lexems, TimeToken.MONTH)) {
-            consumeMonth(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.DAY_WORD)) {
-            consumeDayWord(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.DAY)) {
-            consumeDay(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.NEXT_WEEK)) {
-            consumeNextWeek(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.DAY_OF_WEEK)) {
-            consumeDayOfWeek(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
-            LocalTime time = consumeTime(lexems);
-            parsedTime.time(time);
-        }
-
-        ZonedDateTime now = ZonedDateTime.now(parsedTime.getZone());
-        if (parsedTime.date().isBefore(now.toLocalDate())) {
-            parsedTime.month(now.getMonthValue() + 1);
-        }
-        if (parsedTime.hasTime()) {
-            if (parsedTime.date().equals(LocalDate.now(parsedTime.getZone()))
-                    && now.toLocalTime().isAfter(parsedTime.time())) {
-                parsedTime.plusDays(1);
-            }
-        }
-
-        return parsedTime;
+    public TimeParser(LocalisationService localisationService, Locale locale, ZoneId zoneId, DayOfWeekService dayOfWeekService) {
+        this.lexemsConsumer = new LexemsConsumer();
+        this.fixedTimeParser = new FixedTimeParser(localisationService, locale, lexemsConsumer, zoneId, dayOfWeekService);
+        this.repeatTimeParser = new RepeatTimeParser(lexemsConsumer, dayOfWeekService, locale, zoneId);
+        this.offsetTimeParser = new OffsetTimeParser(localisationService, zoneId, lexemsConsumer);
     }
 
-    private void consumeNextWeek(List<BaseLexem> lexems) {
-        lexemsConsumer.consume(lexems, TimeToken.NEXT_WEEK);
-
-        consumeDayOfWeek(lexems);
-        parsedTime.plusDays(7);
-    }
-
-    private void consumeDayOfWeek(List<BaseLexem> lexems) {
-        String dayOfWeekValue = lexemsConsumer.consume(lexems, TimeToken.DAY_OF_WEEK).getValue();
-        DayOfWeek dayOfWeek = Stream.of(DayOfWeek.values())
-                .filter(dow -> dayOfWeekService.isThatDay(dow, locale, dayOfWeekValue))
-                .findFirst()
-                .orElseThrow();
-        LocalDate dayOfWeekDate = (LocalDate) TemporalAdjusters.next(dayOfWeek).adjustInto(parsedTime.date());
-
-        parsedTime.date(dayOfWeekDate);
-
-        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
-            parsedTime.time(consumeTime(lexems));
+    public Time parse(List<BaseLexem> lexems) {
+        if (lexemsConsumer.check(lexems, TimeToken.REPEAT)) {
+            lexemsConsumer.consume(lexems, TimeToken.REPEAT);
+            time.setRepeatTime(repeatTimeParser.parse(lexems));
+        } else if (lexemsConsumer.check(lexems, TimeToken.OFFSET)) {
+            lexemsConsumer.consume(lexems, TimeToken.OFFSET);
+            time.setOffsetTime(offsetTimeParser.parse(lexems));
+        } else {
+            time.setFixedTime(fixedTimeParser.parse(lexems));
         }
-    }
-
-    private void consumeMonth(List<BaseLexem> lexems) {
-        int month = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MONTH).getValue());
-        int day = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAY).getValue());
-
-        parsedTime.month(month);
-
-        parsedTime.dayOfMonth(day);
-
-        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
-            parsedTime.time(consumeTime(lexems));
+        if (lexemsConsumer.getPosition() < lexems.size()) {
+            throw new ParseException();
         }
-    }
 
-    private void consumeMonthWord(List<BaseLexem> lexems) {
-        String month = lexemsConsumer.consume(lexems, TimeToken.MONTH_WORD).getValue();
-
-        Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, locale).equals(month)).findFirst().orElseThrow(ParseException::new);
-
-        parsedTime.month(m.getValue());
-        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
-            parsedTime.time(consumeTime(lexems));
-        }
-    }
-
-    private void consumeDayWord(List<BaseLexem> lexems) {
-        String dayWord = lexemsConsumer.consume(lexems, TimeToken.DAY_WORD).getValue();
-
-        if (dayWord.equals(tomorrow)) {
-            parsedTime.plusDays(1);
-        } else if (dayWord.equals(dayAfterTomorrow)) {
-            parsedTime.plusDays(2);
-        }
-        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
-            parsedTime.time(consumeTime(lexems));
-        }
-    }
-
-    private void consumeDay(List<BaseLexem> lexems) {
-        int day = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAY).getValue());
-
-        parsedTime.dayOfMonth(day);
-        if (lexemsConsumer.check(lexems, TimeToken.MONTH_WORD)) {
-            consumeMonthWord(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
-            parsedTime.time(consumeTime(lexems));
-        }
-        if (parsedTime.dayOfMonth() > day) {
-            parsedTime.plusMonths(1);
-        }
-    }
-
-    private LocalTime consumeTime(List<BaseLexem> lexems) {
-        int hour = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.HOUR).getValue());
-        int minute = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MINUTE).getValue());
-
-        return LocalTime.of(hour, minute);
+        return time;
     }
 }
