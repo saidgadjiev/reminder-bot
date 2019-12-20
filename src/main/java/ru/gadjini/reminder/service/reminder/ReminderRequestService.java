@@ -191,7 +191,7 @@ public class ReminderRequestService {
 
         setCommonInfo(reminder, parsedRequest, receiverId);
 
-        return repeatReminderService.createReminder(reminder);
+        return reminderService.createReminder(reminder);
     }
 
     private Reminder createRepeatReminder(ParsedRequest parsedRequest, Integer receiverId) {

@@ -69,6 +69,7 @@ public class ReminderRequestParser {
             lexemsConsumer.consume(lexems, TimeToken.REPEAT);
             parsedRequest.setRepeatTime(repeatTimeParser.parse(lexems));
         } else if (lexemsConsumer.check(lexems, TimeToken.OFFSET)) {
+            lexemsConsumer.consume(lexems, TimeToken.OFFSET);
             parsedRequest.setOffsetTime(offsetTimeParser.parse(lexems));
         } else {
             parsedRequest.setParsedTime(timeParser.parse(lexems));

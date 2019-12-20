@@ -32,7 +32,6 @@ public class OffsetTimeLexer {
             Map<String, String> values = matcher.values();
             List<BaseLexem> lexems = new ArrayList<>();
 
-            lexems.add(new TimeLexem(TimeToken.OFFSET, ""));
             if (values.containsKey(PatternBuilder.TYPE)) {
                 lexems.add(new CustomRemindLexem(CustomRemindToken.TYPE, values.get(PatternBuilder.TYPE)));
             }

@@ -10,7 +10,6 @@ import ru.gadjini.reminder.service.parser.postpone.lexer.PostponeRequestLexer;
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 import ru.gadjini.reminder.service.parser.postpone.parser.PostponeRequestParser;
 import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexer;
-import ru.gadjini.reminder.service.parser.remind.lexer.CustomRemindLexerConfig;
 import ru.gadjini.reminder.service.parser.remind.parser.CustomRemindParser;
 import ru.gadjini.reminder.service.parser.remind.parser.CustomRemindTime;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderRequestLexer;
@@ -35,8 +34,6 @@ public class RequestParser {
 
     private final TimeLexerConfig timeLexerConfig;
 
-    private final CustomRemindLexerConfig customRemindLexerConfig;
-
     private DayOfWeekService dayOfWeekService;
 
     @Autowired
@@ -44,13 +41,11 @@ public class RequestParser {
                          PostponeLexerConfig postponeLexerConfig,
                          ReminderRequestLexerConfig reminderRequestLexerConfig,
                          TimeLexerConfig timeLexerConfig,
-                         CustomRemindLexerConfig customRemindLexerConfig,
                          DayOfWeekService dayOfWeekService) {
         this.localisationService = localisationService;
         this.postponeLexerConfig = postponeLexerConfig;
         this.reminderRequestLexerConfig = reminderRequestLexerConfig;
         this.timeLexerConfig = timeLexerConfig;
-        this.customRemindLexerConfig = customRemindLexerConfig;
         this.dayOfWeekService = dayOfWeekService;
     }
 
@@ -73,7 +68,7 @@ public class RequestParser {
     }
 
     public CustomRemindTime parseCustomRemind(String text, ZoneId zoneId) {
-        List<BaseLexem> lexems = new CustomRemindLexer(customRemindLexerConfig, timeLexerConfig, text).tokenize();
+        List<BaseLexem> lexems = new CustomRemindLexer(timeLexerConfig, text).tokenize();
 
         return new CustomRemindParser(localisationService, Locale.getDefault(), zoneId, dayOfWeekService).parse(lexems);
     }

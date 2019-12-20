@@ -75,7 +75,7 @@ public class ReminderRequestLexer {
         lexems.add(new TimeLexem(TimeToken.OFFSET, ""));
         lexems.addAll(timeLexems);
 
-        String tokenizeStr = parts[0].substring(0, parts[0].length() - repeatTimeLexer.end()).trim();
+        String tokenizeStr = parts[0].substring(0, parts[0].length() - offsetTimeLexer.end()).trim();
 
         return tokenizeReminderTextAndNote(tokenizeStr, lexems);
     }
