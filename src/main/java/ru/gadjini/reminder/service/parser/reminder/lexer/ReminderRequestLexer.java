@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.service.parser.reminder.lexer;
 
-import org.apache.commons.lang3.StringUtils;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.regex.GroupMatcher;
 import ru.gadjini.reminder.regex.GroupPattern;
@@ -12,15 +11,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-//каждые 5мин
-//каждое воскресенье в 19:00
-//каждый вторник в 19:00
-//каждый день в 19:00
 public class ReminderRequestLexer {
 
     private final ReminderRequestLexerConfig lexerConfig;
 
     private RepeatTimeLexer repeatTimeLexer;
+
+    private OffsetTimeLexer offsetTimeLexer;
 
     private TimeLexer timeLexer;
 
@@ -35,17 +32,22 @@ public class ReminderRequestLexer {
         }
         this.timeLexer = new TimeLexer(timeLexerConfig, parts[0]);
         this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, parts[0]);
+        this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, parts[0]);
     }
 
     public List<BaseLexem> tokenize() {
-        List<BaseLexem> lexems = tokenizeRepeatRequest();
+        List<BaseLexem> lexems = tokenizeOffsetRequest();
 
         if (lexems != null) {
             return lexems;
         }
 
-        lexems = tokenizeStandardRequest();
+        lexems = tokenizeRepeatRequest();
+        if (lexems != null) {
+            return lexems;
+        }
 
+        lexems = tokenizeStandardRequest();
         if (lexems != null) {
             return lexems;
         }
@@ -61,6 +63,21 @@ public class ReminderRequestLexer {
         }
 
         throw new ParseException();
+    }
+
+    private LinkedList<BaseLexem> tokenizeOffsetRequest() {
+        List<BaseLexem> timeLexems = offsetTimeLexer.tokenize();
+
+        if (timeLexems == null) {
+            return null;
+        }
+        LinkedList<BaseLexem> lexems = new LinkedList<>();
+        lexems.add(new TimeLexem(TimeToken.OFFSET, ""));
+        lexems.addAll(timeLexems);
+
+        String tokenizeStr = parts[0].substring(0, parts[0].length() - repeatTimeLexer.end()).trim();
+
+        return tokenizeReminderTextAndNote(tokenizeStr, lexems);
     }
 
     private LinkedList<BaseLexem> tokenizeRepeatRequest() {

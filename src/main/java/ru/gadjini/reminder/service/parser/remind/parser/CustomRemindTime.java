@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.parser.remind.parser;
 
+import ru.gadjini.reminder.domain.OffsetTime;
 import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.time.DateTime;
 

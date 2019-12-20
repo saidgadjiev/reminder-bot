@@ -6,8 +6,6 @@ public class CustomRemindLexem extends BaseLexem {
 
     private CustomRemindToken token;
 
-    private String value;
-
     public CustomRemindLexem(CustomRemindToken token, String value) {
         super(value);
         this.token = token;
@@ -19,9 +17,5 @@ public class CustomRemindLexem extends BaseLexem {
 
     public void setToken(CustomRemindToken token) {
         this.token = token;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 }

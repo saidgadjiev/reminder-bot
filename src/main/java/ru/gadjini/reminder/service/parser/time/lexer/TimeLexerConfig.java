@@ -11,20 +11,27 @@ import java.util.Map;
 @Component
 public class TimeLexerConfig {
 
-    private Map<Locale, GroupPattern> patterns = new HashMap<>();
+    private Map<Locale, GroupPattern> timePatterns = new HashMap<>();
 
     private final Map<Locale, GroupPattern> repeatTimePatterns = new HashMap<>();
 
+    private final Map<Locale, GroupPattern> offsetTimePatterns = new HashMap<>();
+
     public TimeLexerConfig(PatternBuilder patternBuilder) {
-        patterns.put(Locale.getDefault(), patternBuilder.buildTimePattern(Locale.getDefault()));
+        timePatterns.put(Locale.getDefault(), patternBuilder.buildTimePattern(Locale.getDefault()));
         repeatTimePatterns.put(Locale.getDefault(), patternBuilder.buildRepeatTimePattern(Locale.getDefault()));
+        offsetTimePatterns.put(Locale.getDefault(), patternBuilder.buildOffsetTimePattern());
     }
 
-    public GroupPattern getPattern() {
-        return patterns.get(Locale.getDefault());
+    public GroupPattern getTimePattern() {
+        return timePatterns.get(Locale.getDefault());
     }
 
     public GroupPattern getRepeatTimePattern() {
         return repeatTimePatterns.get(Locale.getDefault());
+    }
+
+    public GroupPattern getOffsetTimePattern() {
+        return offsetTimePatterns.get(Locale.getDefault());
     }
 }

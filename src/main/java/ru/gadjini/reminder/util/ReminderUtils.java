@@ -2,7 +2,7 @@ package ru.gadjini.reminder.util;
 
 import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 import ru.gadjini.reminder.service.parser.postpone.parser.PostponeOn;
-import ru.gadjini.reminder.service.parser.remind.parser.OffsetTime;
+import ru.gadjini.reminder.domain.OffsetTime;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.ZoneId;

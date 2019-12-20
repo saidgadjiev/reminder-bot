@@ -23,6 +23,7 @@ import ru.gadjini.reminder.service.parser.reminder.parser.ParsedRequest;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.validation.ValidationService;
 import ru.gadjini.reminder.time.DateTime;
+import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.ReminderUtils;
 
 import java.time.ZoneId;
@@ -65,6 +66,8 @@ public class ReminderRequestService {
 
         if (parsedRequest.isRepeatReminder()) {
             return createRepeatReminder(parsedRequest, receiverId);
+        } else if (parsedRequest.isOffsetReminder()) {
+            return createOffsetReminder(parsedRequest, receiverId);
         } else {
             validationService.validateIsNotPastTime(parsedRequest.getParsedTime());
             User user = securityService.getAuthenticatedUser();
@@ -75,16 +78,18 @@ public class ReminderRequestService {
     }
 
     public Reminder createReminder(String text) {
-        ParsedRequest reminderRequest = parseRequest(text);
-        if (reminderRequest.isRepeatReminder()) {
-            return createRepeatReminder(reminderRequest, null);
+        ParsedRequest parsedRequest = parseRequest(text);
+        if (parsedRequest.isRepeatReminder()) {
+            return createRepeatReminder(parsedRequest, null);
+        } else if (parsedRequest.isOffsetReminder()) {
+            return createOffsetReminder(parsedRequest, null);
         } else {
-            validationService.validateIsNotPastTime(reminderRequest.getParsedTime());
-            if (StringUtils.isNotBlank(reminderRequest.getReceiverName())) {
+            validationService.validateIsNotPastTime(parsedRequest.getParsedTime());
+            if (StringUtils.isNotBlank(parsedRequest.getReceiverName())) {
                 User user = securityService.getAuthenticatedUser();
-                validationService.checkFriendShip(user.getId(), reminderRequest.getReceiverName());
+                validationService.checkFriendShip(user.getId(), parsedRequest.getReceiverName());
             }
-            return createStandardReminder(reminderRequest, null);
+            return createStandardReminder(parsedRequest, null);
         }
     }
 
@@ -178,18 +183,22 @@ public class ReminderRequestService {
         return parsedRequest;
     }
 
+    private Reminder createOffsetReminder(ParsedRequest parsedRequest, Integer receiverId) {
+        Reminder reminder = new Reminder();
+
+        ZonedDateTime now = JodaTimeUtils.plus(ZonedDateTime.now(parsedRequest.getOffsetTime().getZoneId()), parsedRequest.getOffsetTime().getPeriod());
+        reminder.setRemindAt(DateTime.of(now.withZoneSameInstant(ZoneOffset.UTC)));
+
+        setCommonInfo(reminder, parsedRequest, receiverId);
+
+        return repeatReminderService.createReminder(reminder);
+    }
+
     private Reminder createRepeatReminder(ParsedRequest parsedRequest, Integer receiverId) {
         Reminder reminder = new Reminder();
 
         reminder.setRepeatRemindAt(parsedRequest.getRepeatTime().withZone(ZoneOffset.UTC));
-        reminder.setText(parsedRequest.getText());
-        reminder.setNote(parsedRequest.getNote());
-
-        User user = securityService.getAuthenticatedUser();
-        reminder.setCreator(TgUser.from(user));
-        reminder.setCreatorId(user.getId());
-
-        setReceiver(reminder, parsedRequest, receiverId);
+        setCommonInfo(reminder, parsedRequest, receiverId);
 
         return repeatReminderService.createReminder(reminder);
     }
@@ -198,6 +207,13 @@ public class ReminderRequestService {
         Reminder reminder = new Reminder();
         reminder.setRemindAt(parsedRequest.getParsedTime().withZoneSameInstant(ZoneOffset.UTC));
         reminder.setInitialRemindAt(reminder.getRemindAt());
+
+        setCommonInfo(reminder, parsedRequest, receiverId);
+
+        return reminderService.createReminder(reminder);
+    }
+
+    private void setCommonInfo(Reminder reminder, ParsedRequest parsedRequest, Integer receiverId) {
         reminder.setText(parsedRequest.getText());
         reminder.setNote(parsedRequest.getNote());
 
@@ -206,12 +222,6 @@ public class ReminderRequestService {
         reminder.setCreator(creator);
         reminder.setCreatorId(creator.getUserId());
 
-        setReceiver(reminder, parsedRequest, receiverId);
-
-        return reminderService.createReminder(reminder);
-    }
-
-    private void setReceiver(Reminder reminder, ParsedRequest parsedRequest, Integer receiverId) {
         if (StringUtils.isNotBlank(parsedRequest.getReceiverName())) {
             reminder.setReceiver(new TgUser() {{
                 setUsername(parsedRequest.getReceiverName());

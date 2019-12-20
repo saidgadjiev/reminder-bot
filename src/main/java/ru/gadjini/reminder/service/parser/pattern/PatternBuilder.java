@@ -131,7 +131,7 @@ public class PatternBuilder {
         return new GroupPattern(Pattern.compile(patternTypeOn.toString()), List.of(DAYS, HOURS, MINUTES));
     }
 
-    public GroupPattern buildCustomRemindPattern() {
+    public GroupPattern buildOffsetTimePattern() {
         StringBuilder patternBuilder = new StringBuilder();
 
         String typeAfter = localisationService.getMessage(MessagesProperties.REGEX_CUSTOM_REMIND_TYPE_AFTER);

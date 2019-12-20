@@ -39,7 +39,7 @@ public class PostponeRequestParser {
             postponeTime.setPostponeOn(new PostponeOn());
             consumeTypeOn(lexems);
         } else if (type.equals(typeAt)) {
-            DateTime parsedTime = timeParser.parseTime(lexems);
+            DateTime parsedTime = timeParser.parse(lexems);
             postponeTime.setPostponeAt(parsedTime.toZonedDateTime());
         } else {
             throw new ParseException();

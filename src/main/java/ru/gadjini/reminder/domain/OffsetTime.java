@@ -1,4 +1,6 @@
-package ru.gadjini.reminder.service.parser.remind.parser;
+package ru.gadjini.reminder.domain;
+
+import org.joda.time.Period;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -9,11 +11,7 @@ public class OffsetTime {
 
     private Type type;
 
-    private int days;
-
-    private int hours;
-
-    private int minutes;
+    private Period period = new Period();
 
     private LocalTime time;
 
@@ -32,27 +30,31 @@ public class OffsetTime {
     }
 
     public int getDays() {
-        return days;
+        return period.getDays();
     }
 
     public void setDays(int days) {
-        this.days = days;
+        period = period.withDays(days);
     }
 
     public int getHours() {
-        return hours;
+        return period.getHours();
     }
 
     public void setHours(int hours) {
-        this.hours = hours;
+        period = period.withHours(hours);
     }
 
     public int getMinutes() {
-        return minutes;
+        return period.getMinutes();
     }
 
     public void setMinutes(int minutes) {
-        this.minutes = minutes;
+        period = period.withMinutes(minutes);
+    }
+
+    public Period getPeriod() {
+        return period;
     }
 
     public LocalTime getTime() {

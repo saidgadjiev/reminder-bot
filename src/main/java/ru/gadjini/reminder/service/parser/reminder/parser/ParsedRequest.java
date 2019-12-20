@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.parser.reminder.parser;
 
+import ru.gadjini.reminder.domain.OffsetTime;
 import ru.gadjini.reminder.domain.RepeatTime;
 import ru.gadjini.reminder.time.DateTime;
 
@@ -16,6 +17,8 @@ public class ParsedRequest {
     private DateTime parsedTime;
 
     private RepeatTime repeatTime;
+
+    private OffsetTime offsetTime;
 
     private ZoneId zone;
 
@@ -59,8 +62,20 @@ public class ParsedRequest {
         this.repeatTime = repeatTime;
     }
 
+    public OffsetTime getOffsetTime() {
+        return offsetTime;
+    }
+
+    public void setOffsetTime(OffsetTime offsetTime) {
+        this.offsetTime = offsetTime;
+    }
+
     public boolean isRepeatReminder() {
         return repeatTime != null;
+    }
+
+    public boolean isOffsetReminder() {
+        return offsetTime != null;
     }
 
     public ZoneId getZone() {

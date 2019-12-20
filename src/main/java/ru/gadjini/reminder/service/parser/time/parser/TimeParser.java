@@ -40,7 +40,7 @@ public class TimeParser {
         this.dayOfWeekService = dayOfWeekService;
     }
 
-    public DateTime parseTime(List<BaseLexem> lexems) {
+    public DateTime parse(List<BaseLexem> lexems) {
         if (lexemsConsumer.check(lexems, TimeToken.MONTH)) {
             consumeMonth(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAY_WORD)) {
