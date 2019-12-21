@@ -10,8 +10,10 @@ import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
-import ru.gadjini.reminder.domain.Time;
+import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.security.SecurityService;
+import ru.gadjini.reminder.service.validation.ValidationEvent;
+import ru.gadjini.reminder.service.validation.ValidatorFactory;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -31,14 +33,18 @@ public class UserReminderNotificationService {
 
     private RequestParser requestParser;
 
+    private ValidatorFactory validatorFactory;
+
     @Autowired
     public UserReminderNotificationService(UserReminderNotificationDao dao,
                                            LocalisationService localisationService,
-                                           SecurityService securityService, RequestParser requestParser) {
+                                           SecurityService securityService, RequestParser requestParser,
+                                           ValidatorFactory validatorFactory) {
         this.dao = dao;
         this.localisationService = localisationService;
         this.securityService = securityService;
         this.requestParser = requestParser;
+        this.validatorFactory = validatorFactory;
     }
 
     @Autowired
@@ -51,6 +57,8 @@ public class UserReminderNotificationService {
         ZoneId zoneId = userService.getTimeZone(user.getId());
 
         Time time = parseCustomRemind(text, zoneId);
+        validatorFactory.getValidator(ValidationEvent.USER_REMINDER_NOTIFICATION).validate(time);
+
         time.setOffsetTime(time.getOffsetTime().withZone(ZoneOffset.UTC));
         UserReminderNotification userReminderNotification = new UserReminderNotification(ZoneOffset.UTC);
         userReminderNotification.setDays(time.getOffsetTime().getDays());
@@ -108,6 +116,7 @@ public class UserReminderNotificationService {
         eveNotification.setUserId(userId);
         dao.create(eveNotification);
     }
+
     private UserReminderNotification buildOffsetNotification(int userId, int hours, int minutes) {
         UserReminderNotification notification = new UserReminderNotification(ZoneOffset.UTC);
         notification.setType(UserReminderNotification.NotificationType.WITH_TIME);

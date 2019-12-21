@@ -102,11 +102,11 @@ public class PatternBuilder {
         String tomorrow = localisationService.getMessage(MessagesProperties.TOMORROW);
         String dayAfterTomorrow = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
         String today = localisationService.getMessage(MessagesProperties.TODAY);
-        String at = localisationService.getMessage(MessagesProperties.REGEX_POSTPONE_TYPE_AT);
+        String until = localisationService.getMessage(MessagesProperties.FIXED_TIME_TYPE_UNTIL);
         StringBuilder patternBuilder = new StringBuilder();
 
         patternBuilder
-                .append("(").append(at).append(" )?")
+                .append("((?<").append(TYPE).append(">").append(until).append("|").append(regexpTimeArticle).append(") )?")
                 .append("(((?<").append(MONTH).append(">1[0-2]|[1-9])\\.)?((?<").append(DAY).append(">0[1-9]|[12]\\d|3[01]|0?[1-9])|(?<").append(DAY_WORD).append(">")
                 .append(tomorrow).append("|").append(dayAfterTomorrow).append("|").append(today).append(")) )?((?<").append(MONTH_WORD).append(">")
                 .append(Stream.of(Month.values()).map(month -> month.getDisplayName(TextStyle.FULL, locale)).collect(Collectors.joining("|")))
@@ -115,7 +115,7 @@ public class PatternBuilder {
                 .append("))?( )?(").append(regexpTimeArticle).append(" )?((?<")
                 .append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))?");
 
-        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(MONTH, DAY, DAY_WORD, MONTH_WORD, NEXT_WEEK, DAY_OF_WEEK_WORD, HOUR, MINUTE));
+        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, MONTH, DAY, DAY_WORD, MONTH_WORD, NEXT_WEEK, DAY_OF_WEEK_WORD, HOUR, MINUTE));
     }
 
     public GroupPattern buildOffsetTimePattern() {
@@ -126,10 +126,11 @@ public class PatternBuilder {
         String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX);
         String eve = localisationService.getMessage(MessagesProperties.EVE);
         String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
-        String typeAfter = localisationService.getMessage(MessagesProperties.REGEX_OFFSET_TIME_TYPE_AFTER);
+        String typeAfter = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_AFTER);
+        String typeOn = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_FOR);
         String typeBefore = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE);
 
-        patternBuilder.append("((((?<").append(TYPE).append(">").append(typeAfter).append("|").append(typeBefore).append(")|(?<")
+        patternBuilder.append("((((?<").append(TYPE).append(">").append(typeAfter).append("|").append(typeBefore).append("|").append(typeOn).append(")|(?<")
                 .append(EVE).append(">").append(eve).append(")) )((?<").append(DAYS).append(">\\d+)( )?")
                 .append(dayPrefix).append(")?( )?((?<").append(HOURS).append(">\\d+)( )?").append(hourPrefix).append(")?( )?((?<")
                 .append(MINUTES).append(">\\d+)( )?").append(minutePrefix).append(")?)").append("( )?(").append(timeArticle)

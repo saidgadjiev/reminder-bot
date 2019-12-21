@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
-import ru.gadjini.reminder.domain.RepeatTime;
+import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.service.declension.TimeDeclensionService;
 import ru.gadjini.reminder.service.message.LocalisationService;

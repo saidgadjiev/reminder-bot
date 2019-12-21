@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.*;
 import ru.gadjini.reminder.domain.mapping.FriendshipMapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
+import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JdbcUtils;
 import ru.gadjini.reminder.util.JodaTimeUtils;

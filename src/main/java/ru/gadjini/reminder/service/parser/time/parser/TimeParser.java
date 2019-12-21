@@ -1,15 +1,12 @@
 package ru.gadjini.reminder.service.parser.time.parser;
 
-import ru.gadjini.reminder.domain.Time;
+import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
-import ru.gadjini.reminder.service.parser.time.parser.OffsetTimeParser;
-import ru.gadjini.reminder.service.parser.time.parser.RepeatTimeParser;
-import ru.gadjini.reminder.service.parser.time.parser.FixedTimeParser;
 
 import java.time.ZoneId;
 import java.util.List;

@@ -1,8 +1,9 @@
 package ru.gadjini.reminder.service.parser.reminder.parser;
 
-import ru.gadjini.reminder.domain.OffsetTime;
-import ru.gadjini.reminder.domain.RepeatTime;
-import ru.gadjini.reminder.domain.Time;
+import ru.gadjini.reminder.domain.time.FixedTime;
+import ru.gadjini.reminder.domain.time.OffsetTime;
+import ru.gadjini.reminder.domain.time.RepeatTime;
+import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.ZoneId;
@@ -11,11 +12,21 @@ public class ReminderRequest {
 
     private String receiverName;
 
+    private Integer receiverId;
+
     private String text;
 
     private String note;
 
     private Time time;
+
+    public Integer getReceiverId() {
+        return receiverId;
+    }
+
+    public void setReceiverId(Integer receiverId) {
+        this.receiverId = receiverId;
+    }
 
     public String getReceiverName() {
         return receiverName;
@@ -50,10 +61,10 @@ public class ReminderRequest {
     }
 
     public DateTime getFixedTime() {
-        return time.getFixedTime();
+        return time.getFixedDateTime();
     }
 
-    void setFixedTime(DateTime fixedTime) {
+    public void setFixedTime(FixedTime fixedTime) {
         time.setFixedTime(fixedTime);
     }
 

@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.service.parser.time.parser;
 
 import org.joda.time.Period;
-import ru.gadjini.reminder.domain.RepeatTime;
+import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;

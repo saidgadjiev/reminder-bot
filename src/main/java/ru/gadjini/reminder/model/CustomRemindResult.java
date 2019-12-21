@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.model;
 
 import ru.gadjini.reminder.domain.ReminderNotification;
-import ru.gadjini.reminder.domain.RepeatTime;
+import ru.gadjini.reminder.domain.time.RepeatTime;
 
 import java.time.ZonedDateTime;
 

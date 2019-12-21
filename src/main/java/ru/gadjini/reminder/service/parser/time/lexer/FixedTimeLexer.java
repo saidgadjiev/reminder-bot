@@ -45,6 +45,9 @@ public class FixedTimeLexer {
     private LinkedList<BaseLexem> toLexems(Map<String, String> values) {
         LinkedList<BaseLexem> lexems = new LinkedList<>();
 
+        if (values.containsKey(PatternBuilder.TYPE)) {
+            lexems.add(new TimeLexem(TimeToken.TYPE, values.get(PatternBuilder.TYPE)));
+        }
         if (values.containsKey(PatternBuilder.DAY_WORD)) {
             lexems.add(new TimeLexem(TimeToken.DAY_WORD, values.get(PatternBuilder.DAY_WORD)));
         }

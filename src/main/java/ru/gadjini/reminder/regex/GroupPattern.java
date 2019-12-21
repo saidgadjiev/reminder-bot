@@ -20,6 +20,15 @@ public class GroupPattern {
     }
 
     public GroupMatcher maxMatcher(String text) {
+        GroupMatcher fortuneMatcher = checkFortune(text);
+        if (fortuneMatcher != null) {
+            return fortuneMatcher;
+        }
+
+        return findMaxMatcher(text);
+    }
+
+    private GroupMatcher findMaxMatcher(String text) {
         String[] words = text.split(" ");
         StringBuilder toMatch = new StringBuilder();
         Matcher maxMatcher = null;
@@ -36,5 +45,11 @@ public class GroupPattern {
         }
 
         return maxMatcher == null ? null : new GroupMatcher(groups, maxMatcher);
+    }
+
+    private GroupMatcher checkFortune(String text) {
+        Matcher matcher = pattern.matcher(text);
+
+        return matcher.matches() ? new GroupMatcher(groups, matcher) : null;
     }
 }

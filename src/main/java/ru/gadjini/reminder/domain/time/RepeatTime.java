@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.domain;
+package ru.gadjini.reminder.domain.time;
 
 import org.joda.time.Period;
 import org.postgresql.util.PGobject;

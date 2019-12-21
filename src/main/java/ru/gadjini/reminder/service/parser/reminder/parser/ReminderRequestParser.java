@@ -1,6 +1,6 @@
 package ru.gadjini.reminder.service.parser.reminder.parser;
 
-import ru.gadjini.reminder.domain.Time;
+import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;

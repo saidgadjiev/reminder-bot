@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.domain;
 
+import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.ZoneId;

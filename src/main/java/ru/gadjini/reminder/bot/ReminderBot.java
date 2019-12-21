@@ -10,7 +10,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.exception.UserException;
-import ru.gadjini.reminder.exception.ValidationException;
 import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.service.command.CommandExecutor;
 import ru.gadjini.reminder.service.command.CommandNavigator;
@@ -69,9 +68,6 @@ public class ReminderBot extends WorkerUpdatesBot {
             }
         } catch (UserException ex) {
             messageService.sendMessage(chatId, ex.getMessage(), null);
-        } catch (ValidationException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-            messageService.sendMessage(chatId, ex.getErrorBag().firstErrorMessage(), null);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             messageService.sendErrorMessage(chatId, null);

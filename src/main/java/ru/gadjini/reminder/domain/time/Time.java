@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.domain;
+package ru.gadjini.reminder.domain.time;
 
 import ru.gadjini.reminder.time.DateTime;
 
@@ -8,7 +8,7 @@ public class Time {
 
     private RepeatTime repeatTime;
 
-    private DateTime fixedTime;
+    private FixedTime fixedTime;
 
     private OffsetTime offsetTime;
 
@@ -30,11 +30,15 @@ public class Time {
         this.repeatTime = repeatTime;
     }
 
-    public DateTime getFixedTime() {
+    public DateTime getFixedDateTime() {
+        return fixedTime.getDateTime();
+    }
+
+    public FixedTime getFixedTime() {
         return fixedTime;
     }
 
-    public void setFixedTime(DateTime fixedTime) {
+    public void setFixedTime(FixedTime fixedTime) {
         this.fixedTime = fixedTime;
     }
 

@@ -70,7 +70,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         if (!message.hasText()) {
             return;
         }
-        Reminder reminder = reminderService.createReminder(message.getText().trim());
+        Reminder reminder = reminderService.createReminder(message.getText().trim(), null);
         reminder.getCreator().setChatId(message.getChatId());
 
         reminderMessageSender.sendReminderCreated(reminder, null);

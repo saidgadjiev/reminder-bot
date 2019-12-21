@@ -3,7 +3,7 @@ package ru.gadjini.reminder.service.reminder.message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.domain.RepeatTime;
+import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
