@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableBotCommand {
 
+    //TODO: состояние
     private ConcurrentHashMap<Long, CallbackRequest> changeReminderTimeRequests = new ConcurrentHashMap<>();
 
     private String name;

@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCommand {
 
+    //TODO: состояние
     private final ConcurrentHashMap<Long, Integer> reminderRequests = new ConcurrentHashMap<>();
 
     private ReminderRequestService reminderService;

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 public class UserReminderNotificationScheduleCommand implements KeyboardBotCommand, NavigableBotCommand {
 
+    //TODO:сотояние
     private Map<Long, Integer> messagesByChat = new ConcurrentHashMap<>();
 
     private String name;
