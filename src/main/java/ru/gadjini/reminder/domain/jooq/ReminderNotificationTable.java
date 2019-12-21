@@ -7,6 +7,8 @@ import org.jooq.impl.TableImpl;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
 
+import java.sql.Timestamp;
+
 public class ReminderNotificationTable extends TableImpl<Record> {
 
     public static final ReminderNotificationTable TABLE = new ReminderNotificationTable();
@@ -14,6 +16,8 @@ public class ReminderNotificationTable extends TableImpl<Record> {
     public TableField<Record, Integer> ID;
 
     public TableField<Record, Integer> REMINDER_ID;
+
+    public TableField<Record, Timestamp> FIXED_TIME;
 
     public TableField<Record, Boolean> CUSTOM;
 
@@ -34,6 +38,7 @@ public class ReminderNotificationTable extends TableImpl<Record> {
         ID = createField(Reminder.ID, SQLDataType.INTEGER);
         CUSTOM = createField(ReminderNotification.CUSTOM, SQLDataType.BOOLEAN);
         REMINDER_ID = createField(ReminderNotification.REMINDER_ID, SQLDataType.INTEGER);
+        FIXED_TIME = createField(ReminderNotification.FIXED_TIME, SQLDataType.TIMESTAMP);
     }
 
     @Override

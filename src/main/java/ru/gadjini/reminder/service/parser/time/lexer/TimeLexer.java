@@ -5,6 +5,7 @@ import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class TimeLexer {
@@ -25,9 +26,10 @@ public class TimeLexer {
     }
 
     public List<BaseLexem> tokenize() {
-        List<BaseLexem> lexems = offsetTimeLexer.tokenize();
+        LinkedList<BaseLexem> lexems = offsetTimeLexer.tokenize();
 
         if (lexems != null) {
+            lexems.addFirst(new TimeLexem(TimeToken.OFFSET, ""));
             end = offsetTimeLexer.end();
             return lexems;
         }
@@ -36,11 +38,8 @@ public class TimeLexer {
 
         if (lexems != null) {
             end = repeatTimeLexer.end();
-            List<BaseLexem> toReturn = new ArrayList<>();
-            toReturn.add(new TimeLexem(TimeToken.REPEAT, ""));
-            toReturn.addAll(lexems);
-
-            return toReturn;
+            lexems.addFirst(new TimeLexem(TimeToken.REPEAT, ""));
+            return lexems;
         }
 
         lexems = fixedTimeLexer.tokenize();

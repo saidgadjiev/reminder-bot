@@ -10,12 +10,13 @@ import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class OffsetTimeParser {
 
     private String typeBefore;
 
-    private String typeAfter;
+    private Pattern typeAfter;
 
     private OffsetTime offsetTime;
 
@@ -23,7 +24,7 @@ public class OffsetTimeParser {
 
     public OffsetTimeParser(LocalisationService localisationService, ZoneId zoneId, LexemsConsumer lexemsConsumer) {
         this.typeBefore = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE);
-        this.typeAfter = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_AFTER);
+        this.typeAfter = Pattern.compile(localisationService.getMessage(MessagesProperties.REGEX_OFFSET_TIME_TYPE_AFTER));
         this.lexemsConsumer = lexemsConsumer;
         this.offsetTime = new OffsetTime(zoneId);
     }
@@ -40,7 +41,7 @@ public class OffsetTimeParser {
 
     private void consumeType(List<BaseLexem> lexems) {
         String type = lexemsConsumer.consume(lexems, TimeToken.TYPE).getValue();
-        if (type.equals(typeAfter)) {
+        if (typeAfter.matcher(type).matches()) {
             offsetTime.setType(OffsetTime.Type.AFTER);
         } else if (type.equals(typeBefore)) {
             offsetTime.setType(OffsetTime.Type.BEFORE);

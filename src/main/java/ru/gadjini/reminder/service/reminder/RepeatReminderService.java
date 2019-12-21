@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.service.reminder;
 
 import org.joda.time.Period;
+import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -135,13 +136,20 @@ public class RepeatReminderService {
     @Transactional
     public Reminder changeReminderTime(int reminderId, int receiverId, RepeatTime repeatTime) {
         DateTime nextRemindAt = getFirstRemindAt(repeatTime);
-        reminderDao.update(
+        PGobject sqlObject = nextRemindAt.sqlObject();
+        Reminder reminder = reminderDao.update(
                 new HashMap<>() {{
-                    put(ReminderTable.TABLE.INITIAL_REMIND_AT, nextRemindAt.sqlObject());
-                    put(ReminderTable.TABLE.REMIND_AT, nextRemindAt.sqlObject());
+                    put(ReminderTable.TABLE.REPEAT_REMIND_AT, repeatTime.sqlObject());
+                    put(ReminderTable.TABLE.INITIAL_REMIND_AT, sqlObject);
+                    put(ReminderTable.TABLE.REMIND_AT, sqlObject);
                 }},
                 ReminderTable.TABLE.ID.eq(reminderId),
-                null
+                new ReminderMapping() {{
+                    setRemindMessageMapping(new Mapping());
+                    setReceiverMapping(new Mapping() {{
+                        setFields(List.of(ReminderMapping.RC_CHAT_ID));
+                    }});
+                }}
         );
 
         reminderNotificationService.deleteReminderNotifications(reminderId);
@@ -149,9 +157,6 @@ public class RepeatReminderService {
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
         reminderNotificationService.create(reminderNotifications);
 
-        Reminder reminder = new Reminder();
-
-        reminder.setId(reminderId);
         reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
 
         return reminder;

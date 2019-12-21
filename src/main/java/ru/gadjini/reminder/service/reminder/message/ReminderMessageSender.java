@@ -205,7 +205,8 @@ public class ReminderMessageSender {
                     remindMessage.getMessageId(),
                     reminderMessageBuilder.getReminderPostponedForReceiver(
                             reminder.getText(),
-                            updateReminderResult.getNewReminder().getRemindAtInReceiverZone()
+                            updateReminderResult.getNewReminder().getRemindAtInReceiverZone(),
+                            null
                     ),
                     inlineKeyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable())
             );
@@ -214,7 +215,11 @@ public class ReminderMessageSender {
             String message = reminderMessageBuilder.getReminderPostponedForCreator(reminder.getText(), reminder.getReceiver(), updateReminderResult.getNewReminder().getRemindAtInReceiverZone(), reason);
             messageService.sendMessage(reminder.getCreator().getChatId(), message);
         }
-        messageService.sendMessageByCode(reminder.getReceiver().getChatId(), MessagesProperties.MESSAGE_REMINDER_POSTPONED, replyKeyboard);
+        messageService.sendMessage(
+                reminder.getReceiver().getChatId(),
+                reminderMessageBuilder.getReminderPostponedForReceiver(reminder.getText(), updateReminderResult.getNewReminder().getRemindAtInReceiverZone(), reason),
+                replyKeyboard
+        );
     }
 
     public void sendReminderTextChanged(int messageId, UpdateReminderResult updateReminderResult) {
@@ -298,7 +303,7 @@ public class ReminderMessageSender {
             messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getReminderDeletedForReceiver(reminder), null);
         }
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_DELETED);
-        messageService.editMessageByMessageCode(
+        messageService.editMessage(
                 reminder.getCreator().getChatId(),
                 messageId,
                 reminderMessageBuilder.getReminderDeletedForCreator(reminder),
@@ -451,7 +456,7 @@ public class ReminderMessageSender {
                 reminder.getCreator().getChatId(),
                 messageId,
                 reminderMessageBuilder.getReminderMessage(reminder),
-                inlineKeyboardService.getReminderDetailsKeyboard(securityService.getAuthenticatedUser().getId(), reminder)
+                inlineKeyboardService.getEditReminderKeyboard(reminder.getId(), MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)
         );
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_NOTE_DELETED);
     }

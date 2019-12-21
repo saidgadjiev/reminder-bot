@@ -36,10 +36,7 @@ public class TimeParser {
     }
 
     public TimeParser(LocalisationService localisationService, Locale locale, ZoneId zoneId, DayOfWeekService dayOfWeekService) {
-        this.lexemsConsumer = new LexemsConsumer();
-        this.fixedTimeParser = new FixedTimeParser(localisationService, locale, lexemsConsumer, zoneId, dayOfWeekService);
-        this.repeatTimeParser = new RepeatTimeParser(lexemsConsumer, dayOfWeekService, locale, zoneId);
-        this.offsetTimeParser = new OffsetTimeParser(localisationService, zoneId, lexemsConsumer);
+        this(localisationService, locale, zoneId, dayOfWeekService, new LexemsConsumer());
     }
 
     public Time parse(List<BaseLexem> lexems) {

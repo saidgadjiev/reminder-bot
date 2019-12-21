@@ -21,6 +21,8 @@ public class ReminderTable extends TableImpl<Record> {
 
     public TableField<Record, Object> INITIAL_REMIND_AT;
 
+    public TableField<Record, Object> REPEAT_REMIND_AT;
+
     public TableField<Record, Object> REMIND_AT;
 
     public TableField<Record, String> TEXT;
@@ -52,6 +54,7 @@ public class ReminderTable extends TableImpl<Record> {
         REMIND_AT = createField(Reminder.REMIND_AT, SQLDataType.OTHER);
         NOTE = createField(Reminder.NOTE, SQLDataType.VARCHAR);
         STATUS = createField(Reminder.STATUS, SQLDataType.INTEGER);
+        REPEAT_REMIND_AT = createField(Reminder.REPEAT_REMIND_AT, SQLDataType.OTHER);
     }
 
     @Override

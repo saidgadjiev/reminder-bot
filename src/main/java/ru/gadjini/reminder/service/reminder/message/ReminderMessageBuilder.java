@@ -265,8 +265,16 @@ public class ReminderMessageBuilder {
         return message.toString();
     }
 
-    public String getReminderPostponedForReceiver(String text, DateTime remindAt) {
-        return messageBuilder.getReminderPostponed(text, remindAt);
+    public String getReminderPostponedForReceiver(String text, DateTime remindAt, String reason) {
+        StringBuilder message = new StringBuilder();
+
+        message.append(messageBuilder.getReminderPostponed(text, remindAt));
+
+        if (StringUtils.isNotBlank(reason)) {
+            message.append("\n\n").append(reason);
+        }
+
+        return message.toString();
     }
 
     public String getReminderNoteEditedReceiver(TgUser creator, String text, DateTime remindAt, String note) {

@@ -6,6 +6,7 @@ import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public class FixedTimeLexer {
         this.str = str;
     }
 
-    public List<BaseLexem> tokenize() {
+    public LinkedList<BaseLexem> tokenize() {
         GroupPattern pattern = lexerConfig.getTimePattern();
         GroupMatcher timeMatcher = pattern.maxMatcher(str);
 
@@ -41,8 +42,8 @@ public class FixedTimeLexer {
         return matchEnd;
     }
 
-    private List<BaseLexem> toLexems(Map<String, String> values) {
-        List<BaseLexem> lexems = new ArrayList<>();
+    private LinkedList<BaseLexem> toLexems(Map<String, String> values) {
+        LinkedList<BaseLexem> lexems = new LinkedList<>();
 
         if (values.containsKey(PatternBuilder.DAY_WORD)) {
             lexems.add(new TimeLexem(TimeToken.DAY_WORD, values.get(PatternBuilder.DAY_WORD)));

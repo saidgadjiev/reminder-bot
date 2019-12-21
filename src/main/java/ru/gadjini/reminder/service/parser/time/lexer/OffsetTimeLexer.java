@@ -6,6 +6,7 @@ import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,13 +23,13 @@ public class OffsetTimeLexer {
         this.str = str;
     }
 
-    public List<BaseLexem> tokenize() {
+    public LinkedList<BaseLexem> tokenize() {
         GroupPattern pattern = lexerConfig.getOffsetTimePattern();
         GroupMatcher matcher = pattern.maxMatcher(str);
 
         if (matcher != null) {
             Map<String, String> values = matcher.values();
-            List<BaseLexem> lexems = new ArrayList<>();
+            LinkedList<BaseLexem> lexems = new LinkedList<>();
 
             if (values.containsKey(PatternBuilder.TYPE)) {
                 lexems.add(new TimeLexem(TimeToken.TYPE, values.get(PatternBuilder.TYPE)));

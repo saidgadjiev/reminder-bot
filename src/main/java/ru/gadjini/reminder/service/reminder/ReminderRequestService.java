@@ -100,8 +100,7 @@ public class ReminderRequestService {
         if (customRemind.isOffsetTime()) {
             ZonedDateTime remindTime = buildRemindTime(
                     customRemind.getOffsetTime(),
-                    reminder.getRemindAtInReceiverZone().toZonedDateTime(),
-                    reminder.getReceiver().getZone()
+                    reminder.isRepeatable() ? null : reminder.getRemindAtInReceiverZone().toZonedDateTime()
             ).withZoneSameInstant(ZoneOffset.UTC);
             reminderNotification = reminderService.customRemind(reminderId, remindTime);
             customRemindResult.setZonedDateTime(remindTime);
@@ -133,14 +132,14 @@ public class ReminderRequestService {
         Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone());
         Reminder changed;
         if (newReminderTimeInReceiverZone.isRepeatTime()) {
-            changed = repeatReminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), newReminderTimeInReceiverZone.getRepeatTime());
+            changed = repeatReminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), newReminderTimeInReceiverZone.getRepeatTime().withZone(ZoneOffset.UTC));
+        } else if (newReminderTimeInReceiverZone.isOffsetTime()) {
+            ZonedDateTime remindAtInReceiverZone = buildRemindTime(newReminderTimeInReceiverZone.getOffsetTime(), null);
+            changed = reminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), DateTime.of(remindAtInReceiverZone.withZoneSameInstant(ZoneOffset.UTC)));
         } else {
             validationService.validateIsNotPastTime(newReminderTimeInReceiverZone.getFixedTime());
             changed = reminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), newReminderTimeInReceiverZone.getFixedTime().withZoneSameInstant(ZoneOffset.UTC));
         }
-        changed.setReceiver(new TgUser() {{
-            setZone(newReminderTimeInReceiverZone.getZoneId());
-        }});
 
         return new UpdateReminderResult(oldReminder, changed);
     }
@@ -183,7 +182,8 @@ public class ReminderRequestService {
         return reminderRequest;
     }
 
-    private ZonedDateTime buildRemindTime(OffsetTime offsetTime, ZonedDateTime remindAt, ZoneId zoneId) {
+    private ZonedDateTime buildRemindTime(OffsetTime offsetTime, ZonedDateTime remindAt) {
+        ZoneId zoneId = offsetTime.getZoneId();
         switch (offsetTime.getType()) {
             case AFTER: {
                 return ZonedDateTime.now(zoneId).plusHours(offsetTime.getHours()).plusMinutes(offsetTime.getMinutes());

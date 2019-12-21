@@ -58,7 +58,6 @@ public class ReminderJob implements TaskSchedulerCustomizer {
     @Scheduled(cron = "0 0 0 * * *")
     public void deleteCompletedReminders() {
         LocalDateTime now = LocalDateTime.now();
-        LOGGER.debug("Start delete completed reminders: " + now);
 
         int deleted = reminderService.deleteCompletedReminders(now);
 
@@ -67,15 +66,13 @@ public class ReminderJob implements TaskSchedulerCustomizer {
 
     @Scheduled(cron = "0 0 * * * *")
     public void moveReminders() {
-        LocalDateTime now = LocalDateTime.now();
-        LOGGER.debug("Start move overdue reminders: " + now);
         List<Reminder> overdueReminders = repeatReminderService.getOverdueRepeatReminders();
 
         for (Reminder reminder : overdueReminders) {
             DateTime nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
             repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
+            LOGGER.debug("Overdue reminder with id " + reminder.getId() + " moved not the next time");
         }
-        LOGGER.debug("Finish move overdue reminders: " + now);
     }
 
     @Scheduled(fixedDelay = 1000)

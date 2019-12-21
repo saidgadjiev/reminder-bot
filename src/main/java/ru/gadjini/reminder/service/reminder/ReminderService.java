@@ -62,13 +62,19 @@ public class ReminderService {
 
     @Transactional
     public Reminder changeReminderTime(int reminderId, int receiverId, DateTime remindAt) {
-        reminderDao.update(
+        Reminder reminder = reminderDao.update(
                 new HashMap<>() {{
                     put(ReminderTable.TABLE.INITIAL_REMIND_AT, remindAt.sqlObject());
                     put(ReminderTable.TABLE.REMIND_AT, remindAt.sqlObject());
+                    put(ReminderTable.TABLE.REPEAT_REMIND_AT, null);
                 }},
                 ReminderTable.TABLE.ID.eq(reminderId),
-                null
+                new ReminderMapping() {{
+                    setRemindMessageMapping(new Mapping());
+                    setReceiverMapping(new Mapping() {{
+                        setFields(List.of(ReminderMapping.RC_CHAT_ID));
+                    }});
+                }}
         );
 
         List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAt, receiverId);
@@ -76,9 +82,6 @@ public class ReminderService {
         reminderNotificationService.deleteReminderNotifications(reminderId);
         reminderNotificationService.create(reminderNotifications);
 
-        Reminder reminder = new Reminder();
-
-        reminder.setId(reminderId);
         reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
 
         return reminder;
@@ -221,15 +224,19 @@ public class ReminderService {
     @Transactional
     public Reminder postponeReminder(int reminderId, int receiverId, DateTime remindAtInReceiverZone) {
         DateTime remindAt = remindAtInReceiverZone.withZoneSameInstant(ZoneOffset.UTC);
-        reminderDao.update(
+        Reminder reminder = reminderDao.update(
                 new HashMap<>() {{
                     put(ReminderTable.TABLE.REMIND_AT, remindAt.sqlObject());
                 }},
                 ReminderTable.TABLE.ID.equal(reminderId),
-                null
+                new ReminderMapping() {{
+                    setRemindMessageMapping(new Mapping());
+                    setCreatorMapping(new Mapping() {{
+                        setFields(List.of(ReminderMapping.CR_CHAT_ID));
+                    }});
+                    setReceiverMapping(new Mapping());
+                }}
         );
-        Reminder reminder = new Reminder();
-        reminder.setRemindAt(remindAt);
 
         List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAtInReceiverZone, receiverId);
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
@@ -265,6 +272,7 @@ public class ReminderService {
         reminderNotification.setType(ReminderNotification.Type.ONCE);
         reminderNotification.setReminderId(reminderId);
         reminderNotification.setFixedTime(remindTime);
+        reminderNotification.setCustom(true);
         reminderNotificationService.create(reminderNotification);
 
         return reminderNotification;
@@ -277,7 +285,7 @@ public class ReminderService {
 
         if (repeatTime.getDayOfWeek() != null) {
             ZonedDateTime repeatReminder = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek())).with(repeatTime.getTime());
-            reminderNotification = fixedRepeatReminderTime(repeatReminder.toLocalDate(),7, repeatTime.getTime());
+            reminderNotification = fixedRepeatReminderTime(repeatReminder.toLocalDate(), 7, repeatTime.getTime());
         } else if (repeatTime.getInterval().getDays() > 0) {
             ZonedDateTime repeatReminder = now.with(repeatTime.getTime());
 
@@ -286,8 +294,9 @@ public class ReminderService {
             }
             reminderNotification = fixedRepeatReminderTime(repeatReminder.toLocalDate(), repeatTime.getInterval().getDays(), repeatTime.getTime());
         } else {
-            reminderNotification = intervalReminderTime(now, repeatTime.getInterval(), true);
+            reminderNotification = intervalReminderTime(now, repeatTime.getInterval());
         }
+        reminderNotification.setCustom(true);
         reminderNotification.setReminderId(reminderId);
         reminderNotificationService.create(reminderNotification);
 
@@ -306,7 +315,7 @@ public class ReminderService {
         List<ReminderNotification> reminderNotifications = new ArrayList<>();
 
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITH_TIME);
-        for (UserReminderNotification userReminderNotification: userReminderNotifications) {
+        for (UserReminderNotification userReminderNotification : userReminderNotifications) {
             if (reminderNotificationAI.isNeedCreateReminderNotification(localDate, userReminderNotification)) {
                 fixedReminderTime(localDate.minusDays(userReminderNotification.getDays()), userReminderNotification.getTime(), reminderNotifications).setCustom(true);
             }
@@ -329,7 +338,9 @@ public class ReminderService {
             }
         }
 
-        reminderNotifications.add(intervalReminderTime(remindAt, new Period().withMinutes(20), true));
+        ReminderNotification intervalNotification = intervalReminderTime(remindAt, new Period().withMinutes(20));
+        intervalNotification.setCustom(true);
+        reminderNotifications.add(intervalNotification);
         fixedReminderTime(remindAt.toLocalDate(), remindAt.toLocalTime(), reminderNotifications).setItsTime(true);
 
         return reminderNotifications;
@@ -351,10 +362,9 @@ public class ReminderService {
         return reminderNotification;
     }
 
-    private ReminderNotification intervalReminderTime(ZonedDateTime remindAt, Period interval, boolean custom) {
+    private ReminderNotification intervalReminderTime(ZonedDateTime remindAt, Period interval) {
         ReminderNotification reminderNotification = ReminderNotification.repeatTime();
         reminderNotification.setLastReminderAt(remindAt);
-        reminderNotification.setCustom(custom);
         reminderNotification.setDelayTime(interval);
 
         return reminderNotification;

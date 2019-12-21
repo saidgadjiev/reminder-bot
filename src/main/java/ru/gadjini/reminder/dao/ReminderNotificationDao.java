@@ -2,8 +2,7 @@ package ru.gadjini.reminder.dao;
 
 import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.SelectConditionStep;
+import org.jooq.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -64,12 +63,13 @@ public class ReminderNotificationDao {
         TgUserTable rc = TgUserTable.TABLE.as("rc");
         ReminderTable r = ReminderTable.TABLE.as("r");
 
-        SelectConditionStep<Record> select = dslContext
+        Query select = dslContext
                 .select(rt.asterisk(), rc.ZONE_ID.as("rc_zone_id"))
                 .from(rt)
                 .innerJoin(r).on(rt.REMINDER_ID.equal(r.ID))
                 .innerJoin(rc).on(r.RECEIVER_ID.equal(rc.USER_ID))
-                .where(condition);
+                .where(condition)
+                .orderBy(rt.FIXED_TIME.asc().nullsLast());
 
         return jdbcTemplate.query(
                 select.getSQL(),

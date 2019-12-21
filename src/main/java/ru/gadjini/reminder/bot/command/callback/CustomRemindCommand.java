@@ -16,8 +16,8 @@ import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
+import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageSender;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -75,7 +75,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
-                callbackQuery.getMessage().getText() + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND),
+                localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND),
                 inlineKeyboardService.goBackCallbackButton(prevHistoryName, true, requestParams)
         );
 

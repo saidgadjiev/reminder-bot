@@ -150,8 +150,6 @@ public class MessagesProperties {
 
     public static final String REGEX_MINUTE_PREFIX = "regex.minute.prefix";
 
-    public static final String MESSAGE_REMINDER_POSTPONE_TIME = "message.reminder.postpone.time";
-
     public static final String CUSTOM_REMINDER_TIME_COMMAND_NAME = "customremindertime";
 
     public static final String DELETE_COMPLETED_REMINDERS_COMMAND_DESCRIPTION = "delete.completed.reminders.command.description";
@@ -162,7 +160,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_CUSTOM_REMIND = "message.custom.remind";
 
-    public static final String OFFSET_TIME_TYPE_AFTER = "offset.time.type.after";
+    public static final String REGEX_OFFSET_TIME_TYPE_AFTER = "regex.offset.time.type.after";
 
     public static final String OFFSET_TIME_TYPE_BEFORE = "offset.time.type.before";
 
@@ -249,8 +247,6 @@ public class MessagesProperties {
     public static final String REGEXP_EVERY_HOUR = "regexp.every.hour";
 
     public static final String MESSAGE_NEXT_REMINDER_NOTIFICATION_AT = "message.next.reminder.notification.at";
-
-    public static final String MESSAGE_NEXT_REMIND_AT = "message.next.remind.at";
 
     public static final String TODAY = "today";
 

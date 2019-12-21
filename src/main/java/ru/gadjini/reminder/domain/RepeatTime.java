@@ -1,8 +1,10 @@
 package ru.gadjini.reminder.domain;
 
 import org.joda.time.Period;
+import org.postgresql.util.PGobject;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 
+import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
@@ -95,5 +97,17 @@ public class RepeatTime {
         sql.append(")");
 
         return sql.toString();
+    }
+
+    public PGobject sqlObject() {
+        PGobject pGobject = new PGobject();
+        pGobject.setType("repeat_time");
+        try {
+            pGobject.setValue(sql());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return pGobject;
     }
 }

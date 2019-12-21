@@ -23,7 +23,7 @@ public class GroupPattern {
         String[] words = text.split(" ");
         StringBuilder toMatch = new StringBuilder();
         Matcher maxMatcher = null;
-        for (int i = words.length - 1; i > 0; --i) {
+        for (int i = words.length - 1; i >= 0; --i) {
             if (toMatch.length() > 0) {
                 toMatch.insert(0, " ");
             }

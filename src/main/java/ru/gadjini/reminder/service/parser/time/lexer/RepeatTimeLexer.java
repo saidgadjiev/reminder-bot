@@ -21,7 +21,7 @@ public class RepeatTimeLexer {
         this.str = str;
     }
 
-    public List<BaseLexem> tokenize() {
+    public LinkedList<BaseLexem> tokenize() {
         LinkedList<BaseLexem> lexems = new LinkedList<>();
 
         GroupMatcher repeatTimeMatcher = lexerConfig.getRepeatTimePattern().maxMatcher(str);

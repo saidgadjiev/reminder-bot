@@ -132,6 +132,7 @@ public class TimeBuilder {
     private String time(Period period) {
         StringBuilder time = new StringBuilder();
 
+        time.append("<b>");
         TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
         time.append(declensionService.getRepeatWord(period)).append(" ");
         if (period.getDays() != 0) {
@@ -143,6 +144,7 @@ public class TimeBuilder {
         if (period.getMinutes() != 0) {
             time.append(declensionService.minute(period.getMinutes())).append(" ");
         }
+        time.append("</b>");
 
         return time.toString().trim();
     }
@@ -210,7 +212,6 @@ public class TimeBuilder {
     public String time(RepeatTime repeatTime) {
         StringBuilder time = new StringBuilder();
 
-        time.append("<b>");
         if (repeatTime.getInterval() != null) {
             time.append(time(repeatTime.getInterval()));
             if (repeatTime.getTime() != null) {
@@ -222,7 +223,6 @@ public class TimeBuilder {
             time.append(declensionService.dayOfWeek(repeatTime.getDayOfWeek())).append(" ");
             time.append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
         }
-        time.append("</b>");
 
         return time.toString();
     }
