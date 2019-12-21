@@ -39,6 +39,16 @@ public class TimeParser {
         this(localisationService, locale, zoneId, dayOfWeekService, new LexemsConsumer());
     }
 
+    public Time parseWithParseException(List<BaseLexem> lexems) {
+        parse(lexems);
+
+        if (lexemsConsumer.getPosition() < lexems.size()) {
+            throw new ParseException();
+        }
+
+        return time;
+    }
+
     public Time parse(List<BaseLexem> lexems) {
         if (lexemsConsumer.check(lexems, TimeToken.REPEAT)) {
             lexemsConsumer.consume(lexems, TimeToken.REPEAT);
@@ -48,9 +58,6 @@ public class TimeParser {
             time.setOffsetTime(offsetTimeParser.parse(lexems));
         } else {
             time.setFixedTime(fixedTimeParser.parse(lexems));
-        }
-        if (lexemsConsumer.getPosition() < lexems.size()) {
-            throw new ParseException();
         }
 
         return time;

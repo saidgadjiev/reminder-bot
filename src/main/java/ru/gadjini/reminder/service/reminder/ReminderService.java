@@ -314,7 +314,7 @@ public class ReminderService {
     private List<ReminderNotification> getReminderNotificationsWithoutTime(LocalDate localDate, int receiverId) {
         List<ReminderNotification> reminderNotifications = new ArrayList<>();
 
-        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITH_TIME);
+        List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITHOUT_TIME);
         for (UserReminderNotification userReminderNotification : userReminderNotifications) {
             if (reminderNotificationAI.isNeedCreateReminderNotification(localDate, userReminderNotification)) {
                 fixedReminderTime(localDate.minusDays(userReminderNotification.getDays()), userReminderNotification.getTime(), reminderNotifications).setCustom(true);

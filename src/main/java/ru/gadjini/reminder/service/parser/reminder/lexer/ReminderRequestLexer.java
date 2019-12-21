@@ -31,7 +31,11 @@ public class ReminderRequestLexer {
     }
 
     public List<BaseLexem> tokenize() {
-        LinkedList<BaseLexem> lexems = new LinkedList<>(timeLexer.tokenize());
+        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
+
+        if (lexems == null) {
+            lexems = new LinkedList<>();
+        }
 
         String tokenizeStr = parts[0].substring(0, parts[0].length() - timeLexer.end()).trim();
 

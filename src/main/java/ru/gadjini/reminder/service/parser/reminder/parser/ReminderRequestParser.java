@@ -41,15 +41,6 @@ public class ReminderRequestParser {
         return reminderRequest;
     }
 
-    public Time parseTime(List<BaseLexem> lexems) {
-        reminderRequest.setTime(timeParser.parse(lexems));
-        if (lexemsConsumer.getPosition() < lexems.size()) {
-            throw new ParseException();
-        }
-
-        return reminderRequest.getTime();
-    }
-
     private void consumeText(List<BaseLexem> lexems) {
         reminderRequest.setText(lexemsConsumer.consume(lexems, ReminderToken.TEXT).getValue());
 

@@ -25,7 +25,17 @@ public class TimeLexer {
         this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, str);
     }
 
-    public List<BaseLexem> tokenize() {
+    public List<BaseLexem> tokenizeThrowParseException() {
+        List<BaseLexem> lexems = tokenize();
+
+        if (lexems == null) {
+            throw new ParseException();
+        }
+
+        return lexems;
+    }
+
+    public LinkedList<BaseLexem> tokenize() {
         LinkedList<BaseLexem> lexems = offsetTimeLexer.tokenize();
 
         if (lexems != null) {
@@ -49,7 +59,7 @@ public class TimeLexer {
             return lexems;
         }
 
-        throw new ParseException();
+        return null;
     }
 
     public int end() {
