@@ -120,7 +120,7 @@ public class UserReminderNotificationService {
 
     private Time parseCustomRemind(String text, ZoneId zoneId) {
         try {
-            return requestParser.parseCustomRemind(text, zoneId);
+            return requestParser.parseTime(text, zoneId);
         } catch (ParseException ex) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND));
         }

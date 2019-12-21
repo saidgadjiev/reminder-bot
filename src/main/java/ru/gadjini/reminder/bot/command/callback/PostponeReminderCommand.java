@@ -9,6 +9,7 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.Time;
 import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.request.Arg;
@@ -18,7 +19,6 @@ import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 
@@ -113,7 +113,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
     private void postponeTime(Message message, PostponeCommandState postponeCommandState) {
         Reminder reminder = reminderRequestService.getReminderForPostpone(postponeCommandState.callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()));
         reminder.getReceiver().setChatId(message.getChatId());
-        postponeCommandState.parsedPostponeTime = reminderRequestService.parsePostponeTime(message.getText().trim(), reminder.getReceiver().getZone());
+        postponeCommandState.postponeTime = reminderRequestService.parseTime(message.getText().trim(), reminder.getReceiver().getZone());
         postponeCommandState.reminder = reminder;
         postponeCommandState.state = State.REASON;
 
@@ -125,7 +125,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
     }
 
     private void postpone(long chatId, String reason, PostponeCommandState postponeCommandState) {
-        UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(postponeCommandState.reminder, postponeCommandState.parsedPostponeTime);
+        UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(postponeCommandState.reminder, postponeCommandState.postponeTime);
         reminderRequests.remove(chatId);
 
         ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(chatId);
@@ -140,7 +140,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
         private Reminder reminder;
 
-        private ParsedPostponeTime parsedPostponeTime;
+        private Time postponeTime;
 
         private PostponeCommandState(CallbackRequest callbackRequest, State state) {
             this.callbackRequest = callbackRequest;

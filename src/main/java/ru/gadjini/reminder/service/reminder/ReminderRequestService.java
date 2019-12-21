@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.ReminderNotification;
-import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.domain.*;
 import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.exception.ParseException;
@@ -17,14 +15,11 @@ import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
-import ru.gadjini.reminder.service.parser.postpone.parser.ParsedPostponeTime;
-import ru.gadjini.reminder.domain.Time;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.validation.ValidationService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.ReminderUtils;
 
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -98,12 +93,12 @@ public class ReminderRequestService {
             setReceiverMapping(new Mapping());
         }});
 
-        Time customRemind = parseCustomRemind(text, reminder.getReceiver().getZone());
+        Time customRemind = parseTime(text, reminder.getReceiver().getZone());
         CustomRemindResult customRemindResult = new CustomRemindResult();
         ReminderNotification reminderNotification;
 
         if (customRemind.isOffsetTime()) {
-            ZonedDateTime remindTime = ReminderUtils.buildRemindTime(
+            ZonedDateTime remindTime = buildRemindTime(
                     customRemind.getOffsetTime(),
                     reminder.getRemindAtInReceiverZone().toZonedDateTime(),
                     reminder.getReceiver().getZone()
@@ -135,11 +130,16 @@ public class ReminderRequestService {
         }});
         oldReminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
 
-        ZonedDateTime remindAtInReceiverTimeZone = parseChangeReminderTime(timeText, oldReminder.getReceiver().getZone());
-        validationService.validateIsNotPastTime(remindAtInReceiverTimeZone);
-        Reminder changed = reminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), remindAtInReceiverTimeZone.withZoneSameInstant(ZoneOffset.UTC));
+        Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone());
+        Reminder changed;
+        if (newReminderTimeInReceiverZone.isRepeatTime()) {
+            changed = repeatReminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), newReminderTimeInReceiverZone.getRepeatTime());
+        } else {
+            validationService.validateIsNotPastTime(newReminderTimeInReceiverZone.getFixedTime());
+            changed = reminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), newReminderTimeInReceiverZone.getFixedTime().withZoneSameInstant(ZoneOffset.UTC));
+        }
         changed.setReceiver(new TgUser() {{
-            setZone(remindAtInReceiverTimeZone.getZone());
+            setZone(newReminderTimeInReceiverZone.getZoneId());
         }});
 
         return new UpdateReminderResult(oldReminder, changed);
@@ -158,8 +158,8 @@ public class ReminderRequestService {
         return oldReminder;
     }
 
-    public UpdateReminderResult postponeReminder(Reminder reminder, ParsedPostponeTime parsedPostponeTime) {
-        DateTime remindAtInReceiverZone = ReminderUtils.buildRemindAt(parsedPostponeTime, reminder.getRemindAtInReceiverZone().copy());
+    public UpdateReminderResult postponeReminder(Reminder reminder, Time postponeTime) {
+        DateTime remindAtInReceiverZone = buildPostponedRemindAt(postponeTime, reminder.getRemindAtInReceiverZone().copy());
         if (!reminder.getRemindAt().hasTime()) {
             remindAtInReceiverZone.time(null);
         } else {
@@ -177,10 +177,33 @@ public class ReminderRequestService {
         if (text.startsWith("@")) {
             reminderRequest = parseWithLoginRequest(text);
         } else {
-            reminderRequest = parseMySelfReminderRequest(text);
+            reminderRequest = parseRequest(text, securityService.getAuthenticatedUser().getId());
         }
 
         return reminderRequest;
+    }
+
+    private ZonedDateTime buildRemindTime(OffsetTime offsetTime, ZonedDateTime remindAt, ZoneId zoneId) {
+        switch (offsetTime.getType()) {
+            case AFTER: {
+                return ZonedDateTime.now(zoneId).plusHours(offsetTime.getHours()).plusMinutes(offsetTime.getMinutes());
+            }
+            case BEFORE: {
+                return remindAt.minusHours(offsetTime.getHours()).minusMinutes(offsetTime.getMinutes());
+            }
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    private DateTime buildPostponedRemindAt(Time postponeTime, DateTime remindAt) {
+        if (postponeTime.isOffsetTime()) {
+            OffsetTime postponeOn = postponeTime.getOffsetTime();
+
+            return remindAt.plusDays(postponeOn.getDays()).plusHours(postponeOn.getHours()).plusMinutes(postponeOn.getMinutes());
+        } else {
+            return postponeTime.getFixedTime();
+        }
     }
 
     private Reminder createOffsetReminder(ReminderRequest reminderRequest, Integer receiverId) {
@@ -255,16 +278,6 @@ public class ReminderRequestService {
         }
     }
 
-    private ReminderRequest parseMySelfReminderRequest(String text) {
-        ZoneId zoneId = tgUserService.getTimeZone(securityService.getAuthenticatedUser().getId());
-
-        try {
-            return requestParser.parseRequest(text, zoneId);
-        } catch (ParseException ex) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
-        }
-    }
-
     private ReminderRequest parseRequest(String text, int receiverId) {
         ZoneId zoneId = tgUserService.getTimeZone(receiverId);
 
@@ -275,27 +288,11 @@ public class ReminderRequestService {
         }
     }
 
-    private ZonedDateTime parseChangeReminderTime(String text, ZoneId zoneId) {
+    public Time parseTime(String text, ZoneId zoneId) {
         try {
             return requestParser.parseTime(text, zoneId);
         } catch (ParseException ex) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME));
-        }
-    }
-
-    public ParsedPostponeTime parsePostponeTime(String text, ZoneId zoneId) {
-        try {
-            return requestParser.parsePostponeTime(text, zoneId);
-        } catch (ParseException ex) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME));
-        }
-    }
-
-    private Time parseCustomRemind(String text, ZoneId zoneId) {
-        try {
-            return requestParser.parseCustomRemind(text, zoneId);
-        } catch (ParseException ex) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND));
         }
     }
 }

@@ -18,7 +18,6 @@ import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeUtils;
 
-import java.sql.Timestamp;
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -62,11 +61,11 @@ public class ReminderService {
     }
 
     @Transactional
-    public Reminder changeReminderTime(int reminderId, int receiverId, ZonedDateTime remindAt) {
+    public Reminder changeReminderTime(int reminderId, int receiverId, DateTime remindAt) {
         reminderDao.update(
                 new HashMap<>() {{
-                    put(ReminderTable.TABLE.INITIAL_REMIND_AT, Timestamp.valueOf(remindAt.toLocalDateTime()));
-                    put(ReminderTable.TABLE.REMIND_AT, Timestamp.valueOf(remindAt.toLocalDateTime()));
+                    put(ReminderTable.TABLE.INITIAL_REMIND_AT, remindAt.sqlObject());
+                    put(ReminderTable.TABLE.REMIND_AT, remindAt.sqlObject());
                 }},
                 ReminderTable.TABLE.ID.eq(reminderId),
                 null
@@ -74,7 +73,7 @@ public class ReminderService {
 
         List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAt, receiverId);
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
-        reminderNotificationService.deleteReminderTimes(reminderId);
+        reminderNotificationService.deleteReminderNotifications(reminderId);
         reminderNotificationService.create(reminderNotifications);
 
         Reminder reminder = new Reminder();
@@ -174,7 +173,7 @@ public class ReminderService {
                     setRemindMessageMapping(new Mapping());
                 }}
         );
-        reminderNotificationService.deleteReminderTimes(id);
+        reminderNotificationService.deleteReminderNotifications(id);
 
         if (completed == null) {
             return null;
@@ -234,7 +233,7 @@ public class ReminderService {
 
         List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAtInReceiverZone, receiverId);
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
-        reminderNotificationService.deleteReminderTimes(reminderId);
+        reminderNotificationService.deleteReminderNotifications(reminderId);
         reminderNotificationService.create(reminderNotifications);
 
         return reminder;

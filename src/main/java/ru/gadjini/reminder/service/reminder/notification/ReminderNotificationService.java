@@ -30,11 +30,11 @@ public class ReminderNotificationService {
         reminderNotificationDao.create(reminderNotifications);
     }
 
-    public void deleteReminderTimes(int reminderId) {
+    public void deleteReminderNotifications(int reminderId) {
         reminderNotificationDao.deleteByReminderId(reminderId);
     }
 
-    public int deleteReminderTime(int id) {
+    public int deleteReminderNotification(int id) {
         return reminderNotificationDao.delete(id);
     }
 

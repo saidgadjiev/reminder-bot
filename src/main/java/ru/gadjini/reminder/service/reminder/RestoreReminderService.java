@@ -46,7 +46,7 @@ public class RestoreReminderService {
     private void restoreRepeatableReminder(Reminder reminder) {
         for (ReminderNotification reminderNotification : reminder.getReminderNotifications()) {
             if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
-                reminderNotificationService.deleteReminderTime(reminderNotification.getId());
+                reminderNotificationService.deleteReminderNotification(reminderNotification.getId());
             } else {
                 if (reminderNotification.isItsTime()) {
                     DateTime nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
@@ -62,7 +62,7 @@ public class RestoreReminderService {
     private void restoreStandardReminder(Reminder reminder) {
         for (ReminderNotification reminderNotification : reminder.getReminderNotifications()) {
             if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
-                reminderNotificationService.deleteReminderTime(reminderNotification.getId());
+                reminderNotificationService.deleteReminderNotification(reminderNotification.getId());
             } else {
                 reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), TimeUtils.now());
             }

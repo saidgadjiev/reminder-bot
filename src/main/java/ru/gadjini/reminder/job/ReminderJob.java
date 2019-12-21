@@ -134,7 +134,7 @@ public class ReminderJob implements TaskSchedulerCustomizer {
 
     private void sendOnceReminder(Reminder reminder, ReminderNotification reminderNotification) {
         reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime());
-        reminderNotificationService.deleteReminderTime(reminderNotification.getId());
+        reminderNotificationService.deleteReminderNotification(reminderNotification.getId());
     }
 
     private void sendRepeatReminderTime(Reminder reminder, ReminderNotification reminderNotification) {

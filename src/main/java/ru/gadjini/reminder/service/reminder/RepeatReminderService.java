@@ -6,16 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gadjini.reminder.dao.CompletedReminderDao;
 import ru.gadjini.reminder.dao.ReminderDao;
-import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.ReminderNotification;
-import ru.gadjini.reminder.domain.RepeatTime;
-import ru.gadjini.reminder.domain.UserReminderNotification;
+import ru.gadjini.reminder.domain.*;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationAI;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
+import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
@@ -40,16 +38,20 @@ public class RepeatReminderService {
 
     private UserReminderNotificationService userReminderNotificationService;
 
+    private SecurityService securityService;
+
     @Autowired
     public RepeatReminderService(ReminderDao reminderDao, CompletedReminderDao completedReminderDao,
                                  ReminderNotificationService reminderNotificationService,
                                  ReminderNotificationAI reminderNotificationAI,
-                                 UserReminderNotificationService userReminderNotificationService) {
+                                 UserReminderNotificationService userReminderNotificationService,
+                                 SecurityService securityService) {
         this.reminderDao = reminderDao;
         this.completedReminderDao = completedReminderDao;
         this.reminderNotificationService = reminderNotificationService;
         this.reminderNotificationAI = reminderNotificationAI;
         this.userReminderNotificationService = userReminderNotificationService;
+        this.securityService = securityService;
     }
 
     @Transactional
@@ -130,6 +132,31 @@ public class RepeatReminderService {
         }
     }
 
+    @Transactional
+    public Reminder changeReminderTime(int reminderId, int receiverId, RepeatTime repeatTime) {
+        DateTime nextRemindAt = getFirstRemindAt(repeatTime);
+        reminderDao.update(
+                new HashMap<>() {{
+                    put(ReminderTable.TABLE.INITIAL_REMIND_AT, nextRemindAt.sqlObject());
+                    put(ReminderTable.TABLE.REMIND_AT, nextRemindAt.sqlObject());
+                }},
+                ReminderTable.TABLE.ID.eq(reminderId),
+                null
+        );
+
+        reminderNotificationService.deleteReminderNotifications(reminderId);
+        List<ReminderNotification> reminderNotifications = getRepeatReminderNotifications(repeatTime, receiverId);
+        reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
+        reminderNotificationService.create(reminderNotifications);
+
+        Reminder reminder = new Reminder();
+
+        reminder.setId(reminderId);
+        reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
+
+        return reminder;
+    }
+
     private void moveReminderNotificationToNextPeriod(Reminder reminder) {
         int id = reminder.getId();
         List<ReminderNotification> reminderNotifications = reminderNotificationService.getList(id);
@@ -140,7 +167,7 @@ public class RepeatReminderService {
                     reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), nextLastRemindAt.toLocalDateTime());
                 }
             } else {
-                reminderNotificationService.deleteReminderTime(reminderNotification.getId());
+                reminderNotificationService.deleteReminderNotification(reminderNotification.getId());
             }
         }
         DateTime nextRemindAt = getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
@@ -150,34 +177,36 @@ public class RepeatReminderService {
 
     private boolean isNotSentYet(Reminder reminder, ReminderNotification reminderNotification) {
         if (reminder.getRepeatRemindAt().getDayOfWeek() != null || reminder.getRepeatRemindAt().getInterval().getDays() != 0) {
-            LocalDate remindAt = reminder.getRemindAt().date();
-
-            if (reminder.getRepeatRemindAt().getDayOfWeek() != null) {
-                remindAt = remindAt.minusDays(7);
-            } else {
-                remindAt = remindAt.minusDays(reminder.getRepeatRemindAt().getInterval().getDays());
-            }
-
-            if (remindAt.isAfter(reminderNotification.getLastReminderAt().toLocalDate())) {
-                return true;
-            }
-            if (remindAt.isEqual(reminderNotification.getLastReminderAt().toLocalDate())) {
-                return true;
-            }
-
-            return false;
+            return isNotSentYetForDailyTime(reminder, reminderNotification);
         } else {
-            ZonedDateTime left = reminder.getRemindAt().toZonedDateTime();
-
-            if (left.isAfter(reminderNotification.getLastReminderAt())) {
-                return true;
-            }
-            if (left.isEqual(reminderNotification.getLastReminderAt())) {
-                return true;
-            }
-
-            return false;
+            return isNotSendYetForIntervalTime(reminder, reminderNotification);
         }
+    }
+
+    private boolean isNotSendYetForIntervalTime(Reminder reminder, ReminderNotification reminderNotification) {
+        ZonedDateTime left = reminder.getRemindAt().toZonedDateTime();
+
+        if (left.isAfter(reminderNotification.getLastReminderAt())) {
+            return true;
+        }
+
+        return left.isEqual(reminderNotification.getLastReminderAt());
+    }
+
+    private boolean isNotSentYetForDailyTime(Reminder reminder, ReminderNotification reminderNotification) {
+        LocalDate remindAt = reminder.getRemindAt().date();
+
+        if (reminder.getRepeatRemindAt().getDayOfWeek() != null) {
+            remindAt = remindAt.minusDays(7);
+        } else {
+            remindAt = remindAt.minusDays(reminder.getRepeatRemindAt().getInterval().getDays());
+        }
+
+        if (remindAt.isAfter(reminderNotification.getLastReminderAt().toLocalDate())) {
+            return true;
+        }
+
+        return remindAt.isEqual(reminderNotification.getLastReminderAt().toLocalDate());
     }
 
     private DateTime getFirstRemindAt(RepeatTime repeatTime) {
