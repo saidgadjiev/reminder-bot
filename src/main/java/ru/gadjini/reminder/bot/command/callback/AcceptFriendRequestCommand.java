@@ -8,7 +8,9 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.FriendshipService;
+import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
+import ru.gadjini.reminder.service.friendship.FriendshipService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
 
@@ -21,8 +23,15 @@ public class AcceptFriendRequestCommand implements CallbackBotCommand {
 
     private MessageService messageService;
 
+    private InlineKeyboardService inlineKeyboardService;
+
+    private FriendshipMessageBuilder friendshipMessageBuilder;
+
     @Autowired
-    public AcceptFriendRequestCommand(FriendshipService friendshipService, MessageService messageService) {
+    public AcceptFriendRequestCommand(FriendshipService friendshipService, MessageService messageService, InlineKeyboardService inlineKeyboardService,
+                                      FriendshipMessageBuilder friendshipMessageBuilder) {
+        this.inlineKeyboardService = inlineKeyboardService;
+        this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.name = MessagesProperties.ACCEPT_FRIEND_REQUEST_COMMAND_NAME;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
@@ -41,7 +50,12 @@ public class AcceptFriendRequestCommand implements CallbackBotCommand {
                 UserUtils.userLink(friendship.getUserTwo())
         });
 
-        messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_ACCEPTED);
-        messageService.deleteMessage(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
+        messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_ACCEPTED_ANSWER);
+        messageService.editMessage(
+                callbackQuery.getMessage().getChatId(),
+                callbackQuery.getMessage().getMessageId(),
+                friendshipMessageBuilder.getFriendDetails(friendship.getUserOne()),
+                inlineKeyboardService.getFriendKeyboard(friendship.getUserOneId())
+        );
     }
 }

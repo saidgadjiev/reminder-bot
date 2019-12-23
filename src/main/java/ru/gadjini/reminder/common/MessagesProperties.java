@@ -44,6 +44,8 @@ public class MessagesProperties {
 
     public static final String REJECT_FRIEND_REQUEST_COMMAND_DESCRIPTION = "reject.friend.request.command.description";
 
+    public static final String MESSAGE_FRIEND_REQUEST_ACCEPTED_ANSWER = "message.friend.request.accepted.answer";
+
     public static final String MESSAGE_FRIEND_REQUEST_ACCEPTED = "message.friend.request.accepted";
 
     public static final String MESSAGE_FRIEND_REQUEST_ACCEPTED_INITIATOR = "message.friend.request.accepted.initiator";
@@ -329,4 +331,10 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_SKIPPED_ANSWER = "message.reminder.skipped.answer";
 
     public static final String MESSAGE_COMPLETED_AT = "message.completed.at";
+
+    public static final String GET_FRIEND_REQUEST_COMMAND_NAME = "friendrequest";
+
+    public static final String MESSAGE_FRIEND_REQUESTS_EMPTY = "message.friend.requests.empty";
+
+    public static final String MESSAGE_FRIENDS_EMPTY = "message.friends.empty";
 }

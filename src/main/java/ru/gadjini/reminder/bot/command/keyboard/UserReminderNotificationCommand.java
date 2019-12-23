@@ -51,7 +51,7 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
 
     @Override
     public String getParentHistoryName() {
-        return MessagesProperties.START_COMMAND_NAME;
+        return MessagesProperties.USER_SETTINGS_COMMAND_HISTORY_NAME;
     }
 
     @Override

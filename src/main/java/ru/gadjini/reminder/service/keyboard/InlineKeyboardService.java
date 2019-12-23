@@ -91,7 +91,7 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getFriendsListKeyboard(List<Integer> friendsUserIds) {
+    public InlineKeyboardMarkup getFriendsListKeyboard(List<Integer> friendsUserIds, String commandName) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         int i = 1;
@@ -102,7 +102,7 @@ public class InlineKeyboardService {
             for (int friendUserId : list) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(i++));
-                button.setCallbackData(MessagesProperties.FRIEND_DETAILS_COMMAND + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
+                button.setCallbackData(commandName + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
                     add(Arg.FRIEND_ID.getKey(), friendUserId);
                 }}.serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
                 row.add(button);
@@ -225,6 +225,7 @@ public class InlineKeyboardService {
                 buttonFactory.acceptFriendRequestButton(friendUserId),
                 buttonFactory.rejectFriendRequestButton(friendUserId)
         ));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(MessagesProperties.GET_FRIEND_REQUESTS_COMMAND_NAME)));
 
         return inlineKeyboardMarkup;
     }

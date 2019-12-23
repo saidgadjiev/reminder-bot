@@ -9,46 +9,41 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.TgUserService;
-import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.util.UserUtils;
 
 @Component
-public class FriendDetailsCommand implements CallbackBotCommand {
+public class GetFriendRequestCommand implements CallbackBotCommand {
 
-    private final String name = MessagesProperties.FRIEND_DETAILS_COMMAND;
-
-    private TgUserService userService;
+    private TgUserService tgUserService;
 
     private MessageService messageService;
 
     private InlineKeyboardService inlineKeyboardService;
 
-    private FriendshipMessageBuilder friendshipMessageBuilder;
-
     @Autowired
-    public FriendDetailsCommand(TgUserService userService, MessageService messageService,
-                                InlineKeyboardService inlineKeyboardService, FriendshipMessageBuilder friendshipMessageBuilder) {
-        this.userService = userService;
+    public GetFriendRequestCommand(TgUserService tgUserService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
+        this.tgUserService = tgUserService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
-        this.friendshipMessageBuilder = friendshipMessageBuilder;
     }
 
     @Override
     public String getName() {
-        return name;
+        return MessagesProperties.GET_FRIEND_REQUEST_COMMAND_NAME;
     }
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        int friendUserId = requestParams.getInt(Arg.FRIEND_ID.getKey());
-        TgUser friend = userService.getByUserId(friendUserId);
+        int friendId = requestParams.getInt(Arg.FRIEND_ID.getKey());
+        TgUser mayBeFriend = tgUserService.getByUserId(friendId);
+
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
-                friendshipMessageBuilder.getFriendDetails(friend),
-                inlineKeyboardService.getFriendKeyboard(friendUserId)
+                UserUtils.userLink(mayBeFriend),
+                inlineKeyboardService.getFriendRequestKeyboard(friendId)
         );
     }
 }

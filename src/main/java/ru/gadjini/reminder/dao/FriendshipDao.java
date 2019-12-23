@@ -62,7 +62,11 @@ public class FriendshipDao {
                 Friendship friendship = new Friendship();
 
                 TgUser userOne = new TgUser();
+                userOne.setUserId(rs.getInt("uo_user_id"));
                 userOne.setChatId(rs.getLong("uo_chat_id"));
+                userOne.setLastName(rs.getString("uo_last_name"));
+                userOne.setFirstName(rs.getString("uo_first_name"));
+                userOne.setZoneId(rs.getString("uo_zone_id"));
                 friendship.setUserOne(userOne);
 
                 return friendship;
@@ -194,7 +198,7 @@ public class FriendshipDao {
                 "WITH f AS (\n" +
                         "    DELETE FROM friendship WHERE user_one_id = ? AND user_two_id = ? RETURNING user_one_id, user_two_id\n" +
                         ")\n" +
-                        "SELECT uo.chat_id as uo_chat_id\n" +
+                        "SELECT uo.chat_id as uo_chat_id, uo.user_id as uo_user_id, uo.last_name as uo_last_name, uo.first_name as uo_first_name, uo.zone_id as uo_zone_id\n" +
                         "FROM f INNER JOIN tg_user uo ON f.user_one_id = uo.user_id",
                 ps -> {
                     ps.setInt(1, friendId);
@@ -209,7 +213,7 @@ public class FriendshipDao {
                 "WITH f AS (\n" +
                         "    UPDATE friendship SET status = ? WHERE user_one_id = ? AND user_two_id = ? RETURNING user_one_id, user_two_id\n" +
                         ")\n" +
-                        "SELECT uo.chat_id as uo_chat_id\n" +
+                        "SELECT uo.chat_id as uo_chat_id, uo.user_id as uo_user_id, uo.last_name as uo_last_name, uo.first_name as uo_first_name, uo.zone_id as uo_zone_id\n" +
                         "FROM f INNER JOIN tg_user uo ON f.user_one_id = uo.user_id",
                 ps -> {
                     ps.setInt(1, Friendship.Status.ACCEPTED.ordinal());

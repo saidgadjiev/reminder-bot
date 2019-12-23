@@ -8,7 +8,8 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.FriendshipService;
+import ru.gadjini.reminder.service.friendship.FriendshipService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
 
@@ -21,8 +22,11 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
 
     private MessageService messageService;
 
+    private InlineKeyboardService inlineKeyboardService;
+
     @Autowired
-    public RejectFriendRequestCommand(FriendshipService friendshipService, MessageService messageService) {
+    public RejectFriendRequestCommand(FriendshipService friendshipService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
+        this.inlineKeyboardService = inlineKeyboardService;
         this.name = MessagesProperties.REJECT_FRIEND_REQUEST_COMMAND_NAME;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
@@ -44,6 +48,11 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
         );
 
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED);
-        messageService.deleteMessage(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
+        messageService.editMessageByMessageCode(
+                callbackQuery.getMessage().getChatId(),
+                callbackQuery.getMessage().getMessageId(),
+                MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED,
+                inlineKeyboardService.goBackCallbackButton(MessagesProperties.GET_FRIEND_REQUESTS_COMMAND_NAME)
+        );
     }
 }
