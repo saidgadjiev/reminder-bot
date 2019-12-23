@@ -57,8 +57,9 @@ public class ReminderNotificationMessageSender {
         }
 
         InlineKeyboardMarkup keyboard = inlineKeyboardService.getRemindKeyboard(reminder.getId(), itsTime, reminder.isRepeatable());
-        int messageId = messageService.sendMessage(reminder.getReceiver().getChatId(), message, keyboard).getMessageId();
-        remindMessageService.create(reminder.getId(), messageId);
+        messageService.sendMessage(reminder.getReceiver().getChatId(), message, keyboard, msg -> {
+            remindMessageService.create(reminder.getId(), msg.getMessageId());
+        });
     }
 
     public void sendCustomRemindCreatedFromReminderTimeDetails(long chatId, int messageId, CustomRemindResult customRemindResult, ReplyKeyboardMarkup replyKeyboardMarkup) {

@@ -63,22 +63,27 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
     public void processMessage(Message message) {
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(message.getFrom().getId(), notificationType);
 
-        int messageId = messageService.sendMessage(
+        messageService.sendMessage(
                 message.getChatId(),
                 messageBuilder.getUserReminderNotifications(userReminderNotifications),
-                inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)
-        ).getMessageId();
+                inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType),
+                msg -> messagesByChat.put(msg.getChatId(), msg.getMessageId())
+        );
         messageService.sendMessageByCode(
                 message.getChatId(),
                 MessagesProperties.MESSAGE_EDIT_USER_REMINDER_NOTIFICATION,
                 replyKeyboardService.goBackCommand()
         );
-
-        messagesByChat.put(message.getChatId(), messageId);
     }
 
     @Override
     public void processNonCommandUpdate(Message message) {
+        if (!message.hasText()) {
+            return;
+        }
+        if (!messagesByChat.containsKey(message.getChatId())) {
+            return;
+        }
         userReminderNotificationService.create(message.getText().trim(), notificationType);
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(message.getFrom().getId(), notificationType);
         int messageId = messagesByChat.get(message.getChatId());

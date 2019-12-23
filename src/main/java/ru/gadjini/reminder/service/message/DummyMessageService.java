@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.configuration.BotConfiguration;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 @Service
 @Profile(BotConfiguration.PROFILE_TEST)
@@ -35,13 +36,16 @@ public class DummyMessageService implements MessageService {
     }
 
     @Override
-    public Message sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard) {
-        return dummyMessage;
+    public void sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard, Consumer<Message> callback) {
+        callback.accept(dummyMessage);
     }
 
     @Override
-    public Message sendMessage(long chatId, String message) {
-        return dummyMessage;
+    public void sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard) {
+    }
+
+    @Override
+    public void sendMessage(long chatId, String message) {
     }
 
     @Override
@@ -60,8 +64,7 @@ public class DummyMessageService implements MessageService {
     }
 
     @Override
-    public Message sendMessageByCode(long chatId, String messageCode, Object[] args, ReplyKeyboard replyKeyboard) {
-        return dummyMessage;
+    public void sendMessageByCode(long chatId, String messageCode, Object[] args, ReplyKeyboard replyKeyboard) {
     }
 
     @Override

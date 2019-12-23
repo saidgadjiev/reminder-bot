@@ -4,14 +4,18 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 
+import java.util.function.Consumer;
+
 public interface MessageService {
     void sendAction(long chatId);
 
     void deleteMessage(long chatId, int messageId);
 
-    Message sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard);
+    void sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard, Consumer<Message> callback);
 
-    Message sendMessage(long chatId, String message);
+    void sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard);
+
+    void sendMessage(long chatId, String message);
 
     void sendMessageByCode(long chatId, String messageCode);
 
@@ -19,7 +23,7 @@ public interface MessageService {
 
     void sendMessageByCode(long chatId, String messageCode, Object[] args);
 
-    Message sendMessageByCode(long chatId, String messageCode, Object[] args, ReplyKeyboard replyKeyboard);
+    void sendMessageByCode(long chatId, String messageCode, Object[] args, ReplyKeyboard replyKeyboard);
 
     void sendAnswerCallbackQuery(String callbackQueryId, String text);
 

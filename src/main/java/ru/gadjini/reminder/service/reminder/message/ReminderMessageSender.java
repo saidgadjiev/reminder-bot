@@ -2,6 +2,7 @@ package ru.gadjini.reminder.service.reminder.message;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
@@ -16,6 +17,7 @@ import ru.gadjini.reminder.service.reminder.RemindMessageService;
 import ru.gadjini.reminder.service.security.SecurityService;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -168,9 +170,9 @@ public class ReminderMessageSender {
             );
         }
         InlineKeyboardMarkup keyboard = inlineKeyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable());
-        int messageId = messageService.sendMessage(reminder.getReceiver().getChatId(), messageForReceiver, keyboard).getMessageId();
-
-        remindMessageService.create(reminder.getId(), messageId);
+        messageService.sendMessage(reminder.getReceiver().getChatId(), messageForReceiver, keyboard, message -> {
+            remindMessageService.create(reminder.getId(), message.getMessageId());
+        });
     }
 
     public void sendReminderTimeChanged(int messageId, UpdateReminderResult updateReminderResult) {

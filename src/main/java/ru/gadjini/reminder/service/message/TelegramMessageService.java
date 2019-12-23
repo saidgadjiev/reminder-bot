@@ -20,20 +20,25 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.service.TelegramService;
 
+import java.util.function.Consumer;
+
 @Service
 @Profile("!" + BotConfiguration.PROFILE_TEST)
 public class TelegramMessageService implements MessageService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TelegramMessageService.class);
 
     private LocalisationService localisationService;
 
     private TelegramService telegramService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TelegramMessageService.class);
+    private MessageQueue messageQueue;
 
     @Autowired
-    public TelegramMessageService(LocalisationService localisationService, TelegramService telegramService) {
+    public TelegramMessageService(LocalisationService localisationService, TelegramService telegramService, MessageQueue messageQueue) {
         this.localisationService = localisationService;
         this.telegramService = telegramService;
+        this.messageQueue = messageQueue;
     }
 
     @Override
@@ -65,27 +70,38 @@ public class TelegramMessageService implements MessageService {
     }
 
     @Override
-    public Message sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard) {
-        SendMessage sendMessage = new SendMessage();
+    public void sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard, Consumer<Message> callback) {
+        messageQueue.push(() -> {
+            SendMessage sendMessage = new SendMessage();
 
-        sendMessage.setChatId(chatId);
-        sendMessage.enableHtml(true);
-        sendMessage.setText(message);
+            sendMessage.setChatId(chatId);
+            sendMessage.enableHtml(true);
+            sendMessage.setText(message);
 
-        if (replyKeyboard != null) {
-            sendMessage.setReplyMarkup(replyKeyboard);
-        }
+            if (replyKeyboard != null) {
+                sendMessage.setReplyMarkup(replyKeyboard);
+            }
 
-        try {
-            return telegramService.execute(sendMessage);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+            try {
+                Message msg = telegramService.execute(sendMessage);
+
+                if (callback != null) {
+                    callback.accept(msg);
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
     }
 
     @Override
-    public Message sendMessage(long chatId, String message) {
-        return sendMessage(chatId, message, null);
+    public void sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard) {
+        sendMessage(chatId, message, replyKeyboard, null);
+    }
+
+    @Override
+    public void sendMessage(long chatId, String message) {
+        sendMessage(chatId, message, null, null);
     }
 
     @Override
@@ -104,8 +120,8 @@ public class TelegramMessageService implements MessageService {
     }
 
     @Override
-    public Message sendMessageByCode(long chatId, String messageCode, Object[] args, ReplyKeyboard replyKeyboard) {
-        return sendMessage(chatId, localisationService.getMessage(messageCode, args), replyKeyboard);
+    public void sendMessageByCode(long chatId, String messageCode, Object[] args, ReplyKeyboard replyKeyboard) {
+        sendMessage(chatId, localisationService.getMessage(messageCode, args), replyKeyboard, null);
     }
 
     @Override
