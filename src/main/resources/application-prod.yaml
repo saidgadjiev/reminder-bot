@@ -1,0 +1,3 @@
+web-hook:
+  external-url: https://46c80e54.eu.ngrok.io
+  internal-url: http://localhost:8000

@@ -21,7 +21,7 @@ import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.service.TelegramService;
 
 @Service
-@Profile(BotConfiguration.PROFILE_PROD)
+@Profile("!" + BotConfiguration.PROFILE_TEST)
 public class TelegramMessageService implements MessageService {
 
     private LocalisationService localisationService;

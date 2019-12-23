@@ -11,7 +11,7 @@ import ru.gadjini.reminder.configuration.BotConfiguration;
 import java.io.IOException;
 
 @Service
-@Profile(BotConfiguration.PROFILE_DEV)
+@Profile(BotConfiguration.PROFILE_TEST)
 public class DummyMessageService implements MessageService {
 
     private Message dummyMessage;

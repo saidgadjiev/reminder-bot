@@ -30,7 +30,7 @@ public class BotConfiguration {
 
     public static final String PROFILE_PROD = "prod";
 
-    public static final String PROFILE_DEV = "dev";
+    public static final String PROFILE_TEST = "test";
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -45,7 +45,7 @@ public class BotConfiguration {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    @Profile("dev")
+    @Profile("!" + PROFILE_TEST)
     public TelegramBotsApi telegramBotsApi(WebHookProperties webHookProperties) throws TelegramApiRequestException {
         return new TelegramBotsApi(webHookProperties.getExternalUrl(), webHookProperties.getInternalUrl());
     }

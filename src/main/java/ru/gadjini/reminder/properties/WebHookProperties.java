@@ -1,7 +1,10 @@
 package ru.gadjini.reminder.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Profile;
+import ru.gadjini.reminder.configuration.BotConfiguration;
 
+@Profile("!" + BotConfiguration.PROFILE_TEST)
 @ConfigurationProperties("web-hook")
 public class WebHookProperties {
 
