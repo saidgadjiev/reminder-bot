@@ -42,12 +42,26 @@ public class FriendshipDao {
         return friendship;
     }
 
-    public List<TgUser> getFriendRequests(int userId, Friendship.Status status) {
+    public List<TgUser> getToMeFriendRequests(int userId, Friendship.Status status) {
         return jdbcTemplate.query(
                 "SELECT tu.*\n" +
                         "FROM friendship f INNER JOIN tg_user tu on f.user_one_id = tu.user_id\n" +
                         "WHERE status = ?\n" +
                         "  AND user_two_id = ?",
+                ps -> {
+                    ps.setInt(1, status.getCode());
+                    ps.setInt(2, userId);
+                },
+                (rs, rowNum) -> resultSetMapper.mapUser(rs)
+        );
+    }
+
+    public List<TgUser> getFromMeFriendRequests(int userId, Friendship.Status status) {
+        return jdbcTemplate.query(
+                "SELECT tu.*\n" +
+                        "FROM friendship f INNER JOIN tg_user tu on f.user_two_id = tu.user_id\n" +
+                        "WHERE status = ?\n" +
+                        "  AND user_one_id = ?",
                 ps -> {
                     ps.setInt(1, status.getCode());
                     ps.setInt(2, userId);

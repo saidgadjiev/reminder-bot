@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class GetFriendRequestsCommand implements KeyboardBotCommand, NavigableCallbackBotCommand {
+public class GetToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableCallbackBotCommand {
 
     private InlineKeyboardService inlineKeyboardService;
 
@@ -32,8 +32,8 @@ public class GetFriendRequestsCommand implements KeyboardBotCommand, NavigableCa
     private String name;
 
     @Autowired
-    public GetFriendRequestsCommand(InlineKeyboardService inlineKeyboardService, LocalisationService localisationService,
-                                    FriendshipService friendshipService, FriendshipMessageBuilder friendshipMessageBuilder, MessageService messageService) {
+    public GetToMeFriendRequestsCommand(InlineKeyboardService inlineKeyboardService, LocalisationService localisationService,
+                                        FriendshipService friendshipService, FriendshipMessageBuilder friendshipMessageBuilder, MessageService messageService) {
         this.inlineKeyboardService = inlineKeyboardService;
         this.friendshipService = friendshipService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
@@ -48,11 +48,11 @@ public class GetFriendRequestsCommand implements KeyboardBotCommand, NavigableCa
 
     @Override
     public void processMessage(Message message) {
-        List<TgUser> friendRequests = friendshipService.getFriendRequests();
+        List<TgUser> friendRequests = friendshipService.getToMeFriendRequests();
 
         messageService.sendMessage(
                 message.getChatId(),
-                friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY),
+                friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null),
                 inlineKeyboardService.getFriendsListKeyboard(friendRequests.stream().map(TgUser::getUserId).collect(Collectors.toList()), MessagesProperties.GET_FRIEND_REQUEST_COMMAND_NAME)
         );
     }
@@ -64,12 +64,12 @@ public class GetFriendRequestsCommand implements KeyboardBotCommand, NavigableCa
 
     @Override
     public void restore(long chatId, int messageId, String queryId, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
-        List<TgUser> friendRequests = friendshipService.getFriendRequests();
+        List<TgUser> friendRequests = friendshipService.getToMeFriendRequests();
 
         messageService.editMessage(
                 chatId,
                 messageId,
-                friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY),
+                friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null),
                 inlineKeyboardService.getFriendsListKeyboard(friendRequests.stream().map(TgUser::getUserId).collect(Collectors.toList()), MessagesProperties.GET_FRIEND_REQUEST_COMMAND_NAME)
         );
     }

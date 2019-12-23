@@ -337,4 +337,14 @@ public class MessagesProperties {
     public static final String MESSAGE_FRIEND_REQUESTS_EMPTY = "message.friend.requests.empty";
 
     public static final String MESSAGE_FRIENDS_EMPTY = "message.friends.empty";
+
+    public static final String FROM_ME_FRIEND_REQUESTS_COMMAND_NAME = "from.me.friend.requests.command.name";
+
+    public static final String FROM_ME_FRIEND_REQUESTS_HISTORY_NAME = "frommefriendrequests";
+
+    public static final String CANCEL_FRIEND_REQUEST_COMMAND_NAME = "cancelfriendrequest";
+
+    public static final String MESSAGE_FROM_ME_FRIEND_REQUESTS_EMPTY = "message.from.me.friend.requests.empty";
+
+    public static final String MESSAGE_CHOOSE_FRIEND_REQUEST_CANCEL = "message.choose.friend.request.cancel";
 }

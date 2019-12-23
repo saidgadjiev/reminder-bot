@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.friendship;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
@@ -30,7 +31,7 @@ public class FriendshipMessageBuilder {
         return message.toString();
     }
 
-    public String getFriendsList(List<TgUser> items, String emptyCode) {
+    public String getFriendsList(List<TgUser> items, String emptyCode, String footer) {
         if (items.isEmpty()) {
             return localisationService.getMessage(emptyCode);
         }
@@ -42,6 +43,9 @@ public class FriendshipMessageBuilder {
                 message.append("\n");
             }
             message.append(i++).append(") ").append(UserUtils.userLink(friend));
+        }
+        if (StringUtils.isNotBlank(footer)) {
+            message.append("\n\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_CHOOSE_FRIEND_REQUEST_CANCEL));
         }
 
         return message.toString();

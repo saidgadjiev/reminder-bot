@@ -52,7 +52,7 @@ public class GeFriendsCommand implements KeyboardBotCommand, NavigableCallbackBo
 
         messageService.sendMessage(
                 message.getChatId(),
-                friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY),
+                friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null),
                 inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), MessagesProperties.FRIEND_DETAILS_COMMAND)
         );
     }
@@ -69,7 +69,7 @@ public class GeFriendsCommand implements KeyboardBotCommand, NavigableCallbackBo
         messageService.editMessage(
                 chatId,
                 messageId,
-                friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY),
+                friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null),
                 inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), MessagesProperties.FRIEND_DETAILS_COMMAND)
         );
     }

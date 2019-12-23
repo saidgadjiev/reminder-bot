@@ -82,10 +82,20 @@ public class FriendshipService {
         return createFriendRequestResult;
     }
 
-    public List<TgUser> getFriendRequests() {
+    public List<TgUser> getToMeFriendRequests() {
         User user = securityService.getAuthenticatedUser();
 
-        return friendshipDao.getFriendRequests(user.getId(), Friendship.Status.REQUESTED);
+        return friendshipDao.getToMeFriendRequests(user.getId(), Friendship.Status.REQUESTED);
+    }
+
+    public List<TgUser> getFromMeFriendRequests() {
+        User user = securityService.getAuthenticatedUser();
+
+        return friendshipDao.getFromMeFriendRequests(user.getId(), Friendship.Status.REQUESTED);
+    }
+
+    public void cancelFriendRequest(int friendId) {
+
     }
 
     public List<TgUser> getFriends() {

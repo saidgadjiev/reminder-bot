@@ -88,6 +88,10 @@ public class ReplyKeyboardService {
         }});
 
         replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
+            add(localisationService.getMessage(MessagesProperties.FROM_ME_FRIEND_REQUESTS_COMMAND_NAME));
+        }});
+
+        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
             add(localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME));
         }});
 

@@ -14,7 +14,7 @@ import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
 
 @Component
-public class GetFriendRequestCommand implements CallbackBotCommand {
+public class GetToMeFriendRequestCommand implements CallbackBotCommand {
 
     private TgUserService tgUserService;
 
@@ -23,7 +23,7 @@ public class GetFriendRequestCommand implements CallbackBotCommand {
     private InlineKeyboardService inlineKeyboardService;
 
     @Autowired
-    public GetFriendRequestCommand(TgUserService tgUserService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
+    public GetToMeFriendRequestCommand(TgUserService tgUserService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
         this.tgUserService = tgUserService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
