@@ -18,8 +18,8 @@ public class MessageSenderJob {
     }
 
     @Scheduled(fixedDelay = 1000)
-    public void sendMessages() throws Exception {
-        List<Runnable> poll = messageQueue.poll(30);
+    public void sendMessages() {
+        List<Runnable> poll = messageQueue.poll(25);
 
         for (Runnable job: poll) {
             job.run();
