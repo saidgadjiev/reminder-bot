@@ -29,7 +29,7 @@ public class FriendshipService {
     public void deleteFriend(int friendId) {
         User user = securityService.getAuthenticatedUser();
 
-        friendshipDao.deleteFriend(user.getId(), friendId);
+        friendshipDao.deleteFriendship(user.getId(), friendId);
     }
 
     @Transactional
@@ -95,7 +95,9 @@ public class FriendshipService {
     }
 
     public void cancelFriendRequest(int friendId) {
+        User user = securityService.getAuthenticatedUser();
 
+        friendshipDao.deleteFriendship(user.getId(), friendId);
     }
 
     public List<TgUser> getFriends() {

@@ -98,7 +98,7 @@ public class FriendshipDao {
         return null;
     }
 
-    public void deleteFriend(int userId, int friendId) {
+    public void deleteFriendship(int userId, int friendId) {
         namedParameterJdbcTemplate.update(
                 "DELETE FROM friendship " +
                         "WHERE (user_one_id = :user_id AND user_two_id = :friend_id) " +
