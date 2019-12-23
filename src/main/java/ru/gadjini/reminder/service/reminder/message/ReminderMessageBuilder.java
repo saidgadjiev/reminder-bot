@@ -42,7 +42,7 @@ public class ReminderMessageBuilder {
         if (reminder.isRepeatable()) {
             result
                     .append(timeBuilder.time(reminder.getRepeatRemindAtInReceiverZone())).append("\n")
-                    .append(messageBuilder.getNextRemindAt(nextRemindAt == null ? reminder.getRemindAtInReceiverZone() : nextRemindAt));
+                    .append(messageBuilder.getNextRemindAt(nextRemindAt == null ? reminder.getRemindAtInReceiverZone() : nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId())));
         } else {
             result.append(timeBuilder.time(reminder.getRemindAtInReceiverZone()));
         }

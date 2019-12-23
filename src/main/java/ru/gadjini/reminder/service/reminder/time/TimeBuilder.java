@@ -71,6 +71,7 @@ public class TimeBuilder {
 
         TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
         StringBuilder time = new StringBuilder();
+        time.append("<b>");
         if (reminderNotification.getDelayTime().getDays() == 7) {
             ZonedDateTime lastRemindAt = reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone());
             DayOfWeek dayOfWeek = lastRemindAt.getDayOfWeek();
@@ -85,6 +86,7 @@ public class TimeBuilder {
         } else {
             time.append(time(reminderNotification.getDelayTime()));
         }
+        time.append("</b>");
 
         return time.toString();
     }
@@ -132,7 +134,6 @@ public class TimeBuilder {
     private String time(Period period) {
         StringBuilder time = new StringBuilder();
 
-        time.append("<b>");
         TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
         time.append(declensionService.getRepeatWord(period)).append(" ");
         if (period.getDays() != 0) {
@@ -144,7 +145,6 @@ public class TimeBuilder {
         if (period.getMinutes() != 0) {
             time.append(declensionService.minute(period.getMinutes())).append(" ");
         }
-        time.append("</b>");
 
         return time.toString().trim();
     }
@@ -212,6 +212,7 @@ public class TimeBuilder {
     public String time(RepeatTime repeatTime) {
         StringBuilder time = new StringBuilder();
 
+        time.append("<b>");
         if (repeatTime.getInterval() != null) {
             time.append(time(repeatTime.getInterval()));
             if (repeatTime.getTime() != null) {
@@ -221,8 +222,11 @@ public class TimeBuilder {
             TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
             time.append(declensionService.getRepeatWord(repeatTime.getDayOfWeek())).append(" ");
             time.append(declensionService.dayOfWeek(repeatTime.getDayOfWeek())).append(" ");
-            time.append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
+            if (repeatTime.getTime() != null) {
+                time.append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
+            }
         }
+        time.append("</b>");
 
         return time.toString();
     }
