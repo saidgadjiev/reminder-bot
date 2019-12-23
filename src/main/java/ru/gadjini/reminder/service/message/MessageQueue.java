@@ -16,15 +16,12 @@ public class MessageQueue {
         blockingQueue.add(job);
     }
 
-    public List<Runnable> poll(int count) {
+    public List<Runnable> poll(int count) throws InterruptedException {
         List<Runnable> poll = new ArrayList<>();
 
         while (count > 0) {
-            Runnable runnable = blockingQueue.poll();
+            Runnable runnable = blockingQueue.take();
 
-            if (runnable == null) {
-                break;
-            }
             poll.add(runnable);
             --count;
         }

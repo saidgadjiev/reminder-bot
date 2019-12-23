@@ -17,9 +17,9 @@ public class MessageSenderJob {
         this.messageQueue = messageQueue;
     }
 
-    @Scheduled(fixedDelay = 1000)
-    public void sendMessages() {
-        List<Runnable> poll = messageQueue.poll(25);
+    @Scheduled(fixedDelay = 40)
+    public void sendMessages() throws Exception {
+        List<Runnable> poll = messageQueue.poll(1);
 
         for (Runnable job: poll) {
             job.run();
