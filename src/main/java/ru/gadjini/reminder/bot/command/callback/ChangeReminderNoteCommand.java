@@ -44,7 +44,6 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
     public ChangeReminderNoteCommand(ReminderMessageSender reminderMessageSender,
                                      MessageService messageService,
                                      ReminderService reminderService,
-                                     CommandNavigator commandNavigator,
                                      InlineKeyboardService inlineKeyboardService,
                                      LocalisationService localisationService) {
         this.inlineKeyboardService = inlineKeyboardService;
@@ -53,6 +52,10 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.reminderService = reminderService;
+    }
+
+    @Autowired
+    public void setCommandNavigator(CommandNavigator commandNavigator) {
         this.commandNavigator = commandNavigator;
     }
 

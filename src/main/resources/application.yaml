@@ -6,7 +6,7 @@ web-hook:
   internal-url: http://localhost:8000
 spring:
   profiles:
-    active: default
+    active: prod
   datasource:
     url: jdbc:postgresql://localhost:5432/reminder
     driver-class-name: org.postgresql.Driver

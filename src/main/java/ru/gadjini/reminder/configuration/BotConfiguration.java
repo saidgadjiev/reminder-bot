@@ -27,6 +27,10 @@ import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageB
 @Configuration
 public class BotConfiguration {
 
+    public static final String PROFILE_PROD = "prod";
+
+    public static final String PROFILE_DEV = "dev";
+
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
     public DefaultConfiguration configuration(ConnectionProvider connectionProvider) {
