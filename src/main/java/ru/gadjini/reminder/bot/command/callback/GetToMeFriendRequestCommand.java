@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -31,7 +31,7 @@ public class GetToMeFriendRequestCommand implements CallbackBotCommand {
 
     @Override
     public String getName() {
-        return MessagesProperties.GET_FRIEND_REQUEST_COMMAND_NAME;
+        return CommandNames.GET_FRIEND_REQUEST_COMMAND_NAME;
     }
 
     @Override

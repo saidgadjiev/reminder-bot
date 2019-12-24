@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
@@ -25,7 +25,7 @@ public class GetCompletedRemindersCommand implements CallbackBotCommand {
     public GetCompletedRemindersCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
-        this.name = MessagesProperties.GET_COMPLETED_REMINDERS_COMMAND_NAME;
+        this.name = CommandNames.GET_COMPLETED_REMINDERS_COMMAND_NAME;
     }
 
     @Override

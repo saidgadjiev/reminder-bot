@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.message.MessageService;
 
@@ -20,7 +20,7 @@ public class OkCommand implements CallbackBotCommand {
 
     @Override
     public String getName() {
-        return MessagesProperties.OK_COMMAND_NAME;
+        return CommandNames.OK_COMMAND_NAME;
     }
 
     @Override

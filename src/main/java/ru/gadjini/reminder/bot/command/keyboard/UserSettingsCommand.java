@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -42,7 +43,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
 
     @Override
     public String getHistoryName() {
-        return MessagesProperties.USER_SETTINGS_COMMAND_HISTORY_NAME;
+        return CommandNames.USER_SETTINGS_COMMAND_HISTORY_NAME;
     }
 
     @Override

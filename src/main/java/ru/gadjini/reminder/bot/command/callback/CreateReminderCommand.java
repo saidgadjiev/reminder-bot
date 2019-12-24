@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -44,7 +45,7 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
                                  CommandNavigator commandNavigator,
                                  ReminderMessageSender reminderMessageSender) {
         this.reminderService = reminderService;
-        this.name = MessagesProperties.CREATE_REMINDER_COMMAND_NAME;
+        this.name = CommandNames.CREATE_REMINDER_COMMAND_NAME;
         this.messageService = messageService;
         this.replyKeyboardService = replyKeyboardService;
         this.commandNavigator = commandNavigator;

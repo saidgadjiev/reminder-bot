@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
@@ -27,7 +27,7 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
     public GetActiveRemindersCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
-        this.name = MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME;
+        this.name = CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
 
     @Override
     public String getHistoryName() {
-        return MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_NAME;
+        return CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME;
     }
 
     @Override

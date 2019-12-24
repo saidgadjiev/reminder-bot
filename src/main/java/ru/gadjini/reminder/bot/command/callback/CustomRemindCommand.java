@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.request.Arg;
@@ -54,7 +55,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
         this.reminderMessageSender = reminderMessageSender;
         this.commandNavigator = commandNavigator;
         this.localisationService = localisationService;
-        this.name = MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_NAME;
+        this.name = CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME;
     }
 
     @Override
@@ -93,7 +94,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
         String prevHistoryName = callbackRequest.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
-        if (prevHistoryName.equals(MessagesProperties.SCHEDULE_COMMAND_NAME)) {
+        if (prevHistoryName.equals(CommandNames.SCHEDULE_COMMAND_NAME)) {
             reminderMessageSender.sendCustomRemindCreatedFromReminderTimeDetails(message.getChatId(), callbackRequest.getMessageId(), customRemindResult, replyKeyboardMarkup);
         } else {
             reminderMessageSender.sendCustomRemindCreated(message.getChatId(), callbackRequest.getMessageId(), customRemindResult, replyKeyboardMarkup);

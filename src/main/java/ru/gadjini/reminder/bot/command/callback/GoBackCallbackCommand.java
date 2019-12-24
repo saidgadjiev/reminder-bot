@@ -5,13 +5,11 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandNavigator;
-
-import java.util.Arrays;
 
 @Component
 public class GoBackCallbackCommand implements CallbackBotCommand {
@@ -32,7 +30,7 @@ public class GoBackCallbackCommand implements CallbackBotCommand {
 
     @Override
     public String getName() {
-        return MessagesProperties.GO_BACK_CALLBACK_COMMAND_NAME;
+        return CommandNames.GO_BACK_CALLBACK_COMMAND_NAME;
     }
 
     @Override

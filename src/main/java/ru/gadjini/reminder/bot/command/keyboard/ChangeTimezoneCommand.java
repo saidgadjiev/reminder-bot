@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.service.*;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
@@ -66,12 +67,12 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
 
     @Override
     public String getHistoryName() {
-        return MessagesProperties.CHANGE_TIMEZONE_COMMAND_HISTORY_NAME;
+        return CommandNames.CHANGE_TIMEZONE_COMMAND_HISTORY_NAME;
     }
 
     @Override
     public String getParentHistoryName() {
-        return MessagesProperties.USER_SETTINGS_COMMAND_HISTORY_NAME;
+        return CommandNames.USER_SETTINGS_COMMAND_HISTORY_NAME;
     }
 
     @Override

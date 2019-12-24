@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -38,7 +39,7 @@ public class CancelFriendRequestCommand implements CallbackBotCommand {
 
     @Override
     public String getName() {
-        return MessagesProperties.CANCEL_FRIEND_REQUEST_COMMAND_NAME;
+        return CommandNames.CANCEL_FRIEND_REQUEST_COMMAND_NAME;
     }
 
     @Override
@@ -49,7 +50,7 @@ public class CancelFriendRequestCommand implements CallbackBotCommand {
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 friendshipMessageBuilder.getFriendsList(requests, MessagesProperties.MESSAGE_FROM_ME_FRIEND_REQUESTS_EMPTY, null),
-                inlineKeyboardService.getFriendsListKeyboard(requests.stream().map(TgUser::getUserId).collect(Collectors.toList()), MessagesProperties.CANCEL_FRIEND_REQUEST_COMMAND_NAME)
+                inlineKeyboardService.getFriendsListKeyboard(requests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.CANCEL_FRIEND_REQUEST_COMMAND_NAME)
         );
     }
 }

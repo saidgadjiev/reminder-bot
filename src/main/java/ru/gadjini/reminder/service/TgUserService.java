@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.TgUserDao;
 import ru.gadjini.reminder.domain.TgUser;
-import ru.gadjini.reminder.domain.UserReminderNotification;
 
 import java.time.ZoneId;
 
@@ -14,23 +13,24 @@ public class TgUserService {
 
     private TgUserDao tgUserDao;
 
-    private UserReminderNotificationService userReminderNotificationService;
-
     @Autowired
     public TgUserService(TgUserDao tgUserDao) {
         this.tgUserDao = tgUserDao;
-    }
-
-    @Autowired
-    public void setUserReminderNotificationService(UserReminderNotificationService userReminderNotificationService) {
-        this.userReminderNotificationService = userReminderNotificationService;
     }
 
     public TgUser getByUserId(int userId) {
         return tgUserDao.getByUserId(userId);
     }
 
-    public void createOrUpdateUser(long chatId, User user) {
+    public boolean isExists(String username) {
+        return tgUserDao.isExists(username);
+    }
+
+    public boolean isExists(int userId) {
+        return tgUserDao.isExists(userId);
+    }
+
+    public TgUser createOrUpdateUser(long chatId, User user) {
         TgUser tgUser = new TgUser();
 
         tgUser.setUserId(user.getId());
@@ -40,7 +40,8 @@ public class TgUserService {
         tgUser.setLastName(user.getLastName());
 
         tgUserDao.createOrUpdate(tgUser);
-        createUserNotifications(user.getId());
+
+        return tgUser;
     }
 
     public ZoneId getTimeZone(int userId) {
@@ -53,17 +54,5 @@ public class TgUserService {
 
     public void saveZoneId(int userId, ZoneId zoneId) {
         tgUserDao.updateTimezone(userId, zoneId);
-    }
-
-    private void createUserNotifications(int userId) {
-        int countWithTime = userReminderNotificationService.count(userId, UserReminderNotification.NotificationType.WITH_TIME);
-        if (countWithTime == 0) {
-            userReminderNotificationService.createDefaultNotificationsForWithTime(userId);
-        }
-
-        int countWithoutTime = userReminderNotificationService.count(userId, UserReminderNotification.NotificationType.WITHOUT_TIME);
-        if (countWithoutTime == 0) {
-            userReminderNotificationService.createDefaultNotificationsForWithoutTime(userId);
-        }
     }
 }

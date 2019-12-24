@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.request.Arg;
@@ -48,7 +49,7 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
                                      LocalisationService localisationService) {
         this.inlineKeyboardService = inlineKeyboardService;
         this.localisationService = localisationService;
-        this.name = MessagesProperties.EDIT_REMINDER_NOTE_COMMAND_NAME;
+        this.name = CommandNames.EDIT_REMINDER_NOTE_COMMAND_NAME;
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.reminderService = reminderService;
@@ -72,7 +73,7 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 callbackQuery.getMessage().getText() + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_EDIT_NOTE),
-                inlineKeyboardService.goBackCallbackButton(MessagesProperties.EDIT_REMINDER_COMMAND_NAME, true, requestParams)
+                inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, true, requestParams)
         );
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_REMINDER_NOTE_ANSWER);
     }

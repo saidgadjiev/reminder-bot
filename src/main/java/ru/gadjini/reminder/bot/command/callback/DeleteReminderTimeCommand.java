@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -30,7 +31,7 @@ public class DeleteReminderTimeCommand implements CallbackBotCommand {
 
     @Override
     public String getName() {
-        return MessagesProperties.DELETE_REMINDER_TIME_COMMAND_NAME;
+        return CommandNames.DELETE_REMINDER_TIME_COMMAND_NAME;
     }
 
     @Override
@@ -42,7 +43,7 @@ public class DeleteReminderTimeCommand implements CallbackBotCommand {
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 MessagesProperties.MESSAGE_REMINDER_TIME_DELETED,
-                inlineKeyboardService.goBackCallbackButton(MessagesProperties.SCHEDULE_COMMAND_NAME, false, new RequestParams() {{
+                inlineKeyboardService.goBackCallbackButton(CommandNames.SCHEDULE_COMMAND_NAME, false, new RequestParams() {{
                     add(Arg.REMINDER_ID.getKey(), reminderId);
                 }})
         );

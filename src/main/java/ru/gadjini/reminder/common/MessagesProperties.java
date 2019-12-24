@@ -20,13 +20,9 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMIND_ITS_TIME = "message.remind.its.time";
 
-    public static final String COMPLETE_REMINDER_COMMAND_NAME = "completereminder";
-
     public static final String COMPLETE_REMINDER_COMMAND_DESCRIPTION = "complete.reminder.command.description";
 
     public static final String MESSAGE_REMINDER_COMPLETE_ANSWER = "message.reminder.complete.answer";
-
-    public static final String MESSAGE_BAD_REMIND_AT = "message.bad.remind.at";
 
     public static final String MESSAGE_REMIND_NOT_FRIEND = "message.remind.not.friend";
 
@@ -36,17 +32,11 @@ public class MessagesProperties {
 
     public static final String SEND_FRIEND_REQUEST_COMMAND_NAME = "send.friend.request.command.name";
 
-    public static final String ACCEPT_FRIEND_REQUEST_COMMAND_NAME = "accept";
-
     public static final String ACCEPT_FRIEND_REQUEST_COMMAND_DESCRIPTION = "accept.friend.request.command.description";
-
-    public static final String REJECT_FRIEND_REQUEST_COMMAND_NAME = "reject";
 
     public static final String REJECT_FRIEND_REQUEST_COMMAND_DESCRIPTION = "reject.friend.request.command.description";
 
     public static final String MESSAGE_FRIEND_REQUEST_ACCEPTED_ANSWER = "message.friend.request.accepted.answer";
-
-    public static final String MESSAGE_FRIEND_REQUEST_ACCEPTED = "message.friend.request.accepted";
 
     public static final String MESSAGE_FRIEND_REQUEST_ACCEPTED_INITIATOR = "message.friend.request.accepted.initiator";
 
@@ -68,15 +58,9 @@ public class MessagesProperties {
 
     public static final String GET_FRIENDS_COMMAND_NAME = "get.friends.command.name";
 
-    public static final String GET_FRIENDS_COMMAND_HISTORY_NAME = "friendslist";
-
-    public static final String CREATE_REMINDER_COMMAND_NAME = "createreminder";
-
     public static final String CREATE_REMINDER_COMMAND_DESCRIPTION = "create.reminder.command.description";
 
     public static final String GO_BACK_COMMAND_NAME = "go.back.command.name";
-
-    public static final String DELETE_FRIEND_COMMAND_NAME = "deletefriend";
 
     public static final String DELETE_FRIEND_COMMAND_DESCRIPTION = "delete.friend.command.description";
 
@@ -92,17 +76,9 @@ public class MessagesProperties {
 
     public static final String GET_REMINDERS_COMMAND_NAME = "get.reminder.command.name";
 
-    public static final String GET_REMINDERS_COMMAND_HISTORY_NAME = "reminders";
-
-    public static final String EDIT_REMINDER_TIME_COMMAND_NAME = "editremindertime";
-
     public static final String EDIT_REMINDER_TIME_COMMAND_DESCRIPTION = "edit.reminder.time.command.description";
 
-    public static final String EDIT_REMINDER_TEXT_COMMAND_NAME = "editremindertext";
-
     public static final String EDIT_REMINDER_NOTE_COMMAND_DESCRIPTION = "edit.reminder.note.command.description";
-
-    public static final String EDIT_REMINDER_NOTE_COMMAND_NAME = "editremindernote";
 
     public static final String EDIT_REMINDER_TEXT_COMMAND_DESCRIPTION = "edit.reminder.text.command.description";
 
@@ -118,13 +94,9 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_TEXT_EDITED_RECEIVER = "message.reminder.text.edited.receiver";
 
-    public static final String DELETE_REMINDER_COMMAND_NAME = "deletereminder";
-
     public static final String DELETE_REMINDER_COMMAND_DESCRIPTION = "delete.reminder.command.description";
 
     public static final String MESSAGE_REMINDER_DELETED = "message.reminder.deleted";
-
-    public static final String CANCEL_REMINDER_COMMAND_NAME = "cancelreminder";
 
     public static final String CANCEL_REMINDER_COMMAND_DESCRIPTION = "cancel.reminder.command.description";
 
@@ -135,8 +107,6 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_NOT_FOUND = "message.reminder.not.found";
 
     public static final String MESSAGE_REMINDER_CANT_BE_COMPLETED = "message.reminder.cant.be.completed";
-
-    public static final String POSTPONE_REMINDER_COMMAND_NAME = "postponereminder";
 
     public static final String POSTPONE_REMINDER_COMMAND_DESCRIPTION = "postpone.reminder.command.description";
 
@@ -152,11 +122,7 @@ public class MessagesProperties {
 
     public static final String REGEX_MINUTE_PREFIX = "regex.minute.prefix";
 
-    public static final String CUSTOM_REMINDER_TIME_COMMAND_NAME = "customremindertime";
-
     public static final String DELETE_COMPLETED_REMINDERS_COMMAND_DESCRIPTION = "delete.completed.reminders.command.description";
-
-    public static final String DELETE_COMPLETED_REMINDERS_COMMAND_NAME = "deletecompletedreminders";
 
     public static final String CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION = "custom.reminder.time.command.description";
 
@@ -170,19 +136,9 @@ public class MessagesProperties {
 
     public static final String MESSAGE_CUSTOM_REMIND_CREATED = "message.custom.remind.created";
 
-    public static final String REMINDER_DETAILS_COMMAND_NAME = "reminderdetails";
-
-    public static final String EDIT_REMINDER_COMMAND_NAME = "editreminder";
-
-    public static final String RECEIVER_REMINDER_COMMAND_NAME = "receiverreminder";
-
     public static final String GET_COMPLETED_REMINDERS_COMMAND_DESCRIPTION = "get.completed.reminders.command.description";
 
-    public static final String GET_COMPLETED_REMINDERS_COMMAND_NAME = "completedreminders";
-
     public static final String GET_ACTIVE_REMINDERS_COMMAND_DESCRIPTION = "get.active.reminders.command.description";
-
-    public static final String GET_ACTIVE_REMINDERS_COMMAND_NAME = "activereminders";
 
     public static final String MESSAGE_LET_SEE_ON_REMINDERS = "message.let.see.on.reminders";
 
@@ -190,13 +146,9 @@ public class MessagesProperties {
 
     public static final String MESSAGE_ACTIVE_REMINDERS_EMPTY = "message.active.reminders.empty";
 
-    public static final String GO_BACK_CALLBACK_COMMAND_NAME = "goback";
-
     public static final String GO_BACK_CALLBACK_COMMAND_DESCRIPTION = "go.back.callback.command.description";
 
     public static final String CHANGE_TIMEZONE_COMMAND_NAME = "change.timezone.command.name";
-
-    public static final String CHANGE_TIMEZONE_COMMAND_HISTORY_NAME = "changetimezone";
 
     public static final String CURRENT_TIMEZONE = "current.timezone";
 
@@ -217,8 +169,6 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_EDIT_NOTE = "message.reminder.edit.note";
 
     public static final String DELETE_REMINDER_NOTE_COMMAND_DESCRIPTION = "delete.reminder.note.command.description";
-
-    public static final String DELETE_REMINDER_NOTE_COMMAND_NAME = "deleteremindernote";
 
     public static final String MESSAGE_REMINDER_NOTE_DELETED_RECEIVER = "message.reminder.note.deleted.receiver";
 
@@ -262,19 +212,9 @@ public class MessagesProperties {
 
     public static final String TIME_ARTICLE = "time.article";
 
-    public static final String FRIEND_DETAILS_COMMAND = "frienddetails";
-
     public static final String OK_COMMAND_DESCRIPTION = "ok.command.description";
 
-    public static final String OK_COMMAND_NAME = "ok";
-
-    public static final String SCHEDULE_COMMAND_NAME = "reminderschedule";
-
     public static final String SCHEDULE_COMMAND_DESCRIPTION = "schedule.command.description";
-
-    public static final String REMINDER_TIME_DETAILS_COMMAND_NAME = "remindertimedetails";
-
-    public static final String DELETE_REMINDER_TIME_COMMAND_NAME = "deleteremindertime";
 
     public static final String DELETE_REMINDER_TIME_COMMAND_DESCRIPTION = "delete.reminder.time.command.description";
 
@@ -284,23 +224,13 @@ public class MessagesProperties {
 
     public static final String USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME = "user.reminder.notification.with.time.command.name";
 
-    public static final String USER_REMINDER_NOTIFICATION_WITH_TIME_HISTORY_NAME = "urnwthn";
-
     public static final String USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME = "user.reminder.notification.without.time.command.name";
-
-    public static final String USER_REMINDER_NOTIFICATION_WITHOUT_TIME_HISTORY_NAME = "urnwithn";
 
     public static final String MESSAGE_USER_REMINDER_NOTIFICATION = "message.user.reminder.notification";
 
     public static final String USER_REMINDER_NOTIFICATION_COMMAND_NAME = "user.reminder.notification.command.name";
 
-    public static final String USER_REMINDER_NOTIFICATION_HISTORY_NAME = "urnhn";
-
-    public static final String DELETE_USER_REMINDER_NOTIFICATION_COMMAND_NAME = "durn";
-
     public static final String USER_SETTINGS_COMMAND_NAME = "user.settings.command.name";
-
-    public static final String USER_SETTINGS_COMMAND_HISTORY_NAME = "uscn";
 
     public static final String MESSAGE_USER_SETTINGS = "message.user.settings";
 
@@ -312,15 +242,9 @@ public class MessagesProperties {
 
     public static final String COMPLETE_REPEAT_REMINDER_COMMAND_DESCRIPTION = "complete.repeat.reminder.command.description";
 
-    public static final String COMPLETE_REPEAT_REMINDER_COMMAND_NAME = "crrc";
-
     public static final String SKIP_REPEAT_REMINDER_COMMAND_DESCRIPTION = "skip.repeat.reminder.command.description";
 
-    public static final String SKIP_REPEAT_REMINDER_COMMAND_NAME = "srrca";
-
     public static final String STOP_REPEAT_REMINDER_COMMAND_DESCRIPTION = "stop.repeat.reminder.command.description";
-
-    public static final String STOP_REPEAT_REMINDER_COMMAND_NAME = "srrcb";
 
     public static final String MESSAGE_REMINDER_SKIPPED = "message.reminder.skipped";
 
@@ -332,25 +256,27 @@ public class MessagesProperties {
 
     public static final String MESSAGE_COMPLETED_AT = "message.completed.at";
 
-    public static final String GET_FRIEND_REQUEST_COMMAND_NAME = "friendrequest";
-
     public static final String MESSAGE_FRIEND_REQUESTS_EMPTY = "message.friend.requests.empty";
 
     public static final String MESSAGE_FRIENDS_EMPTY = "message.friends.empty";
+
+    public static final String MESSAGE_FRIEND_REQUESTS = "message.friend.requests";
+
+    public static final String MESSAGE_FROM_ME_FRIEND_REQUESTS_EMPTY = "message.from.me.friend.requests.empty";
+
+    public static final String MESSAGE_CHOOSE_FRIEND_REQUEST_CANCEL = "message.choose.friend.request.cancel";
+
+    public static final String MESSAGE_USER_NOT_EXISTS = "message.user.not.exists";
+
+    public static final String MESSAGE_USER_DATA_REFRESHED = "message.user.data.refreshed";
+
+    public static final String MESSAGE_USER_DATA = "message.user.data";
+
+    public static final String MESSAGE_USERNAME_NOT_EXISTS = "message.username.not.exists";
 
     public static final String FROM_ME_FRIEND_REQUESTS_COMMAND_NAME = "from.me.friend.requests.command.name";
 
     public static final String FRIEND_REQUESTS_COMMAND_NAME = "friend.requests.command.name";
 
-    public static final String MESSAGE_FRIEND_REQUESTS = "message.friend.requests";
-
-    public static final String FRIEND_REQUESTS_COMMAND_HISTORY_NAME = "friendrequests";
-
-    public static final String FROM_ME_FRIEND_REQUESTS_HISTORY_NAME = "frommefriendrequests";
-
-    public static final String CANCEL_FRIEND_REQUEST_COMMAND_NAME = "cancelfriendrequest";
-
-    public static final String MESSAGE_FROM_ME_FRIEND_REQUESTS_EMPTY = "message.from.me.friend.requests.empty";
-
-    public static final String MESSAGE_CHOOSE_FRIEND_REQUEST_CANCEL = "message.choose.friend.request.cancel";
+    public static final String REFRESH_USER_DATA_COMMAND_NAME = "refresh.user.data.command.name";
 }

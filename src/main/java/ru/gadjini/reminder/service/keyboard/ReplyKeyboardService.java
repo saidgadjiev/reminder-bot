@@ -9,7 +9,6 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class ReplyKeyboardService {
@@ -50,6 +49,11 @@ public class ReplyKeyboardService {
         replyKeyboardMarkup.getKeyboard().add(
                 new KeyboardRow() {{
                     add(new KeyboardButton(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME)));
+                }}
+        );
+        replyKeyboardMarkup.getKeyboard().add(
+                new KeyboardRow() {{
+                    add(new KeyboardButton(localisationService.getMessage(MessagesProperties.REFRESH_USER_DATA_COMMAND_NAME)));
                 }}
         );
         replyKeyboardMarkup.getKeyboard().add(

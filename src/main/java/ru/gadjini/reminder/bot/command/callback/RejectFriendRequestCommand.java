@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.request.Arg;
@@ -27,7 +28,7 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
     @Autowired
     public RejectFriendRequestCommand(FriendshipService friendshipService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
         this.inlineKeyboardService = inlineKeyboardService;
-        this.name = MessagesProperties.REJECT_FRIEND_REQUEST_COMMAND_NAME;
+        this.name = CommandNames.REJECT_FRIEND_REQUEST_COMMAND_NAME;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
     }

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -28,7 +28,7 @@ public class CompleteRepeatReminderCommand implements CallbackBotCommand {
 
     @Override
     public String getName() {
-        return MessagesProperties.COMPLETE_REPEAT_REMINDER_COMMAND_NAME;
+        return CommandNames.COMPLETE_REPEAT_REMINDER_COMMAND_NAME;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class CompleteRepeatReminderCommand implements CallbackBotCommand {
         Reminder reminder = repeatReminderService.complete(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         String currHistoryName = requestParams.getString(Arg.CURR_HISTORY_NAME.getKey());
-        if (Objects.equals(currHistoryName, MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)) {
+        if (Objects.equals(currHistoryName, CommandNames.REMINDER_DETAILS_COMMAND_NAME)) {
             reminderMessageSender.sendRepeatReminderCompletedFromList(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
         } else {
             reminderMessageSender.sendRepeatReminderCompleted(callbackQuery.getId(), reminder);

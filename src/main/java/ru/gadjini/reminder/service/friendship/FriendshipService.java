@@ -9,7 +9,9 @@ import ru.gadjini.reminder.dao.FriendshipDao;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.security.SecurityService;
+import ru.gadjini.reminder.service.validation.UserValidator;
 
 import java.util.List;
 
@@ -20,10 +22,13 @@ public class FriendshipService {
 
     private SecurityService securityService;
 
+    private UserValidator userValidator;
+
     @Autowired
-    public FriendshipService(FriendshipDao friendshipDao, SecurityService securityService) {
+    public FriendshipService(FriendshipDao friendshipDao, SecurityService securityService, UserValidator userValidator) {
         this.friendshipDao = friendshipDao;
         this.securityService = securityService;
+        this.userValidator = userValidator;
     }
 
     public void deleteFriend(int friendId) {
@@ -38,8 +43,10 @@ public class FriendshipService {
         Friendship friendship;
 
         if (StringUtils.isNotBlank(friendUsername)) {
+            userValidator.checkExists(friendUsername);
             friendship = getFriendship(user.getId(), friendUsername);
         } else {
+            userValidator.checkExists(friendUserId);
             friendship = getFriendship(user.getId(), friendUserId);
         }
 

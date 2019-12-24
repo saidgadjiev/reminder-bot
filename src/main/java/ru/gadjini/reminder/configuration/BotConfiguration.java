@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.keyboard.UserReminderNotificationScheduleCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.properties.WebHookProperties;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
@@ -67,7 +68,7 @@ public class BotConfiguration {
     ) {
         return new UserReminderNotificationScheduleCommand(
                 localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME),
-                MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_HISTORY_NAME,
+                CommandNames.USER_REMINDER_NOTIFICATION_WITH_TIME_HISTORY_NAME,
                 UserReminderNotification.NotificationType.WITH_TIME,
                 userReminderNotificationService,
                 messageBuilder,
@@ -88,7 +89,7 @@ public class BotConfiguration {
     ) {
         return new UserReminderNotificationScheduleCommand(
                 localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME),
-                MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_HISTORY_NAME,
+                CommandNames.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_HISTORY_NAME,
                 UserReminderNotification.NotificationType.WITHOUT_TIME,
                 userReminderNotificationService,
                 messageBuilder,

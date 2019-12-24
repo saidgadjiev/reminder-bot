@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -39,7 +39,7 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
 
     @Override
     public String getName() {
-        return MessagesProperties.SCHEDULE_COMMAND_NAME;
+        return CommandNames.SCHEDULE_COMMAND_NAME;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
 
     @Override
     public String getHistoryName() {
-        return MessagesProperties.SCHEDULE_COMMAND_NAME;
+        return CommandNames.SCHEDULE_COMMAND_NAME;
     }
 
     @Override

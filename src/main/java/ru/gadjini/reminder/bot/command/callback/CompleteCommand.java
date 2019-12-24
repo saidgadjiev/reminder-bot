@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -26,7 +26,7 @@ public class CompleteCommand implements CallbackBotCommand {
     public CompleteCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
-        this.name = MessagesProperties.COMPLETE_REMINDER_COMMAND_NAME;
+        this.name = CommandNames.COMPLETE_REMINDER_COMMAND_NAME;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class CompleteCommand implements CallbackBotCommand {
         Reminder reminder = reminderService.completeReminder(reminderId);
         String currHistoryName = requestParams.getString(Arg.CURR_HISTORY_NAME.getKey());
 
-        if (Objects.equals(currHistoryName, MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)) {
+        if (Objects.equals(currHistoryName, CommandNames.REMINDER_DETAILS_COMMAND_NAME)) {
             doCompleteFromList(reminder, callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), callbackQuery.getId());
         } else {
             doComplete(reminder, callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), callbackQuery.getId());

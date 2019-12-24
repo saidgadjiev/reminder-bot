@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -37,7 +37,7 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
 
     @Override
     public String getName() {
-        return MessagesProperties.REMINDER_TIME_DETAILS_COMMAND_NAME;
+        return CommandNames.REMINDER_TIME_DETAILS_COMMAND_NAME;
     }
 
     @Override

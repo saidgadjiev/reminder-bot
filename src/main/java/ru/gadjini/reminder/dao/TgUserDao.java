@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
+import java.sql.ResultSet;
 import java.time.ZoneId;
 
 @Repository
@@ -19,6 +20,22 @@ public class TgUserDao {
     public TgUserDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.resultSetMapper = resultSetMapper;
+    }
+
+    public Boolean isExists(String username) {
+        return jdbcTemplate.query(
+                "SELECT TRUE FROM tg_user WHERE username = ?",
+                ps -> ps.setString(1, username),
+                ResultSet::next
+        );
+    }
+
+    public Boolean isExists(int userId) {
+        return jdbcTemplate.query(
+                "SELECT TRUE FROM tg_user WHERE user_id = ?",
+                ps -> ps.setInt(1, userId),
+                ResultSet::next
+        );
     }
 
     public TgUser getByUserId(int userId) {

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
@@ -27,7 +28,7 @@ public class DeleteFriendCommand implements CallbackBotCommand {
         this.messageService = messageService;
         this.friendshipService = friendshipService;
         this.inlineKeyboardService = inlineKeyboardService;
-        name = MessagesProperties.DELETE_FRIEND_COMMAND_NAME;
+        name = CommandNames.DELETE_FRIEND_COMMAND_NAME;
     }
 
     @Override
@@ -44,7 +45,7 @@ public class DeleteFriendCommand implements CallbackBotCommand {
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 MessagesProperties.MESSAGE_FRIEND_DELETED,
-                inlineKeyboardService.goBackCallbackButton(MessagesProperties.GET_FRIENDS_COMMAND_HISTORY_NAME)
+                inlineKeyboardService.goBackCallbackButton(CommandNames.GET_FRIENDS_COMMAND_HISTORY_NAME)
         );
     }
 }

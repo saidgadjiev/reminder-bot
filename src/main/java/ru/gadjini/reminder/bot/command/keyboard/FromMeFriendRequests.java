@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
@@ -50,12 +51,12 @@ public class FromMeFriendRequests implements KeyboardBotCommand, NavigableCallba
         messageService.sendMessage(
                 message.getChatId(),
                 friendshipMessageBuilder.getFriendsList(requests, MessagesProperties.MESSAGE_FROM_ME_FRIEND_REQUESTS_EMPTY, MessagesProperties.MESSAGE_CHOOSE_FRIEND_REQUEST_CANCEL),
-                inlineKeyboardService.getFriendsListKeyboard(requests.stream().map(TgUser::getUserId).collect(Collectors.toList()), MessagesProperties.CANCEL_FRIEND_REQUEST_COMMAND_NAME)
+                inlineKeyboardService.getFriendsListKeyboard(requests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.CANCEL_FRIEND_REQUEST_COMMAND_NAME)
         );
     }
 
     @Override
     public String getHistoryName() {
-        return MessagesProperties.FROM_ME_FRIEND_REQUESTS_HISTORY_NAME;
+        return CommandNames.FROM_ME_FRIEND_REQUESTS_HISTORY_NAME;
     }
 }

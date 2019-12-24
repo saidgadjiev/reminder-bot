@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.model.CallbackRequest;
@@ -56,7 +57,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
                                    LocalisationService localisationService) {
         this.replyKeyboardService = replyKeyboardService;
         this.localisationService = localisationService;
-        this.name = MessagesProperties.POSTPONE_REMINDER_COMMAND_NAME;
+        this.name = CommandNames.POSTPONE_REMINDER_COMMAND_NAME;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.reminderRequestService = reminderRequestService;

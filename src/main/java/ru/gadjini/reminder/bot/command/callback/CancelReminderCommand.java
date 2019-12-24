@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -24,7 +24,7 @@ public class CancelReminderCommand implements CallbackBotCommand {
 
     @Autowired
     public CancelReminderCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
-        this.name = MessagesProperties.CANCEL_REMINDER_COMMAND_NAME;
+        this.name = CommandNames.CANCEL_REMINDER_COMMAND_NAME;
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
     }
@@ -41,7 +41,7 @@ public class CancelReminderCommand implements CallbackBotCommand {
         Reminder reminder = reminderService.cancel(reminderId);
         String currHistoryName = requestParams.getString(Arg.CURR_HISTORY_NAME.getKey());
 
-        if (Objects.equals(currHistoryName, MessagesProperties.REMINDER_DETAILS_COMMAND_NAME)) {
+        if (Objects.equals(currHistoryName, CommandNames.REMINDER_DETAILS_COMMAND_NAME)) {
             if (reminder == null) {
                 reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getId(), callbackQuery.getMessage().getMessageId());
             } else {
