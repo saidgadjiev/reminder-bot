@@ -2,8 +2,6 @@ package ru.gadjini.reminder.service.message;
 
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -16,16 +14,7 @@ public class MessageQueue {
         blockingQueue.add(job);
     }
 
-    public List<Runnable> poll(int count) throws InterruptedException {
-        List<Runnable> poll = new ArrayList<>();
-
-        while (count > 0) {
-            Runnable runnable = blockingQueue.take();
-
-            poll.add(runnable);
-            --count;
-        }
-
-        return poll;
+    public Runnable take() throws InterruptedException {
+        return blockingQueue.take();
     }
 }

@@ -10,6 +10,8 @@ import java.util.List;
 @Component
 public class MessageSenderJob {
 
+    private static final int BATCH_SIZE = 1;
+
     private MessageQueue messageQueue;
 
     @Autowired
@@ -19,9 +21,8 @@ public class MessageSenderJob {
 
     @Scheduled(fixedDelay = 40)
     public void sendMessages() throws Exception {
-        List<Runnable> poll = messageQueue.poll(1);
-
-        for (Runnable job: poll) {
+        for (int i = 0; i < BATCH_SIZE; ++i) {
+            Runnable job = messageQueue.take();
             job.run();
         }
     }
