@@ -52,7 +52,9 @@ public class FixedTimeParser {
         if (lexemsConsumer.check(lexems, TimeToken.TYPE)) {
             consumeType(lexems);
         }
-        if (lexemsConsumer.check(lexems, TimeToken.MONTH)) {
+        if (lexemsConsumer.check(lexems, TimeToken.YEAR)) {
+            consumeYear(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.MONTH)) {
             consumeMonth(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAY_WORD)) {
             consumeDayWord(lexems);
@@ -69,7 +71,7 @@ public class FixedTimeParser {
 
         ZonedDateTime now = ZonedDateTime.now(fixedTime.getZone());
         if (fixedTime.date().isBefore(now.toLocalDate())) {
-            fixedTime.month(now.getMonthValue() + 1);
+            fixedTime.year(now.getYear() + 1);
         }
         if (fixedTime.hasTime()) {
             if (fixedTime.date().equals(LocalDate.now(fixedTime.getZone()))
@@ -108,6 +110,20 @@ public class FixedTimeParser {
         LocalDate dayOfWeekDate = (LocalDate) TemporalAdjusters.next(dayOfWeek).adjustInto(fixedTime.date());
 
         fixedTime.date(dayOfWeekDate);
+
+        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            fixedTime.time(consumeTime(lexems));
+        }
+    }
+
+    private void consumeYear(List<BaseLexem> lexems) {
+        int year = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.YEAR).getValue());
+        int month = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MONTH).getValue());
+        int day = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAY).getValue());
+
+        fixedTime.year(year);
+        fixedTime.month(month);
+        fixedTime.dayOfMonth(day);
 
         if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             fixedTime.time(consumeTime(lexems));

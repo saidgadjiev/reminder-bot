@@ -48,6 +48,8 @@ public class PatternBuilder {
 
     public static final String MONTH = "month";
 
+    public static final String YEAR = "year";
+
     public static final String LOGIN = "login";
 
     public static final String TEXT = "text";
@@ -107,15 +109,15 @@ public class PatternBuilder {
 
         patternBuilder
                 .append("((?<").append(TYPE).append(">").append(until).append("|").append(regexpTimeArticle).append(") )?")
-                .append("(((?<").append(MONTH).append(">1[0-2]|[1-9])\\.)?((?<").append(DAY).append(">0[1-9]|[12]\\d|3[01]|0?[1-9])|(?<").append(DAY_WORD).append(">")
-                .append(tomorrow).append("|").append(dayAfterTomorrow).append("|").append(today).append(")) )?((?<").append(MONTH_WORD).append(">")
+                .append("(").append("((?<").append(YEAR).append(">\\d{4})\\.)?((?<").append(MONTH).append(">1[0-2]|[1-9])\\.)?((?<").append(DAY).append(">0[1-9]|[12]\\d|3[01]|0?[1-9])|(?<").append(DAY_WORD).append(">")
+                .append(tomorrow).append("|").append(dayAfterTomorrow).append("|").append(today).append(")))?( )??(?<").append(MONTH_WORD).append(">")
                 .append(Stream.of(Month.values()).map(month -> month.getDisplayName(TextStyle.FULL, locale)).collect(Collectors.joining("|")))
-                .append(") )?(((").append(regexpDayOfWeekArticle).append(") )?( )?((?<").append(NEXT_WEEK).append(">")
+                .append(")?( )?(((").append(regexpDayOfWeekArticle).append(") )?( )?((?<").append(NEXT_WEEK).append(">")
                 .append(regexpNextWeek).append(") )?(?<").append(DAY_OF_WEEK_WORD).append(">").append(getDayOfWeekPattern(locale))
                 .append("))?( )?(").append(regexpTimeArticle).append(" )?((?<")
                 .append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]))?");
 
-        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, MONTH, DAY, DAY_WORD, MONTH_WORD, NEXT_WEEK, DAY_OF_WEEK_WORD, HOUR, MINUTE));
+        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, YEAR, MONTH, DAY, DAY_WORD, MONTH_WORD, NEXT_WEEK, DAY_OF_WEEK_WORD, HOUR, MINUTE));
     }
 
     public GroupPattern buildOffsetTimePattern() {

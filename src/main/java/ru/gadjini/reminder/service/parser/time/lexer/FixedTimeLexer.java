@@ -51,6 +51,9 @@ public class FixedTimeLexer {
         if (values.containsKey(PatternBuilder.DAY_WORD)) {
             lexems.add(new TimeLexem(TimeToken.DAY_WORD, values.get(PatternBuilder.DAY_WORD)));
         }
+        if (values.containsKey(PatternBuilder.YEAR)) {
+            lexems.add(new TimeLexem(TimeToken.YEAR, values.get(PatternBuilder.YEAR)));
+        }
         if (values.containsKey(PatternBuilder.MONTH)) {
             lexems.add(new TimeLexem(TimeToken.MONTH, values.get(PatternBuilder.MONTH)));
         }

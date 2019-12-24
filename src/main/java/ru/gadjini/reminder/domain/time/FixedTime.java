@@ -114,6 +114,14 @@ public class FixedTime {
         this.type = type;
     }
 
+    public DateTime plusYears(int years) {
+        return dateTime.plusYears(years);
+    }
+
+    public DateTime year(int year) {
+        return dateTime.year(year);
+    }
+
     public enum Type {
 
         UNTIL,

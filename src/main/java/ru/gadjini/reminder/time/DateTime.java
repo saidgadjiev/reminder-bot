@@ -60,6 +60,18 @@ public class DateTime {
         return this;
     }
 
+    public DateTime plusYears(int years) {
+        localDate = localDate.plusYears(years);
+
+        return this;
+    }
+
+    public DateTime year(int year) {
+        localDate = localDate.withYear(year);
+
+        return this;
+    }
+
     public DateTime month(int month) {
         localDate = localDate.withMonth(month);
 

@@ -8,6 +8,8 @@ public enum TimeToken implements Token {
 
     MONTH,
 
+    YEAR,
+
     MONTH_WORD,
 
     DAY_WORD,

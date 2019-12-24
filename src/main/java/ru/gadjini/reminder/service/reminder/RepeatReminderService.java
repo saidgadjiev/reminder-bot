@@ -88,6 +88,7 @@ public class RepeatReminderService {
         );
         completedReminderDao.create(toComplete);
         moveReminderNotificationToNextPeriod(toComplete);
+        toComplete.getReceiver().setFrom(securityService.getAuthenticatedUser());
 
         return toComplete;
     }
@@ -110,7 +111,7 @@ public class RepeatReminderService {
                     setRemindMessageMapping(new Mapping());
                 }}
         );
-
+        toSkip.getReceiver().setFrom(securityService.getAuthenticatedUser());
         moveReminderNotificationToNextPeriod(toSkip);
 
         return toSkip;

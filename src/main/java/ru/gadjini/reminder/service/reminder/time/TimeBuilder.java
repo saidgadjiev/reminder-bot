@@ -112,7 +112,7 @@ public class TimeBuilder {
             }
         }
 
-        return fixedDate(remindAt);
+        return fixedDate(remindAt, zoneId);
     }
 
     public String time(ZonedDateTime remindAt) {
@@ -167,10 +167,13 @@ public class TimeBuilder {
         return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")</b>";
     }
 
-    private String fixedDate(LocalDate remindAt) {
+    private String fixedDate(LocalDate remindAt, ZoneId zoneId) {
         String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+        LocalDate now = LocalDate.now(zoneId);
 
-        return "<b>" + remindAt.getDayOfMonth() + " " + monthName + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")</b>";
+        return "<b>"+ remindAt.getDayOfMonth() + " " + monthName +
+                "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")"
+                + (now.getYear() < remindAt.getYear() ? " " + remindAt.getYear() : "") + "</b>";
     }
 
     private String todayTime(ZonedDateTime remindAt) {
@@ -183,8 +186,11 @@ public class TimeBuilder {
     private String fixedDay(ZonedDateTime remindAt) {
         String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
         String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
+        ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
 
-        return "<b>" + remindAt.getDayOfMonth() + " " + monthName + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
+        return "<b>" + remindAt.getDayOfMonth() + " " + monthName +
+                "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " +
+                timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + (now.getYear() < remindAt.getYear() ? " " + remindAt.getYear() : "") + "</b>";
     }
 
     private String tomorrowTime(ZonedDateTime remindAt) {
