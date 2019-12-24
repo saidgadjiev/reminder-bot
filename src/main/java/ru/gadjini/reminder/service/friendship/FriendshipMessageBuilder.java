@@ -22,6 +22,7 @@ public class FriendshipMessageBuilder {
 
     public String getFriendDetails(TgUser friend) {
         StringBuilder message = new StringBuilder();
+
         message.append(UserUtils.userLink(friend)).append("\n\n");
         message.append(localisationService.getMessage(MessagesProperties.TIMEZONE, new Object[] {
                 friend.getZoneId(),
@@ -45,7 +46,7 @@ public class FriendshipMessageBuilder {
             message.append(i++).append(") ").append(UserUtils.userLink(friend));
         }
         if (StringUtils.isNotBlank(footer)) {
-            message.append("\n\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_CHOOSE_FRIEND_REQUEST_CANCEL));
+            message.append("\n\n").append(localisationService.getMessage(footer));
         }
 
         return message.toString();

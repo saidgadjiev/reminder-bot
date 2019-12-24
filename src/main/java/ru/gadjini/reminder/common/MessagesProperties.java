@@ -32,7 +32,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_COMPLETED = "message.reminder.completed";
 
-    public static final String GET_FRIEND_REQUESTS_COMMAND_NAME = "get.friend.requests.command.name";
+    public static final String TO_ME_FRIEND_REQUESTS_COMMAND_NAME = "to.me.friend.requests.command.name";
 
     public static final String SEND_FRIEND_REQUEST_COMMAND_NAME = "send.friend.request.command.name";
 
@@ -339,6 +339,12 @@ public class MessagesProperties {
     public static final String MESSAGE_FRIENDS_EMPTY = "message.friends.empty";
 
     public static final String FROM_ME_FRIEND_REQUESTS_COMMAND_NAME = "from.me.friend.requests.command.name";
+
+    public static final String FRIEND_REQUESTS_COMMAND_NAME = "friend.requests.command.name";
+
+    public static final String MESSAGE_FRIEND_REQUESTS = "message.friend.requests";
+
+    public static final String FRIEND_REQUESTS_COMMAND_HISTORY_NAME = "friendrequests";
 
     public static final String FROM_ME_FRIEND_REQUESTS_HISTORY_NAME = "frommefriendrequests";
 

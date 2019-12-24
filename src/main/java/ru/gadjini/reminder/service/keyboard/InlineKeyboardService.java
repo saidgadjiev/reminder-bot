@@ -225,7 +225,7 @@ public class InlineKeyboardService {
                 buttonFactory.acceptFriendRequestButton(friendUserId),
                 buttonFactory.rejectFriendRequestButton(friendUserId)
         ));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(MessagesProperties.GET_FRIEND_REQUESTS_COMMAND_NAME)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME)));
 
         return inlineKeyboardMarkup;
     }

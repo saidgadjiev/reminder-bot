@@ -52,7 +52,7 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED,
-                inlineKeyboardService.goBackCallbackButton(MessagesProperties.GET_FRIEND_REQUESTS_COMMAND_NAME)
+                inlineKeyboardService.goBackCallbackButton(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME)
         );
     }
 }

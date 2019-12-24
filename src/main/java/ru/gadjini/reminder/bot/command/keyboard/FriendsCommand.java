@@ -19,58 +19,58 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class GetToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableCallbackBotCommand {
+public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotCommand {
 
     private InlineKeyboardService inlineKeyboardService;
 
-    private FriendshipService friendshipService;
-
     private FriendshipMessageBuilder friendshipMessageBuilder;
+
+    private FriendshipService friendshipService;
 
     private MessageService messageService;
 
     private String name;
 
     @Autowired
-    public GetToMeFriendRequestsCommand(InlineKeyboardService inlineKeyboardService, LocalisationService localisationService,
-                                        FriendshipService friendshipService, FriendshipMessageBuilder friendshipMessageBuilder, MessageService messageService) {
+    public FriendsCommand(InlineKeyboardService inlineKeyboardService, FriendshipMessageBuilder friendshipMessageBuilder,
+                          FriendshipService friendshipService, MessageService messageService, LocalisationService localisationService) {
         this.inlineKeyboardService = inlineKeyboardService;
-        this.friendshipService = friendshipService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
+        this.friendshipService = friendshipService;
         this.messageService = messageService;
-        this.name = localisationService.getMessage(MessagesProperties.GET_FRIEND_REQUESTS_COMMAND_NAME);
+        this.name = localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME);
     }
 
     @Override
     public boolean canHandle(String command) {
-        return name.equals(command);
+        return this.name.equals(command);
     }
 
     @Override
     public void processMessage(Message message) {
-        List<TgUser> friendRequests = friendshipService.getToMeFriendRequests();
+        List<TgUser> friends = friendshipService.getFriends();
 
         messageService.sendMessage(
                 message.getChatId(),
-                friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null),
-                inlineKeyboardService.getFriendsListKeyboard(friendRequests.stream().map(TgUser::getUserId).collect(Collectors.toList()), MessagesProperties.GET_FRIEND_REQUEST_COMMAND_NAME)
+                friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null),
+                inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), MessagesProperties.FRIEND_DETAILS_COMMAND)
         );
     }
 
     @Override
     public String getHistoryName() {
-        return MessagesProperties.GET_FRIEND_REQUESTS_COMMAND_NAME;
+        return MessagesProperties.GET_FRIENDS_COMMAND_HISTORY_NAME;
     }
 
     @Override
     public void restore(long chatId, int messageId, String queryId, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
-        List<TgUser> friendRequests = friendshipService.getToMeFriendRequests();
+        List<TgUser> friends = friendshipService.getFriends();
 
         messageService.editMessage(
                 chatId,
                 messageId,
-                friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null),
-                inlineKeyboardService.getFriendsListKeyboard(friendRequests.stream().map(TgUser::getUserId).collect(Collectors.toList()), MessagesProperties.GET_FRIEND_REQUEST_COMMAND_NAME)
+                friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null),
+                inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), MessagesProperties.FRIEND_DETAILS_COMMAND)
         );
     }
 }

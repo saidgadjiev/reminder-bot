@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class GetFromMeFriendRequests implements KeyboardBotCommand, NavigableCallbackBotCommand {
+public class FromMeFriendRequests implements KeyboardBotCommand, NavigableCallbackBotCommand {
 
     private String name;
 
@@ -30,8 +30,8 @@ public class GetFromMeFriendRequests implements KeyboardBotCommand, NavigableCal
     private MessageService messageService;
 
     @Autowired
-    public GetFromMeFriendRequests(LocalisationService localisationService, FriendshipService friendshipService,
-                                   FriendshipMessageBuilder friendshipMessageBuilder, InlineKeyboardService inlineKeyboardService, MessageService messageService) {
+    public FromMeFriendRequests(LocalisationService localisationService, FriendshipService friendshipService,
+                                FriendshipMessageBuilder friendshipMessageBuilder, InlineKeyboardService inlineKeyboardService, MessageService messageService) {
         this.name = localisationService.getMessage(MessagesProperties.FROM_ME_FRIEND_REQUESTS_COMMAND_NAME);
         this.friendshipService = friendshipService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
@@ -49,7 +49,7 @@ public class GetFromMeFriendRequests implements KeyboardBotCommand, NavigableCal
         List<TgUser> requests = friendshipService.getFromMeFriendRequests();
         messageService.sendMessage(
                 message.getChatId(),
-                friendshipMessageBuilder.getFriendsList(requests, MessagesProperties.MESSAGE_FROM_ME_FRIEND_REQUESTS_EMPTY, null),
+                friendshipMessageBuilder.getFriendsList(requests, MessagesProperties.MESSAGE_FROM_ME_FRIEND_REQUESTS_EMPTY, MessagesProperties.MESSAGE_CHOOSE_FRIEND_REQUEST_CANCEL),
                 inlineKeyboardService.getFriendsListKeyboard(requests.stream().map(TgUser::getUserId).collect(Collectors.toList()), MessagesProperties.CANCEL_FRIEND_REQUEST_COMMAND_NAME)
         );
     }

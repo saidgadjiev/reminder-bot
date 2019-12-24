@@ -13,7 +13,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
 @Component
-public class GetRemindersCommand implements KeyboardBotCommand, NavigableCallbackBotCommand {
+public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBotCommand {
 
     private String name;
 
@@ -22,7 +22,7 @@ public class GetRemindersCommand implements KeyboardBotCommand, NavigableCallbac
     private InlineKeyboardService inlineKeyboardService;
 
     @Autowired
-    public GetRemindersCommand(LocalisationService localisationService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
+    public RemindersCommand(LocalisationService localisationService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
         this.name = localisationService.getMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME);
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;

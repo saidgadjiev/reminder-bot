@@ -9,6 +9,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ReplyKeyboardService {
@@ -18,6 +19,24 @@ public class ReplyKeyboardService {
     @Autowired
     public ReplyKeyboardService(LocalisationService localisationService) {
         this.localisationService = localisationService;
+    }
+
+    public ReplyKeyboardMarkup getFriendRequestsKeyboard() {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+
+        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
+            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME)));
+        }});
+        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
+            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.FROM_ME_FRIEND_REQUESTS_COMMAND_NAME)));
+        }});
+        replyKeyboardMarkup.getKeyboard().add(
+                new KeyboardRow() {{
+                    add(new KeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
+                }}
+        );
+
+        return replyKeyboardMarkup;
     }
 
     public ReplyKeyboardMarkup getUserSettingsKeyboard() {
@@ -84,11 +103,7 @@ public class ReplyKeyboardService {
         }});
 
         replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.GET_FRIEND_REQUESTS_COMMAND_NAME));
-        }});
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.FROM_ME_FRIEND_REQUESTS_COMMAND_NAME));
+            add(localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME));
         }});
 
         replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
