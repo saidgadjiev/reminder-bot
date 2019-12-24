@@ -3,10 +3,8 @@ package ru.gadjini.reminder.job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.task.TaskSchedulerCustomizer;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.domain.Reminder;
@@ -26,7 +24,7 @@ import java.util.List;
 
 @Component
 @Profile("!" + BotConfiguration.PROFILE_TEST)
-public class ReminderJob implements TaskSchedulerCustomizer {
+public class ReminderJob {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReminderJob.class);
 
@@ -51,11 +49,8 @@ public class ReminderJob implements TaskSchedulerCustomizer {
         this.reminderNotificationMessageSender = reminderNotificationMessageSender;
         this.repeatReminderService = repeatReminderService;
         this.restoreReminderService = restoreReminderService;
-    }
 
-    @Override
-    public void customize(ThreadPoolTaskScheduler taskScheduler) {
-        taskScheduler.setErrorHandler(throwable -> LOGGER.error(throwable.getMessage(), throwable));
+        LOGGER.debug("Reminder job initialized and working");
     }
 
     @Scheduled(cron = "0 0 0 * * *")

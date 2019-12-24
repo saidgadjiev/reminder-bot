@@ -83,11 +83,11 @@ public class PatternBuilder {
         String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX);
 
         pattern
-                .append(regexRepeat).append(" (((((?<" + HOURS + ">\\d+)( )?").append(hourPrefix).append(")|(?<")
+                .append(regexRepeat).append(" (((((?<" + HOURS + ">\\d+)( )?(").append(hourPrefix).append("))|(?<")
                 .append(EVERY_HOUR).append(">").append(regexpEveryHour).append("))?( )?((?<").append(MINUTES)
-                .append(">\\d+)( )?").append(minutePrefix).append(")?( )?)|(?<").append(EVERY_MINUTE).append(">")
+                .append(">\\d+)( )?(").append(minutePrefix).append("))?( )?)|(?<").append(EVERY_MINUTE).append(">")
                 .append(regexpEveryMinute).append(")|(((?<").append(EVERY_DAY).append(">").append(regexpEveryDay)
-                .append(")|((?<").append(DAYS).append(">\\d+)( )?").append(dayPrefix).append("))|(?<")
+                .append(")|((?<").append(DAYS).append(">\\d+)( )?(").append(dayPrefix).append(")))|(?<")
                 .append(DAY_OF_WEEK_WORD).append(">").append(getDayOfWeekPattern(locale)).append("))( )?(")
                 .append(regexpTimeArticle).append(" )?((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<")
                 .append(MINUTE).append(">[0-5]?[0-9]))?)");

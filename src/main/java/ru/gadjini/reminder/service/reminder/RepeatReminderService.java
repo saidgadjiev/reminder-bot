@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gadjini.reminder.dao.CompletedReminderDao;
 import ru.gadjini.reminder.dao.ReminderDao;
-import ru.gadjini.reminder.domain.*;
+import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.ReminderNotification;
+import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
@@ -239,7 +242,7 @@ public class RepeatReminderService {
     private DateTime getIntervalFirstRemindAt(RepeatTime repeatTime) {
         ZonedDateTime now = TimeUtils.nowZoned();
 
-        return DateTime.of(now.plusHours(repeatTime.getInterval().getHours()).plusMinutes(repeatTime.getInterval().getMinutes()));
+        return DateTime.of(JodaTimeUtils.plus(now, repeatTime.getInterval()));
     }
 
     private DateTime getWeeklyFirstRemindAt(RepeatTime repeatTime) {
@@ -324,7 +327,7 @@ public class RepeatReminderService {
     }
 
     private void addIntervalReminderNotifications(RepeatTime repeatTime, int receiverId, List<ReminderNotification> reminderNotifications) {
-        ZonedDateTime now = JodaTimeUtils.plus(TimeUtils.nowZoned(), repeatTime.getInterval());
+        ZonedDateTime now = getFirstRemindAt(repeatTime).toZonedDateTime();
 
         intervalReminderNotification(now, repeatTime.getInterval(), reminderNotifications).setItsTime(true);
 
@@ -347,8 +350,7 @@ public class RepeatReminderService {
     }
 
     private void addDailyReminderNotifications(RepeatTime repeatTime, int receiverId, List<ReminderNotification> reminderNotifications) {
-        ZonedDateTime now = TimeUtils.nowZoned();
-        ZonedDateTime repeatReminder = now.with(repeatTime.getTime());
+        ZonedDateTime repeatReminder = getFirstRemindAt(repeatTime).toZonedDateTime();
 
         fixedReminderNotification(repeatReminder.toLocalDate(), repeatTime.getInterval().getDays(), repeatTime.getTime(), reminderNotifications).setItsTime(true);
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITH_TIME);
@@ -368,8 +370,7 @@ public class RepeatReminderService {
     }
 
     private void addWeeklyReminderNotifications(RepeatTime repeatTime, int receiverId, List<ReminderNotification> reminderNotifications) {
-        ZonedDateTime now = TimeUtils.nowZoned();
-        ZonedDateTime repeatReminder = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek())).with(repeatTime.getTime());
+        ZonedDateTime repeatReminder = getFirstRemindAt(repeatTime).toZonedDateTime();
 
         fixedReminderNotification(repeatReminder.toLocalDate(), 7, repeatTime.getTime(), reminderNotifications).setItsTime(true);
 
@@ -385,8 +386,7 @@ public class RepeatReminderService {
     }
 
     private void addWeeklyReminderNotificationsWithoutTime(RepeatTime repeatTime, int receiverId, List<ReminderNotification> reminderNotifications) {
-        LocalDate now = LocalDate.now();
-        LocalDate repeatReminder = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek()));
+        LocalDate repeatReminder = getFirstRemindAt(repeatTime).date();
 
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITHOUT_TIME);
         for (UserReminderNotification offsetTime : userReminderNotifications) {
@@ -395,7 +395,7 @@ public class RepeatReminderService {
     }
 
     private void addDailyReminderNotificationsWithoutTime(RepeatTime repeatTime, int receiverId, List<ReminderNotification> reminderNotifications) {
-        ZonedDateTime now = ZonedDateTime.now();
+        LocalDate now = getFirstRemindAt(repeatTime).date();
 
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITHOUT_TIME);
         for (UserReminderNotification offsetTime : userReminderNotifications) {
@@ -404,7 +404,7 @@ public class RepeatReminderService {
             }
 
             ReminderNotification notification = fixedReminderNotification(
-                    now.minusDays(offsetTime.getDays()).toLocalDate(),
+                    now.minusDays(offsetTime.getDays()),
                     repeatTime.getInterval().getDays(),
                     offsetTime.getTime(),
                     reminderNotifications
