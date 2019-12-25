@@ -8,16 +8,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ru.gadjini.reminder.service.parser.pattern.Patterns.FIXED_TIME_PATTERN;
+
 
 class ReminderRequestFixedTimePatternTest {
-
-    private static final Pattern PATTERN = Pattern.compile("(((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]) ?)(в ?)?)?(((((?<dayofweek>понедельник[а]?|вторник[а]?|сред[ыу]?|четверг[а]?|пятниц[ыу]?|суббот[ыу]?|воскресень[яе]?|пн|вт|ср|чт|пт|сб|вс) ?)((?<nextweek>следующ(ий|ей|ую|ее)|след) ?)?)(во|в ?)?)|((((?<monthword>января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря) )|(((?<year>\\d{4})\\.)?(?<month>1[0-2]|[1-9])\\.))((?<day>0[1-9]|[12]\\d|3[01]|0?[1-9]) ?)))?((?<type>до) ?)?");
 
     @Test
     void matchTimeOnly() {
         String str = StringUtils.reverseDelimited("Сходить на почту в 19:00", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("hour", "19"), Map.entry("minute", "00")));
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("hour", "19"), Map.entry("minute", "00")));
         Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -25,7 +25,7 @@ class ReminderRequestFixedTimePatternTest {
     void matchDayOfWeekTime() {
         String str = StringUtils.reverseDelimited("Сходить на почту во вторник в 19:00", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("dayofweek", "вторник"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("dayofweek", "вторник"), Map.entry("hour", "19"), Map.entry("minute", "00")));
         Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -33,7 +33,7 @@ class ReminderRequestFixedTimePatternTest {
     void matchDayOfWeek() {
         String str = StringUtils.reverseDelimited("Сходить на почту во вторник", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("dayofweek", "вторник")));
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("dayofweek", "вторник")));
         Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -41,7 +41,7 @@ class ReminderRequestFixedTimePatternTest {
     void matchDayOfNextWeekTime() {
         String str = StringUtils.reverseDelimited("Сходить на почту в след вторник в 19:00", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("nextweek", "след"), Map.entry("dayofweek", "вторник"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("nextweek", "след"), Map.entry("dayofweek", "вторник"), Map.entry("hour", "19"), Map.entry("minute", "00")));
         Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -49,7 +49,7 @@ class ReminderRequestFixedTimePatternTest {
     void matchDayOfNextWeek() {
         String str = StringUtils.reverseDelimited("Сходить на почту в след вторник", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("nextweek", "след"), Map.entry("dayofweek", "вторник")));
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("nextweek", "след"), Map.entry("dayofweek", "вторник")));
         Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -57,7 +57,7 @@ class ReminderRequestFixedTimePatternTest {
     void matchDayMonthWordTime() {
         String str = StringUtils.reverseDelimited("Сходить на почту 5 сентября в 19:00", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("day", "5"), Map.entry("monthword", "сентября"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("day", "5"), Map.entry("monthword", "сентября"), Map.entry("hour", "19"), Map.entry("minute", "00")));
         Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -65,7 +65,7 @@ class ReminderRequestFixedTimePatternTest {
     void matchDayMonthWord() {
         String str = StringUtils.reverseDelimited("Сходить на почту 5 сентября", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("day", "5"), Map.entry("monthword", "сентября")));
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("day", "5"), Map.entry("monthword", "сентября")));
         Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -73,7 +73,7 @@ class ReminderRequestFixedTimePatternTest {
     void matchDayMonthTime() {
         String str = StringUtils.reverseDelimited("Сходить на почту 12.5 в 19:00", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("day", "5"), Map.entry("month", "12"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("day", "5"), Map.entry("month", "12"), Map.entry("hour", "19"), Map.entry("minute", "00")));
         Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -81,7 +81,7 @@ class ReminderRequestFixedTimePatternTest {
     void matchDayMonth() {
         String str = StringUtils.reverseDelimited("Сходить на почту 12.5", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("day", "5"), Map.entry("month", "12")));
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("day", "5"), Map.entry("month", "12")));
         Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -89,7 +89,7 @@ class ReminderRequestFixedTimePatternTest {
     void matchDayMonthYearTime() {
         String str = StringUtils.reverseDelimited("Сходить на почту 2030.12.5 в 19:00", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("year", "2030"), Map.entry("day", "5"), Map.entry("month", "12"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("year", "2030"), Map.entry("day", "5"), Map.entry("month", "12"), Map.entry("hour", "19"), Map.entry("minute", "00")));
         Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -97,7 +97,39 @@ class ReminderRequestFixedTimePatternTest {
     void matchDayMonthYear() {
         String str = StringUtils.reverseDelimited("Сходить на почту 2030.12.5", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("year", "2030"), Map.entry("day", "5"), Map.entry("month", "12")));
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("year", "2030"), Map.entry("day", "5"), Map.entry("month", "12")));
+        Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
+    }
+
+    @Test
+    void matchToday() {
+        String str = StringUtils.reverseDelimited("Сходить на почту сегодня", ' ');
+
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("dayword", "сегодня")));
+        Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
+    }
+
+    @Test
+    void matchTodayTime() {
+        String str = StringUtils.reverseDelimited("Сходить на почту сегодня в 19:00", ' ');
+
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("dayword", "сегодня"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+        Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
+    }
+
+    @Test
+    void matchTomorrow() {
+        String str = StringUtils.reverseDelimited("Сходить на почту завтра в 19:00", ' ');
+
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("dayword", "завтра"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+        Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
+    }
+
+    @Test
+    void matchDayAfterTomorrow() {
+        String str = StringUtils.reverseDelimited("Сходить на почту послезавтра в 19:00", ' ');
+
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("dayword", "послезавтра"), Map.entry("hour", "19"), Map.entry("minute", "00")));
         Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 

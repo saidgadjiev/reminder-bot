@@ -37,7 +37,7 @@ public class ReminderRequestLexer {
             lexems = new LinkedList<>();
         }
 
-        String tokenizeStr = parts[0].substring(0, parts[0].length() - timeLexer.end()).trim();
+        String tokenizeStr = timeLexer.eraseTime().trim();
 
         return tokenizeReminderTextAndNote(tokenizeStr, lexems);
     }

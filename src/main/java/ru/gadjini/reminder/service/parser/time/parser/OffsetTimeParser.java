@@ -20,6 +20,8 @@ public class OffsetTimeParser {
 
     private String typeOn;
 
+    private String eve;
+
     private OffsetTime offsetTime;
 
     private LexemsConsumer lexemsConsumer;
@@ -28,6 +30,7 @@ public class OffsetTimeParser {
         this.typeBefore = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE);
         this.typeAfter = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_AFTER);
         this.typeOn = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_FOR);
+        this.eve = localisationService.getMessage(MessagesProperties.EVE);
         this.lexemsConsumer = lexemsConsumer;
         this.offsetTime = new OffsetTime(zoneId);
     }
@@ -53,6 +56,8 @@ public class OffsetTimeParser {
         } else if (type.equals(typeOn)) {
             offsetTime.setType(OffsetTime.Type.FOR);
             consumeOnType(lexems);
+        } else if (type.equals(eve)) {
+            consumeEveType(lexems);
         } else {
             throw new ParseException();
         }
@@ -64,6 +69,11 @@ public class OffsetTimeParser {
         } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
             consumeMinutes(lexems);
         }
+    }
+
+    private void consumeEveType(List<BaseLexem> lexems) {
+        offsetTime.setDays(1);
+        offsetTime.setTime(consumeTime(lexems));
     }
 
     private void consumeOnType(List<BaseLexem> lexems) {

@@ -8,16 +8,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ru.gadjini.reminder.service.parser.pattern.Patterns.OFFSET_TIME_PATTERN;
+
 
 class ReminderRequestOffsetTimePatternTest {
-
-    private static final Pattern PATTERN = Pattern.compile("(((?<hour>2[0-3]|[01]?[0-9]):(?<minute>[0-5]?[0-9]) ?)(в ?)?)?((((мин|минут) )?(?<minutes>\\d+)((мин|минут)( )?)?)?((( )?(ч|час[а-я]{0,2}) )?(?<hours>\\d+)((ч|час[а-я]{1,2})( )?)?)?((( )?(д|дн[а-я]{1,2}) )?(?<days>\\d+)(д|дн[а-я]{1,2})?)?) (?<type>через|на|за|накануне)");
 
     @Test
     void matchHours() {
         String str = StringUtils.reverseDelimited("Проверить готовность торта за 2ч", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("type", "за"), Map.entry("hours", "2")));
+        int end = match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry("type", "за"), Map.entry("hours", "2")));
         Assert.assertEquals("Проверить готовность торта", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -25,7 +25,7 @@ class ReminderRequestOffsetTimePatternTest {
     void matchDays() {
         String str = StringUtils.reverseDelimited("Проверить готовность торта за 2д", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("type", "за"), Map.entry("days", "2")));
+        int end = match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry("type", "за"), Map.entry("days", "2")));
         Assert.assertEquals("Проверить готовность торта", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -33,7 +33,7 @@ class ReminderRequestOffsetTimePatternTest {
     void matchDaysHours() {
         String str = StringUtils.reverseDelimited("Проверить готовность торта за 2д 2ч", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("type", "за"), Map.entry("days", "2"), Map.entry("hours", "2")));
+        int end = match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry("type", "за"), Map.entry("days", "2"), Map.entry("hours", "2")));
         Assert.assertEquals("Проверить готовность торта", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -41,7 +41,7 @@ class ReminderRequestOffsetTimePatternTest {
     void matchMinutes() {
         String str = StringUtils.reverseDelimited("Проверить готовность торта через 10мин", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("type", "через"), Map.entry("minutes", "10")));
+        int end = match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry("type", "через"), Map.entry("minutes", "10")));
         Assert.assertEquals("Проверить готовность торта", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -49,7 +49,7 @@ class ReminderRequestOffsetTimePatternTest {
     void matchDaysHoursMinutes() {
         String str = StringUtils.reverseDelimited("Проверить готовность торта за 2д 2ч 10мин", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("type", "за"), Map.entry("days", "2"), Map.entry("hours", "2"), Map.entry("minutes", "10")));
+        int end = match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry("type", "за"), Map.entry("days", "2"), Map.entry("hours", "2"), Map.entry("minutes", "10")));
         Assert.assertEquals("Проверить готовность торта", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
@@ -57,7 +57,7 @@ class ReminderRequestOffsetTimePatternTest {
     void matchDaysTime() {
         String str = StringUtils.reverseDelimited("Сходить на почту через 2д в 13:00", ' ');
 
-        int end = match(PATTERN, str, Map.ofEntries(Map.entry("type", "через"), Map.entry("days", "2"), Map.entry("hour", "13"), Map.entry("minute", "00")));
+        int end = match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry("type", "через"), Map.entry("days", "2"), Map.entry("hour", "13"), Map.entry("minute", "00")));
         Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 

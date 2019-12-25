@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.parser.time.lexer;
 
+import org.apache.commons.lang3.StringUtils;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.*;
@@ -16,13 +17,15 @@ public class TimeLexer {
 
     private FixedTimeLexer fixedTimeLexer;
 
+    private String str;
+
     private int end;
 
     public TimeLexer(TimeLexerConfig timeLexerConfig, String str) {
-        str = str.toLowerCase();
-        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, str);
-        this.fixedTimeLexer = new FixedTimeLexer(timeLexerConfig, str);
-        this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, str);
+        this.str = StringUtils.reverseDelimited(str.toLowerCase(), ' ');
+        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, this.str);
+        this.fixedTimeLexer = new FixedTimeLexer(timeLexerConfig, this.str);
+        this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, this.str);
     }
 
     public List<BaseLexem> tokenizeThrowParseException() {
@@ -62,7 +65,7 @@ public class TimeLexer {
         return null;
     }
 
-    public int end() {
-        return end;
+    public String eraseTime() {
+        return StringUtils.reverseDelimited(str.substring(end), ' ');
     }
 }
