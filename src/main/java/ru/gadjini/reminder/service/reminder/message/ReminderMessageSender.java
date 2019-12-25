@@ -124,7 +124,7 @@ public class ReminderMessageSender {
             );
         } else {
             messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getReminderCompletedForCreator(reminder), null);
-            messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getReminderCompletedForReceiver(reminder), null);
+            messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getReminderCompletedForReceiver(reminder), null);
         }
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER);
     }
