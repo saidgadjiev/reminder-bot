@@ -64,8 +64,8 @@ public class TelegramMessageService implements MessageService {
 
         try {
             telegramService.execute(deleteMessage);
-        } catch (Exception ignore) {
-
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
         }
     }
 

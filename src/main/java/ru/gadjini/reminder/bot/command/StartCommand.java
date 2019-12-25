@@ -39,13 +39,15 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
                         ReminderRequestService reminderService,
                         TgUserService tgUserService,
                         ReplyKeyboardService replyKeyboardService,
-                        ReminderMessageSender reminderMessageSender) {
+                        ReminderMessageSender reminderMessageSender,
+                        UserReminderNotificationService userReminderNotificationService) {
         super(MessagesProperties.START_COMMAND_NAME, "");
         this.messageService = messageService;
         this.reminderService = reminderService;
         this.tgUserService = tgUserService;
         this.replyKeyboardService = replyKeyboardService;
         this.reminderMessageSender = reminderMessageSender;
+        this.userReminderNotificationService = userReminderNotificationService;
     }
 
     @Override

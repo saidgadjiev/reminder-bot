@@ -14,6 +14,12 @@ import static ru.gadjini.reminder.service.parser.pattern.Patterns.OFFSET_TIME_PA
 class ReminderRequestOffsetTimePatternTest {
 
     @Test
+    void matchFixedTime() {
+        String str = StringUtils.reverseDelimited("Test завтра в 19:00", ' ');
+        Assert.assertFalse(OFFSET_TIME_PATTERN.matcher(str).find());
+    }
+
+    @Test
     void matchHours() {
         String str = StringUtils.reverseDelimited("Проверить готовность торта за 2ч", ' ');
 

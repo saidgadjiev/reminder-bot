@@ -15,8 +15,6 @@ public class MessageSenderJob {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageSenderJob.class);
 
-    private static final int BATCH_SIZE = 1;
-
     private MessageQueue messageQueue;
 
     @Autowired
@@ -26,11 +24,9 @@ public class MessageSenderJob {
         LOGGER.debug("Message sender job initialized and working");
     }
 
-    @Scheduled(fixedDelay = 40)
+    @Scheduled(fixedDelay = 35)
     public void sendMessages() throws Exception {
-        for (int i = 0; i < BATCH_SIZE; ++i) {
-            Runnable job = messageQueue.take();
-            job.run();
-        }
+        Runnable job = messageQueue.take();
+        job.run();
     }
 }

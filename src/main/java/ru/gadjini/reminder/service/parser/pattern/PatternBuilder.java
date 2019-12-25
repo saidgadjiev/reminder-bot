@@ -136,8 +136,8 @@ public class PatternBuilder {
                 .append(MINUTES).append(">\\d+)((").append(minutePrefix).append(")( )?)?)?((( )?(")
                 .append(hourPrefix).append(") )?(?<").append(HOURS).append(">\\d+)((").append(hourPrefix)
                 .append(")( )?)?)?((( )?(").append(dayPrefix).append(") )?(?<").append(DAYS).append(">\\d+)(")
-                .append(dayPrefix).append(")?)?) (?<").append(TYPE).append(">").append(typeAfter).append("|")
-                .append(typeBefore).append("|").append(typeOn).append("|").append(eve).append(")");
+                .append(dayPrefix).append(")?)?) (?<").append(TYPE).append(">\\b(").append(typeAfter).append("|")
+                .append(typeBefore).append("|").append(typeOn).append("|").append(eve).append(")\\b)");
 
         return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, DAYS, HOURS, MINUTES, HOUR, MINUTE));
     }
