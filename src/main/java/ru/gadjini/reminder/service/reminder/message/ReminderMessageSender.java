@@ -303,7 +303,7 @@ public class ReminderMessageSender {
         if (!reminder.isMySelf()) {
             messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getReminderDeletedForReceiver(reminder), null);
         }
-        messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_DELETED);
+        messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_DELETED_ANSWER);
         messageService.editMessage(
                 reminder.getCreator().getChatId(),
                 messageId,

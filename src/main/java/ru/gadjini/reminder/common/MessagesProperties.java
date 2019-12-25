@@ -98,6 +98,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REMINDER_DELETED = "message.reminder.deleted";
 
+    public static final String MESSAGE_REMINDER_DELETED_ANSWER = "message.reminder.deleted.answer";
+
     public static final String CANCEL_REMINDER_COMMAND_DESCRIPTION = "cancel.reminder.command.description";
 
     public static final String MESSAGE_REMINDER_CANCELED = "message.reminder.canceled";

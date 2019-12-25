@@ -22,10 +22,12 @@ public class TimeLexer {
     private int end;
 
     public TimeLexer(TimeLexerConfig timeLexerConfig, String str) {
-        this.str = StringUtils.reverseDelimited(str.toLowerCase(), ' ');
-        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, this.str);
-        this.fixedTimeLexer = new FixedTimeLexer(timeLexerConfig, this.str);
-        this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, this.str);
+        this.str = StringUtils.reverseDelimited(str, ' ');
+
+        str = this.str.toLowerCase();
+        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, str);
+        this.fixedTimeLexer = new FixedTimeLexer(timeLexerConfig, str);
+        this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, str);
     }
 
     public List<BaseLexem> tokenizeThrowParseException() {
