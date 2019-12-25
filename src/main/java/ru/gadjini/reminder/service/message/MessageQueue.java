@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-@Component
+//@Component
 public class MessageQueue {
 
     private BlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>();

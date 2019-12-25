@@ -32,13 +32,10 @@ public class TelegramMessageService implements MessageService {
 
     private TelegramService telegramService;
 
-    private MessageQueue messageQueue;
-
     @Autowired
-    public TelegramMessageService(LocalisationService localisationService, TelegramService telegramService, MessageQueue messageQueue) {
+    public TelegramMessageService(LocalisationService localisationService, TelegramService telegramService) {
         this.localisationService = localisationService;
         this.telegramService = telegramService;
-        this.messageQueue = messageQueue;
     }
 
     @Override
@@ -71,27 +68,25 @@ public class TelegramMessageService implements MessageService {
 
     @Override
     public void sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard, Consumer<Message> callback) {
-        messageQueue.push(() -> {
-            SendMessage sendMessage = new SendMessage();
+        SendMessage sendMessage = new SendMessage();
 
-            sendMessage.setChatId(chatId);
-            sendMessage.enableHtml(true);
-            sendMessage.setText(message);
+        sendMessage.setChatId(chatId);
+        sendMessage.enableHtml(true);
+        sendMessage.setText(message);
 
-            if (replyKeyboard != null) {
-                sendMessage.setReplyMarkup(replyKeyboard);
+        if (replyKeyboard != null) {
+            sendMessage.setReplyMarkup(replyKeyboard);
+        }
+
+        try {
+            Message msg = telegramService.execute(sendMessage);
+
+            if (callback != null) {
+                callback.accept(msg);
             }
-
-            try {
-                Message msg = telegramService.execute(sendMessage);
-
-                if (callback != null) {
-                    callback.accept(msg);
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override

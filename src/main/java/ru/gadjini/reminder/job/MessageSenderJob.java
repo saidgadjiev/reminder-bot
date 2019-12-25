@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.service.message.MessageQueue;
 
-@Component
-@Profile("!" + BotConfiguration.PROFILE_TEST)
+//@Component
+//@Profile("!" + BotConfiguration.PROFILE_TEST)
 public class MessageSenderJob {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageSenderJob.class);
