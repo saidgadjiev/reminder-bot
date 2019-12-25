@@ -118,6 +118,42 @@ class RepeatTimePatternTest {
         match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("hours", "2"), Map.entry("days", "2"), Map.entry("minutes", "10")));
     }
 
+    @Test
+    void matchEveryMonthDay() {
+        String str = StringUtils.reverseDelimited("каждый месяц 20 числа", ' ');
+        match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("everymonth", "месяц"), Map.entry("day", "20")));
+    }
+
+    @Test
+    void matchEveryMonthDayTime() {
+        String str = StringUtils.reverseDelimited("каждый месяц 20 числа в 19:00", ' ');
+        match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("everymonth", "месяц"), Map.entry("day", "20"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+    }
+
+    @Test
+    void matchEveryMonthWordDay() {
+        String str = StringUtils.reverseDelimited("каждое 20 сентября", ' ');
+        match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("monthword", "сентября"), Map.entry("dayofmonthword", "20")));
+    }
+
+    @Test
+    void matchEveryMonthWordDayTime() {
+        String str = StringUtils.reverseDelimited("каждое 20 сентября в 19:00", ' ');
+        match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("monthword", "сентября"), Map.entry("dayofmonthword", "20"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+    }
+
+    @Test
+    void matchEveryYearMonthDay() {
+        String str = StringUtils.reverseDelimited("каждый год 20 сентября", ' ');
+        match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("everyyear", "год"), Map.entry("monthword", "сентября"), Map.entry("dayofmonthword", "20")));
+    }
+
+    @Test
+    void matchEveryYearMonthDayTime() {
+        String str = StringUtils.reverseDelimited("каждый год 20 сентября в 19:00", ' ');
+        match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("everyyear", "год"), Map.entry("monthword", "сентября"), Map.entry("dayofmonthword", "20"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+    }
+
     private void match(Pattern p, String toMatch, Map<String, String> expected) {
         Matcher maxMatcher = p.matcher(toMatch);
 

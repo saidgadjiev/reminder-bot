@@ -151,6 +151,49 @@ class ReminderRequestRepeatTimePatternTest {
         Assert.assertEquals("Готовность торта", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
+
+    @Test
+    void matchEveryMonthDay() {
+        String str = StringUtils.reverseDelimited("День рожденье каждый месяц 20 числа", ' ');
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("everymonth", "месяц"), Map.entry("day", "20")));
+        Assert.assertEquals("День рожденье", StringUtils.reverseDelimited(str.substring(end), ' '));
+    }
+
+    @Test
+    void matchEveryMonthDayTime() {
+        String str = StringUtils.reverseDelimited("День рожденье каждый месяц 20 числа в 19:00", ' ');
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("everymonth", "месяц"), Map.entry("day", "20"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+        Assert.assertEquals("День рожденье", StringUtils.reverseDelimited(str.substring(end), ' '));
+    }
+
+    @Test
+    void matchEveryMonthWordDay() {
+        String str = StringUtils.reverseDelimited("День рожденье каждое 20 сентября", ' ');
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("monthword", "сентября"), Map.entry("dayofmonthword", "20")));
+        Assert.assertEquals("День рожденье", StringUtils.reverseDelimited(str.substring(end), ' '));
+    }
+
+    @Test
+    void matchEveryMonthWordDayTime() {
+        String str = StringUtils.reverseDelimited("День рожденье каждое 20 сентября в 19:00", ' ');
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("monthword", "сентября"), Map.entry("dayofmonthword", "20"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+        Assert.assertEquals("День рожденье", StringUtils.reverseDelimited(str.substring(end), ' '));
+    }
+
+    @Test
+    void matchEveryYearMonthDay() {
+        String str = StringUtils.reverseDelimited("День рожденье каждый год 20 сентября", ' ');
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("everyyear", "год"), Map.entry("monthword", "сентября"), Map.entry("dayofmonthword", "20")));
+        Assert.assertEquals("День рожденье", StringUtils.reverseDelimited(str.substring(end), ' '));
+    }
+
+    @Test
+    void matchEveryYearMonthDayTime() {
+        String str = StringUtils.reverseDelimited("День рожденье каждый год 20 сентября в 19:00", ' ');
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("everyyear", "год"), Map.entry("monthword", "сентября"), Map.entry("dayofmonthword", "20"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+        Assert.assertEquals("День рожденье", StringUtils.reverseDelimited(str.substring(end), ' '));
+    }
+
     private int match(Pattern p, String toMatch, Map<String, String> expected) {
         Matcher maxMatcher = p.matcher(toMatch);
 
