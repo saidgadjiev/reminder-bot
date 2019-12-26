@@ -32,6 +32,12 @@ public enum TimeToken implements Token {
 
     EVERY_HOUR,
 
+    EVERY_YEAR,
+
+    EVERY_MONTH,
+
+    MONTHS,
+
     DAYS,
 
     REPEAT,

@@ -120,6 +120,10 @@ public class MessagesProperties {
 
     public static final String REGEX_DAY_PREFIX = "regex.day.prefix";
 
+    public static final String REGEXP_MONTH_DAY_PREFIX = "regexp.month.day.prefix";
+
+    public static final String REGEXP_MONTH_PREFIX = "regex.month.prefix";
+
     public static final String REGEX_HOUR_PREFIX = "regex.hour.prefix";
 
     public static final String REGEX_MINUTE_PREFIX = "regex.minute.prefix";
@@ -201,6 +205,10 @@ public class MessagesProperties {
     public static final String REGEXP_EVERY_MINUTE = "regexp.every.minute";
 
     public static final String REGEXP_EVERY_HOUR = "regexp.every.hour";
+
+    public static final String REGEXP_EVERY_MONTH = "regexp.every.month";
+
+    public static final String REGEXP_EVERY_YEAR = "regexp.every.year";
 
     public static final String MESSAGE_NEXT_REMINDER_NOTIFICATION_AT = "message.next.reminder.notification.at";
 

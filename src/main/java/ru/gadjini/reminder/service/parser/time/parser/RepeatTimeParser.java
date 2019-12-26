@@ -2,6 +2,7 @@ package ru.gadjini.reminder.service.parser.time.parser;
 
 import org.joda.time.Period;
 import ru.gadjini.reminder.domain.time.RepeatTime;
+import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
@@ -9,7 +10,9 @@ import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.ZoneId;
+import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -32,29 +35,72 @@ public class RepeatTimeParser {
     }
 
     public RepeatTime parse(List<BaseLexem> lexems) {
+        repeatTime.setInterval(new Period());
+
         if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
-            repeatTime.setInterval(new Period());
             consumeMinutes(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
-            repeatTime.setInterval(new Period());
             consumeHours(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAY_OF_WEEK)) {
             consumeDayOfWeek(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.EVERY_DAY)) {
-            repeatTime.setInterval(new Period());
             consumeEveryDay(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.EVERY_MINUTE)) {
-            repeatTime.setInterval(new Period());
             consumeEveryMinute(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.EVERY_HOUR)) {
-            repeatTime.setInterval(new Period());
             consumeEveryHour(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.EVERY_MONTH)) {
+            consumeEveryMonth(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.MONTHS)) {
+            consumeMonths(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.DAY)) {
+            repeatTime.setInterval(repeatTime.getInterval().withYears(1));
+            consumeDay(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.EVERY_YEAR)) {
+            consumeEveryYear(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
-            repeatTime.setInterval(new Period());
             consumeDays(lexems);
         }
 
         return repeatTime;
+    }
+
+    private void consumeMonths(List<BaseLexem> lexems) {
+        int months = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MONTHS).getValue());
+        repeatTime.setInterval(repeatTime.getInterval().withMonths(months));
+        consumeDay(lexems);
+    }
+
+    private void consumeEveryYear(List<BaseLexem> lexems) {
+        lexemsConsumer.consume(lexems, TimeToken.EVERY_YEAR);
+        repeatTime.setInterval(repeatTime.getInterval().withYears(1));
+        consumeDay(lexems);
+    }
+
+    private void consumeEveryMonth(List<BaseLexem> lexems) {
+        lexemsConsumer.consume(lexems, TimeToken.EVERY_MONTH);
+        repeatTime.setInterval(repeatTime.getInterval().withMonths(1));
+        consumeDay(lexems);
+    }
+
+    private void consumeDay(List<BaseLexem> lexems) {
+        int day = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAY).getValue());
+        repeatTime.setDay(day);
+        if (lexemsConsumer.check(lexems, TimeToken.MONTH_WORD)) {
+            consumeMonthWord(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            repeatTime.setTime(consumeTime(lexems));
+        }
+    }
+
+    private void consumeMonthWord(List<BaseLexem> lexems) {
+        String month = lexemsConsumer.consume(lexems, TimeToken.MONTH_WORD).getValue();
+        Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, locale).equals(month)).findFirst().orElseThrow(ParseException::new);
+        repeatTime.setMonth(m);
+
+        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            repeatTime.setTime(consumeTime(lexems));
+        }
     }
 
     private void consumeEveryMinute(List<BaseLexem> lexems) {

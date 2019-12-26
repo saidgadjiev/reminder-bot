@@ -10,15 +10,23 @@ import java.time.format.DateTimeFormatter;
 
 public class RepeatTime {
 
-    public static final String WEEK_DAY = "week_day";
+    public static final String WEEK_DAY = "rt_day_of_week";
 
     public static final String TIME = "rt_time";
 
     public static final String INTERVAL = "rt_interval";
 
+    public static final String MONTH = "rt_month";
+
+    public static final String DAY = "rt_day";
+
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private DayOfWeek dayOfWeek;
+
+    private Month month;
+
+    private int day;
 
     private LocalTime time;
 
@@ -28,6 +36,22 @@ public class RepeatTime {
 
     public RepeatTime(ZoneId zoneId) {
         this.zoneId = zoneId;
+    }
+
+    public Month getMonth() {
+        return month;
+    }
+
+    public void setMonth(Month month) {
+        this.month = month;
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    public void setDay(int day) {
+        this.day = day;
     }
 
     public ZoneId getZoneId() {
@@ -70,6 +94,8 @@ public class RepeatTime {
         RepeatTime repeatTime = new RepeatTime(target);
         repeatTime.setDayOfWeek(getDayOfWeek());
         repeatTime.setInterval(getInterval());
+        repeatTime.setDay(getDay());
+        repeatTime.setMonth(getMonth());
         if (hasTime()) {
             LocalTime time = ZonedDateTime.of(LocalDate.now(zoneId), getTime(), zoneId).withZoneSameInstant(target).toLocalTime();
             repeatTime.setTime(time);
@@ -92,7 +118,15 @@ public class RepeatTime {
             sql.append(time.format(DATE_TIME_FORMATTER)).append(",");
         }
         if (interval != null) {
-            sql.append(JodaTimeUtils.toSqlInterval(interval));
+            sql.append(JodaTimeUtils.toSqlInterval(interval)).append(",");
+        }
+        if (month == null) {
+            sql.append(",");
+        } else {
+            sql.append(month.name()).append(",");
+        }
+        if (day != 0) {
+            sql.append(day);
         }
         sql.append(")");
 

@@ -194,6 +194,28 @@ class ReminderRequestRepeatTimePatternTest {
         Assert.assertEquals("День рожденье", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
+    @Test
+    void matchMonthsDay() {
+        String str = StringUtils.reverseDelimited("Идти на работу каждые 2 месяца 20 числа", ' ');
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("months", "2"), Map.entry("everymonthday", "20")));
+        Assert.assertEquals("Идти на работу", StringUtils.reverseDelimited(str.substring(end), ' '));
+
+        str = StringUtils.reverseDelimited("Идти на работу каждые 2месяца 20 числа", ' ');
+        end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("months", "2"), Map.entry("everymonthday", "20")));
+        Assert.assertEquals("Идти на работу", StringUtils.reverseDelimited(str.substring(end), ' '));
+
+        str = StringUtils.reverseDelimited("Идти на работу каждые 2месяца 20числа", ' ');
+        end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("months", "2"), Map.entry("everymonthday", "20")));
+        Assert.assertEquals("Идти на работу", StringUtils.reverseDelimited(str.substring(end), ' '));
+    }
+
+    @Test
+    void matchMonthsDayTime() {
+        String str = StringUtils.reverseDelimited("Идти на работу каждые 2 месяца 20 числа в 19:00", ' ');
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("months", "2"), Map.entry("everymonthday", "20"), Map.entry("hour", "19"), Map.entry("minute", "00")));
+        Assert.assertEquals("Идти на работу", StringUtils.reverseDelimited(str.substring(end), ' '));
+    }
+
     private int match(Pattern p, String toMatch, Map<String, String> expected) {
         Matcher maxMatcher = p.matcher(toMatch);
 

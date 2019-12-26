@@ -7,6 +7,7 @@ import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class RepeatTimeLexer {
 
@@ -46,6 +47,24 @@ public class RepeatTimeLexer {
             }
             if (repeatTimeValues.containsKey(PatternBuilder.EVERY_MINUTE)) {
                 lexems.add(new TimeLexem(TimeToken.EVERY_MINUTE, repeatTimeValues.get(PatternBuilder.EVERY_MINUTE)));
+            }
+            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_YEAR)) {
+                lexems.add(new TimeLexem(TimeToken.EVERY_YEAR, repeatTimeValues.get(PatternBuilder.EVERY_YEAR)));
+            }
+            if (repeatTimeValues.containsKey(PatternBuilder.DAY)) {
+                lexems.add(new TimeLexem(TimeToken.DAY, repeatTimeValues.get(PatternBuilder.DAY)));
+            }
+            if (repeatTimeValues.containsKey(PatternBuilder.MONTH_WORD)) {
+                lexems.add(new TimeLexem(TimeToken.MONTH_WORD, repeatTimeValues.get(PatternBuilder.MONTH_WORD)));
+            }
+            if (repeatTimeValues.containsKey(PatternBuilder.MONTHS)) {
+                lexems.add(new TimeLexem(TimeToken.MONTHS, repeatTimeValues.get(PatternBuilder.MONTHS)));
+            }
+            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_MONTH)) {
+                lexems.add(new TimeLexem(TimeToken.EVERY_MONTH, repeatTimeValues.get(PatternBuilder.EVERY_MONTH)));
+            }
+            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_MONTH_DAY)) {
+                lexems.add(new TimeLexem(TimeToken.DAY, repeatTimeValues.get(PatternBuilder.EVERY_MONTH_DAY)));
             }
             if (repeatTimeValues.containsKey(PatternBuilder.DAYS)) {
                 lexems.add(new TimeLexem(TimeToken.DAYS, repeatTimeValues.get(PatternBuilder.DAYS)));

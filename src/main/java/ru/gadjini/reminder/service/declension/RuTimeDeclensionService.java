@@ -95,10 +95,14 @@ public class RuTimeDeclensionService implements TimeDeclensionService {
 
     @Override
     public String getRepeatWord(Period period) {
-        if (period.getDays() != 0) {
-            return getRepeatWordByDaysOrHours(period.getDays());
+        if (period.getYears() != 0) {
+            return getRepeatWordByDaysOrHoursOrMonthOrYears(period.getYears());
+        } else if (period.getMonths() != 0) {
+            return getRepeatWordByDaysOrHoursOrMonthOrYears(period.getMonths());
+        } else if (period.getDays() != 0) {
+            return getRepeatWordByDaysOrHoursOrMonthOrYears(period.getDays());
         } else if (period.getHours() != 0) {
-            return getRepeatWordByDaysOrHours(period.getHours());
+            return getRepeatWordByDaysOrHoursOrMonthOrYears(period.getHours());
         } else if (period.getMinutes() != 0) {
             return getRepeatWordByMinutes(period.getMinutes());
         }
@@ -106,8 +110,32 @@ public class RuTimeDeclensionService implements TimeDeclensionService {
         return "";
     }
 
-    private String getRepeatWordByDaysOrHours(int daysOrHours) {
-        if (daysOrHours == 1) {
+    @Override
+    public String months(int months) {
+        if (months == 1) {
+            return "месяц";
+        }
+        if (months >= 2 && months <= 4) {
+            return months + " месяца";
+        }
+
+        return months + " месяцев";
+    }
+
+    @Override
+    public String year(int years) {
+        if (years == 1) {
+            return "год";
+        }
+        if (years >= 2 && years <= 4) {
+            return years + " года";
+        }
+
+        return years + " лет";
+    }
+
+    private String getRepeatWordByDaysOrHoursOrMonthOrYears(int daysOrHoursOrMonthsOrYears) {
+        if (daysOrHoursOrMonthsOrYears == 1) {
             return "каждый";
         }
 

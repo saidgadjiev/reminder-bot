@@ -56,6 +56,14 @@ public class PatternBuilder {
 
     public static final String TYPE = "type";
 
+    public static final String EVERY_MONTH = "everymonth";
+
+    public static final String EVERY_YEAR = "everyyear";
+
+    public static final String EVERY_MONTH_DAY = "everymonthday";
+
+    public static final String MONTHS = "months";
+
     private LocalisationService localisationService;
 
     private DayOfWeekService dayOfWeekService;
@@ -79,8 +87,12 @@ public class PatternBuilder {
         String regexRepeat = localisationService.getMessage(MessagesProperties.REGEXP_REPEAT);
         String regexpEveryDay = localisationService.getMessage(MessagesProperties.REGEXP_DAY);
         String regexpEveryMinute = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_MINUTE);
+        String regexpEveryMonthDayPrefix = localisationService.getMessage(MessagesProperties.REGEXP_MONTH_DAY_PREFIX);
         String regexpEveryHour = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_HOUR);
+        String regexpEveryMonth = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_MONTH);
+        String regexpEveryYear = localisationService.getMessage(MessagesProperties.REGEXP_EVERY_YEAR);
         String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX);
+        String monthPrefix = localisationService.getMessage(MessagesProperties.REGEXP_MONTH_PREFIX);
 
         pattern.append("(((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]) ?)(")
                 .append(regexpTimeArticle).append(" ?)?)?(((((").append(minutePrefix).append(") )?(?<")
@@ -88,11 +100,19 @@ public class PatternBuilder {
                 .append(hourPrefix).append(") )?(?<").append(HOURS).append(">\\d+)((").append(hourPrefix)
                 .append(")( )?)?)?((( )?(").append(dayPrefix).append(") )?(?<").append(DAYS).append(">\\d+)(")
                 .append(dayPrefix).append(")?)?)|(?<").append(EVERY_HOUR).append(">").append(regexpEveryHour)
-                .append(")|(?<").append(EVERY_DAY).append(">").append(regexpEveryDay).append(")|(?<")
+                .append(")|(?<").append(EVERY_DAY).append(">").append(regexpEveryDay).append(")|(((").append(regexpEveryMonthDayPrefix)
+                .append(" )?(?<").append(EVERY_MONTH_DAY).append(">\\d+)(").append(regexpEveryMonthDayPrefix).append(")?) ((?<")
+                .append(EVERY_MONTH).append(">").append(regexpEveryMonth).append(")|((").append(monthPrefix).append(" )?(?<")
+                .append(MONTHS).append(">\\d+)(").append(monthPrefix).append(")?)))|((?<").append(MONTH_WORD).append(">")
+                .append(Stream.of(Month.values()).map(month -> month.getDisplayName(TextStyle.FULL, locale)).collect(Collectors.joining("|")))
+                .append(") (?<").append(DAY).append(">\\d+)( (?<").append(EVERY_YEAR).append(">").append(regexpEveryYear).append("))?)|(?<")
                 .append(EVERY_MINUTE).append(">").append(regexpEveryMinute).append(")|(?<").append(DAY_OF_WEEK_WORD)
                 .append(">").append(getDayOfWeekPattern(locale)).append(")) ").append(regexRepeat);
 
-        return new GroupPattern(Pattern.compile(pattern.toString()), List.of(HOURS, EVERY_HOUR, MINUTES, EVERY_MINUTE, EVERY_DAY, DAYS, DAY_OF_WEEK_WORD, HOUR, MINUTE));
+        return new GroupPattern(
+                Pattern.compile(pattern.toString()),
+                List.of(HOURS, EVERY_HOUR, MINUTES, EVERY_MINUTE, EVERY_YEAR, DAY, MONTH_WORD, MONTHS, EVERY_MONTH, EVERY_MONTH_DAY, EVERY_DAY, DAYS, DAY_OF_WEEK_WORD, HOUR, MINUTE)
+        );
     }
 
     public GroupPattern buildTimePattern(Locale locale) {

@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
+import java.time.Month;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -199,6 +200,14 @@ public class ResultSetMapper {
         PGInterval interval = (PGInterval) rs.getObject(RepeatTime.INTERVAL);
         if (interval != null) {
             repeatTime.setInterval(JodaTimeUtils.toPeriod(interval));
+        }
+        String month = rs.getString(RepeatTime.MONTH);
+        if (StringUtils.isNotBlank(month)) {
+            repeatTime.setMonth(Month.valueOf(month));
+        }
+        int day = rs.getInt(RepeatTime.DAY);
+        if (day != 0) {
+            repeatTime.setDay(day);
         }
 
         return repeatTime;

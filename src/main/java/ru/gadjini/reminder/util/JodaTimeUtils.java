@@ -3,6 +3,8 @@ package ru.gadjini.reminder.util;
 import org.joda.time.Period;
 import org.postgresql.util.PGInterval;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 public class JodaTimeUtils {
@@ -14,6 +16,8 @@ public class JodaTimeUtils {
     public static String toSqlInterval(Period period) {
         StringBuilder interval = new StringBuilder();
 
+        interval.append(period.getYears()).append(" years ");
+        interval.append(period.getMonths()).append(" months ");
         interval.append(period.getDays()).append(" days ");
         interval.append(period.getHours()).append(" hours ");
         interval.append(period.getMinutes()).append(" minute");
@@ -38,10 +42,14 @@ public class JodaTimeUtils {
     }
 
     public static ZonedDateTime plus(ZonedDateTime zonedDateTime, Period period) {
-        return zonedDateTime.plusDays(period.getDays()).plusHours(period.getHours()).plusMinutes(period.getMinutes());
+        return zonedDateTime.plusYears(period.getYears()).plusMonths(period.getMonths()).plusDays(period.getDays()).plusHours(period.getHours()).plusMinutes(period.getMinutes());
     }
 
     public static ZonedDateTime minus(ZonedDateTime zonedDateTime, Period period) {
-        return zonedDateTime.minusDays(period.getDays()).minusHours(period.getHours()).minusMinutes(period.getMinutes());
+        return zonedDateTime.minusYears(period.getYears()).minusMonths(period.getMonths()).minusDays(period.getDays()).minusHours(period.getHours()).minusMinutes(period.getMinutes());
+    }
+
+    public static LocalDate minus(LocalDate localDateTime, Period period) {
+        return localDateTime.minusYears(period.getYears()).minusMonths(period.getMonths()).minusDays(period.getDays());
     }
 }

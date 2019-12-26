@@ -19,4 +19,8 @@ public interface TimeDeclensionService {
     String dayOfWeek(DayOfWeek dayOfWeek);
 
     String getRepeatWord(Period period);
+
+    String months(int months);
+
+    String year(int years);
 }
