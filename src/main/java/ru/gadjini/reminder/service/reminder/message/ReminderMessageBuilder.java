@@ -9,6 +9,7 @@ import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
 
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -282,10 +283,12 @@ public class ReminderMessageBuilder {
     }
 
     public String getCustomRemindText(CustomRemindResult customRemindResult) {
+        ZoneId receiverZoneId = customRemindResult.getReminderNotification().getReminder().getReceiverZoneId();
+
         if (customRemindResult.isStandard()) {
-            return messageBuilder.getCustomRemindCreated(customRemindResult.getZonedDateTime());
+            return messageBuilder.getCustomRemindCreated(customRemindResult.getZonedDateTime().withZoneSameInstant(receiverZoneId));
         } else {
-            return messageBuilder.getCustomRemindCreated(customRemindResult.getRepeatTime().withZone(customRemindResult.getReminderNotification().getReminder().getReceiverZoneId()));
+            return messageBuilder.getCustomRemindCreated(customRemindResult.getRepeatTime().withZone(receiverZoneId));
         }
     }
 

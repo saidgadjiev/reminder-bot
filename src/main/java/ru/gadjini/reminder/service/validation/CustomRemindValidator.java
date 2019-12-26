@@ -44,7 +44,7 @@ public class CustomRemindValidator implements Validator {
     }
 
     private void validate(FixedTime fixedTime) {
-        if (fixedTime.getType() != FixedTime.Type.UNTIL) {
+        if (fixedTime.getType() != FixedTime.Type.AT) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
         }
         if (!fixedTime.getDateTime().hasTime()) {
