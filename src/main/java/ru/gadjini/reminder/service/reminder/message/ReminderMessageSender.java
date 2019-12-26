@@ -168,7 +168,7 @@ public class ReminderMessageSender {
                     replyKeyboardMarkup
             );
         }
-        InlineKeyboardMarkup keyboard = inlineKeyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable());
+        InlineKeyboardMarkup keyboard = inlineKeyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable(), reminder.getRemindAt().hasTime());
         messageService.sendMessage(reminder.getReceiver().getChatId(), messageForReceiver, keyboard, message -> {
             remindMessageService.create(reminder.getId(), message.getMessageId());
         });
@@ -209,7 +209,7 @@ public class ReminderMessageSender {
                             updateReminderResult.getNewReminder().getRemindAtInReceiverZone(),
                             null
                     ),
-                    inlineKeyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable())
+                    inlineKeyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable(), reminder.getRemindAt().hasTime())
             );
         }
         if (!reminder.isMySelf()) {

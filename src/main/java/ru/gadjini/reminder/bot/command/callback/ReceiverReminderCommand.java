@@ -70,7 +70,7 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
                 chatId,
                 messageId,
                 messageBuilder.getReminderMessage(reminder),
-                inlineKeyboardService.getReceiverReminderKeyboard(requestParams.getInt(Arg.REMINDER_ID.getKey()), reminder.isRepeatable())
+                inlineKeyboardService.getReceiverReminderKeyboard(requestParams.getInt(Arg.REMINDER_ID.getKey()), reminder.isRepeatable(), reminder.getRemindAt().hasTime())
         );
         if (replyKeyboard != null) {
             messageService.sendMessageByCode(chatId, MessagesProperties.MESSAGE_HOW_HELP, replyKeyboard);

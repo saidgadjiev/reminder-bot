@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Reminder;
@@ -162,8 +163,8 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getRemindKeyboard(int reminderId, boolean itsTime, boolean repeatable) {
-        InlineKeyboardMarkup inlineKeyboardMarkup = getReceiverReminderKeyboard(reminderId, repeatable);
+    public InlineKeyboardMarkup getRemindKeyboard(int reminderId, boolean itsTime, boolean repeatable, boolean hasTime) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = getReceiverReminderKeyboard(reminderId, repeatable, hasTime);
 
         if (!itsTime) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.okButton()));
@@ -172,7 +173,7 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getReceiverReminderKeyboard(int reminderId, boolean repeatable) {
+    public InlineKeyboardMarkup getReceiverReminderKeyboard(int reminderId, boolean repeatable, boolean hasTime) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         if (repeatable) {
@@ -181,7 +182,12 @@ public class InlineKeyboardService {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
         } else {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME), buttonFactory.cancelReminderButton(reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME), buttonFactory.postponeReminderButton(reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
+            List<InlineKeyboardButton> keyboardButtons = new ArrayList<>();
+            keyboardButtons.add(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME));
+            if (hasTime) {
+                keyboardButtons.add(buttonFactory.postponeReminderButton(reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME));
+            }
+            inlineKeyboardMarkup.getKeyboard().add(keyboardButtons);
         }
 
         return inlineKeyboardMarkup;
