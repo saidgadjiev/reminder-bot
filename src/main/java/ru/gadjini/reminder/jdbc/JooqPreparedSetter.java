@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.jdbc;
 
-import org.checkerframework.checker.units.qual.A;
 import org.jooq.Param;
 import org.springframework.jdbc.core.ArgumentTypePreparedStatementSetter;
 import org.springframework.jdbc.core.ParameterDisposer;
