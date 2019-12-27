@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.bot.command;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
@@ -18,6 +19,7 @@ import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
+import ru.gadjini.reminder.service.speech.VoiceRecognitionService;
 
 @Component
 public class StartCommand extends BotCommand implements NavigableBotCommand {
@@ -34,13 +36,16 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     private UserReminderNotificationService userReminderNotificationService;
 
+    private VoiceRecognitionService voiceRecognitionService;
+
     @Autowired
     public StartCommand(MessageService messageService,
                         ReminderRequestService reminderService,
                         TgUserService tgUserService,
                         ReplyKeyboardService replyKeyboardService,
                         ReminderMessageSender reminderMessageSender,
-                        UserReminderNotificationService userReminderNotificationService) {
+                        UserReminderNotificationService userReminderNotificationService,
+                        VoiceRecognitionService voiceRecognitionService) {
         super(MessagesProperties.START_COMMAND_NAME, "");
         this.messageService = messageService;
         this.reminderService = reminderService;
@@ -48,6 +53,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         this.replyKeyboardService = replyKeyboardService;
         this.reminderMessageSender = reminderMessageSender;
         this.userReminderNotificationService = userReminderNotificationService;
+        this.voiceRecognitionService = voiceRecognitionService;
     }
 
     @Override
@@ -74,13 +80,26 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     @Override
     public void processNonCommandUpdate(Message message) {
-        if (!message.hasText()) {
+        String reminderText = getReminderText(message);
+        if (StringUtils.isBlank(reminderText)) {
             return;
         }
-        Reminder reminder = reminderService.createReminder(message.getText().trim(), null);
+        reminderText = StringUtils.capitalize(reminderText);
+        Reminder reminder = reminderService.createReminder(reminderText, null);
         reminder.getCreator().setChatId(message.getChatId());
 
         reminderMessageSender.sendReminderCreated(reminder, null);
+    }
+
+    private String getReminderText(Message message) {
+        if (message.hasText()) {
+            return message.getText();
+        }
+        if (message.hasVoice()) {
+            return voiceRecognitionService.recognize(message.getVoice());
+        }
+
+        return null;
     }
 
     private void createUserNotifications(int userId) {

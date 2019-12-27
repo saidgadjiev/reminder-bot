@@ -67,11 +67,11 @@ public class ReminderRequestService {
 
         ((CreateReminderValidator) validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER)).validate(reminderRequest);
         if (reminderRequest.isRepeatTime()) {
-            return createRepeatReminder(reminderRequest, receiverId);
+            return createRepeatReminder(reminderRequest);
         } else if (reminderRequest.isOffsetTime()) {
-            return createOffsetReminder(reminderRequest, receiverId);
+            return createOffsetReminder(reminderRequest);
         } else {
-            return createStandardReminder(reminderRequest, receiverId);
+            return createStandardReminder(reminderRequest);
         }
     }
 
@@ -226,37 +226,37 @@ public class ReminderRequestService {
         }
     }
 
-    private Reminder createOffsetReminder(ReminderRequest reminderRequest, Integer receiverId) {
+    private Reminder createOffsetReminder(ReminderRequest reminderRequest) {
         Reminder reminder = new Reminder();
 
         ZonedDateTime now = JodaTimeUtils.plus(ZonedDateTime.now(reminderRequest.getOffsetTime().getZoneId()), reminderRequest.getOffsetTime().getPeriod());
         reminder.setRemindAt(DateTime.of(now.withZoneSameInstant(ZoneOffset.UTC)));
 
-        setCommonInfo(reminder, reminderRequest, receiverId);
+        setCommonInfo(reminder, reminderRequest);
 
         return reminderService.createReminder(reminder);
     }
 
-    private Reminder createRepeatReminder(ReminderRequest reminderRequest, Integer receiverId) {
+    private Reminder createRepeatReminder(ReminderRequest reminderRequest) {
         Reminder reminder = new Reminder();
 
         reminder.setRepeatRemindAt(reminderRequest.getRepeatTime().withZone(ZoneOffset.UTC));
-        setCommonInfo(reminder, reminderRequest, receiverId);
+        setCommonInfo(reminder, reminderRequest);
 
         return repeatReminderService.createReminder(reminder);
     }
 
-    private Reminder createStandardReminder(ReminderRequest reminderRequest, Integer receiverId) {
+    private Reminder createStandardReminder(ReminderRequest reminderRequest) {
         Reminder reminder = new Reminder();
         reminder.setRemindAt(reminderRequest.getFixedTime().withZoneSameInstant(ZoneOffset.UTC));
         reminder.setInitialRemindAt(reminder.getRemindAt());
 
-        setCommonInfo(reminder, reminderRequest, receiverId);
+        setCommonInfo(reminder, reminderRequest);
 
         return reminderService.createReminder(reminder);
     }
 
-    private void setCommonInfo(Reminder reminder, ReminderRequest reminderRequest, Integer receiverId) {
+    private void setCommonInfo(Reminder reminder, ReminderRequest reminderRequest) {
         reminder.setText(reminderRequest.getText());
         reminder.setNote(reminderRequest.getNote());
 
@@ -269,11 +269,11 @@ public class ReminderRequestService {
             reminder.setReceiver(new TgUser() {{
                 setUsername(reminderRequest.getReceiverName());
             }});
-        } else if (receiverId != null) {
+        } else if (reminderRequest.getReceiverId() != null) {
             reminder.setReceiver(new TgUser() {{
-                setUserId(receiverId);
+                setUserId(reminderRequest.getReceiverId());
             }});
-            reminder.setReceiverId(receiverId);
+            reminder.setReceiverId(reminderRequest.getReceiverId());
         } else {
             TgUser receiver = new TgUser();
             receiver.setUserId(reminder.getCreatorId());
