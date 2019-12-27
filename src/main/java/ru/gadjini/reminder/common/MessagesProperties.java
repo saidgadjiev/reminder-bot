@@ -280,6 +280,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_USER_DATA_REFRESHED = "message.user.data.refreshed";
 
+    public static final String MESSAGE_TIMEZONE_NOT_EXISTS = "message.timezone.not.exists";
+
     public static final String MESSAGE_USER_DATA = "message.user.data";
 
     public static final String MESSAGE_USERNAME_NOT_EXISTS = "message.username.not.exists";

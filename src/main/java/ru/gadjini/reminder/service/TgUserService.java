@@ -3,8 +3,11 @@ package ru.gadjini.reminder.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.dao.TgUserDao;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.exception.UserException;
+import ru.gadjini.reminder.service.message.LocalisationService;
 
 import java.time.ZoneId;
 
@@ -13,9 +16,12 @@ public class TgUserService {
 
     private TgUserDao tgUserDao;
 
+    private LocalisationService localisationService;
+
     @Autowired
-    public TgUserService(TgUserDao tgUserDao) {
+    public TgUserService(TgUserDao tgUserDao, LocalisationService localisationService) {
         this.tgUserDao = tgUserDao;
+        this.localisationService = localisationService;
     }
 
     public TgUser getByUserId(int userId) {
@@ -45,14 +51,26 @@ public class TgUserService {
     }
 
     public ZoneId getTimeZone(int userId) {
-        return ZoneId.of("Europe/Moscow");
+        String zone = tgUserDao.getTimeZone(userId);
+
+        if (zone == null) {
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_TIMEZONE_NOT_EXISTS));
+        }
+
+        return ZoneId.of(zone);
     }
 
     public ZoneId getTimeZone(String username) {
-        return ZoneId.of("Europe/Moscow");
+        String zone = tgUserDao.getTimeZone(username);
+
+        if (zone == null) {
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_TIMEZONE_NOT_EXISTS));
+        }
+
+        return ZoneId.of(zone);
     }
 
     public void saveZoneId(int userId, ZoneId zoneId) {
-        tgUserDao.updateTimezone(userId, zoneId);
+        tgUserDao.updateTimezone(userId, zoneId.getId());
     }
 }

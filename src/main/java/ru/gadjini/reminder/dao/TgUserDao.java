@@ -7,7 +7,6 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
 import java.sql.ResultSet;
-import java.time.ZoneId;
 
 @Repository
 public class TgUserDao {
@@ -66,9 +65,35 @@ public class TgUserDao {
         );
     }
 
-    public void updateTimezone(int userId, ZoneId zoneId) {
+    public void updateTimezone(int userId, String zoneId) {
         jdbcTemplate.update(
-                "UPDATE tg_user SET zone_id ='" + zoneId.getId() + "' WHERE user_id = " + userId
+                "UPDATE tg_user SET zone_id ='" + zoneId + "' WHERE user_id = " + userId
+        );
+    }
+
+    public String getTimeZone(int userId) {
+        return jdbcTemplate.query(
+                "SELECT zone_id FROM tg_user WHERE user_id =" + userId,
+                rs -> {
+                    if (rs.next()) {
+                        return rs.getString("zone_id");
+                    }
+
+                    return null;
+                }
+        );
+    }
+
+    public String getTimeZone(String username) {
+        return jdbcTemplate.query(
+                "SELECT zone_id FROM tg_user WHERE username =" + username,
+                rs -> {
+                    if (rs.next()) {
+                        return rs.getString("zone_id");
+                    }
+
+                    return null;
+                }
         );
     }
 }
