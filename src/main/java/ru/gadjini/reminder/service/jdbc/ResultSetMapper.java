@@ -64,8 +64,8 @@ public class ResultSetMapper {
             rc.setZoneId(zoneId);
             rc.setUserId(reminder.getReceiverId());
 
-            if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_FIRST_LAST_NAME)) {
-                rc.setName(rs.getString("rc_first_name"));
+            if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_NAME)) {
+                rc.setName(rs.getString("rc_name"));
             }
             if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_CHAT_ID)) {
                 rc.setChatId(rs.getLong("rc_chat_id"));
@@ -87,7 +87,7 @@ public class ResultSetMapper {
             TgUser cr = new TgUser();
 
             cr.setUserId(reminder.getCreatorId());
-            cr.setName(rs.getString("cr_first_name"));
+            cr.setName(rs.getString("cr_name"));
 
             if (reminderMapping.getCreatorMapping().fields().contains(ReminderMapping.CR_CHAT_ID)) {
                 cr.setChatId(rs.getLong("cr_chat_id"));
@@ -140,8 +140,8 @@ public class ResultSetMapper {
         TgUser userOne = new TgUser();
         userOne.setUserId(friendship.getUserOneId());
         if (friendshipMapping.getUserOneMapping() != null) {
-            if (friendshipMapping.getUserOneMapping().fields().contains(FriendshipMapping.UO_FIRST_LAST_NAME)) {
-                userOne.setName(rs.getString("uo_first_name"));
+            if (friendshipMapping.getUserOneMapping().fields().contains(FriendshipMapping.UO_NAME)) {
+                userOne.setName(rs.getString("uo_name"));
             }
             userOne.setChatId(rs.getLong("uo_chat_id"));
         }
@@ -150,7 +150,7 @@ public class ResultSetMapper {
         TgUser userTwo = new TgUser();
         userTwo.setUserId(friendship.getUserTwoId());
         if (friendshipMapping.getUserTwoMapping() != null) {
-            userTwo.setName(rs.getString("ut_first_name"));
+            userTwo.setName(rs.getString("ut_name"));
         }
         friendship.setUserTwo(userTwo);
 

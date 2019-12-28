@@ -78,7 +78,7 @@ public class FriendshipDao {
                 TgUser userOne = new TgUser();
                 userOne.setUserId(rs.getInt("uo_user_id"));
                 userOne.setChatId(rs.getLong("uo_chat_id"));
-                userOne.setName(rs.getString("uo_first_name"));
+                userOne.setName(rs.getString("uo_name"));
                 userOne.setZoneId(rs.getString("uo_zone_id"));
                 friendship.setUserOne(userOne);
 
@@ -117,7 +117,7 @@ public class FriendshipDao {
                         "          WHEN f.user_one_id = :user_id THEN f.user_two_id = tu.user_id\n" +
                         "          WHEN f.user_two_id = :user_id THEN f.user_one_id = tu.user_id\n" +
                         "          ELSE false END\n" +
-                        "  AND f.status = :state ORDER BY tu.first_name",
+                        "  AND f.status = :state ORDER BY tu.name",
                 new MapSqlParameterSource().addValue("user_id", userId).addValue("state", status.getCode()),
                 (rs, rowNum) -> resultSetMapper.mapUser(rs)
         );
@@ -166,7 +166,7 @@ public class FriendshipDao {
                 "WITH f AS (\n" +
                         "    INSERT INTO friendship (user_one_id, user_two_id, status) VALUES(?, ?, ?) RETURNING id, user_one_id, user_two_id, status\n" +
                         ")\n" +
-                        "SELECT ut.first_name AS ut_first_name\n" +
+                        "SELECT ut.name AS ut_name\n" +
                         "FROM f INNER JOIN tg_user ut ON f.user_two_id = ut.user_id",
                 ps -> {
                     ps.setInt(1, friendship.getUserOneId());
@@ -174,7 +174,7 @@ public class FriendshipDao {
                     ps.setInt(3, friendship.getStatus().getCode());
                 },
                 rs -> {
-                    friendship.getUserTwo().setName(rs.getString("ut_first_name"));
+                    friendship.getUserTwo().setName(rs.getString("ut_name"));
                 }
         );
     }
@@ -185,7 +185,7 @@ public class FriendshipDao {
                         "    INSERT INTO friendship (user_one_id, user_two_id, status) SELECT ?, user_id, ? FROM tg_user WHERE username = ? RETURNING id, user_one_id, user_two_id, status\n" +
                         ")\n" +
                         "SELECT f.user_two_id,\n" +
-                        "       ut.first_name AS ut_first_name,\n" +
+                        "       ut.name AS ut_name,\n" +
                         "       ut.chat_id AS ut_chat_id\n" +
                         "FROM f INNER JOIN tg_user ut ON f.user_two_id = ut.user_id",
                 ps -> {
@@ -196,7 +196,7 @@ public class FriendshipDao {
                 rs -> {
                     friendship.setUserTwoId(rs.getInt("user_two_id"));
                     friendship.getUserTwo().setUserId(friendship.getUserTwoId());
-                    friendship.getUserTwo().setName(rs.getString("ut_first_name"));
+                    friendship.getUserTwo().setName(rs.getString("ut_name"));
                     friendship.getUserTwo().setChatId(rs.getLong("ut_chat_id"));
                 }
         );
@@ -207,7 +207,7 @@ public class FriendshipDao {
                 "WITH f AS (\n" +
                         "    DELETE FROM friendship WHERE user_one_id = ? AND user_two_id = ? RETURNING user_one_id, user_two_id\n" +
                         ")\n" +
-                        "SELECT uo.chat_id as uo_chat_id, uo.user_id as uo_user_id, uo.first_name as uo_first_name, uo.zone_id as uo_zone_id\n" +
+                        "SELECT uo.chat_id as uo_chat_id, uo.user_id as uo_user_id, uo.name as uo_name, uo.zone_id as uo_zone_id\n" +
                         "FROM f INNER JOIN tg_user uo ON f.user_one_id = uo.user_id",
                 ps -> {
                     ps.setInt(1, friendId);
@@ -222,7 +222,7 @@ public class FriendshipDao {
                 "WITH f AS (\n" +
                         "    UPDATE friendship SET status = ? WHERE user_one_id = ? AND user_two_id = ? RETURNING user_one_id, user_two_id\n" +
                         ")\n" +
-                        "SELECT uo.chat_id as uo_chat_id, uo.user_id as uo_user_id, uo.first_name as uo_first_name, uo.zone_id as uo_zone_id\n" +
+                        "SELECT uo.chat_id as uo_chat_id, uo.user_id as uo_user_id, uo.name as uo_name, uo.zone_id as uo_zone_id\n" +
                         "FROM f INNER JOIN tg_user uo ON f.user_one_id = uo.user_id",
                 ps -> {
                     ps.setInt(1, Friendship.Status.ACCEPTED.ordinal());

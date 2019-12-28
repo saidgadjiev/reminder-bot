@@ -3,7 +3,7 @@ package ru.gadjini.reminder.domain.mapping;
 
 public class ReminderMapping {
 
-    public static final String RC_FIRST_LAST_NAME = "rc_first_last_name";
+    public static final String RC_NAME = "rc_name";
 
     public static final String RC_CHAT_ID = "rc_chat_id";
 
