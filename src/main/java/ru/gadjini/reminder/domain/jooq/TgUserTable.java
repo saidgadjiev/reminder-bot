@@ -16,9 +16,7 @@ public class TgUserTable extends TableImpl<Record> {
 
     public TableField<Record, Integer> CHAT_ID;
 
-    public TableField<Record, String> FIRST_NAME;
-
-    public TableField<Record, String> LAST_NAME;
+    public TableField<Record, String> NAME;
 
     public TableField<Record, String> ZONE_ID;
 
@@ -39,8 +37,7 @@ public class TgUserTable extends TableImpl<Record> {
         ID = createField(TgUser.ID, SQLDataType.INTEGER);
         USER_ID = createField(TgUser.USER_ID, SQLDataType.INTEGER);
         CHAT_ID = createField(TgUser.CHAT_ID, SQLDataType.INTEGER);
-        FIRST_NAME = createField(TgUser.FIRST_NAME, SQLDataType.VARCHAR);
-        LAST_NAME = createField(TgUser.LAST_NAME, SQLDataType.VARCHAR);
+        NAME = createField(TgUser.NAME, SQLDataType.VARCHAR);
         ZONE_ID = createField(TgUser.ZONE_ID, SQLDataType.VARCHAR);
     }
 

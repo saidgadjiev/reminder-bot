@@ -64,9 +64,7 @@ public class ReminderDao {
                         "       (r.remind_at).*,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.first_name                                    AS rc_first_name,\n" +
-                        "       rc.last_name                                     AS rc_last_name,\n" +
-                        "       cr.first_name                                    AS cr_first_name,\n" +
-                        "       cr.last_name                                     AS cr_last_name\n" +
+                        "       cr.first_name                                    AS cr_first_name\n" +
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
                         "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
@@ -105,9 +103,7 @@ public class ReminderDao {
                         "       r.note,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.first_name                                    AS rc_first_name,\n" +
-                        "       rc.last_name                                     AS rc_last_name,\n" +
-                        "       cr.first_name                                    AS cr_first_name,\n" +
-                        "       cr.last_name                                     AS cr_last_name\n" +
+                        "       cr.first_name                                    AS cr_first_name\n" +
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
                         "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
@@ -126,9 +122,7 @@ public class ReminderDao {
                         "       r.note,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
                         "       rc.first_name                                    as rc_first_name,\n" +
-                        "       rc.last_name                                     as rc_last_name,\n" +
-                        "       cr.first_name                                    AS cr_first_name,\n" +
-                        "       cr.last_name                                     AS cr_last_name\n" +
+                        "       cr.first_name                                    AS cr_first_name\n" +
                         "FROM completed_reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id " +
                         "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
@@ -172,8 +166,7 @@ public class ReminderDao {
                         "       rt.id as rt_id,\n" +
                         "       rc.chat_id                                       as rc_chat_id,\n" +
                         "       rc.zone_id                                       as rc_zone_id,\n" +
-                        "       cr.first_name                                    as cr_first_name,\n" +
-                        "       cr.last_name                                     as cr_last_name,\n" +
+                        "       cr.first_name                                    as cr_first_name\n" +
                         "       rt.last_reminder_at as rt_last_reminder_at,\n" +
                         "       rt.reminder_id as rt_reminder_id,\n" +
                         "       rt.fixed_time as rt_fixed_time,\n" +
@@ -328,7 +321,6 @@ public class ReminderDao {
                         ")\n" +
                         "SELECT r.id,\n" +
                         "       rc.first_name as rc_first_name,\n" +
-                        "       rc.last_name  as rc_last_name,\n" +
                         "       rc.chat_id    as rc_chat_id\n" +
                         "FROM r\n" +
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id",
@@ -343,8 +335,7 @@ public class ReminderDao {
                 },
                 rs -> {
                     reminder.setId(rs.getInt(Reminder.ID));
-                    reminder.getReceiver().setFirstName(rs.getString("rc_first_name"));
-                    reminder.getReceiver().setLastName(rs.getString("rc_last_name"));
+                    reminder.getReceiver().setName(rs.getString("rc_first_name"));
                     reminder.getReceiver().setChatId(rs.getLong("rc_chat_id"));
                 }
         );
@@ -359,7 +350,6 @@ public class ReminderDao {
                         "SELECT r.id,\n" +
                         "       r.receiver_id,\n" +
                         "       rc.first_name as rc_first_name,\n" +
-                        "       rc.last_name  as rc_last_name,\n" +
                         "       rc.chat_id    as rc_chat_id\n" +
                         "FROM r INNER JOIN tg_user rc ON r.receiver_id = rc.user_id",
                 new SqlParameterValue[]{
@@ -374,8 +364,7 @@ public class ReminderDao {
                     reminder.setId(rs.getInt(Reminder.ID));
                     reminder.setReceiverId(rs.getInt("receiver_id"));
                     reminder.getReceiver().setUserId(reminder.getReceiverId());
-                    reminder.getReceiver().setFirstName(rs.getString("rc_first_name"));
-                    reminder.getReceiver().setLastName(rs.getString("rc_last_name"));
+                    reminder.getReceiver().setName(rs.getString("rc_first_name"));
                     reminder.getReceiver().setChatId(rs.getLong("rc_chat_id"));
                 }
         );
@@ -409,7 +398,7 @@ public class ReminderDao {
                 select.select(rcTable.CHAT_ID.as("rc_chat_id"));
             }
             if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_FIRST_LAST_NAME)) {
-                select.select(rcTable.FIRST_NAME.as("rc_first_name"), rcTable.LAST_NAME.as("rc_last_name"));
+                select.select(rcTable.NAME.as("rc_first_name"));
             }
         }
         if (reminderMapping.getCreatorMapping() != null) {
@@ -421,7 +410,7 @@ public class ReminderDao {
             if (reminderMapping.getCreatorMapping().fields().contains(ReminderMapping.CR_CHAT_ID)) {
                 select.select(creator.CHAT_ID.as("cr_chat_id"));
             }
-            select.select(creator.FIRST_NAME.as("cr_first_name"), creator.LAST_NAME.as("cr_last_name"));
+            select.select(creator.NAME.as("cr_first_name"));
         }
 
         return select;

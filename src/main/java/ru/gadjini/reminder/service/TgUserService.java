@@ -8,6 +8,7 @@ import ru.gadjini.reminder.dao.TgUserDao;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.ZoneId;
 
@@ -42,8 +43,7 @@ public class TgUserService {
         tgUser.setUserId(user.getId());
         tgUser.setChatId(chatId);
         tgUser.setUsername(user.getUserName());
-        tgUser.setFirstName(user.getFirstName());
-        tgUser.setLastName(user.getLastName());
+        tgUser.setName(UserUtils.name(user));
 
         tgUserDao.createOrUpdate(tgUser);
 

@@ -30,8 +30,7 @@ public class ResultSetMapper {
 
         tgUser.setChatId(resultSet.getLong(TgUser.CHAT_ID));
         tgUser.setUsername(resultSet.getString(TgUser.USERNAME));
-        tgUser.setFirstName(resultSet.getString(TgUser.FIRST_NAME));
-        tgUser.setLastName(resultSet.getString(TgUser.LAST_NAME));
+        tgUser.setName(resultSet.getString(TgUser.NAME));
         tgUser.setUserId(resultSet.getInt(TgUser.USER_ID));
         tgUser.setZoneId(resultSet.getString(TgUser.ZONE_ID));
 
@@ -66,8 +65,7 @@ public class ResultSetMapper {
             rc.setUserId(reminder.getReceiverId());
 
             if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_FIRST_LAST_NAME)) {
-                rc.setFirstName(rs.getString("rc_first_name"));
-                rc.setLastName(rs.getString("rc_last_name"));
+                rc.setName(rs.getString("rc_first_name"));
             }
             if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_CHAT_ID)) {
                 rc.setChatId(rs.getLong("rc_chat_id"));
@@ -89,8 +87,7 @@ public class ResultSetMapper {
             TgUser cr = new TgUser();
 
             cr.setUserId(reminder.getCreatorId());
-            cr.setFirstName(rs.getString("cr_first_name"));
-            cr.setLastName(rs.getString("cr_last_name"));
+            cr.setName(rs.getString("cr_first_name"));
 
             if (reminderMapping.getCreatorMapping().fields().contains(ReminderMapping.CR_CHAT_ID)) {
                 cr.setChatId(rs.getLong("cr_chat_id"));
@@ -144,8 +141,7 @@ public class ResultSetMapper {
         userOne.setUserId(friendship.getUserOneId());
         if (friendshipMapping.getUserOneMapping() != null) {
             if (friendshipMapping.getUserOneMapping().fields().contains(FriendshipMapping.UO_FIRST_LAST_NAME)) {
-                userOne.setFirstName(rs.getString("uo_first_name"));
-                userOne.setLastName(rs.getString("uo_last_name"));
+                userOne.setName(rs.getString("uo_first_name"));
             }
             userOne.setChatId(rs.getLong("uo_chat_id"));
         }
@@ -154,8 +150,7 @@ public class ResultSetMapper {
         TgUser userTwo = new TgUser();
         userTwo.setUserId(friendship.getUserTwoId());
         if (friendshipMapping.getUserTwoMapping() != null) {
-            userTwo.setFirstName(rs.getString("ut_first_name"));
-            userTwo.setLastName(rs.getString("ut_last_name"));
+            userTwo.setName(rs.getString("ut_first_name"));
         }
         friendship.setUserTwo(userTwo);
 
