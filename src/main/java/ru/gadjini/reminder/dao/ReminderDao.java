@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.jooq.FriendshipTable;
 import ru.gadjini.reminder.domain.jooq.RemindMessageTable;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.jooq.TgUserTable;
@@ -62,13 +63,17 @@ public class ReminderDao {
                 "SELECT r.*,\n" +
                         "       (r.repeat_remind_at).*,\n" +
                         "       (r.remind_at).*,\n" +
-                        "       rc.zone_id                                       AS rc_zone_id,\n" +
-                        "       rc.name                                    AS rc_name,\n" +
-                        "       cr.name                                    AS cr_name\n" +
+                        "       rc.zone_id                                                                            AS rc_zone_id,\n" +
+                        "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
+                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
-                        "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
-                        "WHERE status = 0 AND (creator_id = :user_id OR receiver_id = :user_id) ORDER BY r.remind_at",
+                        "         LEFT JOIN friendship f ON CASE\n" +
+                        "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
+                        "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
+                        "WHERE r.status = 0\n" +
+                        "  AND (r.creator_id = :user_id OR r.receiver_id = :user_id)\n" +
+                        "ORDER BY r.remind_at",
                 new MapSqlParameterSource().addValue("user_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs, new ReminderMapping() {{
                     setReceiverMapping(new Mapping() {{
@@ -101,14 +106,16 @@ public class ReminderDao {
                         "       (r.repeat_remind_at).*,\n" +
                         "       r.completed_at,\n" +
                         "       r.note,\n" +
-                        "       rc.zone_id                                       AS rc_zone_id,\n" +
-                        "       rc.name                                    AS rc_name,\n" +
-                        "       cr.name                                    AS cr_name\n" +
+                        "       rc.zone_id                                                                            AS rc_zone_id,\n" +
+                        "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
+                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
-                        "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
-                        "WHERE creator_id = :creator_id\n" +
-                        "  AND status = 1\n" +
+                        "         LEFT JOIN friendship f ON CASE\n" +
+                        "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
+                        "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
+                        "WHERE r.creator_id = :creator_id\n" +
+                        "  AND r.status = 1\n" +
                         "UNION ALL\n" +
                         "SELECT r.id,\n" +
                         "       r.reminder_text,\n" +
@@ -120,13 +127,16 @@ public class ReminderDao {
                         "       (r.repeat_remind_at).*,\n" +
                         "       r.completed_at,\n" +
                         "       r.note,\n" +
-                        "       rc.zone_id                                       AS rc_zone_id,\n" +
-                        "       rc.name                                    as rc_name,\n" +
-                        "       cr.name                                    AS cr_name\n" +
+                        "       rc.zone_id                                                                            AS rc_zone_id,\n" +
+                        "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
+                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
                         "FROM completed_reminder r\n" +
-                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id " +
-                        "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
-                        "WHERE receiver_id = :creator_id ORDER BY remind_at",
+                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
+                        "         LEFT JOIN friendship f ON CASE\n" +
+                        "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
+                        "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
+                        "WHERE r.receiver_id = :creator_id\n" +
+                        "ORDER BY remind_at",
                 new MapSqlParameterSource().addValue("creator_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs, new ReminderMapping() {{
                     setReceiverMapping(new Mapping() {{
@@ -316,14 +326,17 @@ public class ReminderDao {
 
     private Reminder createByReceiverId(Reminder reminder) {
         jdbcTemplate.query("WITH r AS (\n" +
-                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at, note) VALUES (?, ?, ?, ?, ?, ?, ?) " +
-                        "RETURNING id, receiver_id\n" +
+                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
+                        "                       note) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id, receiver_id, creator_id\n" +
                         ")\n" +
                         "SELECT r.id,\n" +
-                        "       rc.name as rc_name,\n" +
-                        "       rc.chat_id    as rc_chat_id\n" +
+                        "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
+                        "       rc.chat_id                                                                            as rc_chat_id\n" +
                         "FROM r\n" +
-                        "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id",
+                        "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
+                        "         LEFT JOIN friendship f ON CASE\n" +
+                        "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
+                        "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END",
                 new SqlParameterValue[]{
                         new SqlParameterValue(Types.VARCHAR, reminder.getText()),
                         new SqlParameterValue(Types.INTEGER, reminder.getCreatorId()),
@@ -344,14 +357,20 @@ public class ReminderDao {
     }
 
     private Reminder createByReceiverName(Reminder reminder) {
-        jdbcTemplate.query("WITH r AS (\n" +
-                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, initial_remind_at, note) SELECT ?, ?, user_id, ?, ? FROM tg_user WHERE username = ? RETURNING id, receiver_id\n" +
+        jdbcTemplate.query("\n" +
+                        "WITH r AS (\n" +
+                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, initial_remind_at,\n" +
+                        "                          note) SELECT ?, ?, user_id, ?, ? FROM tg_user WHERE username = ? RETURNING id, receiver_id, creator_id\n" +
                         ")\n" +
                         "SELECT r.id,\n" +
                         "       r.receiver_id,\n" +
-                        "       rc.name as rc_name,\n" +
-                        "       rc.chat_id    as rc_chat_id\n" +
-                        "FROM r INNER JOIN tg_user rc ON r.receiver_id = rc.user_id",
+                        "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
+                        "       rc.chat_id                                                                            as rc_chat_id\n" +
+                        "FROM r\n" +
+                        "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
+                        "         LEFT JOIN friendship f ON CASE\n" +
+                        "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
+                        "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END",
                 new SqlParameterValue[]{
                         new SqlParameterValue(Types.VARCHAR, reminder.getText()),
                         new SqlParameterValue(Types.INTEGER, reminder.getCreatorId()),
@@ -373,32 +392,42 @@ public class ReminderDao {
     }
 
     private SelectSelectStep<Record> buildSelect(ReminderMapping reminderMapping) {
-        ReminderTable reminder = ReminderTable.TABLE.as("r");
-        SelectSelectStep<Record> select = dslContext.select(reminder.asterisk(), DSL.field("(r.repeat_remind_at).*"), DSL.field("(r.remind_at).*"));
+        ReminderTable r = ReminderTable.TABLE.as("r");
+        SelectSelectStep<Record> select = dslContext.select(r.asterisk(), DSL.field("(r.repeat_remind_at).*"), DSL.field("(r.remind_at).*"));
 
-        SelectJoinStep<Record> from = select.from(reminder);
+        SelectJoinStep<Record> from = select.from(r);
         if (reminderMapping.getRemindMessageMapping() != null) {
             RemindMessageTable remindMessage = RemindMessageTable.TABLE.as("rm");
 
             from
                     .leftJoin(remindMessage)
-                    .on(reminder.ID.eq(remindMessage.REMINDER_ID));
+                    .on(r.ID.eq(remindMessage.REMINDER_ID));
 
             select.select(remindMessage.MESSAGE_ID.as("rm_message_id"));
+        }
+        if ((reminderMapping.getReceiverMapping() != null && reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_NAME))
+                || reminderMapping.getCreatorMapping() != null) {
+            FriendshipTable f = FriendshipTable.TABLE.as("f");
+
+            from
+                    .leftJoin(f)
+                    .on("CASE\n" +
+                            "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
+                            "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END");
         }
         if (reminderMapping.getReceiverMapping() != null) {
             TgUserTable rcTable = TgUserTable.TABLE.as("rc");
 
             from
                     .innerJoin(rcTable)
-                    .on(reminder.RECEIVER_ID.eq(rcTable.USER_ID));
+                    .on(r.RECEIVER_ID.eq(rcTable.USER_ID));
 
             select.select(rcTable.ZONE_ID.as("rc_zone_id"));
             if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_CHAT_ID)) {
                 select.select(rcTable.CHAT_ID.as("rc_chat_id"));
             }
             if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_NAME)) {
-                select.select(rcTable.NAME.as("rc_name"));
+                select.select(DSL.field("CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name"));
             }
         }
         if (reminderMapping.getCreatorMapping() != null) {
@@ -406,11 +435,11 @@ public class ReminderDao {
 
             from
                     .innerJoin(creator)
-                    .on(reminder.CREATOR_ID.eq(creator.USER_ID));
+                    .on(r.CREATOR_ID.eq(creator.USER_ID));
             if (reminderMapping.getCreatorMapping().fields().contains(ReminderMapping.CR_CHAT_ID)) {
                 select.select(creator.CHAT_ID.as("cr_chat_id"));
             }
-            select.select(creator.NAME.as("cr_name"));
+            select.select(DSL.field("CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name"));
         }
 
         return select;
