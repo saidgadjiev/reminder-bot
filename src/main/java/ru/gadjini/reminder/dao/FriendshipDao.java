@@ -1,6 +1,10 @@
 package ru.gadjini.reminder.dao;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.SelectConditionStep;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -9,7 +13,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.domain.jooq.FriendshipTable;
 import ru.gadjini.reminder.domain.mapping.FriendshipMapping;
+import ru.gadjini.reminder.jdbc.JooqPreparedSetter;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
 import java.util.List;
@@ -23,13 +29,16 @@ public class FriendshipDao {
 
     private ResultSetMapper resultSetMapper;
 
+    private DSLContext dslContext;
+
     @Autowired
     public FriendshipDao(JdbcTemplate jdbcTemplate,
                          NamedParameterJdbcTemplate namedParameterJdbcTemplate,
-                         ResultSetMapper resultSetMapper) {
+                         ResultSetMapper resultSetMapper, DSLContext dslContext) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.resultSetMapper = resultSetMapper;
+        this.dslContext = dslContext;
     }
 
     public Friendship createFriendRequest(Friendship friendship) {
@@ -42,31 +51,19 @@ public class FriendshipDao {
         return friendship;
     }
 
-    public List<TgUser> getToMeFriendRequests(int userId, Friendship.Status status) {
-        return jdbcTemplate.query(
-                "SELECT tu.*\n" +
-                        "FROM friendship f INNER JOIN tg_user tu on f.user_one_id = tu.user_id\n" +
-                        "WHERE status = ?\n" +
-                        "  AND user_two_id = ?",
-                ps -> {
-                    ps.setInt(1, status.getCode());
-                    ps.setInt(2, userId);
-                },
-                (rs, rowNum) -> resultSetMapper.mapUser(rs)
-        );
-    }
+    public List<TgUser> getFriendRequests(int userId, Condition condition) {
+        SelectConditionStep<Record> select = dslContext.select(FriendshipTable.TABLE.asterisk())
+                .from(FriendshipTable.TABLE)
+                .where(condition);
 
-    public List<TgUser> getFromMeFriendRequests(int userId, Friendship.Status status) {
         return jdbcTemplate.query(
-                "SELECT tu.*\n" +
-                        "FROM friendship f INNER JOIN tg_user tu on f.user_two_id = tu.user_id\n" +
-                        "WHERE status = ?\n" +
-                        "  AND user_one_id = ?",
-                ps -> {
-                    ps.setInt(1, status.getCode());
-                    ps.setInt(2, userId);
-                },
-                (rs, rowNum) -> resultSetMapper.mapUser(rs)
+                select.getSQL(),
+                new JooqPreparedSetter(select.getParams()),
+                (rs, rowNum) -> {
+                    Friendship friendship = resultSetMapper.mapFriendship(rs, new FriendshipMapping());
+
+                    return friendship.getFriend(userId);
+                }
         );
     }
 
@@ -110,16 +107,13 @@ public class FriendshipDao {
 
     public List<TgUser> getFriends(int userId, Friendship.Status status) {
         return namedParameterJdbcTemplate.query(
-                "SELECT tu.*\n" +
-                        "FROM friendship f,\n" +
-                        "     tg_user tu\n" +
-                        "WHERE CASE\n" +
-                        "          WHEN f.user_one_id = :user_id THEN f.user_two_id = tu.user_id\n" +
-                        "          WHEN f.user_two_id = :user_id THEN f.user_one_id = tu.user_id\n" +
-                        "          ELSE false END\n" +
-                        "  AND f.status = :state ORDER BY tu.name",
+                "SELECT * FROM friendship WHERE status = :state AND (user_one_id = :user_id OR user_two_id = :user_id)",
                 new MapSqlParameterSource().addValue("user_id", userId).addValue("state", status.getCode()),
-                (rs, rowNum) -> resultSetMapper.mapUser(rs)
+                (rs, rowNum) -> {
+                    Friendship friendship = resultSetMapper.mapFriendship(rs, new FriendshipMapping());
+
+                    return friendship.getFriend(userId);
+                }
         );
     }
 
@@ -162,17 +156,21 @@ public class FriendshipDao {
     }
 
     private void createFriendshipByFriendUserId(Friendship friendship) {
-        jdbcTemplate.query(
+        namedParameterJdbcTemplate.query(
                 "WITH f AS (\n" +
-                        "    INSERT INTO friendship (user_one_id, user_two_id, status) VALUES(?, ?, ?) RETURNING id, user_one_id, user_two_id, status\n" +
+                        "    INSERT INTO friendship (user_one_id, user_two_id, user_one_name, user_two_name, status) SELECT :uo_id, :ut_id, uo.name, ut.name, :status\n" +
+                        "                                                                                            FROM tg_user uo,\n" +
+                        "                                                                                                 tg_user ut\n" +
+                        "                                                                                            WHERE uo = :uo_id\n" +
+                        "                                                                                              AND ut = :ut_id RETURNING id, user_one_id, user_two_id, status\n" +
                         ")\n" +
                         "SELECT ut.name AS ut_name\n" +
-                        "FROM f INNER JOIN tg_user ut ON f.user_two_id = ut.user_id",
-                ps -> {
-                    ps.setInt(1, friendship.getUserOneId());
-                    ps.setInt(2, friendship.getUserTwoId());
-                    ps.setInt(3, friendship.getStatus().getCode());
-                },
+                        "FROM f\n" +
+                        "         INNER JOIN tg_user ut ON f.user_two_id = ut.user_id",
+                new MapSqlParameterSource()
+                        .addValue("uo_id", friendship.getUserOneId())
+                        .addValue("ut_id", friendship.getUserTwoId())
+                        .addValue("status", friendship.getStatus().getCode()),
                 rs -> {
                     friendship.getUserTwo().setName(rs.getString("ut_name"));
                 }
@@ -180,19 +178,24 @@ public class FriendshipDao {
     }
 
     private void createFriendshipByFriendUsername(Friendship friendship) {
-        jdbcTemplate.query(
-                "WITH f AS (\n" +
-                        "    INSERT INTO friendship (user_one_id, user_two_id, status) SELECT ?, user_id, ? FROM tg_user WHERE username = ? RETURNING id, user_one_id, user_two_id, status\n" +
+        namedParameterJdbcTemplate.query(
+                "\n" +
+                        "WITH f AS (\n" +
+                        "    INSERT INTO friendship (user_one_id, user_two_id, user_one_name, user_two_name, status) SELECT :uo_id, ut.user_id, uo.name, ut.name, :status\n" +
+                        "                                                                                            FROM tg_user uo,\n" +
+                        "                                                                                                 tg_user ut\n" +
+                        "                                                                                            WHERE ut.username = :username\n" +
+                        "                                                                                              AND uo.user_id = :uo_id RETURNING id, user_one_id, user_two_id, status\n" +
                         ")\n" +
                         "SELECT f.user_two_id,\n" +
-                        "       ut.name AS ut_name,\n" +
+                        "       ut.name    AS ut_name,\n" +
                         "       ut.chat_id AS ut_chat_id\n" +
-                        "FROM f INNER JOIN tg_user ut ON f.user_two_id = ut.user_id",
-                ps -> {
-                    ps.setInt(1, friendship.getUserOneId());
-                    ps.setInt(2, friendship.getStatus().getCode());
-                    ps.setString(3, friendship.getUserTwo().getUsername());
-                },
+                        "FROM f\n" +
+                        "         INNER JOIN tg_user ut ON f.user_two_id = ut.user_id",
+                new MapSqlParameterSource()
+                        .addValue("uo_id", friendship.getUserOneId())
+                        .addValue("username", friendship.getUserTwo().getUsername())
+                        .addValue("status", friendship.getStatus().getCode()),
                 rs -> {
                     friendship.setUserTwoId(rs.getInt("user_two_id"));
                     friendship.getUserTwo().setUserId(friendship.getUserTwoId());

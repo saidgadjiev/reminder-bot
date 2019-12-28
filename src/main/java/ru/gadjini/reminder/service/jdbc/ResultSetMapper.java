@@ -135,6 +135,8 @@ public class ResultSetMapper {
 
         friendship.setUserOneId(rs.getInt(Friendship.USER_ONE_ID));
         friendship.setUserTwoId(rs.getInt(Friendship.USER_TWO_ID));
+        friendship.setUserOneName(rs.getString(Friendship.USER_ONE_NAME));
+        friendship.setUserTwoName(rs.getString(Friendship.USER_TWO_NAME));
         friendship.setStatus(Friendship.Status.fromCode(rs.getInt(Friendship.STATUS)));
 
         TgUser userOne = new TgUser();

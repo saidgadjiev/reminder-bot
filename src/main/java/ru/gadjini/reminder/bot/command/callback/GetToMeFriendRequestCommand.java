@@ -8,7 +8,7 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.TgUserService;
+import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
@@ -16,15 +16,15 @@ import ru.gadjini.reminder.util.UserUtils;
 @Component
 public class GetToMeFriendRequestCommand implements CallbackBotCommand {
 
-    private TgUserService tgUserService;
+    private FriendshipService friendshipService;
 
     private MessageService messageService;
 
     private InlineKeyboardService inlineKeyboardService;
 
     @Autowired
-    public GetToMeFriendRequestCommand(TgUserService tgUserService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
-        this.tgUserService = tgUserService;
+    public GetToMeFriendRequestCommand(FriendshipService friendshipService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
+        this.friendshipService = friendshipService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
     }
@@ -37,7 +37,7 @@ public class GetToMeFriendRequestCommand implements CallbackBotCommand {
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         int friendId = requestParams.getInt(Arg.FRIEND_ID.getKey());
-        TgUser mayBeFriend = tgUserService.getByUserId(friendId);
+        TgUser mayBeFriend = friendshipService.getFriend(friendId);
 
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
