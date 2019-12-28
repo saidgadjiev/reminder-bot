@@ -6,8 +6,8 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.request.Arg;
@@ -93,6 +93,5 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableB
 
         commandNavigator.silentPop(message.getChatId());
         reminderMessageSender.sendReminderTextChanged(request.getMessageId(), updateReminderResult);
-        messageService.deleteMessage(message.getChatId(), message.getMessageId());
     }
 }

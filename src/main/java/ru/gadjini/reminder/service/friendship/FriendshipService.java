@@ -89,10 +89,16 @@ public class FriendshipService {
         return createFriendRequestResult;
     }
 
+    public TgUser changeFriendName(int friendId, String name) {
+        User user = securityService.getAuthenticatedUser();
+
+        return friendshipDao.updateFriendName(user.getId(), friendId, Friendship.Status.ACCEPTED, name);
+    }
+
     public TgUser getFriend(int friendId) {
         User user = securityService.getAuthenticatedUser();
 
-        return friendshipDao.getFriendship(user.getId(), friendId).getFriend(user.getId());
+        return friendshipDao.getFriend(user.getId(), friendId);
     }
 
     public List<TgUser> getToMeFriendRequests() {

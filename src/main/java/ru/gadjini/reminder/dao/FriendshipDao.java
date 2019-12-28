@@ -67,6 +67,42 @@ public class FriendshipDao {
         );
     }
 
+    public TgUser updateFriendName(int userId, int friendId, Friendship.Status status, String name) {
+        return namedParameterJdbcTemplate.query(
+                "WITH f AS (\n" +
+                        "    UPDATE friendship\n" +
+                        "        SET user_one_name = CASE WHEN user_two_id = :user_id THEN :name ELSE user_one_name END,\n" +
+                        "            user_two_name = CASE WHEN user_one_id = :user_id THEN :name ELSE user_two_name END\n" +
+                        "        WHERE status = :status\n" +
+                        "            AND CASE\n" +
+                        "                    WHEN user_one_id = :user_id THEN user_two_id = :friend_id\n" +
+                        "                    WHEN user_two_id = :user_id THEN user_one_id = :friend_id\n" +
+                        "                    ELSE FALSE END\n" +
+                        "        RETURNING user_one_id\n" +
+                        ")\n" +
+                        "SELECT tu.zone_id\n" +
+                        "FROM tg_user tu\n" +
+                        "WHERE tu.user_id = :friend_id",
+                new MapSqlParameterSource()
+                        .addValue("user_id", userId)
+                        .addValue("friend_id", friendId)
+                        .addValue("status", status.getCode())
+                        .addValue("name", name),
+                rs -> {
+                    if (rs.next()) {
+                        TgUser friend = new TgUser();
+                        friend.setUserId(friendId);
+                        friend.setName(name);
+                        friend.setZoneId(rs.getString("zone_id"));
+
+                        return friend;
+                    }
+
+                    return null;
+                }
+        );
+    }
+
     public Friendship updateFriendshipStatus(int userOneId, int userTwoId, Friendship.Status status) {
         ResultSetExtractor<Friendship> resultSetExtractor = rs -> {
             if (rs.next()) {
@@ -113,6 +149,36 @@ public class FriendshipDao {
                     Friendship friendship = resultSetMapper.mapFriendship(rs, new FriendshipMapping());
 
                     return friendship.getFriend(userId);
+                }
+        );
+    }
+
+    public TgUser getFriend(int userId, int friendId) {
+        return namedParameterJdbcTemplate.query(
+                "SELECT f.*, tu.zone_id\n" +
+                        "FROM friendship f,\n" +
+                        "     tg_user tu\n" +
+                        "WHERE (user_one_id = :user_id AND user_two_id = :friend_id)\n" +
+                        "   OR (user_one_id = :friend_id AND user_two_id = :user_id)\n" +
+                        "    AND tu.user_id = :friend_id",
+                new MapSqlParameterSource().addValue("user_id", userId).addValue("friend_id", friendId),
+                rs -> {
+                    if (rs.next()) {
+                        TgUser friend = new TgUser();
+                        friend.setZoneId(rs.getString("zone_id"));
+                        friend.setUserId(friendId);
+
+                        int userOneId = rs.getInt(Friendship.USER_ONE_ID);
+                        if (friendId == userOneId) {
+                            friend.setName(rs.getString(Friendship.USER_ONE_NAME));
+                        } else {
+                            friend.setName(rs.getString(Friendship.USER_TWO_NAME));
+                        }
+
+                        return friend;
+                    }
+
+                    return null;
                 }
         );
     }
