@@ -85,10 +85,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
     }
 
     @Override
-    public void processNonCommandUpdate(Message message) {
-        if (!message.hasText()) {
-            return;
-        }
+    public void processNonCommandUpdate(Message message, String text) {
         CallbackRequest callbackRequest = requests.get(message.getChatId());
         CustomRemindResult customRemindResult = reminderService.customRemind(callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), message.getText().trim());
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());

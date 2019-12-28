@@ -11,6 +11,7 @@ import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.request.RequestParamsParser;
+import ru.gadjini.reminder.service.message.MessageTextExtractor;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,10 +35,13 @@ public class CommandExecutor {
 
     private RequestParamsParser requestParamsParser;
 
+    private MessageTextExtractor messageTextExtractor;
+
     @Autowired
-    public CommandExecutor(CommandNavigator commandNavigator, RequestParamsParser requestParamsParser) {
+    public CommandExecutor(CommandNavigator commandNavigator, RequestParamsParser requestParamsParser, MessageTextExtractor messageTextExtractor) {
         this.commandNavigator = commandNavigator;
         this.requestParamsParser = requestParamsParser;
+        this.messageTextExtractor = messageTextExtractor;
     }
 
     @Autowired
@@ -70,8 +74,9 @@ public class CommandExecutor {
     public void processNonCommandUpdate(Message message) {
         NavigableBotCommand navigableBotCommand = commandNavigator.getCurrentCommand(message.getChatId());
 
-        if (navigableBotCommand != null) {
-            navigableBotCommand.processNonCommandUpdate(message);
+        if (navigableBotCommand != null && navigableBotCommand.accept(message)) {
+            String text = messageTextExtractor.extract(message);
+            navigableBotCommand.processNonCommandUpdate(message, text);
         }
     }
 

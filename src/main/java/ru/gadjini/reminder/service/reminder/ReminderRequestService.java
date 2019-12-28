@@ -16,10 +16,10 @@ import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.UpdateReminderResult;
-import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
+import ru.gadjini.reminder.service.reminder.request.RequestExtractor;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.validation.CreateReminderValidator;
 import ru.gadjini.reminder.service.validation.ValidationEvent;
@@ -39,8 +39,6 @@ public class ReminderRequestService {
 
     private ValidatorFactory validatorFactory;
 
-    private TgUserService tgUserService;
-
     private RequestParser requestParser;
 
     private LocalisationService localisationService;
@@ -49,21 +47,24 @@ public class ReminderRequestService {
 
     private RepeatReminderService repeatReminderService;
 
+    private RequestExtractor requestExtractor;
+
     @Autowired
-    public ReminderRequestService(ReminderService reminderService, ValidatorFactory validatorFactory, TgUserService tgUserService,
+    public ReminderRequestService(ReminderService reminderService, ValidatorFactory validatorFactory,
                                   RequestParser requestParser, LocalisationService localisationService,
-                                  SecurityService securityService, RepeatReminderService repeatReminderService) {
+                                  SecurityService securityService, RepeatReminderService repeatReminderService,
+                                  RequestExtractor requestExtractor) {
         this.reminderService = reminderService;
         this.validatorFactory = validatorFactory;
-        this.tgUserService = tgUserService;
         this.requestParser = requestParser;
         this.localisationService = localisationService;
         this.securityService = securityService;
         this.repeatReminderService = repeatReminderService;
+        this.requestExtractor = requestExtractor;
     }
 
     public Reminder createReminder(String text, Integer receiverId) {
-        ReminderRequest reminderRequest = parseRequest(text, receiverId);
+        ReminderRequest reminderRequest = requestExtractor.extract(text, receiverId);
 
         ((CreateReminderValidator) validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER)).validate(reminderRequest);
         if (reminderRequest.isRepeatTime()) {
@@ -168,25 +169,6 @@ public class ReminderRequestService {
         return new UpdateReminderResult(reminder, newReminder);
     }
 
-    private ReminderRequest parseRequest(String text, Integer receiverId) {
-        ZoneId receiverZoneId;
-        String username = extractTgUsername(text);
-        if (username != null) {
-            receiverZoneId = tgUserService.getTimeZone(username);
-        } else if (receiverId != null) {
-            receiverZoneId = tgUserService.getTimeZone(receiverId);
-        } else {
-            receiverZoneId = tgUserService.getTimeZone(securityService.getAuthenticatedUser().getId());
-        }
-
-        ReminderRequest reminderRequest = parseRequest(text, receiverZoneId);
-
-        reminderRequest.setReceiverName(username);
-        reminderRequest.setReceiverId(receiverId);
-
-        return reminderRequest;
-    }
-
     private ZonedDateTime buildRemindTime(OffsetTime offsetTime, ZonedDateTime remindAt) {
         ZoneId zoneId = offsetTime.getZoneId();
         switch (offsetTime.getType()) {
@@ -281,21 +263,5 @@ public class ReminderRequestService {
             reminder.setReceiverId(reminder.getCreatorId());
         }
         reminder.getReceiver().setZone(reminderRequest.getZone());
-    }
-
-    private ReminderRequest parseRequest(String text, ZoneId zoneId) {
-        try {
-            return requestParser.parseRequest(text, zoneId);
-        } catch (ParseException ex) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
-        }
-    }
-
-    private static String extractTgUsername(String text) {
-        if (text.startsWith("@")) {
-            return text.substring(1, text.indexOf(' '));
-        }
-
-        return null;
     }
 }

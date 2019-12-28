@@ -65,7 +65,12 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
     }
 
     @Override
-    public void processNonCommandUpdate(Message message) {
+    public boolean accept(Message message) {
+        return message.hasContact() || message.hasText();
+    }
+
+    @Override
+    public void processNonCommandUpdate(Message message, String text) {
         CreateFriendRequestResult createFriendRequestResult;
 
         if (message.hasContact()) {
@@ -73,7 +78,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
 
             createFriendRequestResult = friendshipService.createFriendRequest(contact.getUserID(), null);
         } else {
-            String receiverName = removeUsernameStart(message.getText().trim());
+            String receiverName = removeUsernameStart(text);
 
             createFriendRequestResult = friendshipService.createFriendRequest(null, receiverName);
         }

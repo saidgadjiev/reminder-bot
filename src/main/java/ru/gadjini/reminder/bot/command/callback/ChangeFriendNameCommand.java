@@ -71,13 +71,10 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
     }
 
     @Override
-    public void processNonCommandUpdate(Message message) {
-        if (!message.hasText()) {
-            return;
-        }
+    public void processNonCommandUpdate(Message message, String text) {
         CallbackRequest callbackRequest = callbackRequests.get(message.getChatId());
         RequestParams requestParams = callbackRequest.getRequestParams();
-        TgUser friend = friendshipService.changeFriendName(requestParams.getInt(Arg.FRIEND_ID.getKey()), message.getText().trim());
+        TgUser friend = friendshipService.changeFriendName(requestParams.getInt(Arg.FRIEND_ID.getKey()), text);
 
         commandNavigator.silentPop(message.getChatId());
         messageService.editMessage(

@@ -90,10 +90,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
     }
 
     @Override
-    public void processNonCommandUpdate(Message message) {
-        if (!message.hasText()) {
-            return;
-        }
+    public void processNonCommandUpdate(Message message, String text) {
         PostponeCommandState postponeCommandState = reminderRequests.get(message.getChatId());
 
         switch (postponeCommandState.state) {
@@ -101,8 +98,6 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
                 postponeTime(message, postponeCommandState);
                 break;
             case REASON:
-                String text = message.getText().trim();
-
                 if (text.equals(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON))) {
                     postpone(message.getChatId(), null, postponeCommandState);
                 } else {

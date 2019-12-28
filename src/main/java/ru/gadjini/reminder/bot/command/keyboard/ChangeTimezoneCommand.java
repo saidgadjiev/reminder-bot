@@ -7,9 +7,10 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
-import ru.gadjini.reminder.service.*;
+import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.service.TgUserService;
+import ru.gadjini.reminder.service.TimezoneService;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -76,10 +77,12 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
     }
 
     @Override
-    public void processNonCommandUpdate(Message message) {
-        if (!message.hasLocation()) {
-            return;
-        }
+    public boolean accept(Message message) {
+        return message.hasLocation();
+    }
+
+    @Override
+    public void processNonCommandUpdate(Message message, String text) {
         Location location = message.getLocation();
         ZoneId zoneId = timezoneService.getZoneId(location.getLatitude(), location.getLongitude());
 
