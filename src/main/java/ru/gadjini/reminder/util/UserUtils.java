@@ -1,13 +1,14 @@
 package ru.gadjini.reminder.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.domain.TgUser;
 
 public class UserUtils {
 
     private UserUtils() {}
 
-    public static String fio(TgUser user) {
+    public static String name(User user) {
         StringBuilder fio = new StringBuilder();
 
         fio.append(user.getFirstName());
@@ -22,7 +23,7 @@ public class UserUtils {
     public static String userLink(TgUser user) {
         StringBuilder link = new StringBuilder();
 
-        link.append("<a href=\"tg://user?id=").append(user.getUserId()).append("\">").append(fio(user)).append("</a>");
+        link.append("<a href=\"tg://user?id=").append(user.getUserId()).append("\">").append(user.getName()).append("</a>");
 
         return link.toString();
     }

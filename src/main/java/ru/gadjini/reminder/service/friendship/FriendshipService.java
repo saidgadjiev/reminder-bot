@@ -8,11 +8,12 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.FriendshipDao;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.domain.jooq.FriendshipTable;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
-import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.validation.UserValidator;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -89,16 +90,40 @@ public class FriendshipService {
         return createFriendRequestResult;
     }
 
+    public TgUser changeFriendName(int friendId, String name) {
+        User user = securityService.getAuthenticatedUser();
+
+        return friendshipDao.updateFriendName(user.getId(), friendId, Friendship.Status.ACCEPTED, name);
+    }
+
+    public TgUser getFriend(int friendId) {
+        User user = securityService.getAuthenticatedUser();
+
+        return friendshipDao.getFriend(user.getId(), friendId);
+    }
+
+    public TgUser getFriendByFriendNameCandidates(Collection<String> nameCandidates) {
+        User user = securityService.getAuthenticatedUser();
+
+        return friendshipDao.getFriend(user.getId(), nameCandidates);
+    }
+
     public List<TgUser> getToMeFriendRequests() {
         User user = securityService.getAuthenticatedUser();
 
-        return friendshipDao.getToMeFriendRequests(user.getId(), Friendship.Status.REQUESTED);
+        return friendshipDao.getFriendRequests(
+                user.getId(),
+                FriendshipTable.TABLE.USER_TWO_ID.eq(user.getId()).and(FriendshipTable.TABLE.STATUS.eq(Friendship.Status.REQUESTED.getCode()))
+        );
     }
 
     public List<TgUser> getFromMeFriendRequests() {
         User user = securityService.getAuthenticatedUser();
 
-        return friendshipDao.getFromMeFriendRequests(user.getId(), Friendship.Status.REQUESTED);
+        return friendshipDao.getFriendRequests(
+                user.getId(),
+                FriendshipTable.TABLE.USER_ONE_ID.eq(user.getId()).and(FriendshipTable.TABLE.STATUS.eq(Friendship.Status.REQUESTED.getCode()))
+        );
     }
 
     public void cancelFriendRequest(int friendId) {

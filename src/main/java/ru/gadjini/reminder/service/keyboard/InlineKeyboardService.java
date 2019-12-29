@@ -218,6 +218,7 @@ public class InlineKeyboardService {
                 buttonFactory.createFriendReminderButton(friendUserId),
                 buttonFactory.deleteFriendButton(friendUserId))
         );
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.changeFriendNameButton(friendUserId)));
         inlineKeyboardMarkup.getKeyboard().add(List.of(
                 buttonFactory.goBackCallbackButton(CommandNames.GET_FRIENDS_COMMAND_HISTORY_NAME)
         ));

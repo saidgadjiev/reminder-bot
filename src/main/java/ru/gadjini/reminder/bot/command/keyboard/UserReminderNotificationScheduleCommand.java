@@ -61,7 +61,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
     }
 
     @Override
-    public void processMessage(Message message) {
+    public boolean processMessage(Message message, String text) {
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(message.getFrom().getId(), notificationType);
 
         messageService.sendMessage(
@@ -75,17 +75,15 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
                 MessagesProperties.MESSAGE_EDIT_USER_REMINDER_NOTIFICATION,
                 replyKeyboardService.goBackCommand()
         );
+        return true;
     }
 
     @Override
-    public void processNonCommandUpdate(Message message) {
-        if (!message.hasText()) {
-            return;
-        }
+    public void processNonCommandUpdate(Message message, String text) {
         if (!messagesByChat.containsKey(message.getChatId())) {
             return;
         }
-        userReminderNotificationService.create(message.getText().trim(), notificationType);
+        userReminderNotificationService.create(text, notificationType);
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(message.getFrom().getId(), notificationType);
         int messageId = messagesByChat.get(message.getChatId());
 

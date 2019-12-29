@@ -11,8 +11,8 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
-import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -60,12 +60,18 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
     }
 
     @Override
-    public void processMessage(Message message) {
+    public boolean processMessage(Message message, String text) {
         messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME, replyKeyboardService.goBackCommand());
+        return false;
     }
 
     @Override
-    public void processNonCommandUpdate(Message message) {
+    public boolean accept(Message message) {
+        return message.hasContact() || message.hasText();
+    }
+
+    @Override
+    public void processNonCommandUpdate(Message message, String text) {
         CreateFriendRequestResult createFriendRequestResult;
 
         if (message.hasContact()) {
@@ -73,7 +79,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
 
             createFriendRequestResult = friendshipService.createFriendRequest(contact.getUserID(), null);
         } else {
-            String receiverName = removeUsernameStart(message.getText().trim());
+            String receiverName = removeUsernameStart(text);
 
             createFriendRequestResult = friendshipService.createFriendRequest(null, receiverName);
         }

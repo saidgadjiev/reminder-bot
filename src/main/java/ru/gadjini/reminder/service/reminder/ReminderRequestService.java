@@ -16,10 +16,11 @@ import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.UpdateReminderResult;
-import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
+import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
+import ru.gadjini.reminder.service.reminder.request.ReminderRequestExtractor;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.validation.CreateReminderValidator;
 import ru.gadjini.reminder.service.validation.ValidationEvent;
@@ -39,8 +40,6 @@ public class ReminderRequestService {
 
     private ValidatorFactory validatorFactory;
 
-    private TgUserService tgUserService;
-
     private RequestParser requestParser;
 
     private LocalisationService localisationService;
@@ -49,29 +48,32 @@ public class ReminderRequestService {
 
     private RepeatReminderService repeatReminderService;
 
+    private ReminderRequestExtractor requestExtractor;
+
     @Autowired
-    public ReminderRequestService(ReminderService reminderService, ValidatorFactory validatorFactory, TgUserService tgUserService,
+    public ReminderRequestService(ReminderService reminderService, ValidatorFactory validatorFactory,
                                   RequestParser requestParser, LocalisationService localisationService,
-                                  SecurityService securityService, RepeatReminderService repeatReminderService) {
+                                  SecurityService securityService, RepeatReminderService repeatReminderService,
+                                  ReminderRequestExtractor requestExtractor) {
         this.reminderService = reminderService;
         this.validatorFactory = validatorFactory;
-        this.tgUserService = tgUserService;
         this.requestParser = requestParser;
         this.localisationService = localisationService;
         this.securityService = securityService;
         this.repeatReminderService = repeatReminderService;
+        this.requestExtractor = requestExtractor;
     }
 
-    public Reminder createReminder(String text, Integer receiverId) {
-        ReminderRequest reminderRequest = parseRequest(text, receiverId);
+    public Reminder createReminder(ReminderRequestContext context) {
+        ReminderRequest reminderRequest = requestExtractor.extract(context);
 
         ((CreateReminderValidator) validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER)).validate(reminderRequest);
         if (reminderRequest.isRepeatTime()) {
-            return createRepeatReminder(reminderRequest, receiverId);
+            return createRepeatReminder(reminderRequest);
         } else if (reminderRequest.isOffsetTime()) {
-            return createOffsetReminder(reminderRequest, receiverId);
+            return createOffsetReminder(reminderRequest);
         } else {
-            return createStandardReminder(reminderRequest, receiverId);
+            return createStandardReminder(reminderRequest);
         }
     }
 
@@ -168,25 +170,6 @@ public class ReminderRequestService {
         return new UpdateReminderResult(reminder, newReminder);
     }
 
-    private ReminderRequest parseRequest(String text, Integer receiverId) {
-        ZoneId receiverZoneId;
-        String username = extractTgUsername(text);
-        if (username != null) {
-            receiverZoneId = tgUserService.getTimeZone(username);
-        } else if (receiverId != null) {
-            receiverZoneId = tgUserService.getTimeZone(receiverId);
-        } else {
-            receiverZoneId = tgUserService.getTimeZone(securityService.getAuthenticatedUser().getId());
-        }
-
-        ReminderRequest reminderRequest = parseRequest(text, receiverZoneId);
-
-        reminderRequest.setReceiverName(username);
-        reminderRequest.setReceiverId(receiverId);
-
-        return reminderRequest;
-    }
-
     private ZonedDateTime buildRemindTime(OffsetTime offsetTime, ZonedDateTime remindAt) {
         ZoneId zoneId = offsetTime.getZoneId();
         switch (offsetTime.getType()) {
@@ -226,37 +209,37 @@ public class ReminderRequestService {
         }
     }
 
-    private Reminder createOffsetReminder(ReminderRequest reminderRequest, Integer receiverId) {
+    private Reminder createOffsetReminder(ReminderRequest reminderRequest) {
         Reminder reminder = new Reminder();
 
         ZonedDateTime now = JodaTimeUtils.plus(ZonedDateTime.now(reminderRequest.getOffsetTime().getZoneId()), reminderRequest.getOffsetTime().getPeriod());
         reminder.setRemindAt(DateTime.of(now.withZoneSameInstant(ZoneOffset.UTC)));
 
-        setCommonInfo(reminder, reminderRequest, receiverId);
+        setCommonInfo(reminder, reminderRequest);
 
         return reminderService.createReminder(reminder);
     }
 
-    private Reminder createRepeatReminder(ReminderRequest reminderRequest, Integer receiverId) {
+    private Reminder createRepeatReminder(ReminderRequest reminderRequest) {
         Reminder reminder = new Reminder();
 
         reminder.setRepeatRemindAt(reminderRequest.getRepeatTime().withZone(ZoneOffset.UTC));
-        setCommonInfo(reminder, reminderRequest, receiverId);
+        setCommonInfo(reminder, reminderRequest);
 
         return repeatReminderService.createReminder(reminder);
     }
 
-    private Reminder createStandardReminder(ReminderRequest reminderRequest, Integer receiverId) {
+    private Reminder createStandardReminder(ReminderRequest reminderRequest) {
         Reminder reminder = new Reminder();
         reminder.setRemindAt(reminderRequest.getFixedTime().withZoneSameInstant(ZoneOffset.UTC));
         reminder.setInitialRemindAt(reminder.getRemindAt());
 
-        setCommonInfo(reminder, reminderRequest, receiverId);
+        setCommonInfo(reminder, reminderRequest);
 
         return reminderService.createReminder(reminder);
     }
 
-    private void setCommonInfo(Reminder reminder, ReminderRequest reminderRequest, Integer receiverId) {
+    private void setCommonInfo(Reminder reminder, ReminderRequest reminderRequest) {
         reminder.setText(reminderRequest.getText());
         reminder.setNote(reminderRequest.getNote());
 
@@ -269,11 +252,11 @@ public class ReminderRequestService {
             reminder.setReceiver(new TgUser() {{
                 setUsername(reminderRequest.getReceiverName());
             }});
-        } else if (receiverId != null) {
+        } else if (reminderRequest.getReceiverId() != null) {
             reminder.setReceiver(new TgUser() {{
-                setUserId(receiverId);
+                setUserId(reminderRequest.getReceiverId());
             }});
-            reminder.setReceiverId(receiverId);
+            reminder.setReceiverId(reminderRequest.getReceiverId());
         } else {
             TgUser receiver = new TgUser();
             receiver.setUserId(reminder.getCreatorId());
@@ -281,21 +264,5 @@ public class ReminderRequestService {
             reminder.setReceiverId(reminder.getCreatorId());
         }
         reminder.getReceiver().setZone(reminderRequest.getZone());
-    }
-
-    private ReminderRequest parseRequest(String text, ZoneId zoneId) {
-        try {
-            return requestParser.parseRequest(text, zoneId);
-        } catch (ParseException ex) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
-        }
-    }
-
-    private static String extractTgUsername(String text) {
-        if (text.startsWith("@")) {
-            return text.substring(1, text.indexOf(' '));
-        }
-
-        return null;
     }
 }

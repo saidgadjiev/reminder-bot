@@ -37,12 +37,13 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
     }
 
     @Override
-    public void processMessage(Message message) {
+    public boolean processMessage(Message message, String text) {
         messageService.sendMessage(
                 message.getChatId(),
                 localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION),
                 replyKeyboardService.getUserReminderNotificationSettingsKeyboard()
         );
+        return true;
     }
 
     @Override

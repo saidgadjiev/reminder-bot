@@ -10,7 +10,6 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.util.UserUtils;
 
 @Component
 public class RefreshUserDataCommand implements KeyboardBotCommand {
@@ -37,9 +36,11 @@ public class RefreshUserDataCommand implements KeyboardBotCommand {
     }
 
     @Override
-    public void processMessage(Message message) {
+    public boolean processMessage(Message message, String text) {
         TgUser user = tgUserService.createOrUpdateUser(message.getChatId(), message.getFrom());
         messageService.sendMessage(message.getChatId(), message(user));
+
+        return false;
     }
 
     private String message(TgUser user) {
@@ -47,7 +48,7 @@ public class RefreshUserDataCommand implements KeyboardBotCommand {
 
         message.append(localisationService.getMessage(MessagesProperties.MESSAGE_USER_DATA_REFRESHED)).append("\n");
         message.append(localisationService.getMessage(MessagesProperties.MESSAGE_USER_DATA, new Object[]{
-                UserUtils.fio(user),
+                user.getName(),
                 StringUtils.isNotBlank(user.getUsername()) ? TgUser.USERNAME_START + user.getUsername() : localisationService.getMessage(MessagesProperties.MESSAGE_USERNAME_NOT_EXISTS),
                 user.getUserId()
         }));

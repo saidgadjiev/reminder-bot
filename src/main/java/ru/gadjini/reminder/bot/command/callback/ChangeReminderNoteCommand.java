@@ -6,8 +6,8 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.request.Arg;
@@ -79,19 +79,14 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
     }
 
     @Override
-    public void processNonCommandUpdate(Message message) {
-        if (!message.hasText()) {
-            return;
-        }
-        String text = message.getText().trim();
-
+    public void processNonCommandUpdate(Message message, String text) {
         CallbackRequest request = changeReminderTimeRequests.get(message.getChatId());
-        Reminder reminder = reminderService.changeReminderNote(request.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), text);
+        int reminderId = request.getRequestParams().getInt(Arg.REMINDER_ID.getKey());
+        Reminder reminder = reminderService.changeReminderNote(reminderId, text);
         reminder.getCreator().setChatId(message.getChatId());
 
         commandNavigator.silentPop(message.getChatId());
         reminderMessageSender.sendReminderNoteChanged(reminder, request.getMessageId());
-        messageService.deleteMessage(message.getChatId(), message.getMessageId());
     }
 
     @Override

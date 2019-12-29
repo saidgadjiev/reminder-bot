@@ -4,7 +4,7 @@ import java.util.List;
 
 public class FriendshipMapping {
 
-    public static final String UO_FIRST_LAST_NAME = "uo_first_last_name";
+    public static final String UO_NAME = "uo_name";
 
     private Mapping userOneMapping;
 

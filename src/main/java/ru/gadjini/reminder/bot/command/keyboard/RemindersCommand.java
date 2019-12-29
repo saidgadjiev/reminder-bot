@@ -35,12 +35,14 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
     }
 
     @Override
-    public void processMessage(Message message) {
+    public boolean processMessage(Message message, String text) {
         messageService.sendMessageByCode(
                 message.getChatId(),
                 MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS,
                 inlineKeyboardService.getRemindersMenu()
         );
+
+        return false;
     }
 
     @Override

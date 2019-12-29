@@ -2,8 +2,7 @@ CREATE TABLE IF NOT EXISTS tg_user
 (
     user_id    INTEGER      NOT NULL UNIQUE,
     username   VARCHAR(128) UNIQUE,
-    first_name VARCHAR(128) NOT NULL,
-    last_name  VARCHAR(128),
+    name VARCHAR(128) NOT NULL,
     chat_id    INTEGER      NOT NULL UNIQUE,
     zone_id    VARCHAR(128) NOT NULL DEFAULT 'Europe/Moscow',
     PRIMARY KEY (user_id),

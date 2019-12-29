@@ -33,12 +33,13 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
     }
 
     @Override
-    public void processMessage(Message message) {
+    public boolean processMessage(Message message, String text) {
         messageService.sendMessageByCode(
                 message.getChatId(),
                 MessagesProperties.MESSAGE_USER_SETTINGS,
                 replyKeyboardService.getUserSettingsKeyboard()
         );
+        return true;
     }
 
     @Override

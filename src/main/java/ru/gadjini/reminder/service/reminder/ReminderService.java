@@ -98,7 +98,7 @@ public class ReminderService {
                 new ReminderMapping() {{
                     setRemindMessageMapping(new Mapping());
                     setReceiverMapping(new Mapping() {{
-                        setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_FIRST_LAST_NAME));
+                        setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME));
                     }});
                 }}
         );
@@ -117,7 +117,7 @@ public class ReminderService {
                 new ReminderMapping() {{
                     setRemindMessageMapping(new Mapping());
                     setReceiverMapping(new Mapping() {{
-                        setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_FIRST_LAST_NAME));
+                        setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME));
                     }});
                 }}
         );
@@ -153,7 +153,7 @@ public class ReminderService {
     public Reminder getReminder(int reminderId) {
         return reminderDao.getReminder(reminderId, new ReminderMapping() {{
             setReceiverMapping(new Mapping() {{
-                setFields(List.of(ReminderMapping.RC_FIRST_LAST_NAME));
+                setFields(List.of(ReminderMapping.RC_NAME));
             }});
         }});
     }

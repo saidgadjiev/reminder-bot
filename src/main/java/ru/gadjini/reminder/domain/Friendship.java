@@ -2,9 +2,15 @@ package ru.gadjini.reminder.domain;
 
 public class Friendship {
 
+    public static final String TYPE = "friendship";
+
     public static final String USER_ONE_ID = "user_one_id";
 
     public static final String USER_TWO_ID = "user_two_id";
+
+    public static final String USER_ONE_NAME = "user_one_name";
+
+    public static final String USER_TWO_NAME = "user_two_name";
 
     public static final String STATUS = "status";
 
@@ -14,9 +20,29 @@ public class Friendship {
 
     private int userTwoId;
 
+    private String userOneName;
+
+    private String userTwoName;
+
     private TgUser userOne;
 
     private TgUser userTwo;
+
+    public String getUserOneName() {
+        return userOneName;
+    }
+
+    public void setUserOneName(String userOneName) {
+        this.userOneName = userOneName;
+    }
+
+    public String getUserTwoName() {
+        return userTwoName;
+    }
+
+    public void setUserTwoName(String userTwoName) {
+        this.userTwoName = userTwoName;
+    }
 
     public int getUserOneId() {
         return userOneId;
@@ -58,6 +84,20 @@ public class Friendship {
         this.status = status;
     }
 
+    public TgUser getFriend(int userId) {
+        TgUser friend = new TgUser();
+
+        if (getUserOneId() == userId) {
+            friend.setUserId(getUserTwoId());
+            friend.setName(getUserTwoName());
+        } else if (getUserTwoId() == userId) {
+            friend.setUserId(getUserOneId());
+            friend.setName(getUserOneName());
+        }
+
+        return friend;
+    }
+
     public enum Status {
 
         REQUESTED(0),
@@ -73,7 +113,7 @@ public class Friendship {
         }
 
         public static Status fromCode(int code) {
-            for (Status status: values()) {
+            for (Status status : values()) {
                 if (status.code == code) {
                     return status;
                 }

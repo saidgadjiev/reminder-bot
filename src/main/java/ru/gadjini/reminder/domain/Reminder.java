@@ -156,6 +156,10 @@ public class Reminder {
         this.remindMessage = remindMessage;
     }
 
+    public boolean hasRemindMessage() {
+        return remindMessage != null;
+    }
+
     public DateTime getInitialRemindAt() {
         return initialRemindAt;
     }
@@ -210,6 +214,10 @@ public class Reminder {
 
     public boolean isMySelf() {
         return creatorId == receiverId;
+    }
+
+    public boolean isNotMySelf() {
+        return creatorId != receiverId;
     }
 
     public enum Status {

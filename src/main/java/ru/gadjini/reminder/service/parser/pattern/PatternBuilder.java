@@ -131,9 +131,9 @@ public class PatternBuilder {
                 .append(regexpNextWeek).append(") ?)?)(").append(regexpDayOfWeekArticle).append(" ?)?)|((((?<")
                 .append(MONTH_WORD).append(">").append(Stream.of(Month.values()).map(month -> month.getDisplayName(TextStyle.FULL, locale)).collect(Collectors.joining("|")))
                 .append(") )|(((?<").append(YEAR).append(">\\d{4})\\.)?(?<").append(MONTH).append(">1[0-2]|[1-9])\\.))((?<")
-                .append(DAY).append(">0[1-9]|[12]\\d|3[01]|0?[1-9]) ?))|(?<").append(DAY_WORD).append(">").append(today).append("|")
-                .append(tomorrow).append("|").append(dayAfterTomorrow).append("))?((?<").append(TYPE).append(">")
-                .append(until).append(") ?)?");
+                .append(DAY).append(">0[1-9]|[12]\\d|3[01]|0?[1-9]) ?))|(?<").append(DAY_WORD).append(">\\b(").append(today).append("|")
+                .append(tomorrow).append("|").append(dayAfterTomorrow).append(")\\b))?((?<").append(TYPE).append(">\\b")
+                .append(until).append("\\b) ?)?");
 
 
         return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, YEAR, MONTH, DAY, DAY_WORD, MONTH_WORD, NEXT_WEEK, DAY_OF_WEEK_WORD, HOUR, MINUTE));

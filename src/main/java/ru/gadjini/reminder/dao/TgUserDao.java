@@ -53,14 +53,13 @@ public class TgUserDao {
 
     public void createOrUpdate(TgUser tgUser) {
         jdbcTemplate.update(
-                "INSERT INTO tg_user(user_id, username, first_name, last_name, chat_id) VALUES (?, ?, ?, ?, ?) ON CONFLICT(chat_id) " +
-                        "DO UPDATE SET username = excluded.username, first_name = excluded.first_name, last_name = excluded.last_name",
+                "INSERT INTO tg_user(user_id, username, name, chat_id) VALUES (?, ?, ?, ?) ON CONFLICT(chat_id) " +
+                        "DO UPDATE SET username = excluded.username, name = excluded.name",
                 preparedStatement -> {
                     preparedStatement.setInt(1, tgUser.getUserId());
                     preparedStatement.setString(2, tgUser.getUsername());
-                    preparedStatement.setString(3, tgUser.getFirstName());
-                    preparedStatement.setString(4, tgUser.getLastName());
-                    preparedStatement.setLong(5, tgUser.getChatId());
+                    preparedStatement.setString(3, tgUser.getName());
+                    preparedStatement.setLong(4, tgUser.getChatId());
                 }
         );
     }

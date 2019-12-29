@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.domain;
 
 import org.telegram.telegrambots.meta.api.objects.User;
+import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.ZoneId;
 
@@ -14,7 +15,7 @@ public class TgUser {
 
     public static final String USERNAME = "username";
 
-    public static final String FIRST_NAME = "first_name";
+    public static final String NAME = "name";
 
     public static final String LAST_NAME = "last_name";
 
@@ -28,9 +29,7 @@ public class TgUser {
 
     private String username;
 
-    private String firstName;
-
-    private String lastName;
+    private String name;
 
     private int userId;
 
@@ -52,20 +51,12 @@ public class TgUser {
         this.username = username;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getUserId() {
@@ -94,15 +85,13 @@ public class TgUser {
 
     public void setFrom(User user) {
         this.userId = user.getId();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
+        this.name = UserUtils.name(user);
     }
 
     public static TgUser from(User user) {
         TgUser tgUser = new TgUser();
 
-        tgUser.setFirstName(user.getFirstName());
-        tgUser.setLastName(user.getLastName());
+        tgUser.setName(UserUtils.name(user));
         tgUser.setUserId(user.getId());
 
         return tgUser;

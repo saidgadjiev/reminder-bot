@@ -48,7 +48,7 @@ public class ToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableC
     }
 
     @Override
-    public void processMessage(Message message) {
+    public boolean processMessage(Message message, String text) {
         List<TgUser> friendRequests = friendshipService.getToMeFriendRequests();
 
         messageService.sendMessage(
@@ -56,6 +56,7 @@ public class ToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableC
                 friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null),
                 inlineKeyboardService.getFriendsListKeyboard(friendRequests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.GET_FRIEND_REQUEST_COMMAND_NAME)
         );
+        return false;
     }
 
     @Override

@@ -108,6 +108,11 @@ public class DummyMessageService implements MessageService {
     }
 
     @Override
+    public void sendErrorMessage(long chatId) {
+
+    }
+
+    @Override
     public void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard) {
 
     }

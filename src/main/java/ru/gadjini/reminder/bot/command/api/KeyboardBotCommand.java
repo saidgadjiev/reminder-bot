@@ -6,5 +6,5 @@ public interface KeyboardBotCommand extends MyBotCommand {
 
     boolean canHandle(String command);
 
-    void processMessage(Message message);
+    boolean processMessage(Message message, String text);
 }

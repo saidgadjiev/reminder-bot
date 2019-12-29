@@ -15,8 +15,8 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.keyboard.UserReminderNotificationScheduleCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.properties.WebHookProperties;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
@@ -25,6 +25,7 @@ import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
+import ru.gadjini.reminder.service.reminder.request.*;
 
 @Configuration
 public class BotConfiguration {
@@ -97,5 +98,15 @@ public class BotConfiguration {
                 inlineKeyboardService,
                 replyKeyboardService
         );
+    }
+
+    @Bean
+    public ReminderRequestExtractor requestExtractor(MySelfRequestExtractor mySelfRequestExtractor,
+                                                     ReceiverIdRequestExtractor receiverIdRequestExtractor,
+                                                     WithLoginRequestExtractor withLoginRequestExtractor,
+                                                     FriendRequestExtractor friendRequestExtractor) {
+        receiverIdRequestExtractor.setNext(withLoginRequestExtractor).setNext(friendRequestExtractor).setNext(mySelfRequestExtractor);
+
+        return receiverIdRequestExtractor;
     }
 }

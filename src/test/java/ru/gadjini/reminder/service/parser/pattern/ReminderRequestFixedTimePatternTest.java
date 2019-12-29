@@ -133,6 +133,15 @@ class ReminderRequestFixedTimePatternTest {
         Assert.assertEquals("Сходить на почту", StringUtils.reverseDelimited(str.substring(end), ' '));
     }
 
+    @Test
+    void matchWithDayWordReminderText() {
+        String str = StringUtils.reverseDelimited("Завтрак в 11:00", ' ');
+
+        int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry("hour", "11"), Map.entry("minute", "00")));
+        Assert.assertEquals("Завтрак", StringUtils.reverseDelimited(str.substring(end), ' '));
+
+    }
+
     private int match(Pattern p, String toMatch, Map<String, String> expected) {
         Matcher maxMatcher = p.matcher(toMatch);
 

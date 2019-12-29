@@ -193,6 +193,11 @@ public class TelegramMessageService implements MessageService {
     }
 
     @Override
+    public void sendErrorMessage(long chatId) {
+        sendErrorMessage(chatId, null);
+    }
+
+    @Override
     public void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard) {
         sendMessageByCode(chatId, MessagesProperties.MESSAGE_BOT_RESTARTED, replyKeyboard);
     }
