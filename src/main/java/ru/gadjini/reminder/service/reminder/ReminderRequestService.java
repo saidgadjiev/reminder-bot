@@ -63,8 +63,8 @@ public class ReminderRequestService {
         this.requestExtractor = requestExtractor;
     }
 
-    public Reminder createReminder(String text, Integer receiverId) {
-        ReminderRequest reminderRequest = requestExtractor.extract(text, receiverId);
+    public Reminder createReminder(String text, Integer receiverId, boolean voice) {
+        ReminderRequest reminderRequest = requestExtractor.extract(text, receiverId, voice);
 
         ((CreateReminderValidator) validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER)).validate(reminderRequest);
         if (reminderRequest.isRepeatTime()) {

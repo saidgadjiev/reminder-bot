@@ -295,4 +295,10 @@ public class MessagesProperties {
     public static final String MESSAGE_FRIEND_NAME = "message.friend.name";
 
     public static final String CHANGE_FRIEND_NAME_COMMAND_DESCRIPTION = "change.friend.name.command.description";
+
+    public static final String FOR_FRIEND_REMINDER_START = "for.friend.reminder.start";
+
+    public static final String MESSAGE_VOICE_REQUEST = "message.voice.request";
+
+    public static final String MESSAGE_FRIEND_WITH_NAME_NOT_FOUND = "message.friend.with.name.not.found";
 }

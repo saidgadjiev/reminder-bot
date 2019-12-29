@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.parser.reminder.lexer;
 
+import org.apache.commons.lang3.StringUtils;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.regex.GroupMatcher;
 import ru.gadjini.reminder.regex.GroupPattern;
@@ -49,7 +50,7 @@ public class ReminderRequestLexer {
         if (loginMatcher.matches()) {
             Map<String, String> values = loginMatcher.values();
 
-            lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, values.get(PatternBuilder.TEXT).trim()));
+            lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, StringUtils.capitalize(values.get(PatternBuilder.TEXT)).trim()));
             if (values.containsKey(PatternBuilder.LOGIN)) {
                 lexems.addFirst(new ReminderLexem(ReminderToken.LOGIN, values.get(PatternBuilder.LOGIN).trim()));
             }

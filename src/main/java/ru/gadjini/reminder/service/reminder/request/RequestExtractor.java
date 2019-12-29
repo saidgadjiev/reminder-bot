@@ -6,5 +6,5 @@ public interface RequestExtractor {
 
     RequestExtractor setNext(RequestExtractor next);
 
-    ReminderRequest extract(String text, Integer receiverId);
+    ReminderRequest extract(String text, Integer receiverId, boolean voice);
 }

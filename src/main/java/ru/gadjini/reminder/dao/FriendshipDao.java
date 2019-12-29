@@ -18,7 +18,9 @@ import ru.gadjini.reminder.domain.mapping.FriendshipMapping;
 import ru.gadjini.reminder.jdbc.JooqPreparedSetter;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class FriendshipDao {
@@ -149,6 +151,39 @@ public class FriendshipDao {
                     Friendship friendship = resultSetMapper.mapFriendship(rs, new FriendshipMapping());
 
                     return friendship.getFriend(userId);
+                }
+        );
+    }
+
+    public TgUser getFriend(int userId, Collection<String> nameCandidates) {
+        return namedParameterJdbcTemplate.query(
+                "SELECT tu.zone_id, f.name, tu.user_id\n" +
+                        "FROM (SELECT CASE WHEN user_one_id = :user_id THEN user_two_id ELSE user_one_id END AS user_id,\n" +
+                        "             CASE WHEN user_one_id = :user_id THEN user_two_name ELSE user_one_name END AS name\n" +
+                        "      FROM friendship\n" +
+                        "      WHERE status = :status\n" +
+                        "        AND CASE\n" +
+                        "                WHEN user_one_id = :user_id THEN user_two_name IN (:names)\n" +
+                        "                WHEN user_two_id = :user_id THEN user_one_name IN (:names)\n" +
+                        "                ELSE FALSE END\n" +
+                        "      ORDER BY length(CASE WHEN user_one_id = :user_id THEN user_two_name ELSE user_one_name END) DESC\n" +
+                        "      LIMIT 1) f\n" +
+                        "         INNER JOIN tg_user tu ON f.user_id = tu.user_id;",
+                new MapSqlParameterSource()
+                        .addValue("user_id", userId)
+                        .addValue("status", Friendship.Status.ACCEPTED.getCode())
+                        .addValue("names", nameCandidates),
+                rs -> {
+                    if (rs.next()) {
+                        TgUser friend = new TgUser();
+                        friend.setZoneId(rs.getString("zone_id"));
+                        friend.setUserId(rs.getInt("user_id"));
+                        friend.setName(rs.getString("name"));
+
+                        return friend;
+                    }
+
+                    return null;
                 }
         );
     }

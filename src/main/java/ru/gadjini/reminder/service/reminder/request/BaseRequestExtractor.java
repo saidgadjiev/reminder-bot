@@ -14,9 +14,9 @@ public class BaseRequestExtractor implements RequestExtractor {
     }
 
     @Override
-    public ReminderRequest extract(String text, Integer receiverId) {
+    public ReminderRequest extract(String text, Integer receiverId, boolean voice) {
         if (next != null) {
-            next.extract(text, receiverId);
+            next.extract(text, receiverId, voice);
         }
 
         return null;

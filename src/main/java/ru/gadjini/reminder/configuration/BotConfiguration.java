@@ -26,10 +26,7 @@ import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
-import ru.gadjini.reminder.service.reminder.request.MySelfRequestExtractor;
-import ru.gadjini.reminder.service.reminder.request.ReceiverIdRequestExtractor;
-import ru.gadjini.reminder.service.reminder.request.RequestExtractor;
-import ru.gadjini.reminder.service.reminder.request.WithLoginRequestExtractor;
+import ru.gadjini.reminder.service.reminder.request.*;
 
 @Configuration
 public class BotConfiguration {
@@ -107,7 +104,10 @@ public class BotConfiguration {
     @Bean
     public RequestExtractor requestExtractor(MySelfRequestExtractor mySelfRequestExtractor,
                                              ReceiverIdRequestExtractor receiverIdRequestExtractor,
-                                             WithLoginRequestExtractor withLoginRequestExtractor) {
-        return withLoginRequestExtractor.setNext(receiverIdRequestExtractor).setNext(mySelfRequestExtractor);
+                                             WithLoginRequestExtractor withLoginRequestExtractor,
+                                             FriendRequestExtractor friendRequestExtractor) {
+        friendRequestExtractor.setNext(withLoginRequestExtractor).setNext(receiverIdRequestExtractor).setNext(mySelfRequestExtractor);
+
+        return friendRequestExtractor;
     }
 }

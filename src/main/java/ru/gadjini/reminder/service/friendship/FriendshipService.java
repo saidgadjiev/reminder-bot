@@ -13,6 +13,7 @@ import ru.gadjini.reminder.model.CreateFriendRequestResult;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.validation.UserValidator;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -99,6 +100,12 @@ public class FriendshipService {
         User user = securityService.getAuthenticatedUser();
 
         return friendshipDao.getFriend(user.getId(), friendId);
+    }
+
+    public TgUser getFriendByFriendNameCandidates(Collection<String> nameCandidates) {
+        User user = securityService.getAuthenticatedUser();
+
+        return friendshipDao.getFriend(user.getId(), nameCandidates);
     }
 
     public List<TgUser> getToMeFriendRequests() {

@@ -29,7 +29,7 @@ public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
     }
 
     @Override
-    public ReminderRequest extract(String text, Integer receiverId) {
+    public ReminderRequest extract(String text, Integer receiverId, boolean voice) {
         if (receiverId != null) {
             ZoneId zone = tgUserService.getTimeZone(receiverId);
 
@@ -43,6 +43,6 @@ public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
             }
         }
 
-        return super.extract(text, receiverId);
+        return super.extract(text, receiverId, voice);
     }
 }

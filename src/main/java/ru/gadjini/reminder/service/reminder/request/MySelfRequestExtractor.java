@@ -25,6 +25,8 @@ public class MySelfRequestExtractor extends BaseRequestExtractor {
 
     private RequestParser requestParser;
 
+    private String forFriendStart;
+
     @Autowired
     public MySelfRequestExtractor(SecurityService securityService, TgUserService tgUserService,
                                   LocalisationService localisationService, RequestParser requestParser) {
@@ -32,11 +34,12 @@ public class MySelfRequestExtractor extends BaseRequestExtractor {
         this.tgUserService = tgUserService;
         this.localisationService = localisationService;
         this.requestParser = requestParser;
+        this.forFriendStart = localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START);
     }
 
     @Override
-    public ReminderRequest extract(String text, Integer receiverId) {
-        if (!text.startsWith(TgUser.USERNAME_START) && receiverId == null) {
+    public ReminderRequest extract(String text, Integer receiverId, boolean voice) {
+        if (!text.startsWith(TgUser.USERNAME_START) && receiverId == null && !text.startsWith(forFriendStart)) {
             ZoneId zoneId = tgUserService.getTimeZone(securityService.getAuthenticatedUser().getId());
 
             try {
@@ -46,6 +49,6 @@ public class MySelfRequestExtractor extends BaseRequestExtractor {
             }
         }
 
-        return super.extract(text, receiverId);
+        return super.extract(text, receiverId, voice);
     }
 }

@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.bot.command;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
@@ -75,8 +74,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     @Override
     public void processNonCommandUpdate(Message message, String reminderText) {
-        reminderText = StringUtils.capitalize(reminderText);
-        Reminder reminder = reminderService.createReminder(reminderText, null);
+        Reminder reminder = reminderService.createReminder(reminderText, null, message.hasVoice());
         reminder.getCreator().setChatId(message.getChatId());
 
         reminderMessageSender.sendReminderCreated(reminder, null);
