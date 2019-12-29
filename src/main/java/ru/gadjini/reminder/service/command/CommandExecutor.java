@@ -119,9 +119,8 @@ public class CommandExecutor {
     }
 
     private boolean executeKeyBoardCommand(Message message, String text) {
-        String command = message.getText();
         KeyboardBotCommand botCommand = keyboardBotCommands.stream()
-                .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(command))
+                .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(text))
                 .findFirst()
                 .orElseThrow();
 

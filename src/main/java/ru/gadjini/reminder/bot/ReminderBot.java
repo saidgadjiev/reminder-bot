@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.bot;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,8 @@ public class ReminderBot extends WorkerUpdatesBot {
                     return;
                 }
 
+                StopWatch stopWatch = new StopWatch();
+                stopWatch.start();
                 String text = messageTextExtractor.extract(update.getMessage());
                 if (commandExecutor.isCommand(update.getMessage(), text)) {
                     if (!commandExecutor.executeCommand(update.getMessage(), text)) {
@@ -68,9 +71,15 @@ public class ReminderBot extends WorkerUpdatesBot {
                 } else {
                     commandExecutor.processNonCommandUpdate(update.getMessage(), text);
                 }
+                stopWatch.stop();
+                LOGGER.debug("Latency on request: " + text + " = " + stopWatch.getTime());
             } else if (update.hasCallbackQuery()) {
+                StopWatch stopWatch = new StopWatch();
+                stopWatch.start();
                 chatId = update.getCallbackQuery().getMessage().getChatId();
                 commandExecutor.executeCallbackCommand(update.getCallbackQuery());
+                stopWatch.stop();
+                LOGGER.debug("Latency on callback request: " + update.getCallbackQuery().getData() + " = " + stopWatch.getTime());
             }
         } catch (UserException ex) {
             messageService.sendMessage(chatId, ex.getMessage());
