@@ -30,7 +30,9 @@ public class WithLoginRequestExtractor extends BaseRequestExtractor {
     }
 
     @Override
-    public ReminderRequest extract(String text, Integer receiverId, boolean voice) {
+    public ReminderRequest extract(ReminderRequestContext context) {
+        String text = context.getText();
+
         if (text.startsWith(TgUser.USERNAME_START)) {
             String username = text.substring(1, text.indexOf(' '));
             ZoneId zoneId = tgUserService.getTimeZone(username);
@@ -46,6 +48,6 @@ public class WithLoginRequestExtractor extends BaseRequestExtractor {
             }
         }
 
-        return super.extract(text, receiverId, voice);
+        return super.extract(context);
     }
 }

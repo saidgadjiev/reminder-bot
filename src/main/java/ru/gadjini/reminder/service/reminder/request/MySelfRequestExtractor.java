@@ -3,7 +3,6 @@ package ru.gadjini.reminder.service.reminder.request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.TgUserService;
@@ -25,8 +24,6 @@ public class MySelfRequestExtractor extends BaseRequestExtractor {
 
     private RequestParser requestParser;
 
-    private String forFriendStart;
-
     @Autowired
     public MySelfRequestExtractor(SecurityService securityService, TgUserService tgUserService,
                                   LocalisationService localisationService, RequestParser requestParser) {
@@ -34,21 +31,16 @@ public class MySelfRequestExtractor extends BaseRequestExtractor {
         this.tgUserService = tgUserService;
         this.localisationService = localisationService;
         this.requestParser = requestParser;
-        this.forFriendStart = localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START);
     }
 
     @Override
-    public ReminderRequest extract(String text, Integer receiverId, boolean voice) {
-        if (!text.startsWith(TgUser.USERNAME_START) && receiverId == null && !text.startsWith(forFriendStart)) {
-            ZoneId zoneId = tgUserService.getTimeZone(securityService.getAuthenticatedUser().getId());
+    public ReminderRequest extract(ReminderRequestContext context) {
+        ZoneId zoneId = tgUserService.getTimeZone(securityService.getAuthenticatedUser().getId());
 
-            try {
-                return requestParser.parseRequest(text, zoneId);
-            } catch (ParseException ex) {
-                throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
-            }
+        try {
+            return requestParser.parseRequest(context.getText(), zoneId);
+        } catch (ParseException ex) {
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
         }
-
-        return super.extract(text, receiverId, voice);
     }
 }

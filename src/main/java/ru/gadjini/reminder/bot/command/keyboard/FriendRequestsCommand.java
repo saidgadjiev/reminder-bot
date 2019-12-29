@@ -33,12 +33,14 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
     }
 
     @Override
-    public void processMessage(Message message) {
+    public boolean processMessage(Message message, String text) {
         messageService.sendMessageByCode(
                 message.getChatId(),
                 MessagesProperties.MESSAGE_FRIEND_REQUESTS,
                 replyKeyboardService.getFriendRequestsKeyboard()
         );
+
+        return true;
     }
 
     @Override

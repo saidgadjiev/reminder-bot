@@ -42,4 +42,5 @@ public class CommandNames {
     public static final String DELETE_FRIEND_COMMAND_NAME = "al";
     public static final String COMPLETE_REMINDER_COMMAND_NAME = "am";
     public static final String CHANGE_FRIEND_NAME_COMMAND_NAME = "an";
+    public static final String CREATE_REMINDER_KEYBOARD_COMMAND_NAME = "ao";
 }

@@ -41,5 +41,7 @@ public interface MessageService {
 
     void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard);
 
+    void sendErrorMessage(long chatId);
+
     void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard);
 }

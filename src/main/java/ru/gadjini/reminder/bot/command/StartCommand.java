@@ -18,6 +18,7 @@ import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 
 @Component
 public class StartCommand extends BotCommand implements NavigableBotCommand {
@@ -68,13 +69,18 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
     }
 
     @Override
+    public boolean accept(Message message) {
+        return message.hasText() || message.hasVoice();
+    }
+
+    @Override
     public void restore(long chatId) {
         messageService.sendMessageByCode(chatId, MessagesProperties.MESSAGE_START, replyKeyboardService.getMainMenu());
     }
 
     @Override
     public void processNonCommandUpdate(Message message, String reminderText) {
-        Reminder reminder = reminderService.createReminder(reminderText, null, message.hasVoice());
+        Reminder reminder = reminderService.createReminder(new ReminderRequestContext().setText(reminderText).setVoice(message.hasVoice()));
         reminder.getCreator().setChatId(message.getChatId());
 
         reminderMessageSender.sendReminderCreated(reminder, null);

@@ -2,21 +2,21 @@ package ru.gadjini.reminder.service.reminder.request;
 
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 
-public class BaseRequestExtractor implements RequestExtractor {
+public class BaseRequestExtractor implements ReminderRequestExtractor {
 
-    private RequestExtractor next;
+    private ReminderRequestExtractor next;
 
     @Override
-    public RequestExtractor setNext(RequestExtractor next) {
+    public ReminderRequestExtractor setNext(ReminderRequestExtractor next) {
         this.next = next;
 
         return next;
     }
 
     @Override
-    public ReminderRequest extract(String text, Integer receiverId, boolean voice) {
+    public ReminderRequest extract(ReminderRequestContext context) {
         if (next != null) {
-            next.extract(text, receiverId, voice);
+            return next.extract(context);
         }
 
         return null;

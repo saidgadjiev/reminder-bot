@@ -15,6 +15,7 @@ import ru.gadjini.reminder.service.command.CommandExecutor;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.message.MessageTextExtractor;
 
 @Component
 public class ReminderBot extends WorkerUpdatesBot {
@@ -31,17 +32,21 @@ public class ReminderBot extends WorkerUpdatesBot {
 
     private ReplyKeyboardService replyKeyboardService;
 
+    private MessageTextExtractor messageTextExtractor;
+
     @Autowired
     public ReminderBot(BotProperties botProperties,
                        CommandExecutor commandExecutor,
                        CommandNavigator commandNavigator,
                        MessageService messageService,
-                       ReplyKeyboardService replyKeyboardService) {
+                       ReplyKeyboardService replyKeyboardService,
+                       MessageTextExtractor messageTextExtractor) {
         this.botProperties = botProperties;
         this.commandExecutor = commandExecutor;
         this.commandNavigator = commandNavigator;
         this.messageService = messageService;
         this.replyKeyboardService = replyKeyboardService;
+        this.messageTextExtractor = messageTextExtractor;
     }
 
     @Override
@@ -55,22 +60,23 @@ public class ReminderBot extends WorkerUpdatesBot {
                     return;
                 }
 
-                if (commandExecutor.isCommand(update.getMessage())) {
-                    if (!commandExecutor.executeCommand(this, update.getMessage())) {
+                String text = messageTextExtractor.extract(update.getMessage());
+                if (commandExecutor.isCommand(update.getMessage(), text)) {
+                    if (!commandExecutor.executeCommand(update.getMessage(), text)) {
                         messageService.sendMessageByCode(update.getMessage().getChatId(), MessagesProperties.MESSAGE_UNKNOWN_COMMAND);
                     }
                 } else {
-                    commandExecutor.processNonCommandUpdate(update.getMessage());
+                    commandExecutor.processNonCommandUpdate(update.getMessage(), text);
                 }
             } else if (update.hasCallbackQuery()) {
                 chatId = update.getCallbackQuery().getMessage().getChatId();
                 commandExecutor.executeCallbackCommand(update.getCallbackQuery());
             }
         } catch (UserException ex) {
-            messageService.sendMessage(chatId, ex.getMessage(), null);
+            messageService.sendMessage(chatId, ex.getMessage());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
-            messageService.sendErrorMessage(chatId, null);
+            messageService.sendErrorMessage(chatId);
         }
     }
 

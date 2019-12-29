@@ -6,7 +6,6 @@ import org.jooq.SQLDialect;
 import org.jooq.conf.ParamCastMode;
 import org.jooq.conf.SettingsTools;
 import org.jooq.impl.DefaultConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -102,12 +101,12 @@ public class BotConfiguration {
     }
 
     @Bean
-    public RequestExtractor requestExtractor(MySelfRequestExtractor mySelfRequestExtractor,
-                                             ReceiverIdRequestExtractor receiverIdRequestExtractor,
-                                             WithLoginRequestExtractor withLoginRequestExtractor,
-                                             FriendRequestExtractor friendRequestExtractor) {
-        friendRequestExtractor.setNext(withLoginRequestExtractor).setNext(receiverIdRequestExtractor).setNext(mySelfRequestExtractor);
+    public ReminderRequestExtractor requestExtractor(MySelfRequestExtractor mySelfRequestExtractor,
+                                                     ReceiverIdRequestExtractor receiverIdRequestExtractor,
+                                                     WithLoginRequestExtractor withLoginRequestExtractor,
+                                                     FriendRequestExtractor friendRequestExtractor) {
+        receiverIdRequestExtractor.setNext(withLoginRequestExtractor).setNext(friendRequestExtractor).setNext(mySelfRequestExtractor);
 
-        return friendRequestExtractor;
+        return receiverIdRequestExtractor;
     }
 }

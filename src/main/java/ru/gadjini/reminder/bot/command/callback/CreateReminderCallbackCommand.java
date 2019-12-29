@@ -7,8 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -17,11 +17,12 @@ import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCommand {
+public class CreateReminderCallbackCommand implements CallbackBotCommand, NavigableBotCommand {
 
     //TODO: состояние
     private final ConcurrentHashMap<Long, Integer> reminderRequests = new ConcurrentHashMap<>();
@@ -39,11 +40,11 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
     private ReminderMessageSender reminderMessageSender;
 
     @Autowired
-    public CreateReminderCommand(ReminderRequestService reminderService,
-                                 MessageService messageService,
-                                 ReplyKeyboardService replyKeyboardService,
-                                 CommandNavigator commandNavigator,
-                                 ReminderMessageSender reminderMessageSender) {
+    public CreateReminderCallbackCommand(ReminderRequestService reminderService,
+                                         MessageService messageService,
+                                         ReplyKeyboardService replyKeyboardService,
+                                         CommandNavigator commandNavigator,
+                                         ReminderMessageSender reminderMessageSender) {
         this.reminderService = reminderService;
         this.name = CommandNames.CREATE_REMINDER_COMMAND_NAME;
         this.messageService = messageService;
@@ -70,9 +71,14 @@ public class CreateReminderCommand implements CallbackBotCommand, NavigableBotCo
     }
 
     @Override
+    public boolean accept(Message message) {
+        return message.hasText() || message.hasVoice();
+    }
+
+    @Override
     public void processNonCommandUpdate(Message message, String text) {
         int receiverId = reminderRequests.get(message.getChatId());
-        Reminder reminder = reminderService.createReminder(text, receiverId, false);
+        Reminder reminder = reminderService.createReminder(new ReminderRequestContext().setVoice(message.hasVoice()).setReceiverId(receiverId).setText(text));
         reminder.getCreator().setChatId(message.getChatId());
         reminderRequests.remove(message.getChatId());
 

@@ -48,7 +48,7 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
     }
 
     @Override
-    public void processMessage(Message message) {
+    public boolean processMessage(Message message, String text) {
         List<TgUser> friends = friendshipService.getFriends();
 
         messageService.sendMessage(
@@ -56,6 +56,8 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
                 friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null),
                 inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.FRIEND_DETAILS_COMMAND_NAME)
         );
+
+        return false;
     }
 
     @Override

@@ -5,13 +5,11 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.request.RequestParamsParser;
-import ru.gadjini.reminder.service.message.MessageTextExtractor;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,13 +33,10 @@ public class CommandExecutor {
 
     private RequestParamsParser requestParamsParser;
 
-    private MessageTextExtractor messageTextExtractor;
-
     @Autowired
-    public CommandExecutor(CommandNavigator commandNavigator, RequestParamsParser requestParamsParser, MessageTextExtractor messageTextExtractor) {
+    public CommandExecutor(CommandNavigator commandNavigator, RequestParamsParser requestParamsParser) {
         this.commandNavigator = commandNavigator;
         this.requestParamsParser = requestParamsParser;
-        this.messageTextExtractor = messageTextExtractor;
     }
 
     @Autowired
@@ -63,28 +58,27 @@ public class CommandExecutor {
         return botCommandMap.get(startCommandName);
     }
 
-    public boolean isCommand(Message message) {
+    public boolean isCommand(Message message, String text) {
         if (message.isCommand()) {
             return true;
         }
 
-        return keyboardBotCommands.stream().anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(message.getText()));
+        return keyboardBotCommands.stream().anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(text));
     }
 
-    public void processNonCommandUpdate(Message message) {
+    public void processNonCommandUpdate(Message message, String text) {
         NavigableBotCommand navigableBotCommand = commandNavigator.getCurrentCommand(message.getChatId());
 
         if (navigableBotCommand != null && navigableBotCommand.accept(message)) {
-            String text = messageTextExtractor.extract(message);
             navigableBotCommand.processNonCommandUpdate(message, text);
         }
     }
 
-    public boolean executeCommand(AbsSender absSender, Message message) {
+    public boolean executeCommand(Message message, String text) {
         if (message.isCommand()) {
-            return executeBotCommand(absSender, message);
+            return executeBotCommand(message);
         } else {
-            return executeKeyBoardCommand(message);
+            return executeKeyBoardCommand(message, text);
         }
     }
 
@@ -104,7 +98,7 @@ public class CommandExecutor {
         }
     }
 
-    private boolean executeBotCommand(AbsSender absSender, Message message) {
+    private boolean executeBotCommand(Message message) {
         String text = message.getText().trim();
         String[] commandSplit = text.split(COMMAND_ARG_SEPARATOR);
         BotCommand botCommand = botCommandMap.get(commandSplit[0].substring(1));
@@ -112,7 +106,7 @@ public class CommandExecutor {
         if (botCommand != null) {
             String[] parameters = Arrays.copyOfRange(commandSplit, 1, commandSplit.length);
 
-            botCommand.processMessage(absSender, message, parameters);
+            botCommand.processMessage(null, message, parameters);
 
             if (botCommand instanceof NavigableBotCommand) {
                 commandNavigator.push(message.getChatId(), (NavigableBotCommand) botCommand);
@@ -124,16 +118,16 @@ public class CommandExecutor {
         return false;
     }
 
-    private boolean executeKeyBoardCommand(Message message) {
+    private boolean executeKeyBoardCommand(Message message, String text) {
         String command = message.getText();
         KeyboardBotCommand botCommand = keyboardBotCommands.stream()
                 .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(command))
                 .findFirst()
                 .orElseThrow();
 
-        botCommand.processMessage(message);
+        boolean pushToHistory = botCommand.processMessage(message, text);
 
-        if (botCommand instanceof NavigableBotCommand) {
+        if (pushToHistory) {
             commandNavigator.push(message.getChatId(), (NavigableBotCommand) botCommand);
         }
 

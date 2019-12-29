@@ -56,7 +56,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
     }
 
     @Override
-    public void processMessage(Message message) {
+    public boolean processMessage(Message message, String text) {
         ZoneId zoneId = tgUserService.getTimeZone(message.getFrom().getId());
 
         messageService.sendMessageByCode(message.getChatId(), MessagesProperties.CURRENT_TIMEZONE, new Object[]{
@@ -64,6 +64,8 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                         DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(ZonedDateTime.now(zoneId))
                 },
                 replyKeyboardService.goBackCommand());
+
+        return true;
     }
 
     @Override

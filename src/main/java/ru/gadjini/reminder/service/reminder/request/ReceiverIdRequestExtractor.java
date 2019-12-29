@@ -29,12 +29,17 @@ public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
     }
 
     @Override
-    public ReminderRequest extract(String text, Integer receiverId, boolean voice) {
+    public ReminderRequest extract(ReminderRequestContext context) {
+        Integer receiverId = context.getReceiverId();
+
         if (receiverId != null) {
-            ZoneId zone = tgUserService.getTimeZone(receiverId);
+            ZoneId zone = context.getReceiverZone();
+            if (zone == null) {
+                zone = tgUserService.getTimeZone(receiverId);
+            }
 
             try {
-                ReminderRequest reminderRequest = requestParser.parseRequest(text, zone);
+                ReminderRequest reminderRequest = requestParser.parseRequest(context.getText(), zone);
                 reminderRequest.setReceiverId(receiverId);
 
                 return reminderRequest;
@@ -43,6 +48,6 @@ public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
             }
         }
 
-        return super.extract(text, receiverId, voice);
+        return super.extract(context);
     }
 }

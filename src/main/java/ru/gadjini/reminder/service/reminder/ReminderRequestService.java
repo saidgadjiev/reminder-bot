@@ -19,7 +19,8 @@ import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
-import ru.gadjini.reminder.service.reminder.request.RequestExtractor;
+import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
+import ru.gadjini.reminder.service.reminder.request.ReminderRequestExtractor;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.validation.CreateReminderValidator;
 import ru.gadjini.reminder.service.validation.ValidationEvent;
@@ -47,13 +48,13 @@ public class ReminderRequestService {
 
     private RepeatReminderService repeatReminderService;
 
-    private RequestExtractor requestExtractor;
+    private ReminderRequestExtractor requestExtractor;
 
     @Autowired
     public ReminderRequestService(ReminderService reminderService, ValidatorFactory validatorFactory,
                                   RequestParser requestParser, LocalisationService localisationService,
                                   SecurityService securityService, RepeatReminderService repeatReminderService,
-                                  RequestExtractor requestExtractor) {
+                                  ReminderRequestExtractor requestExtractor) {
         this.reminderService = reminderService;
         this.validatorFactory = validatorFactory;
         this.requestParser = requestParser;
@@ -63,8 +64,8 @@ public class ReminderRequestService {
         this.requestExtractor = requestExtractor;
     }
 
-    public Reminder createReminder(String text, Integer receiverId, boolean voice) {
-        ReminderRequest reminderRequest = requestExtractor.extract(text, receiverId, voice);
+    public Reminder createReminder(ReminderRequestContext context) {
+        ReminderRequest reminderRequest = requestExtractor.extract(context);
 
         ((CreateReminderValidator) validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER)).validate(reminderRequest);
         if (reminderRequest.isRepeatTime()) {
