@@ -313,6 +313,7 @@ public class ReminderDao {
                         ")\n" +
                         "SELECT r.id,\n" +
                         "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
+                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name,\n" +
                         "       rc.chat_id                                                                            as rc_chat_id\n" +
                         "FROM r\n" +
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
@@ -331,6 +332,7 @@ public class ReminderDao {
                 rs -> {
                     reminder.setId(rs.getInt(Reminder.ID));
                     reminder.getReceiver().setName(rs.getString("rc_name"));
+                    reminder.getCreator().setName(rs.getString("cr_name"));
                     reminder.getReceiver().setChatId(rs.getLong("rc_chat_id"));
                 }
         );
@@ -347,6 +349,7 @@ public class ReminderDao {
                         "SELECT r.id,\n" +
                         "       r.receiver_id,\n" +
                         "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
+                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name,\n" +
                         "       rc.chat_id                                                                            as rc_chat_id\n" +
                         "FROM r\n" +
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
@@ -367,6 +370,7 @@ public class ReminderDao {
                     reminder.getReceiver().setUserId(reminder.getReceiverId());
                     reminder.getReceiver().setName(rs.getString("rc_name"));
                     reminder.getReceiver().setChatId(rs.getLong("rc_chat_id"));
+                    reminder.getCreator().setName(rs.getString("cr_name"));
                 }
         );
 
