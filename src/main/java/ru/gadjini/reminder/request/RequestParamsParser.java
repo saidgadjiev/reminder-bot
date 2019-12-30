@@ -2,7 +2,6 @@ package ru.gadjini.reminder.request;
 
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Component;
-import ru.gadjini.reminder.service.command.CommandExecutor;
 
 import java.util.Arrays;
 import java.util.List;

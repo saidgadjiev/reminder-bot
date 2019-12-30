@@ -10,7 +10,6 @@ import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
 
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 @Service

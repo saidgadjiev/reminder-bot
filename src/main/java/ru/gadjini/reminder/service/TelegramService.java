@@ -6,8 +6,6 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
 import ru.gadjini.reminder.properties.BotProperties;
 
-import java.io.File;
-
 @Service
 public class TelegramService extends DefaultAbsSender {
 

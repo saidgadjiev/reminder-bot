@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.dao.ReminderNotificationDao;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.jooq.ReminderNotificationTable;
-import ru.gadjini.reminder.domain.jooq.ReminderTable;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -73,11 +73,8 @@ public class FixedTimeParser {
         if (fixedTime.date().isBefore(now.toLocalDate())) {
             fixedTime.year(now.getYear() + 1);
         }
-        if (fixedTime.hasTime()) {
-            if (fixedTime.date().equals(LocalDate.now(fixedTime.getZone()))
-                    && now.toLocalTime().isAfter(fixedTime.time())) {
-                fixedTime.plusDays(1);
-            }
+        if (fixedTime.hasTime() && fixedTime.date().equals(LocalDate.now(fixedTime.getZone())) && now.toLocalTime().isAfter(fixedTime.time())) {
+            fixedTime.plusDays(1);
         }
 
         return fixedTime;

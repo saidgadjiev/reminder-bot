@@ -405,8 +405,7 @@ public class ReminderDao {
 
             select.select(remindMessage.MESSAGE_ID.as("rm_message_id"));
         }
-        if ((reminderMapping.getReceiverMapping() != null && reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_NAME))
-                || reminderMapping.getCreatorMapping() != null) {
+        if (reminderMapping.getReceiverMapping() != null && reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_NAME) || reminderMapping.getCreatorMapping() != null) {
             FriendshipTable f = FriendshipTable.TABLE.as("f");
 
             from

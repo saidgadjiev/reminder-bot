@@ -1,7 +1,5 @@
 package ru.gadjini.reminder.service.message;
 
-import org.springframework.stereotype.Component;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 

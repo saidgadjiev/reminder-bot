@@ -6,9 +6,6 @@ import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import ru.gadjini.reminder.domain.Reminder;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
 public class ReminderTable extends TableImpl<Record> {
 
     public static final ReminderTable TABLE = new ReminderTable();

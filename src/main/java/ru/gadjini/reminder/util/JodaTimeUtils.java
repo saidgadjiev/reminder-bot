@@ -4,7 +4,6 @@ import org.joda.time.Period;
 import org.postgresql.util.PGInterval;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 public class JodaTimeUtils {
