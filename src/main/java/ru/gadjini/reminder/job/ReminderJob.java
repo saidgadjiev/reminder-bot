@@ -59,7 +59,7 @@ public class ReminderJob {
 
         int deleted = reminderService.deleteCompletedReminders(now);
 
-        LOGGER.debug("Delete " + deleted + " completed reminders at " + now);
+        LOGGER.debug("Delete {} completed reminders at {}", deleted, now);
     }
 
     @Scheduled(cron = "0 0 * * * *")
@@ -69,7 +69,7 @@ public class ReminderJob {
         for (Reminder reminder : overdueReminders) {
             DateTime nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
             repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
-            LOGGER.debug("Overdue reminder with id " + reminder.getId() + " moved not the next time");
+            LOGGER.debug("Overdue reminder with id {} moved not the next time", reminder.getId());
         }
     }
 

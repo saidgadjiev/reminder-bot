@@ -78,9 +78,7 @@ public class ReminderRequestService {
     }
 
     public CustomRemindResult customRemind(int reminderId, String text) {
-        Reminder reminder = reminderService.getReminder(reminderId, new ReminderMapping() {{
-            setReceiverMapping(new Mapping());
-        }});
+        Reminder reminder = reminderService.getReminder(reminderId, new ReminderMapping().setReceiverMapping(new Mapping()));
 
         Time customRemind = parseTime(text, reminder.getReceiver().getZone());
         validatorFactory.getValidator(ValidationEvent.CUSTOM_REMIND).validate(customRemind);
@@ -112,12 +110,7 @@ public class ReminderRequestService {
     }
 
     public UpdateReminderResult changeReminderTime(int reminderId, String timeText) {
-        Reminder oldReminder = reminderService.getReminder(reminderId, new ReminderMapping() {{
-            setRemindMessageMapping(new Mapping());
-            setReceiverMapping(new Mapping() {{
-                setFields(List.of(ReminderMapping.RC_CHAT_ID));
-            }});
-        }});
+        Reminder oldReminder = reminderService.getReminder(reminderId, new ReminderMapping().setRemindMessageMapping(new Mapping()).setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID))));
         oldReminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
 
         Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone());
@@ -137,13 +130,13 @@ public class ReminderRequestService {
     }
 
     public Reminder getReminderForPostpone(int reminderId) {
-        Reminder oldReminder = reminderService.getReminder(reminderId, new ReminderMapping() {{
-            setRemindMessageMapping(new Mapping());
-            setCreatorMapping(new Mapping() {{
-                setFields(List.of(ReminderMapping.CR_CHAT_ID));
-            }});
-            setReceiverMapping(new Mapping());
-        }});
+        Reminder oldReminder = reminderService.getReminder(
+                reminderId,
+                new ReminderMapping()
+                        .setRemindMessageMapping(new Mapping())
+                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setReceiverMapping(new Mapping())
+        );
         oldReminder.getReceiver().setFrom(securityService.getAuthenticatedUser());
 
         return oldReminder;
@@ -249,13 +242,13 @@ public class ReminderRequestService {
         reminder.setCreatorId(creator.getUserId());
 
         if (StringUtils.isNotBlank(reminderRequest.getReceiverName())) {
-            reminder.setReceiver(new TgUser() {{
-                setUsername(reminderRequest.getReceiverName());
-            }});
+            TgUser receiver = new TgUser();
+            receiver.setUsername(reminderRequest.getReceiverName());
+            reminder.setReceiver(receiver);
         } else if (reminderRequest.getReceiverId() != null) {
-            reminder.setReceiver(new TgUser() {{
-                setUserId(reminderRequest.getReceiverId());
-            }});
+            TgUser receiver = new TgUser();
+            receiver.setUserId(reminderRequest.getReceiverId());
+            reminder.setReceiver(receiver);
             reminder.setReceiverId(reminderRequest.getReceiverId());
         } else {
             TgUser receiver = new TgUser();

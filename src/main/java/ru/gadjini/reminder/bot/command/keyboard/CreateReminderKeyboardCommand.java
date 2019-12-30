@@ -11,6 +11,7 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -71,24 +72,24 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
         FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(text, message.hasVoice());
 
         if (StringUtils.isBlank(extractReceiverResult.getText())) {
-            receiverMap.put(message.getChatId(), extractReceiverResult.getReceiver());
-            messageService.sendMessageByCode(
-                    message.getChatId(),
-                    MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT,
-                    replyKeyboardService.goBackCommand()
-            );
-            return true;
+            return setReceiverParsed(message, extractReceiverResult.getReceiver());
         } else {
             TgUser receiver = extractReceiverResult.getReceiver();
-            Reminder reminder = reminderRequestService.createReminder(new ReminderRequestContext()
-                    .setText(extractReceiverResult.getText())
-                    .setReceiverId(receiver.getUserId())
-                    .setReceiverZone(receiver.getZone())
-                    .setVoice(message.hasVoice()));
-            reminder.getCreator().setChatId(message.getChatId());
-            reminderMessageSender.sendReminderCreated(reminder, null);
+            try {
+                Reminder reminder = reminderRequestService.createReminder(new ReminderRequestContext()
+                        .setText(extractReceiverResult.getText())
+                        .setReceiverId(receiver.getUserId())
+                        .setReceiverZone(receiver.getZone())
+                        .setVoice(message.hasVoice()));
+                reminder.getCreator().setChatId(message.getChatId());
+                reminderMessageSender.sendReminderCreated(reminder, null);
 
-            return false;
+                return false;
+            } catch (UserException ex) {
+                setReceiverParsed(message, receiver);
+
+                return true;
+            }
         }
     }
 
@@ -111,5 +112,16 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
     @Override
     public String getHistoryName() {
         return CommandNames.CREATE_REMINDER_KEYBOARD_COMMAND_NAME;
+    }
+
+    private boolean setReceiverParsed(Message message, TgUser receiver) {
+        receiverMap.put(message.getChatId(), receiver);
+        messageService.sendMessageByCode(
+                message.getChatId(),
+                MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT,
+                replyKeyboardService.goBackCommand()
+        );
+
+        return true;
     }
 }

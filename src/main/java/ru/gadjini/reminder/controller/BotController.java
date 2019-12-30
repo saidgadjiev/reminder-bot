@@ -24,7 +24,7 @@ public class BotController {
     }
 
     @PostMapping("/{botPath}")
-    public ResponseEntity<?> updateReceived(@PathVariable("botPath") String botPath, @RequestBody Update update) {
+    public ResponseEntity updateReceived(@PathVariable("botPath") String botPath, @RequestBody Update update) {
         try {
             BotApiMethod response = reminderBot.onWebhookUpdateReceived(update);
             if (response != null) {
@@ -39,6 +39,6 @@ public class BotController {
 
     @GetMapping("/{botPath}")
     public String testReceived(@PathVariable("botPath") String botPath) {
-            return "Hi there " + botPath + "!";
+        return "Hi there " + botPath + "!";
     }
 }

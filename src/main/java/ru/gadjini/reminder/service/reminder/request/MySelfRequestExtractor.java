@@ -40,7 +40,11 @@ public class MySelfRequestExtractor extends BaseRequestExtractor {
         try {
             return requestParser.parseRequest(context.getText(), zoneId);
         } catch (ParseException ex) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+            throw new UserException(getMessage(context.isVoice()));
         }
+    }
+
+    private String getMessage(boolean voice) {
+        return localisationService.getMessage(voice ? MessagesProperties.MESSAGE_REMINDER_FORMAT_VOICE : MessagesProperties.MESSAGE_REMINDER_FORMAT);
     }
 }

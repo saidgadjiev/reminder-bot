@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -63,27 +64,22 @@ public class ReminderBot extends WorkerUpdatesBot {
 
                 StopWatch stopWatch = new StopWatch();
                 stopWatch.start();
-                String text = messageTextExtractor.extract(update.getMessage());
-                if (commandExecutor.isCommand(update.getMessage(), text)) {
-                    if (!commandExecutor.executeCommand(update.getMessage(), text)) {
-                        messageService.sendMessageByCode(update.getMessage().getChatId(), MessagesProperties.MESSAGE_UNKNOWN_COMMAND);
-                    }
-                } else {
-                    commandExecutor.processNonCommandUpdate(update.getMessage(), text);
-                }
+                String text = handleMessage(update.getMessage());
                 stopWatch.stop();
                 if (update.getMessage().hasVoice()) {
-                    LOGGER.debug("Latency on voice request: " + text + " = " + stopWatch.getTime());
+                    LOGGER.debug("Latency on voice request: {} = {}", text, stopWatch.getTime());
                 } else {
-                    LOGGER.debug("Latency on request: " + text + " = " + stopWatch.getTime());
+                    LOGGER.debug("Latency on request: {} = {}", text, stopWatch.getTime());
                 }
             } else if (update.hasCallbackQuery()) {
                 StopWatch stopWatch = new StopWatch();
                 stopWatch.start();
+
                 chatId = update.getCallbackQuery().getMessage().getChatId();
                 commandExecutor.executeCallbackCommand(update.getCallbackQuery());
+
                 stopWatch.stop();
-                LOGGER.debug("Latency on callback request: " + update.getCallbackQuery().getData() + " = " + stopWatch.getTime());
+                LOGGER.debug("Latency on callback request: {} = {}", update.getCallbackQuery().getData(), stopWatch.getTime());
             }
         } catch (UserException ex) {
             messageService.sendMessage(chatId, ex.getMessage());
@@ -106,6 +102,19 @@ public class ReminderBot extends WorkerUpdatesBot {
     @Override
     public String getBotPath() {
         return botProperties.getName();
+    }
+
+    private String handleMessage(Message message) {
+        String text = messageTextExtractor.extract(message);
+        if (commandExecutor.isCommand(message, text)) {
+            if (!commandExecutor.executeCommand(message, text)) {
+                messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_UNKNOWN_COMMAND);
+            }
+        } else {
+            commandExecutor.processNonCommandUpdate(message, text);
+        }
+
+        return text;
     }
 
     private boolean restoreIfNeed(long chatId, String command) {

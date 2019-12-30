@@ -2,6 +2,8 @@ package ru.gadjini.reminder.common;
 
 public class MessagesProperties {
 
+    private MessagesProperties() {}
+
     public static final String MESSAGE_HELP = "message.help";
 
     public static final String MESSAGE_START = "message.start";
@@ -13,6 +15,8 @@ public class MessagesProperties {
     public static final String MESSAGE_NEW_REMINDER = "message.new.reminder";
 
     public static final String MESSAGE_REMINDER_FORMAT = "message.reminder.format";
+
+    public static final String MESSAGE_REMINDER_FORMAT_VOICE = "message.reminder.format.voice";
 
     public static final String MESSAGE_UNKNOWN_COMMAND = "message.unknown.command";
 

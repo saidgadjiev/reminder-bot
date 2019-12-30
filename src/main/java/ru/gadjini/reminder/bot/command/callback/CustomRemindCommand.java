@@ -28,8 +28,6 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
     //TODO: состояние
     private final ConcurrentHashMap<Long, CallbackRequest> requests = new ConcurrentHashMap<>();
 
-    private String name;
-
     private MessageService messageService;
 
     private InlineKeyboardService inlineKeyboardService;
@@ -55,17 +53,16 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
         this.reminderMessageSender = reminderMessageSender;
         this.commandNavigator = commandNavigator;
         this.localisationService = localisationService;
-        this.name = CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME;
     }
 
     @Override
     public String getName() {
-        return name;
+        return CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME;
     }
 
     @Override
     public String getHistoryName() {
-        return name;
+        return getName();
     }
 
     @Override

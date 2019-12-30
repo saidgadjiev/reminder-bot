@@ -31,8 +31,6 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
     //TODO: состояние
     private ConcurrentHashMap<Long, PostponeCommandState> reminderRequests = new ConcurrentHashMap<>();
 
-    private String name;
-
     private MessageService messageService;
 
     private InlineKeyboardService inlineKeyboardService;
@@ -57,7 +55,6 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
                                    LocalisationService localisationService) {
         this.replyKeyboardService = replyKeyboardService;
         this.localisationService = localisationService;
-        this.name = CommandNames.POSTPONE_REMINDER_COMMAND_NAME;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.reminderRequestService = reminderRequestService;
@@ -67,7 +64,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     @Override
     public String getName() {
-        return name;
+        return CommandNames.POSTPONE_REMINDER_COMMAND_NAME;
     }
 
     @Override
@@ -86,24 +83,21 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     @Override
     public String getHistoryName() {
-        return name;
+        return getName();
     }
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
         PostponeCommandState postponeCommandState = reminderRequests.get(message.getChatId());
 
-        switch (postponeCommandState.state) {
-            case TIME:
-                postponeTime(message, postponeCommandState);
-                break;
-            case REASON:
-                if (text.equals(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON))) {
-                    postpone(message.getChatId(), null, postponeCommandState);
-                } else {
-                    postpone(message.getChatId(), text, postponeCommandState);
-                }
-                break;
+        if (postponeCommandState.state == State.TIME) {
+            postponeTime(message, postponeCommandState);
+        } else {
+            if (text.equals(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON))) {
+                postpone(message.getChatId(), null, postponeCommandState);
+            } else {
+                postpone(message.getChatId(), text, postponeCommandState);
+            }
         }
     }
 

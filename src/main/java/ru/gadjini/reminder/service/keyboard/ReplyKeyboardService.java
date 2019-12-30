@@ -3,12 +3,13 @@ package ru.gadjini.reminder.service.keyboard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class ReplyKeyboardService {
@@ -23,17 +24,10 @@ public class ReplyKeyboardService {
     public ReplyKeyboardMarkup getFriendRequestsKeyboard() {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME)));
-        }});
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.FROM_ME_FRIEND_REQUESTS_COMMAND_NAME)));
-        }});
-        replyKeyboardMarkup.getKeyboard().add(
-                new KeyboardRow() {{
-                    add(new KeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
-                }}
-        );
+        List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.FROM_ME_FRIEND_REQUESTS_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
 
         return replyKeyboardMarkup;
     }
@@ -41,26 +35,11 @@ public class ReplyKeyboardService {
     public ReplyKeyboardMarkup getUserSettingsKeyboard() {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
-        replyKeyboardMarkup.getKeyboard().add(
-                new KeyboardRow() {{
-                    add(new KeyboardButton(localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME)));
-                }}
-        );
-        replyKeyboardMarkup.getKeyboard().add(
-                new KeyboardRow() {{
-                    add(new KeyboardButton(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME)));
-                }}
-        );
-        replyKeyboardMarkup.getKeyboard().add(
-                new KeyboardRow() {{
-                    add(new KeyboardButton(localisationService.getMessage(MessagesProperties.REFRESH_USER_DATA_COMMAND_NAME)));
-                }}
-        );
-        replyKeyboardMarkup.getKeyboard().add(
-                new KeyboardRow() {{
-                    add(new KeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
-                }}
-        );
+        List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.REFRESH_USER_DATA_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
 
         return replyKeyboardMarkup;
     }
@@ -68,15 +47,10 @@ public class ReplyKeyboardService {
     public ReplyKeyboardMarkup getUserReminderNotificationSettingsKeyboard() {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME)));
-        }});
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME)));
-        }});
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
-        }});
+        List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
 
         return replyKeyboardMarkup;
     }
@@ -84,13 +58,9 @@ public class ReplyKeyboardService {
     public ReplyKeyboardMarkup getPostponeMessagesKeyboard() {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING)));
-        }});
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON)));
-        }});
+        List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON)));
 
         return replyKeyboardMarkup;
     }
@@ -98,25 +68,12 @@ public class ReplyKeyboardService {
     public ReplyKeyboardMarkup getMainMenu() {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME));
-        }});
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME));
-        }});
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME));
-        }});
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME));
-        }});
-
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME));
-        }});
+        List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME)));
 
         return replyKeyboardMarkup;
     }
@@ -124,9 +81,8 @@ public class ReplyKeyboardService {
     public ReplyKeyboardMarkup goBackCommand() {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME));
-        }});
+        List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
 
         return replyKeyboardMarkup;
     }
@@ -134,10 +90,9 @@ public class ReplyKeyboardService {
     public ReplyKeyboardMarkup postponeTimeKeyboard() {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
-        replyKeyboardMarkup.getKeyboard().add(new KeyboardRow() {{
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN)));
-            add(new KeyboardButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN)));
-        }});
+        List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN)));
 
         return replyKeyboardMarkup;
     }
@@ -151,4 +106,10 @@ public class ReplyKeyboardService {
         return replyKeyboardMarkup;
     }
 
+    private KeyboardRow keyboardRow(String ... buttons) {
+        KeyboardRow keyboardRow = new KeyboardRow();
+        keyboardRow.addAll(Arrays.asList(buttons));
+
+        return keyboardRow;
+    }
 }

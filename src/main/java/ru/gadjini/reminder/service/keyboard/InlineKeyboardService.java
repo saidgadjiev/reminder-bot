@@ -41,10 +41,11 @@ public class InlineKeyboardService {
             for (int id : list) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(i++));
-                button.setCallbackData(CommandNames.DELETE_USER_REMINDER_NOTIFICATION_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
-                    add(Arg.USER_REMINDER_NOTIFICATION_ID.getKey(), id);
-                    add(Arg.USER_REMINDER_NOTIFICATION_TYPE.getKey(), notificationType.getCode());
-                }}.serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
+                button.setCallbackData(CommandNames.DELETE_USER_REMINDER_NOTIFICATION_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR +
+                        new RequestParams()
+                                .add(Arg.USER_REMINDER_NOTIFICATION_ID.getKey(), id)
+                                .add(Arg.USER_REMINDER_NOTIFICATION_TYPE.getKey(), notificationType.getCode())
+                                .serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
                 row.add(button);
             }
 
@@ -58,9 +59,7 @@ public class InlineKeyboardService {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderTimeButton(reminderTimeId)));
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.SCHEDULE_COMMAND_NAME, false, new RequestParams() {{
-            add(Arg.REMINDER_ID.getKey(), reminderId);
-        }})));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.SCHEDULE_COMMAND_NAME, false, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
 
         return keyboardMarkup;
     }
@@ -76,18 +75,17 @@ public class InlineKeyboardService {
             for (int reminderTimeId : list) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(i++));
-                button.setCallbackData(CommandNames.REMINDER_TIME_DETAILS_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
-                    add(Arg.REMINDER_NOTIFICATION_ID.getKey(), reminderTimeId);
-                }}.serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
+                button.setCallbackData(CommandNames.REMINDER_TIME_DETAILS_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR +
+                        new RequestParams()
+                                .add(Arg.REMINDER_NOTIFICATION_ID.getKey(), reminderTimeId)
+                                .serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
                 row.add(button);
             }
 
             inlineKeyboardMarkup.getKeyboard().add(row);
         }
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CREATE_REMIND_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.SCHEDULE_COMMAND_NAME)));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.REMINDER_DETAILS_COMMAND_NAME, false, new RequestParams() {{
-            add(Arg.REMINDER_ID.getKey(), reminderId);
-        }})));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.REMINDER_DETAILS_COMMAND_NAME, false, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
 
         return inlineKeyboardMarkup;
     }
@@ -103,9 +101,10 @@ public class InlineKeyboardService {
             for (int friendUserId : list) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(i++));
-                button.setCallbackData(commandName + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
-                    add(Arg.FRIEND_ID.getKey(), friendUserId);
-                }}.serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
+                button.setCallbackData(commandName + CommandExecutor.COMMAND_NAME_SEPARATOR +
+                        new RequestParams()
+                                .add(Arg.FRIEND_ID.getKey(), friendUserId)
+                                .serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
                 row.add(button);
             }
 
@@ -126,9 +125,10 @@ public class InlineKeyboardService {
             for (int remindId : list) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(i++));
-                button.setCallbackData(CommandNames.REMINDER_DETAILS_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR + new RequestParams() {{
-                    add(Arg.REMINDER_ID.getKey(), remindId);
-                }}.serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
+                button.setCallbackData(CommandNames.REMINDER_DETAILS_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR +
+                        new RequestParams()
+                                .add(Arg.REMINDER_ID.getKey(), remindId)
+                                .serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
                 row.add(button);
             }
 
@@ -295,9 +295,7 @@ public class InlineKeyboardService {
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderNote(reminderId)));
 
         if (prevHistoryName != null) {
-            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, false, new RequestParams() {{
-                add(Arg.REMINDER_ID.getKey(), reminderId);
-            }})));
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, false, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
         }
 
         return keyboardMarkup;

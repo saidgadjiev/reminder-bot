@@ -19,23 +19,29 @@ public class ReminderMapping {
         return receiverMapping;
     }
 
-    public void setReceiverMapping(Mapping userMapping) {
+    public ReminderMapping setReceiverMapping(Mapping userMapping) {
         this.receiverMapping = userMapping;
+
+        return this;
     }
 
     public Mapping getCreatorMapping() {
         return creatorMapping;
     }
 
-    public void setCreatorMapping(Mapping creatorMapping) {
+    public ReminderMapping setCreatorMapping(Mapping creatorMapping) {
         this.creatorMapping = creatorMapping;
+
+        return this;
     }
 
     public Mapping getRemindMessageMapping() {
         return remindMessageMapping;
     }
 
-    public void setRemindMessageMapping(Mapping remindMessageMapping) {
+    public ReminderMapping setRemindMessageMapping(Mapping remindMessageMapping) {
         this.remindMessageMapping = remindMessageMapping;
+
+        return this;
     }
 }

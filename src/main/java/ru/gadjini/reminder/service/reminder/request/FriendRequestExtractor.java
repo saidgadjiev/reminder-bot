@@ -4,12 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
-import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.parser.RequestParser;
-import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,34 +20,12 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
 
     private FriendshipService friendshipService;
 
-    private RequestParser requestParser;
-
     private LocalisationService localisationService;
 
-    public FriendRequestExtractor(LocalisationService localisationService, FriendshipService friendshipService,
-                                  RequestParser requestParser) {
+    public FriendRequestExtractor(LocalisationService localisationService, FriendshipService friendshipService) {
         this.forFriendStart = localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START).toLowerCase();
         this.friendshipService = friendshipService;
-        this.requestParser = requestParser;
         this.localisationService = localisationService;
-    }
-
-    @Override
-    public ReminderRequest extract(ReminderRequestContext context) {
-        if (context.getText().toLowerCase().startsWith(forFriendStart)) {
-            ExtractReceiverResult extractReceiverResult = extractReceiver(context.getText(), context.isVoice());
-
-            try {
-                ReminderRequest reminderRequest = requestParser.parseRequest(extractReceiverResult.text, extractReceiverResult.receiver.getZone());
-                reminderRequest.setReceiverId(extractReceiverResult.receiver.getUserId());
-
-                return reminderRequest;
-            } catch (ParseException ex) {
-                throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
-            }
-        }
-
-        return super.extract(context);
     }
 
     public ExtractReceiverResult extractReceiver(String text, boolean voice) {
@@ -80,10 +55,7 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
             throw new UserException(message.toString());
         }
 
-        return new ExtractReceiverResult() {{
-            setReceiver(friend);
-            setText(textWithoutForFriendStart.substring(friend.getName().length()).trim());
-        }};
+        return new ExtractReceiverResult(friend, textWithoutForFriendStart.substring(friend.getName().length()).trim());
     }
 
     private Collection<String> normalizeNames(Collection<String> names) {
@@ -103,20 +75,17 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
 
         private String text;
 
+        private ExtractReceiverResult(TgUser receiver, String text) {
+            this.receiver = receiver;
+            this.text = text;
+        }
+
         public TgUser getReceiver() {
             return receiver;
         }
 
-        void setReceiver(TgUser receiver) {
-            this.receiver = receiver;
-        }
-
         public String getText() {
             return text;
-        }
-
-        void setText(String text) {
-            this.text = text;
         }
     }
 }

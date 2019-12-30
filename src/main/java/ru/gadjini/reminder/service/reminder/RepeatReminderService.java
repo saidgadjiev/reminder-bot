@@ -27,8 +27,8 @@ import java.time.*;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class RepeatReminderService {
@@ -76,15 +76,10 @@ public class RepeatReminderService {
     public Reminder complete(int id) {
         Reminder toComplete = reminderDao.getReminder(
                 id,
-                new ReminderMapping() {{
-                    setReceiverMapping(new Mapping() {{
-                        setFields(List.of(ReminderMapping.RC_CHAT_ID));
-                    }});
-                    setCreatorMapping(new Mapping() {{
-                        setFields(Collections.singletonList(CR_CHAT_ID));
-                    }});
-                    setRemindMessageMapping(new Mapping());
-                }}
+                new ReminderMapping()
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
+                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setRemindMessageMapping(new Mapping())
         );
         completedReminderDao.create(toComplete);
         moveReminderNotificationToNextPeriod(toComplete);
@@ -101,15 +96,10 @@ public class RepeatReminderService {
     public Reminder skip(int id) {
         Reminder toSkip = reminderDao.getReminder(
                 id,
-                new ReminderMapping() {{
-                    setReceiverMapping(new Mapping() {{
-                        setFields(List.of(ReminderMapping.RC_CHAT_ID));
-                    }});
-                    setCreatorMapping(new Mapping() {{
-                        setFields(Collections.singletonList(CR_CHAT_ID));
-                    }});
-                    setRemindMessageMapping(new Mapping());
-                }}
+                new ReminderMapping()
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
+                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setRemindMessageMapping(new Mapping())
         );
         toSkip.getReceiver().setFrom(securityService.getAuthenticatedUser());
         moveReminderNotificationToNextPeriod(toSkip);
@@ -119,10 +109,10 @@ public class RepeatReminderService {
 
     public void updateNextRemindAt(int reminderId, DateTime nextRemindAt) {
         reminderDao.update(
-                new HashMap<>() {{
-                    put(ReminderTable.TABLE.REMIND_AT, nextRemindAt.sqlObject());
-                    put(ReminderTable.TABLE.INITIAL_REMIND_AT, nextRemindAt.sqlObject());
-                }},
+                Map.ofEntries(
+                        Map.entry(ReminderTable.TABLE.REMIND_AT, nextRemindAt.sqlObject()),
+                        Map.entry(ReminderTable.TABLE.INITIAL_REMIND_AT, nextRemindAt.sqlObject())
+                ),
                 ReminderTable.TABLE.ID.equal(reminderId),
                 null
         );
@@ -141,18 +131,15 @@ public class RepeatReminderService {
         DateTime nextRemindAt = getFirstRemindAt(repeatTime);
         PGobject sqlObject = nextRemindAt.sqlObject();
         Reminder reminder = reminderDao.update(
-                new HashMap<>() {{
-                    put(ReminderTable.TABLE.REPEAT_REMIND_AT, repeatTime.sqlObject());
-                    put(ReminderTable.TABLE.INITIAL_REMIND_AT, sqlObject);
-                    put(ReminderTable.TABLE.REMIND_AT, sqlObject);
-                }},
+                Map.ofEntries(
+                        Map.entry(ReminderTable.TABLE.REPEAT_REMIND_AT, repeatTime.sqlObject()),
+                        Map.entry(ReminderTable.TABLE.INITIAL_REMIND_AT, sqlObject),
+                        Map.entry(ReminderTable.TABLE.REMIND_AT, sqlObject)
+                ),
                 ReminderTable.TABLE.ID.eq(reminderId),
-                new ReminderMapping() {{
-                    setRemindMessageMapping(new Mapping());
-                    setReceiverMapping(new Mapping() {{
-                        setFields(List.of(ReminderMapping.RC_CHAT_ID));
-                    }});
-                }}
+                new ReminderMapping()
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
+                        .setRemindMessageMapping(new Mapping())
         );
 
         reminderNotificationService.deleteReminderNotifications(reminderId);

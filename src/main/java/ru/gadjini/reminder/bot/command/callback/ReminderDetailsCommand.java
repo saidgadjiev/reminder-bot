@@ -20,8 +20,6 @@ import ru.gadjini.reminder.service.security.SecurityService;
 @Component
 public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
-    private final String name = CommandNames.REMINDER_DETAILS_COMMAND_NAME;
-
     private ReminderService reminderService;
 
     private ReminderMessageSender reminderMessageSender;
@@ -48,7 +46,7 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
 
     @Override
     public String getName() {
-        return name;
+        return CommandNames.REMINDER_DETAILS_COMMAND_NAME;
     }
 
     @Override
@@ -61,7 +59,7 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
 
     @Override
     public String getHistoryName() {
-        return name;
+        return getName();
     }
 
     @Override

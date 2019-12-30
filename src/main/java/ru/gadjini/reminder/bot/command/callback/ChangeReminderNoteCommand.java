@@ -27,8 +27,6 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
     //TODO: состояние
     private ConcurrentHashMap<Long, CallbackRequest> changeReminderTimeRequests = new ConcurrentHashMap<>();
 
-    private String name;
-
     private ReminderMessageSender reminderMessageSender;
 
     private MessageService messageService;
@@ -49,7 +47,6 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
                                      LocalisationService localisationService) {
         this.inlineKeyboardService = inlineKeyboardService;
         this.localisationService = localisationService;
-        this.name = CommandNames.EDIT_REMINDER_NOTE_COMMAND_NAME;
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.reminderService = reminderService;
@@ -62,7 +59,7 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
 
     @Override
     public String getName() {
-        return name;
+        return CommandNames.EDIT_REMINDER_NOTE_COMMAND_NAME;
     }
 
     @Override
@@ -91,6 +88,6 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
 
     @Override
     public String getHistoryName() {
-        return name;
+        return getName();
     }
 }

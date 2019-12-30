@@ -1,6 +1,9 @@
 package ru.gadjini.reminder.common;
 
 public class CommandNames {
+
+    private CommandNames() {}
+
     public static final String ACCEPT_FRIEND_REQUEST_COMMAND_NAME = "a";
     public static final String REJECT_FRIEND_REQUEST_COMMAND_NAME = "b";
     public static final String OK_COMMAND_NAME = "ok";

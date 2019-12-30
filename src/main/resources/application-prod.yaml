@@ -1,5 +1,5 @@
 web-hook:
-  external-url: https://46c80e54.eu.ngrok.io
+  external-url: https://3d62b1ad.ngrok.io
   internal-url: http://localhost:8000
 spring:
   main:

@@ -31,8 +31,6 @@ public class CreateReminderCallbackCommand implements CallbackBotCommand, Naviga
 
     private MessageService messageService;
 
-    private String name;
-
     private ReplyKeyboardService replyKeyboardService;
 
     private CommandNavigator commandNavigator;
@@ -46,7 +44,6 @@ public class CreateReminderCallbackCommand implements CallbackBotCommand, Naviga
                                          CommandNavigator commandNavigator,
                                          ReminderMessageSender reminderMessageSender) {
         this.reminderService = reminderService;
-        this.name = CommandNames.CREATE_REMINDER_COMMAND_NAME;
         this.messageService = messageService;
         this.replyKeyboardService = replyKeyboardService;
         this.commandNavigator = commandNavigator;
@@ -55,7 +52,7 @@ public class CreateReminderCallbackCommand implements CallbackBotCommand, Naviga
 
     @Override
     public String getName() {
-        return name;
+        return CommandNames.CREATE_REMINDER_COMMAND_NAME;
     }
 
     @Override
@@ -67,7 +64,7 @@ public class CreateReminderCallbackCommand implements CallbackBotCommand, Naviga
 
     @Override
     public String getHistoryName() {
-        return name;
+        return getName();
     }
 
     @Override

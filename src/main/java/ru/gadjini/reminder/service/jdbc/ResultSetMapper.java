@@ -5,7 +5,6 @@ import org.postgresql.util.PGInterval;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.*;
 import ru.gadjini.reminder.domain.mapping.FriendshipMapping;
-import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JdbcUtils;
@@ -37,7 +36,7 @@ public class ResultSetMapper {
         return tgUser;
     }
 
-    public Reminder mapReminder(ResultSet rs, ReminderMapping reminderMapping) throws SQLException {
+    public Reminder mapReminder(ResultSet rs) throws SQLException {
         Reminder reminder = new Reminder();
 
         reminder.setReminderNotifications(new ArrayList<>());
@@ -57,24 +56,25 @@ public class ResultSetMapper {
         }
         reminder.setRemindAt(mapDateTime(rs));
 
-        if (reminderMapping.getReceiverMapping() != null) {
+        Set<String> columnNames = JdbcUtils.getColumnNames(rs.getMetaData());
+        if (columnNames.contains("rc_zone_id")) {
             String zoneId = rs.getString("rc_zone_id");
             TgUser rc = new TgUser();
 
             rc.setZoneId(zoneId);
             rc.setUserId(reminder.getReceiverId());
 
-            if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_NAME)) {
+            if (columnNames.contains("rc_name")) {
                 rc.setName(rs.getString("rc_name"));
             }
-            if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_CHAT_ID)) {
+            if (columnNames.contains("rc_chat_id")) {
                 rc.setChatId(rs.getLong("rc_chat_id"));
             }
 
             reminder.setReceiver(rc);
         }
 
-        if (reminderMapping.getRemindMessageMapping() != null) {
+        if (columnNames.contains("rm_message_id")) {
             int remindMessageId = rs.getInt("rm_message_id");
 
             if (!rs.wasNull()) {
@@ -83,13 +83,13 @@ public class ResultSetMapper {
                 reminder.setRemindMessage(remindMessage);
             }
         }
-        if (reminderMapping.getCreatorMapping() != null) {
+        if (columnNames.contains("cr_name")) {
             TgUser cr = new TgUser();
 
             cr.setUserId(reminder.getCreatorId());
             cr.setName(rs.getString("cr_name"));
 
-            if (reminderMapping.getCreatorMapping().fields().contains(ReminderMapping.CR_CHAT_ID)) {
+            if (columnNames.contains("cr_chat_id")) {
                 cr.setChatId(rs.getLong("cr_chat_id"));
             }
 

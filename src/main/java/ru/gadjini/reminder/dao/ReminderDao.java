@@ -14,7 +14,6 @@ import ru.gadjini.reminder.domain.jooq.FriendshipTable;
 import ru.gadjini.reminder.domain.jooq.RemindMessageTable;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.jooq.TgUserTable;
-import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.jdbc.JooqPreparedSetter;
 import ru.gadjini.reminder.model.UpdateReminderResult;
@@ -25,7 +24,10 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 @Repository
@@ -75,12 +77,7 @@ public class ReminderDao {
                         "  AND (r.creator_id = :user_id OR r.receiver_id = :user_id)\n" +
                         "ORDER BY r.remind_at",
                 new MapSqlParameterSource().addValue("user_id", userId),
-                (rs, rowNum) -> resultSetMapper.mapReminder(rs, new ReminderMapping() {{
-                    setReceiverMapping(new Mapping() {{
-                        setFields(List.of(ReminderMapping.RC_NAME));
-                    }});
-                    setCreatorMapping(new Mapping());
-                }})
+                (rs, rowNum) -> resultSetMapper.mapReminder(rs)
         );
     }
 
@@ -90,7 +87,7 @@ public class ReminderDao {
                         "FROM reminder\n" +
                         "WHERE repeat_remind_at::varchar IS NOT NULL\n" +
                         "  AND (remind_at).dt_date < CURRENT_DATE",
-                (rs, rowNum) -> resultSetMapper.mapReminder(rs, new ReminderMapping())
+                (rs, rowNum) -> resultSetMapper.mapReminder(rs)
         );
     }
 
@@ -138,12 +135,7 @@ public class ReminderDao {
                         "WHERE r.receiver_id = :creator_id\n" +
                         "ORDER BY remind_at",
                 new MapSqlParameterSource().addValue("creator_id", userId),
-                (rs, rowNum) -> resultSetMapper.mapReminder(rs, new ReminderMapping() {{
-                    setReceiverMapping(new Mapping() {{
-                        setFields(List.of(ReminderMapping.RC_NAME));
-                    }});
-                    setCreatorMapping(new Mapping());
-                }})
+                (rs, rowNum) -> resultSetMapper.mapReminder(rs)
         );
     }
 
@@ -203,13 +195,7 @@ public class ReminderDao {
 
                     Reminder reminder = reminders.computeIfAbsent(id, integer -> {
                         try {
-                            return resultSetMapper.mapReminder(rs, new ReminderMapping() {{
-                                setReceiverMapping(new Mapping() {{
-                                    setFields(Collections.singletonList(RC_CHAT_ID));
-                                }});
-                                setRemindMessageMapping(new Mapping());
-                                setCreatorMapping(new Mapping());
-                            }});
+                            return resultSetMapper.mapReminder(rs);
                         } catch (SQLException e) {
                             throw new RuntimeException(e);
                         }
@@ -243,7 +229,7 @@ public class ReminderDao {
             return jdbcTemplate.query(
                     sql.append(select.getSQL()).toString(),
                     new JooqPreparedSetter(update.getParams()),
-                    rs -> rs.next() ? resultSetMapper.mapReminder(rs, reminderMapping) : null
+                    rs -> rs.next() ? resultSetMapper.mapReminder(rs) : null
             );
         }
     }
@@ -268,11 +254,7 @@ public class ReminderDao {
                 },
                 rs -> {
                     if (rs.next()) {
-                        Reminder oldReminder = resultSetMapper.mapReminder(rs, new ReminderMapping() {{
-                            setReceiverMapping(new Mapping() {{
-                                setFields(List.of(ReminderMapping.RC_CHAT_ID));
-                            }});
-                        }});
+                        Reminder oldReminder = resultSetMapper.mapReminder(rs);
                         Reminder newReminder = new Reminder(oldReminder);
                         newReminder.setText(newText);
 
@@ -294,7 +276,7 @@ public class ReminderDao {
                 ps -> ps.setInt(1, reminderId),
                 rs -> {
                     if (rs.next()) {
-                        return resultSetMapper.mapReminder(rs, reminderMapping);
+                        return resultSetMapper.mapReminder(rs);
                     }
 
                     return null;
@@ -320,7 +302,7 @@ public class ReminderDao {
         return jdbcTemplate.query(
                 sql.append(buildSelect(reminderMapping).getSQL()).toString(),
                 new JooqPreparedSetter(delete.getParams()),
-                rs -> rs.next() ? resultSetMapper.mapReminder(rs, reminderMapping) : null
+                rs -> rs.next() ? resultSetMapper.mapReminder(rs) : null
         );
     }
 

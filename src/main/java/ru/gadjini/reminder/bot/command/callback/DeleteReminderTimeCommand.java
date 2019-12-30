@@ -43,9 +43,7 @@ public class DeleteReminderTimeCommand implements CallbackBotCommand {
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 MessagesProperties.MESSAGE_REMINDER_TIME_DELETED,
-                inlineKeyboardService.goBackCallbackButton(CommandNames.SCHEDULE_COMMAND_NAME, false, new RequestParams() {{
-                    add(Arg.REMINDER_ID.getKey(), reminderId);
-                }})
+                inlineKeyboardService.goBackCallbackButton(CommandNames.SCHEDULE_COMMAND_NAME, false, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))
         );
     }
 }

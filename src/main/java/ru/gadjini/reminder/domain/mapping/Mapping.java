@@ -11,7 +11,9 @@ public class Mapping {
         return fields;
     }
 
-    public void setFields(List<String> fields) {
+    public Mapping setFields(List<String> fields) {
         this.fields = fields;
+
+        return this;
     }
 }

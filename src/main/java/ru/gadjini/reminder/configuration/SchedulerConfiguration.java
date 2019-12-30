@@ -18,7 +18,7 @@ public class SchedulerConfiguration {
         threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
         threadPoolTaskScheduler.setErrorHandler(throwable -> LOGGER.error(throwable.getMessage(), throwable));
 
-        LOGGER.debug("Thread pool scheduler initialized with pool size: " + threadPoolTaskScheduler.getPoolSize());
+        LOGGER.debug("Thread pool scheduler initialized with pool size: {}", threadPoolTaskScheduler.getPoolSize());
 
         return threadPoolTaskScheduler;
     }

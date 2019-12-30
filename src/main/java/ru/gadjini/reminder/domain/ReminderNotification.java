@@ -115,15 +115,17 @@ public class ReminderNotification {
     }
 
     public static ReminderNotification repeatTime() {
-        return new ReminderNotification() {{
-            setType(Type.REPEAT);
-        }};
+        ReminderNotification reminderNotification = new ReminderNotification();
+        reminderNotification.setType(Type.REPEAT);
+
+        return reminderNotification;
     }
 
     public static ReminderNotification onceTime() {
-        return new ReminderNotification() {{
-            setType(Type.ONCE);
-        }};
+        ReminderNotification reminderNotification = new ReminderNotification();
+        reminderNotification.setType(Type.ONCE);
+
+        return reminderNotification;
     }
 
     public enum Type {

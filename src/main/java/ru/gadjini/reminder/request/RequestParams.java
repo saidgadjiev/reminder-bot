@@ -15,16 +15,22 @@ public class RequestParams {
         return Integer.parseInt(params.get(key));
     }
 
-    public void add(String key, String value) {
+    public RequestParams add(String key, String value) {
         params.put(key, value);
+
+        return this;
     }
 
-    public void add(String key, Integer value) {
+    public RequestParams add(String key, Integer value) {
         params.put(key, String.valueOf(value));
+
+        return this;
     }
 
-    public void add(String key, Boolean value) {
+    public RequestParams add(String key, Boolean value) {
         params.put(key, String.valueOf(value));
+
+        return this;
     }
 
     public boolean contains(String key) {
