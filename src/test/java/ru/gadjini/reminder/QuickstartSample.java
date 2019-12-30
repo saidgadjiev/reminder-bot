@@ -22,7 +22,6 @@ package ru.gadjini.reminder;
 import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,8 +33,7 @@ class QuickstartSample {
     /**
      * Demonstrates using the Speech API to transcribe an audio file.
      */
-    //@Test
-    void speechTest() throws Exception {
+    public static void main(String[] args) throws Exception {
         // Instantiates a client
         try (SpeechClient speechClient = SpeechClient.create()) {
             StopWatch stopWatch = new StopWatch();
@@ -50,7 +48,7 @@ class QuickstartSample {
 
             // Builds the sync recognize request
             SpeechContext speechContextsElement =
-                    SpeechContext.newBuilder().addAllPhrases(List.of("Напоминание для Зухра")).setBoost(5.0f).build();
+                    SpeechContext.newBuilder().addAllPhrases(List.of("каждые $OOV_CLASS_DIGIT_SEQUENCE часа $OOV_CLASS_DIGIT_SEQUENCE минут")).setBoost(5.0f).build();
 
             RecognitionConfig config = RecognitionConfig.newBuilder()
                     .setEncoding(RecognitionConfig.AudioEncoding.OGG_OPUS)

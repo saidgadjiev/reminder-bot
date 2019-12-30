@@ -298,6 +298,12 @@ public class MessagesProperties {
 
     public static final String FOR_FRIEND_REMINDER_START = "for.friend.reminder.start";
 
+    public static final String OFFSET_TIME_PHRASES = "offset.time.phrases";
+
+    public static final String REPEAT_TIME_PHRASES = "repeat.time.phrases";
+
+    public static final String FIXED_TIME_PHRASES = "fixed.time.phrases";
+
     public static final String MESSAGE_VOICE_REQUEST = "message.voice.request";
 
     public static final String MESSAGE_FRIEND_WITH_NAME_NOT_FOUND = "message.friend.with.name.not.found";
