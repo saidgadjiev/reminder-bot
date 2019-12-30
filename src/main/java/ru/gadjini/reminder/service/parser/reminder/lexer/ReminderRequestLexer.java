@@ -9,6 +9,7 @@ import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +24,7 @@ public class ReminderRequestLexer {
 
     public ReminderRequestLexer(ReminderRequestLexerConfig lexerConfig, TimeLexerConfig timeLexerConfig, String str) {
         this.lexerConfig = lexerConfig;
-        this.parts = str.split(";");
-
-        for (int i = 0; i < parts.length; ++i) {
-            this.parts[i] = this.parts[i].trim();
-        }
+        this.parts = breakToTextAndNote(str);
         this.timeLexer = new TimeLexer(timeLexerConfig, parts[0]);
     }
 
@@ -62,5 +59,15 @@ public class ReminderRequestLexer {
         }
 
         throw new ParseException();
+    }
+
+    private String[] breakToTextAndNote(String str) {
+        String[] parts = str.split(lexerConfig.getTextAndNoteBreakPattern());
+
+        for (int i = 0; i < parts.length; ++i) {
+            parts[i] = parts[i].trim();
+        }
+
+        return parts;
     }
 }

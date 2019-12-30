@@ -308,6 +308,8 @@ public class MessagesProperties {
 
     public static final String FIXED_TIME_PHRASES = "fixed.time.phrases";
 
+    public static final String REGEXP_NOTE_START = "regexp.note.start";
+
     public static final String MESSAGE_VOICE_REQUEST = "message.voice.request";
 
     public static final String MESSAGE_FRIEND_WITH_NAME_NOT_FOUND = "message.friend.with.name.not.found";
