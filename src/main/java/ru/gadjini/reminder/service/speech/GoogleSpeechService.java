@@ -1,6 +1,6 @@
 package ru.gadjini.reminder.service.speech;
 
-import com.google.cloud.speech.v1.*;
+import com.google.cloud.speech.v1p1beta1.*;
 import com.google.protobuf.ByteString;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public class GoogleSpeechService {
 
-    public String recognize(File file) throws Exception {
+    public String recognize(File file, List<SpeechContext> speechContexts) throws Exception {
         try (SpeechClient speechClient = SpeechClient.create()) {
             // The path to the audio file to transcribe
             // Reads the audio file into memory
@@ -20,10 +20,13 @@ public class GoogleSpeechService {
 
             // Builds the sync recognize request
             RecognitionConfig config = RecognitionConfig.newBuilder()
-                    .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
-                    .setSampleRateHertz(16000)
+                    .setEncoding(RecognitionConfig.AudioEncoding.OGG_OPUS)
+                    .setSampleRateHertz(48000)
                     .setLanguageCode("ru-RU")
+                    .setModel("command_and_search")
+                    .addAllSpeechContexts(speechContexts)
                     .build();
+
             RecognitionAudio audio = RecognitionAudio.newBuilder()
                     .setContent(audioBytes)
                     .build();

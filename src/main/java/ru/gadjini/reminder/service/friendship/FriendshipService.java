@@ -15,6 +15,7 @@ import ru.gadjini.reminder.service.validation.UserValidator;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class FriendshipService {
@@ -88,6 +89,12 @@ public class FriendshipService {
         setCreateFriendRequestState(user, createFriendRequestResult);
 
         return createFriendRequestResult;
+    }
+
+    public Set<String> getAllFriendsNames() {
+        User user = securityService.getAuthenticatedUser();
+
+        return friendshipDao.getAllFriendsNames(user.getId());
     }
 
     public TgUser changeFriendName(int friendId, String name) {

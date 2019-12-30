@@ -25,9 +25,9 @@ public class FixedTimeLexer {
 
     public LinkedList<BaseLexem> tokenize() {
         GroupPattern pattern = lexerConfig.getTimePattern();
-        GroupMatcher timeMatcher = pattern.matcher(str);
+        GroupMatcher timeMatcher = pattern.maxMatcher(str);
 
-        if (timeMatcher.find()) {
+        if (timeMatcher != null) {
             Map<String, String> values = timeMatcher.values();
 
             matchEnd = timeMatcher.end();

@@ -72,7 +72,11 @@ public class ReminderBot extends WorkerUpdatesBot {
                     commandExecutor.processNonCommandUpdate(update.getMessage(), text);
                 }
                 stopWatch.stop();
-                LOGGER.debug("Latency on request: " + text + " = " + stopWatch.getTime());
+                if (update.getMessage().hasVoice()) {
+                    LOGGER.debug("Latency on voice request: " + text + " = " + stopWatch.getTime());
+                } else {
+                    LOGGER.debug("Latency on request: " + text + " = " + stopWatch.getTime());
+                }
             } else if (update.hasCallbackQuery()) {
                 StopWatch stopWatch = new StopWatch();
                 stopWatch.start();

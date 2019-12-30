@@ -25,9 +25,9 @@ public class OffsetTimeLexer {
 
     public LinkedList<BaseLexem> tokenize() {
         GroupPattern pattern = lexerConfig.getOffsetTimePattern();
-        GroupMatcher matcher = pattern.matcher(str);
+        GroupMatcher matcher = pattern.maxMatcher(str);
 
-        if (matcher.find()) {
+        if (matcher != null) {
             Map<String, String> values = matcher.values();
             LinkedList<BaseLexem> lexems = new LinkedList<>();
 

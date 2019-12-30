@@ -3,15 +3,15 @@ package ru.gadjini.reminder.service.message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import ru.gadjini.reminder.service.speech.VoiceRecognitionService;
+import ru.gadjini.reminder.service.speech.GoogleVoiceRecognitionService;
 
 @Service
 public class MessageTextExtractor {
 
-    private VoiceRecognitionService voiceRecognitionService;
+    private GoogleVoiceRecognitionService voiceRecognitionService;
 
     @Autowired
-    public MessageTextExtractor(VoiceRecognitionService voiceRecognitionService) {
+    public MessageTextExtractor(GoogleVoiceRecognitionService voiceRecognitionService) {
         this.voiceRecognitionService = voiceRecognitionService;
     }
 

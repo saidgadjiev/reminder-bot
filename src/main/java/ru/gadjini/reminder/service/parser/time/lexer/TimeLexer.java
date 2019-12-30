@@ -22,9 +22,9 @@ public class TimeLexer {
     private int end;
 
     public TimeLexer(TimeLexerConfig timeLexerConfig, String str) {
-        this.str = StringUtils.reverseDelimited(str, ' ');
+        this.str = str;
 
-        str = this.str.toLowerCase();
+        str = str.toLowerCase();
         this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, str);
         this.fixedTimeLexer = new FixedTimeLexer(timeLexerConfig, str);
         this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, str);
@@ -68,6 +68,6 @@ public class TimeLexer {
     }
 
     public String eraseTime() {
-        return StringUtils.reverseDelimited(str.substring(end), ' ');
+        return str.substring(0, str.length() - end).trim();
     }
 }

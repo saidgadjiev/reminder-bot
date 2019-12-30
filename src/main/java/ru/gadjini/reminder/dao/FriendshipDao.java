@@ -19,8 +19,9 @@ import ru.gadjini.reminder.jdbc.JooqPreparedSetter;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Repository
 public class FriendshipDao {
@@ -216,6 +217,24 @@ public class FriendshipDao {
                     return null;
                 }
         );
+    }
+
+    public Set<String> getAllFriendsNames(int userId) {
+        Set<String> result = new LinkedHashSet<>();
+
+        namedParameterJdbcTemplate.query(
+                "SELECT * FROM (SELECT CASE WHEN user_one_id = :user_id THEN user_two_name ELSE user_one_name END as name\n" +
+                        "FROM friendship\n" +
+                        "WHERE status = :status AND (user_one_id = :user_id OR user_two_id = :user_id)) f ORDER BY length(f.name)",
+                new MapSqlParameterSource()
+                        .addValue("status", Friendship.Status.ACCEPTED.getCode())
+                        .addValue("user_id", userId),
+                rs -> {
+                    result.add(rs.getString("name"));
+                }
+        );
+
+        return result;
     }
 
     public Friendship getFriendship(int userOneId, int userTwoId) {

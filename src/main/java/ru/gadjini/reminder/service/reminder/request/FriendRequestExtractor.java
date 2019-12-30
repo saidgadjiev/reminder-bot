@@ -13,6 +13,7 @@ import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
@@ -89,8 +90,8 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
         Collection<String> result = new ArrayList<>();
 
         for (String name : names) {
-            name = name.toLowerCase();
-            result.add(StringUtils.capitalize(name));
+            String[] words = name.split(" ");
+            result.add(Stream.of(words).map(word -> StringUtils.capitalize(word.toLowerCase())).collect(Collectors.joining(" ")));
         }
 
         return result;

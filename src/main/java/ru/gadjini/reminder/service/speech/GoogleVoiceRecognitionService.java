@@ -1,6 +1,6 @@
 package ru.gadjini.reminder.service.speech;
 
-import net.bramp.ffmpeg.builder.FFmpegBuilder;
+import com.google.cloud.speech.v1p1beta1.SpeechContext;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,46 +10,37 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.gadjini.reminder.service.TelegramService;
 
 import java.io.File;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
-public class VoiceRecognitionService {
+public class GoogleVoiceRecognitionService {
 
     private GoogleSpeechService googleSpeechService;
 
     private TelegramService telegramService;
 
-    private FFMpegService ffMpegService;
+    private final Set<SpeechContextProvider> speechContextProviders;
 
     @Autowired
-    public VoiceRecognitionService(GoogleSpeechService googleSpeechService, TelegramService telegramService, FFMpegService ffMpegService) {
+    public GoogleVoiceRecognitionService(GoogleSpeechService googleSpeechService, TelegramService telegramService, Set<SpeechContextProvider> speechContextProviders) {
         this.googleSpeechService = googleSpeechService;
         this.telegramService = telegramService;
-        this.ffMpegService = ffMpegService;
+        this.speechContextProviders = speechContextProviders;
     }
 
     public String recognize(Voice voice) {
         File file = downloadFile(voice.getFileId());
-        File out = null;
 
         try {
-            out = File.createTempFile("speech.", ".wav");
-            ffMpegService.execute(voiceToRecognizableFormatConfig(file, out));
-            return googleSpeechService.recognize(out);
+            List<SpeechContext> speechContexts = speechContextProviders.stream().map(SpeechContextProvider::provide).flatMap(List::stream).collect(Collectors.toList());
+            return googleSpeechService.recognize(file, speechContexts);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         } finally {
             FileUtils.deleteQuietly(file);
-            FileUtils.deleteQuietly(out);
         }
-    }
-
-    private FFmpegBuilder voiceToRecognizableFormatConfig(File in, File out) {
-        return new FFmpegBuilder()
-                .addInput(in.getAbsolutePath())
-                .overrideOutputFiles(true)
-                .addOutput(out.getAbsolutePath())
-                .setAudioSampleRate(16000)
-                .done();
     }
 
     private File downloadFile(String fileId) {
