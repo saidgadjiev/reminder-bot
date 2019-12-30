@@ -25,6 +25,12 @@ import java.util.Set;
 
 @Repository
 public class FriendshipDao {
+    
+    private static final String USER_ID_PARAM = "user_id";
+    
+    private static final String FRIEND_ID_PARAM = "friend_id";
+    
+    public static final String STATUS_PARAM = "status";
 
     private JdbcTemplate jdbcTemplate;
 
@@ -87,16 +93,16 @@ public class FriendshipDao {
                         "FROM tg_user tu\n" +
                         "WHERE tu.user_id = :friend_id",
                 new MapSqlParameterSource()
-                        .addValue("user_id", userId)
-                        .addValue("friend_id", friendId)
-                        .addValue("status", status.getCode())
+                        .addValue(USER_ID_PARAM, userId)
+                        .addValue(FRIEND_ID_PARAM, friendId)
+                        .addValue(STATUS_PARAM, status.getCode())
                         .addValue("name", name),
                 rs -> {
                     if (rs.next()) {
                         TgUser friend = new TgUser();
                         friend.setUserId(friendId);
                         friend.setName(name);
-                        friend.setZoneId(rs.getString("zone_id"));
+                        friend.setZoneId(rs.getString(TgUser.ZONE_ID));
 
                         return friend;
                     }
@@ -139,15 +145,15 @@ public class FriendshipDao {
                         "WHERE (user_one_id = :user_id AND user_two_id = :friend_id) " +
                         "OR (user_one_id = :friend_id AND user_two_id = :user_id)",
                 new MapSqlParameterSource()
-                        .addValue("user_id", userId)
-                        .addValue("friend_id", friendId)
+                        .addValue(USER_ID_PARAM, userId)
+                        .addValue(FRIEND_ID_PARAM, friendId)
         );
     }
 
     public List<TgUser> getFriends(int userId, Friendship.Status status) {
         return namedParameterJdbcTemplate.query(
                 "SELECT * FROM friendship WHERE status = :state AND (user_one_id = :user_id OR user_two_id = :user_id)",
-                new MapSqlParameterSource().addValue("user_id", userId).addValue("state", status.getCode()),
+                new MapSqlParameterSource().addValue(USER_ID_PARAM, userId).addValue("state", status.getCode()),
                 (rs, rowNum) -> {
                     Friendship friendship = resultSetMapper.mapFriendship(rs, new FriendshipMapping());
 
@@ -171,14 +177,14 @@ public class FriendshipDao {
                         "      LIMIT 1) f\n" +
                         "         INNER JOIN tg_user tu ON f.user_id = tu.user_id;",
                 new MapSqlParameterSource()
-                        .addValue("user_id", userId)
-                        .addValue("status", Friendship.Status.ACCEPTED.getCode())
+                        .addValue(USER_ID_PARAM, userId)
+                        .addValue(STATUS_PARAM, Friendship.Status.ACCEPTED.getCode())
                         .addValue("names", nameCandidates),
                 rs -> {
                     if (rs.next()) {
                         TgUser friend = new TgUser();
-                        friend.setZoneId(rs.getString("zone_id"));
-                        friend.setUserId(rs.getInt("user_id"));
+                        friend.setZoneId(rs.getString(TgUser.ZONE_ID));
+                        friend.setUserId(rs.getInt(TgUser.USER_ID));
                         friend.setName(rs.getString("name"));
 
                         return friend;
@@ -197,11 +203,11 @@ public class FriendshipDao {
                         "WHERE (user_one_id = :user_id AND user_two_id = :friend_id)\n" +
                         "   OR (user_one_id = :friend_id AND user_two_id = :user_id)\n" +
                         "    AND tu.user_id = :friend_id",
-                new MapSqlParameterSource().addValue("user_id", userId).addValue("friend_id", friendId),
+                new MapSqlParameterSource().addValue(USER_ID_PARAM, userId).addValue(FRIEND_ID_PARAM, friendId),
                 rs -> {
                     if (rs.next()) {
                         TgUser friend = new TgUser();
-                        friend.setZoneId(rs.getString("zone_id"));
+                        friend.setZoneId(rs.getString(TgUser.ZONE_ID));
                         friend.setUserId(friendId);
 
                         int userOneId = rs.getInt(Friendship.USER_ONE_ID);
@@ -227,8 +233,8 @@ public class FriendshipDao {
                         "FROM friendship\n" +
                         "WHERE status = :status AND (user_one_id = :user_id OR user_two_id = :user_id)) f ORDER BY length(f.name)",
                 new MapSqlParameterSource()
-                        .addValue("status", Friendship.Status.ACCEPTED.getCode())
-                        .addValue("user_id", userId),
+                        .addValue(STATUS_PARAM, Friendship.Status.ACCEPTED.getCode())
+                        .addValue(USER_ID_PARAM, userId),
                 rs -> {
                     result.add(rs.getString("name"));
                 }
@@ -242,7 +248,7 @@ public class FriendshipDao {
                 "SELECT * FROM friendship " +
                         "WHERE (user_one_id = :user_id AND user_two_id = :friend_id) " +
                         "OR (user_one_id = :friend_id AND user_two_id = :user_id)",
-                new MapSqlParameterSource().addValue("user_id", userOneId).addValue("friend_id", userTwoId),
+                new MapSqlParameterSource().addValue(USER_ID_PARAM, userOneId).addValue(FRIEND_ID_PARAM, userTwoId),
                 rs -> {
                     if (rs.next()) {
                         return resultSetMapper.mapFriendship(rs, new FriendshipMapping());
@@ -264,7 +270,7 @@ public class FriendshipDao {
                         "             WHEN f.user_two_id = :user_id THEN tu.user_id = f.user_one_id\n" +
                         "             END\n" +
                         "WHERE tu.username = :friend_username",
-                new MapSqlParameterSource().addValue("user_id", userOneId).addValue("friend_username", friendUsername),
+                new MapSqlParameterSource().addValue(USER_ID_PARAM, userOneId).addValue("friend_username", friendUsername),
                 rs -> {
                     if (rs.next()) {
                         return resultSetMapper.mapFriendship(rs, new FriendshipMapping());
@@ -290,7 +296,7 @@ public class FriendshipDao {
                 new MapSqlParameterSource()
                         .addValue("uo_id", friendship.getUserOneId())
                         .addValue("ut_id", friendship.getUserTwoId())
-                        .addValue("status", friendship.getStatus().getCode()),
+                        .addValue(STATUS_PARAM, friendship.getStatus().getCode()),
                 rs -> {
                     friendship.getUserTwo().setName(rs.getString("ut_name"));
                 }
@@ -315,7 +321,7 @@ public class FriendshipDao {
                 new MapSqlParameterSource()
                         .addValue("uo_id", friendship.getUserOneId())
                         .addValue("username", friendship.getUserTwo().getUsername())
-                        .addValue("status", friendship.getStatus().getCode()),
+                        .addValue(STATUS_PARAM, friendship.getStatus().getCode()),
                 rs -> {
                     friendship.setUserTwoId(rs.getInt("user_two_id"));
                     friendship.getUserTwo().setUserId(friendship.getUserTwoId());
