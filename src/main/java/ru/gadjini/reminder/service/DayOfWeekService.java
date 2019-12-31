@@ -4,9 +4,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.format.TextStyle;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
@@ -48,5 +46,24 @@ public class DayOfWeekService {
 
         return pattern.matcher(value).matches()
                 || dayOfWeek.getDisplayName(TextStyle.SHORT, locale).equals(value);
+    }
+
+    public List<String> getDayOfWeekSpeechPhrases() {
+        List<String> phrases = new ArrayList<>();
+
+        for (DayOfWeek dayOfWeek: DayOfWeek.values()) {
+            String displayName = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
+            phrases.add(displayName);
+
+            switch (dayOfWeek) {
+                case FRIDAY:
+                case SATURDAY:
+                case WEDNESDAY:
+                    phrases.add(displayName.substring(0, displayName.length() - 1) + "у");
+                    break;
+            }
+        }
+
+        return phrases;
     }
 }

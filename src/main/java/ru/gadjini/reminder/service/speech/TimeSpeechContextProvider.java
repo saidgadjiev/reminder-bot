@@ -1,8 +1,10 @@
 package ru.gadjini.reminder.service.speech;
 
 import com.google.cloud.speech.v1p1beta1.SpeechContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
 import java.util.ArrayList;
@@ -20,10 +22,14 @@ public class TimeSpeechContextProvider implements SpeechContextProvider {
 
     private String fixedTimePhrases;
 
-    public TimeSpeechContextProvider(LocalisationService localisationService) {
+    private DayOfWeekService dayOfWeekService;
+
+    @Autowired
+    public TimeSpeechContextProvider(LocalisationService localisationService, DayOfWeekService dayOfWeekService) {
         this.offsetTimePhrases = localisationService.getMessage(MessagesProperties.OFFSET_TIME_PHRASES);
         this.repeatTimePhrases = localisationService.getMessage(MessagesProperties.REPEAT_TIME_PHRASES);
         this.fixedTimePhrases = localisationService.getMessage(MessagesProperties.FIXED_TIME_PHRASES);
+        this.dayOfWeekService = dayOfWeekService;
     }
 
     @Override
@@ -34,6 +40,7 @@ public class TimeSpeechContextProvider implements SpeechContextProvider {
         values.addAll(Arrays.asList(repeatTimePhrases.split(" ")));
         values.addAll(Arrays.asList(fixedTimePhrases.split(" ")));
         values.addAll(Arrays.asList("$MONTH", "$TIME", "$DAY", "$OOV_CLASS_DIGIT_SEQUENCE"));
+        values.addAll(dayOfWeekService.getDayOfWeekSpeechPhrases());
 
         SpeechContext speechContext = SpeechContext.newBuilder().addAllPhrases(values).setBoost(BOOST).build();
         return List.of(speechContext);

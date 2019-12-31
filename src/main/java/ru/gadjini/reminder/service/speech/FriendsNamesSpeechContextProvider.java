@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.service.speech;
 
 import com.google.cloud.speech.v1p1beta1.SpeechContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
@@ -21,6 +22,7 @@ public class FriendsNamesSpeechContextProvider implements SpeechContextProvider 
 
     private FriendshipService friendshipService;
 
+    @Autowired
     public FriendsNamesSpeechContextProvider(LocalisationService localisationService, FriendshipService friendshipService) {
         this.forFriendStart = localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START);
         this.friendshipService = friendshipService;
