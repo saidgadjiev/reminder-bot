@@ -63,7 +63,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     @Override
     public boolean canHandle(String command) {
-        return command.toLowerCase().startsWith(forFriendStart);
+        return command != null && command.toLowerCase().startsWith(forFriendStart);
     }
 
     @Override

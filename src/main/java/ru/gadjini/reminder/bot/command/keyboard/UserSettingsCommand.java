@@ -3,6 +3,7 @@ package ru.gadjini.reminder.bot.command.keyboard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -59,5 +60,10 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
                 MessagesProperties.MESSAGE_USER_SETTINGS,
                 replyKeyboardService.getUserSettingsKeyboard()
         );
+    }
+
+    @Override
+    public ReplyKeyboardMarkup silentRestore() {
+        return replyKeyboardService.getUserSettingsKeyboard();
     }
 }

@@ -93,7 +93,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
             ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
             messageService.sendMessageByCode(message.getChatId(), MessagesProperties.TIMEZONE_CHANGED, new Object[]{
-                    zoneId.toString(),
+                    zoneId.getDisplayName(TextStyle.FULL, Locale.getDefault()),
                     DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(ZonedDateTime.now(zoneId))
             }, replyKeyboardMarkup);
         });
