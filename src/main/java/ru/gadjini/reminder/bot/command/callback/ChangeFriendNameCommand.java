@@ -36,7 +36,6 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
     private InlineKeyboardService inlineKeyboardService;
 
     private CommandNavigator commandNavigator;
-
     private LocalisationService localisationService;
 
     @Autowired
@@ -44,13 +43,17 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
                                    FriendshipService friendshipService,
                                    FriendshipMessageBuilder friendshipMessageBuilder,
                                    InlineKeyboardService inlineKeyboardService,
-                                   CommandNavigator commandNavigator, LocalisationService localisationService) {
+                                   LocalisationService localisationService) {
         this.friendshipService = friendshipService;
         this.messageService = messageService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.inlineKeyboardService = inlineKeyboardService;
-        this.commandNavigator = commandNavigator;
         this.localisationService = localisationService;
+    }
+
+    @Autowired
+    public void setCommandNavigator(CommandNavigator commandNavigator) {
+        this.commandNavigator = commandNavigator;
     }
 
     @Override
