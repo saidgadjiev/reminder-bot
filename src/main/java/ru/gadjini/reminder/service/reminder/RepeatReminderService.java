@@ -251,7 +251,7 @@ public class RepeatReminderService {
         LocalDate nextDate = (LocalDate) TemporalAdjusters.next(repeatTime.getDayOfWeek()).adjustInto(reminderAt.date());
         LocalDate now = LocalDate.now();
 
-        while (now.isAfter(nextDate)) {
+        while (now.isAfter(nextDate) || now.isEqual(nextDate)) {
             nextDate = (LocalDate) TemporalAdjusters.next(repeatTime.getDayOfWeek()).adjustInto(nextDate);
         }
 
@@ -263,11 +263,11 @@ public class RepeatReminderService {
     }
 
     private DateTime getIntervalNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
-        ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
+        ZonedDateTime now = TimeUtils.now(remindAt.getZone());
         ZonedDateTime nextRemindAt = JodaTimeUtils.plus(remindAt.toZonedDateTime(), repeatTime.getInterval());
 
-        while (now.isAfter(nextRemindAt)) {
-            now = JodaTimeUtils.plus(nextRemindAt, repeatTime.getInterval());
+        while (now.isAfter(nextRemindAt) || now.isEqual(nextRemindAt)) {
+            nextRemindAt = JodaTimeUtils.plus(nextRemindAt, repeatTime.getInterval());
         }
 
         return DateTime.of(nextRemindAt);
@@ -275,7 +275,7 @@ public class RepeatReminderService {
 
     private DateTime getMonthlyFirstRemindAt(RepeatTime repeatTime) {
         if (repeatTime.hasTime()) {
-            ZonedDateTime now = ZonedDateTime.now(repeatTime.getZoneId());
+            ZonedDateTime now = TimeUtils.now(repeatTime.getZoneId());
             ZonedDateTime firstRemindAt = ZonedDateTime.of(
                     LocalDate.now(repeatTime.getZoneId()).withDayOfMonth(repeatTime.getDay()),
                     repeatTime.getTime(), repeatTime.getZoneId()
@@ -299,7 +299,7 @@ public class RepeatReminderService {
 
     private DateTime getYearlyFirstRemindAt(RepeatTime repeatTime) {
         if (repeatTime.hasTime()) {
-            ZonedDateTime now = ZonedDateTime.now(repeatTime.getZoneId());
+            ZonedDateTime now = TimeUtils.now(repeatTime.getZoneId());
             ZonedDateTime firstRemindAt = ZonedDateTime.of(
                     LocalDate.now(repeatTime.getZoneId()).withDayOfMonth(repeatTime.getDay()).withMonth(repeatTime.getMonth().getValue()),
                     repeatTime.getTime(), repeatTime.getZoneId()
