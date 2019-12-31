@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.configuration;
 
-import net.iakovlev.timeshape.TimeZoneEngine;
 import org.jooq.ConnectionProvider;
 import org.jooq.SQLDialect;
 import org.jooq.conf.ParamCastMode;
@@ -50,12 +49,6 @@ public class BotConfiguration {
     @Profile("!" + PROFILE_TEST)
     public TelegramBotsApi telegramBotsApi(WebHookProperties webHookProperties) throws TelegramApiRequestException {
         return new TelegramBotsApi(webHookProperties.getExternalUrl(), webHookProperties.getInternalUrl());
-    }
-
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public TimeZoneEngine timeZoneEngine() {
-        return TimeZoneEngine.initialize();
     }
 
     @Bean

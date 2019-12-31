@@ -179,12 +179,6 @@
         </dependency>
 
         <dependency>
-            <groupId>net.iakovlev</groupId>
-            <artifactId>timeshape</artifactId>
-            <version>2019b.7</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
         </dependency>

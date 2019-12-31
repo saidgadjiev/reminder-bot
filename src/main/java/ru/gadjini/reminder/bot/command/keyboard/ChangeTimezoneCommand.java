@@ -88,14 +88,14 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
     @Override
     public void processNonCommandUpdate(Message message, String text) {
         Location location = message.getLocation();
-        ZoneId zoneId = timezoneService.getZoneId(location.getLatitude(), location.getLongitude());
+        timezoneService.getZoneId(location.getLatitude(), location.getLongitude(), zoneId -> {
+            tgUserService.saveZoneId(message.getFrom().getId(), zoneId);
+            ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
-        tgUserService.saveZoneId(message.getFrom().getId(), zoneId);
-        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
-
-        messageService.sendMessageByCode(message.getChatId(), MessagesProperties.TIMEZONE_CHANGED, new Object[]{
-                zoneId.toString(),
-                DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(ZonedDateTime.now(zoneId))
-        }, replyKeyboardMarkup);
+            messageService.sendMessageByCode(message.getChatId(), MessagesProperties.TIMEZONE_CHANGED, new Object[]{
+                    zoneId.toString(),
+                    DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(ZonedDateTime.now(zoneId))
+            }, replyKeyboardMarkup);
+        });
     }
 }
