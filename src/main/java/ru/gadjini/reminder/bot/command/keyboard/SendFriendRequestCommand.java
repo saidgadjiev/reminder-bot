@@ -62,7 +62,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
     @Override
     public boolean processMessage(Message message, String text) {
         messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME, replyKeyboardService.goBackCommand());
-        return false;
+        return true;
     }
 
     @Override

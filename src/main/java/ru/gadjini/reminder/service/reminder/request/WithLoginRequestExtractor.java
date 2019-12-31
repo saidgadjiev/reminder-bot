@@ -34,6 +34,9 @@ public class WithLoginRequestExtractor extends BaseRequestExtractor {
         String text = context.getText();
 
         if (text.startsWith(TgUser.USERNAME_START)) {
+            if (text.indexOf(' ') == -1) {
+                throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+            }
             String username = text.substring(1, text.indexOf(' '));
             ZoneId zoneId = tgUserService.getTimeZone(username);
             text = text.substring(username.length() + 2);
