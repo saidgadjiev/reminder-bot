@@ -136,6 +136,10 @@ class ReminderRequestRepeatTimePatternTest {
         str = "Готовность торта каждые 10 минут";
         end = match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("minutes", "10")));
         Assert.assertEquals("Готовность торта", str.substring(0, end).trim());
+
+        str = "Готовность торта каждые 2 минуты";
+        end = match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("minutes", "2")));
+        Assert.assertEquals("Готовность торта", str.substring(0, end).trim());
     }
 
     @Test

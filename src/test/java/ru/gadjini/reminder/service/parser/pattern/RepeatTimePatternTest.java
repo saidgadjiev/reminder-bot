@@ -105,6 +105,9 @@ class RepeatTimePatternTest {
 
         str = "каждые 10 минут";
         match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("minutes", "10")));
+
+        str = "каждые 2 минуты";
+        match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("minutes", "2")));
     }
 
     @Test
