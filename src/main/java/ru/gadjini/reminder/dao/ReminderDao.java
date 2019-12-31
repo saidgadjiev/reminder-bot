@@ -244,10 +244,15 @@ public class ReminderDao {
                         "       (r.repeat_remind_at).*,\n" +
                         "       (r.remind_at).*,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
-                        "       rc.chat_id                                       AS rc_chat_id\n" +
+                        "       rc.chat_id                                       AS rc_chat_id,\n" +
+                        "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
+                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
                         "FROM r\n" +
                         "         LEFT JOIN remind_message rm ON r.id = rm.message_id\n" +
-                        "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id",
+                        "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id" +
+                        "         LEFT JOIN friendship f ON CASE\n" +
+                        "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
+                        "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END",
                 ps -> {
                     ps.setString(1, newText);
                     ps.setInt(2, reminderId);
@@ -391,7 +396,9 @@ public class ReminderDao {
 
             select.select(remindMessage.MESSAGE_ID.as("rm_message_id"));
         }
-        if (reminderMapping.getReceiverMapping() != null && reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_NAME) || reminderMapping.getCreatorMapping() != null) {
+        if (reminderMapping.getReceiverMapping() != null
+                && reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_NAME)
+                || reminderMapping.getCreatorMapping() != null) {
             FriendshipTable f = FriendshipTable.TABLE.as("f");
 
             from

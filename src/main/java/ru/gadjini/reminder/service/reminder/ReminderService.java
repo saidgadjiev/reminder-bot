@@ -75,7 +75,10 @@ public class ReminderService {
         Reminder reminder = reminderDao.update(
                 updateValues,
                 ReminderTable.TABLE.ID.eq(reminderId),
-                new ReminderMapping().setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID))).setRemindMessageMapping(new Mapping())
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
+                        .setRemindMessageMapping(new Mapping())
         );
 
         List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAt, receiverId);
@@ -83,50 +86,38 @@ public class ReminderService {
         reminderNotificationService.deleteReminderNotifications(reminderId);
         reminderNotificationService.create(reminderNotifications);
 
-        reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
-
         return reminder;
     }
 
     @Transactional
     public Reminder changeReminderNote(int reminderId, String note) {
-        Reminder reminder = reminderDao.update(
+        return reminderDao.update(
                 Map.of(ReminderTable.TABLE.NOTE, note),
                 ReminderTable.TABLE.ID.eq(reminderId),
-                new ReminderMapping().setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME))).setRemindMessageMapping(new Mapping())
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME)))
+                        .setRemindMessageMapping(new Mapping())
         );
-
-        reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
-
-        return reminder;
     }
 
     public Reminder deleteReminderNote(int reminderId) {
         Map<Field<?>, Object> updateValues = new HashMap<>();
         updateValues.put(ReminderTable.TABLE.NOTE, null);
 
-        Reminder reminder = reminderDao.update(
+        return reminderDao.update(
                 updateValues,
                 ReminderTable.TABLE.ID.eq(reminderId),
-                new ReminderMapping().setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME))).setRemindMessageMapping(new Mapping())
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME)))
+                        .setRemindMessageMapping(new Mapping())
         );
-
-        if (reminder == null) {
-            return null;
-        }
-
-        reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
-
-        return reminder;
     }
 
     @Transactional
     public UpdateReminderResult changeReminderText(int reminderId, String newText) {
-        UpdateReminderResult updateReminderResult = reminderDao.updateReminderText(reminderId, newText);
-
-        updateReminderResult.getOldReminder().setCreator(TgUser.from(securityService.getAuthenticatedUser()));
-
-        return updateReminderResult;
+        return reminderDao.updateReminderText(reminderId, newText);
     }
 
     public List<Reminder> getCompletedReminders() {
@@ -182,17 +173,13 @@ public class ReminderService {
 
     @Transactional
     public Reminder delete(int reminderId) {
-        Reminder reminder = reminderDao.delete(
+        return reminderDao.delete(
                 ReminderTable.TABLE.ID.equal(reminderId),
-                new ReminderMapping().setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID))).setRemindMessageMapping(new Mapping())
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
+                        .setRemindMessageMapping(new Mapping())
         );
-
-        if (reminder == null) {
-            return null;
-        }
-        reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
-
-        return reminder;
     }
 
     @Transactional

@@ -9,7 +9,6 @@ import ru.gadjini.reminder.dao.CompletedReminderDao;
 import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
-import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.mapping.Mapping;
@@ -129,16 +128,14 @@ public class RepeatReminderService {
     public Reminder changeReminderTime(int reminderId, int receiverId, RepeatTime repeatTime) {
         DateTime nextRemindAt = getFirstRemindAt(repeatTime);
         PGobject sqlObject = nextRemindAt.sqlObject();
-        Reminder reminder = reminderDao.update(
+        reminderDao.update(
                 Map.ofEntries(
                         Map.entry(ReminderTable.TABLE.REPEAT_REMIND_AT, repeatTime.sqlObject()),
                         Map.entry(ReminderTable.TABLE.INITIAL_REMIND_AT, sqlObject),
                         Map.entry(ReminderTable.TABLE.REMIND_AT, sqlObject)
                 ),
                 ReminderTable.TABLE.ID.eq(reminderId),
-                new ReminderMapping()
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
-                        .setRemindMessageMapping(new Mapping())
+                null
         );
 
         reminderNotificationService.deleteReminderNotifications(reminderId);
@@ -146,7 +143,10 @@ public class RepeatReminderService {
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
         reminderNotificationService.create(reminderNotifications);
 
-        reminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
+        Reminder reminder = new Reminder();
+        reminder.setRepeatRemindAt(repeatTime);
+        reminder.setInitialRemindAt(nextRemindAt);
+        reminder.setRemindAt(nextRemindAt);
 
         return reminder;
     }

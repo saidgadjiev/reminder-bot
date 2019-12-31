@@ -110,8 +110,10 @@ public class ReminderRequestService {
     }
 
     public UpdateReminderResult changeReminderTime(int reminderId, String timeText) {
-        Reminder oldReminder = reminderService.getReminder(reminderId, new ReminderMapping().setRemindMessageMapping(new Mapping()).setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID))));
-        oldReminder.setCreator(TgUser.from(securityService.getAuthenticatedUser()));
+        Reminder oldReminder = reminderService.getReminder(reminderId, new ReminderMapping()
+                .setRemindMessageMapping(new Mapping())
+                .setCreatorMapping(new Mapping())
+                .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID))));
 
         Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone());
         validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER).validate(newReminderTimeInReceiverZone);
@@ -125,6 +127,11 @@ public class ReminderRequestService {
         } else {
             changed = reminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), newReminderTimeInReceiverZone.getFixedDateTime().withZoneSameInstant(ZoneOffset.UTC));
         }
+
+        changed.setCreator(oldReminder.getCreator());
+        changed.setReceiver(oldReminder.getReceiver());
+        changed.setText(oldReminder.getText());
+        changed.setNote(oldReminder.getNote());
 
         return new UpdateReminderResult(oldReminder, changed);
     }
