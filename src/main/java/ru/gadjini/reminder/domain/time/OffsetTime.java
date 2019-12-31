@@ -89,10 +89,10 @@ public class OffsetTime {
 
     public enum Type {
 
-        AFTER,
+        AFTER, //через
 
-        BEFORE,
+        BEFORE, //за
 
-        FOR
+        FOR //до
     }
 }

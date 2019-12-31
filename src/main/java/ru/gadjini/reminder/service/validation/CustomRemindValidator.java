@@ -37,7 +37,7 @@ public class CustomRemindValidator implements Validator {
     }
 
     private void validate(OffsetTime offsetTime) {
-        if (offsetTime.getType() != OffsetTime.Type.FOR) {
+        if (offsetTime.getType() == OffsetTime.Type.FOR) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
         }
     }
