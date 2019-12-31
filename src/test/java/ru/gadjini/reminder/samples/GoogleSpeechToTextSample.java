@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ru.gadjini.reminder;
+package ru.gadjini.reminder.samples;
 
 // [START speech_quickstart]
 // Imports the Google Cloud client library
@@ -28,7 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-class QuickstartSample {
+class GoogleSpeechToTextSample {
 
     /**
      * Demonstrates using the Speech API to transcribe an audio file.

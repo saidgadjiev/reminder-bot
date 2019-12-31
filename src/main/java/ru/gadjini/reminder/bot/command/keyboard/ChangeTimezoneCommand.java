@@ -19,6 +19,8 @@ import ru.gadjini.reminder.time.DateTimeFormats;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.TextStyle;
+import java.util.Locale;
 
 @Component
 public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCommand {
@@ -60,7 +62,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
         ZoneId zoneId = tgUserService.getTimeZone(message.getFrom().getId());
 
         messageService.sendMessageByCode(message.getChatId(), MessagesProperties.CURRENT_TIMEZONE, new Object[]{
-                        zoneId.toString(),
+                        zoneId.getDisplayName(TextStyle.FULL, Locale.getDefault()),
                         DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(ZonedDateTime.now(zoneId))
                 },
                 replyKeyboardService.goBackCommand());

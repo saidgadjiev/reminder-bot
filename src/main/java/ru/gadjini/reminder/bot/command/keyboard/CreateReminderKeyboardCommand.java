@@ -13,6 +13,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -43,11 +44,13 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     private ReminderMessageSender reminderMessageSender;
 
+    private FriendshipMessageBuilder friendshipMessageBuilder;
+
     @Autowired
     public CreateReminderKeyboardCommand(LocalisationService localisationService, FriendRequestExtractor friendRequestExtractor,
                                          ReminderRequestService reminderRequestService, MessageService messageService,
                                          ReplyKeyboardService replyKeyboardService, CommandNavigator commandNavigator,
-                                         ReminderMessageSender reminderMessageSender) {
+                                         ReminderMessageSender reminderMessageSender, FriendshipMessageBuilder friendshipMessageBuilder) {
         this.forFriendStart = localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START).toLowerCase();
         this.friendRequestExtractor = friendRequestExtractor;
         this.reminderRequestService = reminderRequestService;
@@ -55,6 +58,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
         this.replyKeyboardService = replyKeyboardService;
         this.commandNavigator = commandNavigator;
         this.reminderMessageSender = reminderMessageSender;
+        this.friendshipMessageBuilder = friendshipMessageBuilder;
     }
 
     @Override
@@ -72,7 +76,14 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
         FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(text, message.hasVoice());
 
         if (StringUtils.isBlank(extractReceiverResult.getText())) {
-            return setReceiverParsed(message, extractReceiverResult.getReceiver());
+            TgUser receiver = extractReceiverResult.getReceiver();
+            receiverMap.put(message.getChatId(), receiver);
+            messageService.sendMessage(
+                    message.getChatId(),
+                    friendshipMessageBuilder.getFriendDetailsWithFooterCode(receiver, MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT),
+                    replyKeyboardService.goBackCommand()
+            );
+            return true;
         } else {
             TgUser receiver = extractReceiverResult.getReceiver();
             try {
@@ -86,7 +97,8 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
                 return false;
             } catch (UserException ex) {
-                setReceiverParsed(message, receiver);
+                receiverMap.put(message.getChatId(), receiver);
+                messageService.sendMessage(message.getChatId(), friendshipMessageBuilder.getFriendDetails(receiver, ex.getMessage()), replyKeyboardService.goBackCommand());
 
                 return true;
             }
@@ -112,16 +124,5 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
     @Override
     public String getHistoryName() {
         return CommandNames.CREATE_REMINDER_KEYBOARD_COMMAND_NAME;
-    }
-
-    private boolean setReceiverParsed(Message message, TgUser receiver) {
-        receiverMap.put(message.getChatId(), receiver);
-        messageService.sendMessageByCode(
-                message.getChatId(),
-                MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT,
-                replyKeyboardService.goBackCommand()
-        );
-
-        return true;
     }
 }

@@ -9,7 +9,9 @@ import ru.gadjini.reminder.time.DateTimeFormats;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.ZonedDateTime;
+import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class FriendshipMessageBuilder {
@@ -21,16 +23,29 @@ public class FriendshipMessageBuilder {
     }
 
     public String getFriendDetails(TgUser friend) {
+        return getFriendDetails(friend, null);
+    }
+
+    public String getFriendDetailsWithFooterCode(TgUser friend, String footerCode) {
+        return getFriendDetails(friend, localisationService.getMessage(footerCode));
+    }
+
+    public String getFriendDetails(TgUser friend, String footer) {
         StringBuilder message = new StringBuilder();
 
         message.append(UserUtils.userLink(friend)).append("\n\n");
         message.append(localisationService.getMessage(MessagesProperties.TIMEZONE, new Object[] {
-                friend.getZoneId(),
+                friend.getZone().getDisplayName(TextStyle.FULL, Locale.getDefault()),
                 DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(ZonedDateTime.now(friend.getZone()))
         }));
 
+        if (StringUtils.isNotBlank(footer)) {
+            message.append("\n\n").append(footer);
+        }
+
         return message.toString();
     }
+
 
     public String getFriendsList(List<TgUser> items, String emptyCode, String footer) {
         if (items.isEmpty()) {

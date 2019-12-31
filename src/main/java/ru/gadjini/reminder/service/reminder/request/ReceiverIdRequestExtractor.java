@@ -44,14 +44,14 @@ public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
 
                 return reminderRequest;
             } catch (ParseException ex) {
-                throw new UserException(getMessage(context.isVoice()));
+                throw new UserException(getMessage(context.getText(), context.isVoice()));
             }
         }
 
         return super.extract(context);
     }
 
-    private String getMessage(boolean voice) {
-        return localisationService.getMessage(voice ? MessagesProperties.MESSAGE_REMINDER_FORMAT_VOICE : MessagesProperties.MESSAGE_REMINDER_FORMAT);
+    private String getMessage(String text, boolean voice) {
+        return voice ? localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT_VOICE, new Object[] {text}) : localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT);
     }
 }

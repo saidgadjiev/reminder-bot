@@ -22,14 +22,15 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class FriendshipDao {
-    
+
     private static final String USER_ID_PARAM = "user_id";
-    
+
     private static final String FRIEND_ID_PARAM = "friend_id";
-    
+
     public static final String STATUS_PARAM = "status";
 
     private JdbcTemplate jdbcTemplate;
@@ -163,23 +164,23 @@ public class FriendshipDao {
     }
 
     public TgUser getFriend(int userId, Collection<String> nameCandidates) {
+        String names = nameCandidates.stream().map(s -> "'" + s + "'").collect(Collectors.joining(","));
+
         return namedParameterJdbcTemplate.query(
-                "SELECT tu.zone_id, f.name, tu.user_id\n" +
-                        "FROM (SELECT CASE WHEN user_one_id = :user_id THEN user_two_id ELSE user_one_id END AS user_id,\n" +
+                "SELECT tu.zone_id,\n" +
+                        "       f.user_id,\n" +
+                        "       f.name\n" +
+                        "FROM (SELECT CASE WHEN user_one_id = :user_id THEN user_two_id ELSE user_one_id END     AS user_id,\n" +
                         "             CASE WHEN user_one_id = :user_id THEN user_two_name ELSE user_one_name END AS name\n" +
                         "      FROM friendship\n" +
                         "      WHERE status = :status\n" +
-                        "        AND CASE\n" +
-                        "                WHEN user_one_id = :user_id THEN user_two_name IN (:names)\n" +
-                        "                WHEN user_two_id = :user_id THEN user_one_name IN (:names)\n" +
-                        "                ELSE FALSE END\n" +
-                        "      ORDER BY length(CASE WHEN user_one_id = :user_id THEN user_two_name ELSE user_one_name END) DESC\n" +
-                        "      LIMIT 1) f\n" +
-                        "         INNER JOIN tg_user tu ON f.user_id = tu.user_id;",
+                        "        AND (user_one_id = :user_id OR user_two_id = :user_id)) f\n" +
+                        "         INNER JOIN tg_user tu ON f.user_id = tu.user_id\n" +
+                        "ORDER BY max_similarity(f.name, ARRAY[" + names + "]) DESC, length(f.name) DESC\n" +
+                        "LIMIT 1",
                 new MapSqlParameterSource()
                         .addValue(USER_ID_PARAM, userId)
-                        .addValue(STATUS_PARAM, Friendship.Status.ACCEPTED.getCode())
-                        .addValue("names", nameCandidates),
+                        .addValue(STATUS_PARAM, Friendship.Status.ACCEPTED.getCode()),
                 rs -> {
                     if (rs.next()) {
                         TgUser friend = new TgUser();
