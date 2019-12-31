@@ -1,20 +1,23 @@
-CREATE OR REPLACE FUNCTION max_similarity(VARCHAR, VARCHAR[]) RETURNS REAL AS
+CREATE OR REPLACE FUNCTION max_similarity(VARCHAR, VARCHAR[])
+    RETURNS max_similarity
+AS
 $$
 DECLARE
-    max FLOAT;
-    val VARCHAR;
-    sim FLOAT;
+    result max_similarity;
+    val    VARCHAR;
+    sim    REAL;
 BEGIN
-    max = 0;
+    result.max_sim = 0;
     FOREACH val IN ARRAY $2
         LOOP
             sim = similarity($1, val);
 
-            if sim > max THEN
-                max = sim;
+            if sim > result.max_sim THEN
+                result.max_sim = sim;
+                result.match_word = val;
             end if;
         end loop;
 
-    RETURN max;
+    RETURN result;
 END;
-$$ LANGUAGE PLPGSQL
+$$ LANGUAGE PLPGSQL;

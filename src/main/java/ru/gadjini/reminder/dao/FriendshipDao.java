@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.gadjini.reminder.domain.FriendSearchResult;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.FriendshipTable;
@@ -163,21 +164,25 @@ public class FriendshipDao {
         );
     }
 
-    public TgUser getFriend(int userId, Collection<String> nameCandidates) {
+    public FriendSearchResult searchFriend(int userId, Collection<String> nameCandidates) {
         String names = nameCandidates.stream().map(s -> "'" + s + "'").collect(Collectors.joining(","));
 
         return namedParameterJdbcTemplate.query(
                 "SELECT tu.zone_id,\n" +
                         "       f.user_id,\n" +
-                        "       f.name\n" +
+                        "       f.name,\n" +
+                        "       (max_sml).match_word\n" +
                         "FROM (SELECT CASE WHEN user_one_id = :user_id THEN user_two_id ELSE user_one_id END     AS user_id,\n" +
-                        "             CASE WHEN user_one_id = :user_id THEN user_two_name ELSE user_one_name END AS name\n" +
+                        "             CASE WHEN user_one_id = :user_id THEN user_two_name ELSE user_one_name END AS name,\n" +
+                        "             CASE\n" +
+                        "                 WHEN user_one_id = :user_id THEN max_similarity(lower(user_two_name), ARRAY [" + names + "])\n" +
+                        "                 ELSE max_similarity(lower(user_one_name), ARRAY [" + names + "]) END          AS max_sml\n" +
                         "      FROM friendship\n" +
                         "      WHERE status = :status\n" +
                         "        AND (user_one_id = :user_id OR user_two_id = :user_id)) f\n" +
                         "         INNER JOIN tg_user tu ON f.user_id = tu.user_id\n" +
-                        "ORDER BY max_similarity(f.name, ARRAY[" + names + "]) DESC, length(f.name) DESC\n" +
-                        "LIMIT 1",
+                        "WHERE (max_sml).max_sim >= 0.5\n" +
+                        "ORDER BY (max_sml).max_sim DESC, length(f.name) DESC;",
                 new MapSqlParameterSource()
                         .addValue(USER_ID_PARAM, userId)
                         .addValue(STATUS_PARAM, Friendship.Status.ACCEPTED.getCode()),
@@ -188,10 +193,10 @@ public class FriendshipDao {
                         friend.setUserId(rs.getInt(TgUser.USER_ID));
                         friend.setName(rs.getString("name"));
 
-                        return friend;
+                        return new FriendSearchResult(friend, rs.getString("match_word"));
                     }
 
-                    return null;
+                    return new FriendSearchResult(null, null);
                 }
         );
     }

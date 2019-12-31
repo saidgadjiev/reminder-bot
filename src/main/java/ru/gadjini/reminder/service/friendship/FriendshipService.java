@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.FriendshipDao;
+import ru.gadjini.reminder.domain.FriendSearchResult;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.FriendshipTable;
@@ -109,10 +110,10 @@ public class FriendshipService {
         return friendshipDao.getFriend(user.getId(), friendId);
     }
 
-    public TgUser getFriendByFriendNameCandidates(Collection<String> nameCandidates) {
+    public FriendSearchResult searchFriend(Collection<String> nameCandidates) {
         User user = securityService.getAuthenticatedUser();
 
-        return friendshipDao.getFriend(user.getId(), nameCandidates);
+        return friendshipDao.searchFriend(user.getId(), nameCandidates);
     }
 
     public List<TgUser> getToMeFriendRequests() {

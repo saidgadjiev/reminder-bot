@@ -1,8 +1,8 @@
 package ru.gadjini.reminder.service.reminder.request;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.domain.FriendSearchResult;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
@@ -10,7 +10,6 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
@@ -42,9 +41,9 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
             names.add(nextValue.toString());
         });
         Collection<String> normalizedNames = normalizeNames(names);
-        TgUser friend = friendshipService.getFriendByFriendNameCandidates(normalizedNames);
+        FriendSearchResult searchResult = friendshipService.searchFriend(normalizedNames);
 
-        if (friend == null) {
+        if (searchResult.isNotFound()) {
             StringBuilder message = new StringBuilder();
 
             if (voice) {
@@ -55,15 +54,14 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
             throw new UserException(message.toString());
         }
 
-        return new ExtractReceiverResult(friend, textWithoutForFriendStart.substring(friend.getName().length()).trim());
+        return new ExtractReceiverResult(searchResult.getFriend(), textWithoutForFriendStart.substring(searchResult.getMatchWord().length()).trim());
     }
 
     private Collection<String> normalizeNames(Collection<String> names) {
         Collection<String> result = new ArrayList<>();
 
         for (String name : names) {
-            String[] words = name.split(" ");
-            result.add(Stream.of(words).map(word -> StringUtils.capitalize(word.toLowerCase())).collect(Collectors.joining(" ")));
+            result.add(name.toLowerCase());
         }
 
         return result;
@@ -87,5 +85,9 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
         public String getText() {
             return text;
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Зухра".indexOf(' '));
     }
 }
