@@ -70,7 +70,7 @@ public class ReminderService {
         Map<Field<?>, Object> updateValues = new HashMap<>();
         updateValues.put(ReminderTable.TABLE.INITIAL_REMIND_AT, remindAt.sqlObject());
         updateValues.put(ReminderTable.TABLE.REMIND_AT, remindAt.sqlObject());
-        updateValues.put(ReminderTable.TABLE.REMIND_AT, null);
+        updateValues.put(ReminderTable.TABLE.REPEAT_REMIND_AT, null);
 
         Reminder reminder = reminderDao.update(
                 updateValues,
