@@ -6,11 +6,11 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.dao.UserReminderNotificationDao;
 import ru.gadjini.reminder.domain.UserReminderNotification;
+import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
-import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.validation.ValidationEvent;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
@@ -131,7 +131,7 @@ public class UserReminderNotificationService {
         try {
             return requestParser.parseTime(text, zoneId);
         } catch (ParseException ex) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMIND));
         }
     }
 }

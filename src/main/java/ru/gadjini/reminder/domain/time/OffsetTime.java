@@ -93,6 +93,6 @@ public class OffsetTime {
 
         BEFORE, //за
 
-        FOR //до
+        FOR //на
     }
 }

@@ -27,10 +27,10 @@ public class UserReminderNotificationValidator implements Validator {
     public void validate(Time time) {
         if (time.isOffsetTime()) {
             if (time.getOffsetTime().getType() != OffsetTime.Type.BEFORE) {
-                throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+                throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMIND));
             }
         } else {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMIND));
         }
     }
 }

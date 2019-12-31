@@ -167,7 +167,7 @@ public class ReminderRequestService {
         ZoneId zoneId = offsetTime.getZoneId();
         switch (offsetTime.getType()) {
             case AFTER: {
-                ZonedDateTime dateTime = ZonedDateTime.now(zoneId).plusHours(offsetTime.getHours()).plusMinutes(offsetTime.getMinutes());
+                ZonedDateTime dateTime = JodaTimeUtils.plus(ZonedDateTime.now(zoneId), offsetTime.getPeriod());
 
                 if (offsetTime.getTime() != null) {
                     dateTime = dateTime.with(offsetTime.getTime());
@@ -176,10 +176,10 @@ public class ReminderRequestService {
                 return dateTime;
             }
             case FOR: {
-                return ZonedDateTime.now(zoneId).plusHours(offsetTime.getHours()).plusMinutes(offsetTime.getMinutes());
+                return JodaTimeUtils.plus(ZonedDateTime.now(zoneId), offsetTime.getPeriod());
             }
             case BEFORE: {
-                ZonedDateTime offsetRemindAt = remindAt.minusHours(offsetTime.getHours()).minusMinutes(offsetTime.getMinutes());
+                ZonedDateTime offsetRemindAt = JodaTimeUtils.minus(remindAt, offsetTime.getPeriod());
 
                 if (offsetTime.getTime() != null) {
                     offsetRemindAt = offsetRemindAt.with(offsetTime.getTime());

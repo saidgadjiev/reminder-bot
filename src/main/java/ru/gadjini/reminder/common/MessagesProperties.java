@@ -138,6 +138,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_CUSTOM_REMIND = "message.custom.remind";
 
+    public static final String MESSAGE_USER_REMIND = "message.user.remind";
+
     public static final String OFFSET_TIME_TYPE_AFTER = "offset.time.type.after";
 
     public static final String OFFSET_TIME_TYPE_FOR = "offset.time.type.for";

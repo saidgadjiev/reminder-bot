@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.service.parser.pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
@@ -59,5 +58,11 @@ class OffsetTimePatternTest {
         String str = "через 2д в 13:00";
 
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry("type", "через"), Map.entry("days", "2"), Map.entry("hour", "13"), Map.entry("minute", "00")));
+    }
+
+    @Test
+    void matchEveTime() {
+        String str = "накануне в 19:00";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry("type", "накануне"), Map.entry("hour", "19"), Map.entry("minute", "00")));
     }
 }

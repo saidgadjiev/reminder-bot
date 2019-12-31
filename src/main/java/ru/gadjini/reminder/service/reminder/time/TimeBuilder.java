@@ -41,6 +41,7 @@ public class TimeBuilder {
     public String time(UserReminderNotification offsetTime) {
         StringBuilder builder = new StringBuilder();
 
+        builder.append("<b>");
         if (offsetTime.getDays() > 0 || offsetTime.getHours() > 0 || offsetTime.getMinutes() > 0) {
             String typeBefore = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE);
             builder.append(typeBefore).append(" ");
@@ -60,6 +61,7 @@ public class TimeBuilder {
             String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
             builder.append(timeArticle).append(" ").append(DATE_TIME_FORMATTER.format(offsetTime.getTime()));
         }
+        builder.append("</b>");
 
         return builder.toString().trim();
     }

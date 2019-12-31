@@ -57,6 +57,7 @@ public class OffsetTimeParser {
             offsetTime.setType(OffsetTime.Type.FOR);
             consumeOnType(lexems);
         } else if (type.equals(eve)) {
+            offsetTime.setType(OffsetTime.Type.BEFORE);
             consumeEveType(lexems);
         } else {
             throw new ParseException();
