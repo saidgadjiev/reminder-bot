@@ -7,19 +7,24 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.dao.CommandNavigatorDao;
 import ru.gadjini.reminder.util.ReflectionUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class CommandNavigator {
 
     private Map<String, NavigableBotCommand> navigableBotCommands = new HashMap<>();
 
-    private ConcurrentHashMap<Long, NavigableBotCommand> currentCommand = new ConcurrentHashMap<>();
+    private CommandNavigatorDao navigatorDao;
+
+    @Autowired
+    public CommandNavigator(CommandNavigatorDao navigatorDao) {
+        this.navigatorDao = navigatorDao;
+    }
 
     @Autowired
     public void setKeyboardCommands(Collection<KeyboardBotCommand> keyboardCommands) {
@@ -37,40 +42,46 @@ public class CommandNavigator {
     }
 
     public void push(long chatId, NavigableBotCommand navigableBotCommand) {
-        currentCommand.put(chatId, navigableBotCommand);
+        setCurrentCommand(chatId, navigableBotCommand);
     }
 
     public boolean isEmpty(long chatId) {
-        return !currentCommand.containsKey(chatId);
+        return navigatorDao.get(chatId) == null;
     }
 
     public void pop(long chatId) {
-        NavigableBotCommand navigableBotCommand = currentCommand.get(chatId);
+        NavigableBotCommand navigableBotCommand = getCurrentCommand(chatId);
         String parentHistoryName = navigableBotCommand.getParentHistoryName();
         NavigableBotCommand parentCommand = navigableBotCommands.get(parentHistoryName);
 
-        currentCommand.put(chatId, parentCommand);
+        setCurrentCommand(chatId, parentCommand);
         parentCommand.restore(chatId);
     }
 
     public ReplyKeyboardMarkup silentPop(long chatId) {
-        NavigableBotCommand navigableBotCommand = currentCommand.get(chatId);
+        NavigableBotCommand navigableBotCommand = getCurrentCommand(chatId);
         if (navigableBotCommand == null) {
             return null;
         }
         String parentHistoryName = navigableBotCommand.getParentHistoryName();
         NavigableBotCommand parentCommand = navigableBotCommands.get(parentHistoryName);
 
-        currentCommand.put(chatId, parentCommand);
+        setCurrentCommand(chatId, parentCommand);
 
         return parentCommand.silentRestore();
     }
 
-    public NavigableBotCommand getCurrentCommand(long chatId) {
-        return currentCommand.get(chatId);
+    public void zeroRestore(long chatId, NavigableBotCommand botCommand) {
+        setCurrentCommand(chatId, botCommand);
     }
 
-    public void zeroRestore(long chatId, NavigableBotCommand botCommand) {
-        currentCommand.put(chatId, botCommand);
+    public NavigableBotCommand getCurrentCommand(long chatId) {
+        String currCommand = navigatorDao.get(chatId);
+
+        return navigableBotCommands.get(currCommand);
+    }
+
+    private void setCurrentCommand(long chatId, NavigableBotCommand navigableBotCommand) {
+        navigatorDao.set(chatId, navigableBotCommand.getHistoryName());
     }
 }
