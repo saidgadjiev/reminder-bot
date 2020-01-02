@@ -9,7 +9,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
-import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.mapping.Mapping;
@@ -65,6 +64,24 @@ public class ReminderService {
         return reminder;
     }
 
+    public void updateReminderNotifications(int reminderId, int receiverId, DateTime remindAt) {
+        reminderNotificationService.deleteReminderNotifications(reminderId);
+        List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAt, receiverId);
+        reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
+        reminderNotificationService.create(reminderNotifications);
+    }
+
+    public Reminder getReminderByMessageId(int messageId, ReminderMapping reminderMapping) {
+        return reminderDao.getReminder(ReminderTable.TABLE.as("r").MESSAGE_ID.eq(messageId), reminderMapping);
+    }
+
+    public void updateReminder(int id, Map<Field<?>, Object> updateValues) {
+        if (updateValues.get(ReminderTable.TABLE.REMIND_AT) != null) {
+            updateValues.put(ReminderTable.TABLE.INITIAL_REMIND_AT, updateValues.get(ReminderTable.TABLE.REMIND_AT));
+        }
+        reminderDao.update(updateValues, ReminderTable.TABLE.ID.eq(id), null);
+    }
+
     @Transactional
     public Reminder changeReminderTime(int reminderId, int receiverId, DateTime remindAt) {
         Map<Field<?>, Object> updateValues = new HashMap<>();
@@ -89,7 +106,6 @@ public class ReminderService {
         return reminder;
     }
 
-    @Transactional
     public Reminder changeReminderNote(int reminderId, String note) {
         return reminderDao.update(
                 Map.of(ReminderTable.TABLE.NOTE, note),
@@ -115,7 +131,6 @@ public class ReminderService {
         );
     }
 
-    @Transactional
     public UpdateReminderResult changeReminderText(int reminderId, String newText) {
         return reminderDao.updateReminderText(reminderId, newText);
     }
@@ -127,11 +142,14 @@ public class ReminderService {
     }
 
     public Reminder getReminder(int reminderId, ReminderMapping reminderMapping) {
-        return reminderDao.getReminder(reminderId, reminderMapping);
+        return reminderDao.getReminder(ReminderTable.TABLE.as("r").ID.eq(reminderId), reminderMapping);
     }
 
     public Reminder getReminder(int reminderId) {
-        return reminderDao.getReminder(reminderId, new ReminderMapping().setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME))));
+        return reminderDao.getReminder(
+                ReminderTable.TABLE.as("r").ID.eq(reminderId),
+                new ReminderMapping().setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
+        );
     }
 
     public List<Reminder> getRemindersWithReminderTimes(LocalDateTime localDateTime, int limit) {
@@ -171,7 +189,6 @@ public class ReminderService {
         return reminderDao.getActiveReminders(user.getId());
     }
 
-    @Transactional
     public Reminder delete(int reminderId) {
         return reminderDao.delete(
                 ReminderTable.TABLE.ID.equal(reminderId),
@@ -199,22 +216,16 @@ public class ReminderService {
         return reminder;
     }
 
-    @Transactional
     public Reminder cancel(int reminderId) {
-        Reminder reminder = reminderDao.delete(
+        return reminderDao.delete(
                 ReminderTable.TABLE.ID.equal(reminderId),
-                new ReminderMapping().setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID))).setReceiverMapping(new Mapping()).setRemindMessageMapping(new Mapping())
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
+                        .setRemindMessageMapping(new Mapping())
         );
-
-        if (reminder == null) {
-            return null;
-        }
-        reminder.setReceiver(TgUser.from(securityService.getAuthenticatedUser()));
-
-        return reminder;
     }
 
-    @Transactional
     public ReminderNotification customRemind(int reminderId, ZonedDateTime remindTime) {
         ReminderNotification reminderNotification = new ReminderNotification();
         reminderNotification.setType(ReminderNotification.Type.ONCE);
@@ -226,7 +237,6 @@ public class ReminderService {
         return reminderNotification;
     }
 
-    @Transactional
     public ReminderNotification customRemind(int reminderId, RepeatTime repeatTime) {
         ReminderNotification reminderNotification;
         ZonedDateTime now = TimeUtils.nowZoned();

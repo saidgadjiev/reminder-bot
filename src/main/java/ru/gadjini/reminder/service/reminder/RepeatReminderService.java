@@ -59,9 +59,6 @@ public class RepeatReminderService {
 
     @Transactional
     public Reminder createReminder(Reminder reminder) {
-        DateTime nextRemindAt = getFirstRemindAt(reminder.getRepeatRemindAt());
-        reminder.setRemindAt(nextRemindAt);
-
         Reminder created = reminderDao.create(reminder);
         List<ReminderNotification> reminderNotifications = getRepeatReminderNotifications(reminder.getRepeatRemindAt(), reminder.getReceiverId());
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(created.getId()));
@@ -73,7 +70,7 @@ public class RepeatReminderService {
     @Transactional
     public Reminder complete(int id) {
         Reminder toComplete = reminderDao.getReminder(
-                id,
+                ReminderTable.TABLE.ID.eq(id),
                 new ReminderMapping()
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
                         .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
@@ -86,6 +83,27 @@ public class RepeatReminderService {
         return toComplete;
     }
 
+    public DateTime getFirstRemindAt(RepeatTime repeatTime) {
+        if (repeatTime.hasDayOfWeek()) {
+            return getWeeklyFirstRemindAt(repeatTime);
+        } else if (repeatTime.getInterval().getDays() > 0) {
+            return getDailyFirstRemindAt(repeatTime);
+        } else if (repeatTime.getInterval().getMonths() != 0) {
+            return getMonthlyFirstRemindAt(repeatTime);
+        } else if (repeatTime.getInterval().getYears() != 0) {
+            return getYearlyFirstRemindAt(repeatTime);
+        } else {
+            return getIntervalFirstRemindAt(repeatTime);
+        }
+    }
+
+    public void updateReminderNotifications(int reminderId, int receiverId, RepeatTime repeatTime) {
+        reminderNotificationService.deleteReminderNotifications(reminderId);
+        List<ReminderNotification> reminderNotifications = getRepeatReminderNotifications(repeatTime, receiverId);
+        reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
+        reminderNotificationService.create(reminderNotifications);
+    }
+
     public List<Reminder> getOverdueRepeatReminders() {
         return reminderDao.getOverdueRepeatReminders();
     }
@@ -93,7 +111,7 @@ public class RepeatReminderService {
     @Transactional
     public Reminder skip(int id) {
         Reminder toSkip = reminderDao.getReminder(
-                id,
+                ReminderTable.TABLE.ID.eq(id),
                 new ReminderMapping()
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
                         .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
@@ -204,20 +222,6 @@ public class RepeatReminderService {
         }
 
         return remindAt.isEqual(reminderNotification.getLastReminderAt().toLocalDate());
-    }
-
-    private DateTime getFirstRemindAt(RepeatTime repeatTime) {
-        if (repeatTime.hasDayOfWeek()) {
-            return getWeeklyFirstRemindAt(repeatTime);
-        } else if (repeatTime.getInterval().getDays() > 0) {
-            return getDailyFirstRemindAt(repeatTime);
-        } else if (repeatTime.getInterval().getMonths() != 0) {
-            return getMonthlyFirstRemindAt(repeatTime);
-        } else if (repeatTime.getInterval().getYears() != 0) {
-            return getYearlyFirstRemindAt(repeatTime);
-        } else {
-            return getIntervalFirstRemindAt(repeatTime);
-        }
     }
 
     private DateTime getIntervalFirstRemindAt(RepeatTime repeatTime) {

@@ -64,7 +64,10 @@ public class ReminderBot extends WorkerUpdatesBot {
 
                 StopWatch stopWatch = new StopWatch();
                 stopWatch.start();
-                String text = handleMessage(update.getMessage());
+
+                String text = messageTextExtractor.extract(update.getMessage());
+                handleMessage(update.getMessage(), text);
+
                 stopWatch.stop();
                 if (update.getMessage().hasVoice()) {
                     LOGGER.debug("Latency on voice request: {} = {}", text, stopWatch.getTime());
@@ -80,6 +83,15 @@ public class ReminderBot extends WorkerUpdatesBot {
 
                 stopWatch.stop();
                 LOGGER.debug("Latency on callback request: {} = {}", update.getCallbackQuery().getData(), stopWatch.getTime());
+            } else if (update.hasEditedMessage()) {
+                StopWatch stopWatch = new StopWatch();
+                stopWatch.start();
+
+                String text = messageTextExtractor.extract(update.getEditedMessage());
+                handleEditedMessage(update.getEditedMessage(), text);
+
+                stopWatch.stop();
+                LOGGER.debug("Latency on edit message request: {} = {}", text, stopWatch.getTime());
             }
         } catch (UserException ex) {
             messageService.sendMessage(chatId, ex.getMessage());
@@ -104,8 +116,7 @@ public class ReminderBot extends WorkerUpdatesBot {
         return botProperties.getName();
     }
 
-    private String handleMessage(Message message) {
-        String text = messageTextExtractor.extract(message);
+    private void handleMessage(Message message, String text) {
         if (commandExecutor.isCommand(message, text)) {
             if (!commandExecutor.executeCommand(message, text)) {
                 messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_UNKNOWN_COMMAND);
@@ -113,8 +124,14 @@ public class ReminderBot extends WorkerUpdatesBot {
         } else {
             commandExecutor.processNonCommandUpdate(message, text);
         }
+    }
 
-        return text;
+    private void handleEditedMessage(Message editedMessage, String text) {
+        if (commandExecutor.isKeyboardCommand(text)) {
+            commandExecutor.executeKeyBoardCommandEditedMessage(editedMessage, text);
+        } else {
+            commandExecutor.processNonCommandEditedMessage(editedMessage, text);
+        }
     }
 
     private boolean restoreIfNeed(long chatId, String command) {

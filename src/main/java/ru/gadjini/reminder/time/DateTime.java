@@ -5,6 +5,7 @@ import org.postgresql.util.PGobject;
 import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class DateTime {
 
@@ -104,6 +105,26 @@ public class DateTime {
 
     public boolean hasTime() {
         return localTime != null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DateTime dateTime = (DateTime) o;
+
+        if (!Objects.equals(zoneId, dateTime.zoneId)) return false;
+        if (!Objects.equals(localDate, dateTime.localDate)) return false;
+        return Objects.equals(localTime, dateTime.localTime);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = zoneId != null ? zoneId.hashCode() : 0;
+        result = 31 * result + (localDate != null ? localDate.hashCode() : 0);
+        result = 31 * result + (localTime != null ? localTime.hashCode() : 0);
+        return result;
     }
 
     public static DateTime now(ZoneId zoneId) {

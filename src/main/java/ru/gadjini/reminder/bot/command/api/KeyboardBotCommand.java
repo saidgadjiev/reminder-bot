@@ -7,4 +7,8 @@ public interface KeyboardBotCommand extends MyBotCommand {
     boolean canHandle(String command);
 
     boolean processMessage(Message message, String text);
+
+    default void processEditedMessage(Message editedMessage, String text) {
+
+    }
 }

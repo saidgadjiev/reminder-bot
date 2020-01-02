@@ -315,4 +315,14 @@ public class MessagesProperties {
     public static final String MESSAGE_VOICE_REQUEST = "message.voice.request";
 
     public static final String MESSAGE_FRIEND_WITH_NAME_NOT_FOUND = "message.friend.with.name.not.found";
+
+    public static final String MESSAGE_REMINDER_EDITED_RECEIVER = "message.reminder.edited.receiver";
+
+    public static final String MESSAGE_REMINDER_TEXT_EDITED = "message.reminder.text.edited";
+
+    public static final String MESSAGE_REMINDER_NOTE_EDITED = "message.reminder.note.edited";
+
+    public static final String MESSAGE_REMINDER_TIME_EDITED = "message.reminder.time.edited";
+
+    public static final String MESSAGE_REMINDER_EDITED = "message.reminder.edited";
 }

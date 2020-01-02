@@ -45,6 +45,7 @@ public class ResultSetMapper {
         reminder.setReceiverId(rs.getInt(Reminder.RECEIVER_ID));
         reminder.setCreatorId(rs.getInt(Reminder.CREATOR_ID));
         reminder.setNote(rs.getString(Reminder.NOTE));
+        reminder.setMessageId(rs.getInt(Reminder.MESSAGE_ID));
         Timestamp completedAt = rs.getTimestamp(Reminder.COMPLETED_AT);
         if (completedAt != null) {
             reminder.setCompletedAt(ZonedDateTime.of(completedAt.toLocalDateTime(), ZoneOffset.UTC));

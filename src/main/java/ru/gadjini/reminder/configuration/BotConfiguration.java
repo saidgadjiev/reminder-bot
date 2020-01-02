@@ -1,10 +1,5 @@
 package ru.gadjini.reminder.configuration;
 
-import org.jooq.ConnectionProvider;
-import org.jooq.SQLDialect;
-import org.jooq.conf.ParamCastMode;
-import org.jooq.conf.SettingsTools;
-import org.jooq.impl.DefaultConfiguration;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,17 +27,6 @@ public class BotConfiguration {
     public static final String PROFILE_PROD = "prod";
 
     public static final String PROFILE_TEST = "test";
-
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DefaultConfiguration configuration(ConnectionProvider connectionProvider) {
-        DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
-        jooqConfiguration.set(connectionProvider);
-        jooqConfiguration.setSQLDialect(SQLDialect.POSTGRES);
-        jooqConfiguration.setSettings(SettingsTools.defaultSettings().withParamCastMode(ParamCastMode.NEVER));
-
-        return jooqConfiguration;
-    }
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)

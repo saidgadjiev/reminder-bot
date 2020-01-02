@@ -58,14 +58,18 @@ public class CommandExecutor {
         return botCommandMap.get(startCommandName);
     }
 
+    public boolean isKeyboardCommand(String text) {
+        return keyboardBotCommands
+                .stream()
+                .anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(text));
+    }
+
     public boolean isCommand(Message message, String text) {
         if (message.isCommand()) {
             return true;
         }
 
-        return keyboardBotCommands
-                .stream()
-                .anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(text));
+        return isKeyboardCommand(text);
     }
 
     public void processNonCommandUpdate(Message message, String text) {
@@ -73,6 +77,14 @@ public class CommandExecutor {
 
         if (navigableBotCommand != null && navigableBotCommand.accept(message)) {
             navigableBotCommand.processNonCommandUpdate(message, text);
+        }
+    }
+
+    public void processNonCommandEditedMessage(Message editedMessage, String text) {
+        NavigableBotCommand navigableBotCommand = commandNavigator.getCurrentCommand(editedMessage.getChatId());
+
+        if (navigableBotCommand != null && navigableBotCommand.accept(editedMessage)) {
+            navigableBotCommand.processNonCommandEditedMessage(editedMessage, text);
         }
     }
 
@@ -133,5 +145,14 @@ public class CommandExecutor {
         }
 
         return true;
+    }
+
+    public void executeKeyBoardCommandEditedMessage(Message message, String text) {
+        KeyboardBotCommand botCommand = keyboardBotCommands.stream()
+                .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(text))
+                .findFirst()
+                .orElseThrow();
+
+        botCommand.processEditedMessage(message, text);
     }
 }

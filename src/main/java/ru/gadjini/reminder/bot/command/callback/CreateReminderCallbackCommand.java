@@ -75,7 +75,12 @@ public class CreateReminderCallbackCommand implements CallbackBotCommand, Naviga
     @Override
     public void processNonCommandUpdate(Message message, String text) {
         int receiverId = reminderRequests.get(message.getChatId());
-        Reminder reminder = reminderService.createReminder(new ReminderRequestContext().setVoice(message.hasVoice()).setReceiverId(receiverId).setText(text));
+        Reminder reminder = reminderService.createReminder(
+                new ReminderRequestContext()
+                        .setVoice(message.hasVoice())
+                        .setReceiverId(receiverId)
+                        .setText(text)
+                        .setMessageId(message.getMessageId()));
         reminder.getCreator().setChatId(message.getChatId());
         reminderRequests.remove(message.getChatId());
 

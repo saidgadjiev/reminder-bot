@@ -1,12 +1,13 @@
 package ru.gadjini.reminder.domain;
 
+import org.jooq.Field;
+import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Reminder {
 
@@ -31,6 +32,8 @@ public class Reminder {
     public static final String NOTE = "note";
 
     public static final String REPEAT_REMIND_AT = "repeat_remind_at";
+
+    public static final String MESSAGE_ID = "message_id";
 
     private int id;
 
@@ -60,6 +63,8 @@ public class Reminder {
 
     private ZonedDateTime completedAt;
 
+    private int messageId;
+
     public Reminder() {
     }
 
@@ -74,6 +79,11 @@ public class Reminder {
         this.initialRemindAt = reminder.initialRemindAt;
         this.status = reminder.status;
         this.note = reminder.note;
+        this.repeatRemindAt = reminder.repeatRemindAt;
+        this.completedAt = reminder.completedAt;
+        this.messageId = reminder.messageId;
+        this.remindMessage = reminder.remindMessage;
+        this.reminderNotifications = reminder.reminderNotifications;
     }
 
     public int getId() {
@@ -218,6 +228,32 @@ public class Reminder {
 
     public boolean isNotMySelf() {
         return creatorId != receiverId;
+    }
+
+    public int getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(int messageId) {
+        this.messageId = messageId;
+    }
+
+    public Map<Field<?>, Object> getDiff(Reminder newReminder) {
+        Map<Field<?>, Object> values = new HashMap<>();
+        if (!Objects.equals(getText(), newReminder.getText())) {
+            values.put(ReminderTable.TABLE.TEXT, newReminder.getText());
+        }
+        if (!Objects.equals(getNote(), newReminder.getNote())) {
+            values.put(ReminderTable.TABLE.NOTE, newReminder.getNote());
+        }
+        if (!Objects.equals(getRepeatRemindAt(), newReminder.getRepeatRemindAt())) {
+            values.put(ReminderTable.TABLE.REPEAT_REMIND_AT, newReminder.getRepeatRemindAt() == null ? null : newReminder.getRepeatRemindAt().sqlObject());
+        }
+        if (!Objects.equals(getRemindAt(), newReminder.getRemindAt())) {
+            values.put(ReminderTable.TABLE.REMIND_AT, newReminder.getRemindAt() == null ? null : newReminder.getRemindAt().sqlObject());
+        }
+
+        return values;
     }
 
     public enum Status {

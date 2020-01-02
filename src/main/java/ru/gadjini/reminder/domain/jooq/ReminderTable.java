@@ -28,6 +28,8 @@ public class ReminderTable extends TableImpl<Record> {
 
     public TableField<Record, Integer> STATUS;
 
+    public TableField<Record, Integer> MESSAGE_ID;
+
     private ReminderTable() {
         this(DSL.name(Reminder.TYPE), null, null);
     }
@@ -52,6 +54,7 @@ public class ReminderTable extends TableImpl<Record> {
         NOTE = createField(Reminder.NOTE, SQLDataType.VARCHAR);
         STATUS = createField(Reminder.STATUS, SQLDataType.INTEGER);
         REPEAT_REMIND_AT = createField(Reminder.REPEAT_REMIND_AT, SQLDataType.OTHER);
+        MESSAGE_ID = createField(Reminder.MESSAGE_ID, SQLDataType.INTEGER);
     }
 
     @Override

@@ -10,4 +10,8 @@ public interface MyBotCommand {
 
     default void processNonCommandUpdate(Message message, String text) {
     }
+
+    default void processNonCommandEditedMessage(Message editedMessage, String text) {
+
+    }
 }

@@ -12,6 +12,8 @@ public class ReminderRequestContext {
 
     private ZoneId receiverZone;
 
+    private int messageId;
+
     public boolean isVoice() {
         return voice;
     }
@@ -45,6 +47,16 @@ public class ReminderRequestContext {
 
     public ReminderRequestContext setReceiverZone(ZoneId receiverZone) {
         this.receiverZone = receiverZone;
+
+        return this;
+    }
+
+    public int getMessageId() {
+        return messageId;
+    }
+
+    public ReminderRequestContext setMessageId(int messageId) {
+        this.messageId = messageId;
 
         return this;
     }

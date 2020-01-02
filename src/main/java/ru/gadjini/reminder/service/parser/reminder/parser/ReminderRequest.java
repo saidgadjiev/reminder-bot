@@ -20,6 +20,8 @@ public class ReminderRequest {
 
     private Time time;
 
+    private int messageId;
+
     public Integer getReceiverId() {
         return receiverId;
     }
@@ -98,5 +100,13 @@ public class ReminderRequest {
 
     public boolean isOffsetTime() {
         return time.isOffsetTime();
+    }
+
+    public int getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(int messageId) {
+        this.messageId = messageId;
     }
 }

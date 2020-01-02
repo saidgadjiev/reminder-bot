@@ -35,7 +35,11 @@ public class MySelfRequestExtractor extends BaseRequestExtractor {
 
     @Override
     public ReminderRequest extract(ReminderRequestContext context) {
-        ZoneId zoneId = tgUserService.getTimeZone(securityService.getAuthenticatedUser().getId());
+        ZoneId zoneId = context.getReceiverZone();
+
+        if (zoneId == null) {
+            zoneId = tgUserService.getTimeZone(securityService.getAuthenticatedUser().getId());
+        }
 
         try {
             return requestParser.parseRequest(context.getText(), zoneId);

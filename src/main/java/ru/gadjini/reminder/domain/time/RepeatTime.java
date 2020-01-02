@@ -7,6 +7,7 @@ import ru.gadjini.reminder.util.JodaTimeUtils;
 import java.sql.SQLException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class RepeatTime {
 
@@ -88,6 +89,32 @@ public class RepeatTime {
 
     public boolean hasTime() {
         return time != null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RepeatTime that = (RepeatTime) o;
+
+        if (day != that.day) return false;
+        if (dayOfWeek != that.dayOfWeek) return false;
+        if (month != that.month) return false;
+        if (!Objects.equals(time, that.time)) return false;
+        if (!Objects.equals(interval, that.interval)) return false;
+        return Objects.equals(zoneId, that.zoneId);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = dayOfWeek != null ? dayOfWeek.hashCode() : 0;
+        result = 31 * result + (month != null ? month.hashCode() : 0);
+        result = 31 * result + day;
+        result = 31 * result + (time != null ? time.hashCode() : 0);
+        result = 31 * result + (interval != null ? interval.hashCode() : 0);
+        result = 31 * result + (zoneId != null ? zoneId.hashCode() : 0);
+        return result;
     }
 
     public RepeatTime withZone(ZoneId target) {

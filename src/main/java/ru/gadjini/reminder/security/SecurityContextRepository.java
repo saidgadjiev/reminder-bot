@@ -11,6 +11,8 @@ public class SecurityContextRepository {
             securityContext.setUser(update.getMessage().getFrom());
         } else if (update.hasCallbackQuery()) {
             securityContext.setUser(update.getCallbackQuery().getFrom());
+        } else if (update.hasEditedMessage()) {
+            securityContext.setUser(update.getEditedMessage().getFrom());
         }
 
         return securityContext;

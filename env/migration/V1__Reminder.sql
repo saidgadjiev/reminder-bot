@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS tg_user
 (
-    user_id    INTEGER      NOT NULL UNIQUE,
-    username   VARCHAR(128) UNIQUE,
-    name VARCHAR(128) NOT NULL,
-    chat_id    INTEGER      NOT NULL UNIQUE,
-    zone_id    VARCHAR(128) NOT NULL DEFAULT 'Europe/Moscow',
+    user_id  INTEGER      NOT NULL UNIQUE,
+    username VARCHAR(128) UNIQUE,
+    name     VARCHAR(128) NOT NULL,
+    chat_id  INTEGER      NOT NULL UNIQUE,
+    zone_id  VARCHAR(128) NOT NULL DEFAULT 'Europe/Moscow',
     PRIMARY KEY (user_id),
     UNIQUE (user_id, chat_id)
 );
@@ -31,5 +31,6 @@ CREATE TABLE IF NOT EXISTS reminder_time
     delay_time       INTERVAL,
     last_reminder_at TIMESTAMP(0),
     custom           BOOLEAN NOT NULL DEFAULT FALSE,
-    reminder_id      INTEGER NOT NULL REFERENCES reminder (id) ON DELETE CASCADE
+    reminder_id      INTEGER NOT NULL REFERENCES reminder (id) ON DELETE CASCADE,
+    message_id       INT     NOT NULL
 );

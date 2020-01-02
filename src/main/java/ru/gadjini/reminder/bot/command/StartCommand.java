@@ -12,6 +12,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.UserReminderNotification;
+import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
@@ -23,9 +24,9 @@ import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 @Component
 public class StartCommand extends BotCommand implements NavigableBotCommand {
 
-    private final MessageService messageService;
+    private MessageService messageService;
 
-    private final ReminderRequestService reminderService;
+    private ReminderRequestService reminderRequestService;
 
     private TgUserService tgUserService;
 
@@ -37,14 +38,14 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     @Autowired
     public StartCommand(MessageService messageService,
-                        ReminderRequestService reminderService,
+                        ReminderRequestService reminderRequestService,
                         TgUserService tgUserService,
                         ReplyKeyboardService replyKeyboardService,
                         ReminderMessageSender reminderMessageSender,
                         UserReminderNotificationService userReminderNotificationService) {
         super(MessagesProperties.START_COMMAND_NAME, "");
         this.messageService = messageService;
-        this.reminderService = reminderService;
+        this.reminderRequestService = reminderRequestService;
         this.tgUserService = tgUserService;
         this.replyKeyboardService = replyKeyboardService;
         this.reminderMessageSender = reminderMessageSender;
@@ -80,10 +81,25 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     @Override
     public void processNonCommandUpdate(Message message, String reminderText) {
-        Reminder reminder = reminderService.createReminder(new ReminderRequestContext().setText(reminderText).setVoice(message.hasVoice()));
+        Reminder reminder = reminderRequestService.createReminder(
+                new ReminderRequestContext()
+                        .setText(reminderText)
+                        .setVoice(message.hasVoice())
+                        .setMessageId(message.getMessageId()));
         reminder.getCreator().setChatId(message.getChatId());
 
         reminderMessageSender.sendReminderCreated(reminder, null);
+    }
+
+    @Override
+    public void processNonCommandEditedMessage(Message editedMessage, String text) {
+        UpdateReminderResult updateReminderResult = reminderRequestService.updateReminder(editedMessage.getMessageId(), text);
+        if (updateReminderResult == null) {
+            return;
+        }
+        updateReminderResult.getOldReminder().getCreator().setChatId(editedMessage.getChatId());
+
+        reminderMessageSender.sendReminderFullyUpdate(updateReminderResult);
     }
 
     private void createUserNotifications(int userId) {
