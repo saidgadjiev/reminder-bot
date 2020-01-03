@@ -13,19 +13,17 @@ import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 @Component
 public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableBotCommand {
 
-    //TODO: состояние
-    private ConcurrentHashMap<Long, CallbackRequest> changeReminderTimeRequests = new ConcurrentHashMap<>();
+    private CommandStateService stateService;
 
     private ReminderMessageSender reminderMessageSender;
 
@@ -40,11 +38,13 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
     private final LocalisationService localisationService;
 
     @Autowired
-    public ChangeReminderNoteCommand(ReminderMessageSender reminderMessageSender,
+    public ChangeReminderNoteCommand(CommandStateService stateService,
+                                     ReminderMessageSender reminderMessageSender,
                                      MessageService messageService,
                                      ReminderService reminderService,
                                      InlineKeyboardService inlineKeyboardService,
                                      LocalisationService localisationService) {
+        this.stateService = stateService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.localisationService = localisationService;
         this.reminderMessageSender = reminderMessageSender;
@@ -64,7 +64,7 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        changeReminderTimeRequests.put(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
+        stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
@@ -77,9 +77,11 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        CallbackRequest request = changeReminderTimeRequests.get(message.getChatId());
+        CallbackRequest request = stateService.getState(message.getChatId());
         int reminderId = request.getRequestParams().getInt(Arg.REMINDER_ID.getKey());
         Reminder reminder = reminderService.changeReminderNote(reminderId, text);
+
+        stateService.deleteState(message.getChatId());
         reminder.getCreator().setChatId(message.getChatId());
 
         commandNavigator.silentPop(message.getChatId());

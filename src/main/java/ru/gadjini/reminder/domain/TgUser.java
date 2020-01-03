@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.util.UserUtils;
 
@@ -16,8 +17,6 @@ public class TgUser {
     public static final String USERNAME = "username";
 
     public static final String NAME = "name";
-
-    public static final String LAST_NAME = "last_name";
 
     public static final String USER_ID = "user_id";
 
@@ -67,10 +66,12 @@ public class TgUser {
         this.userId = userId;
     }
 
+    @JsonIgnore
     public ZoneId getZone() {
         return ZoneId.of(zoneId);
     }
 
+    @JsonIgnore
     public void setZone(ZoneId zone) {
         this.zoneId = zone.getId();
     }

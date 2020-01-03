@@ -1,5 +1,8 @@
 package ru.gadjini.reminder.time;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.postgresql.util.PGobject;
 
 import java.sql.SQLException;
@@ -7,6 +10,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class DateTime {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -23,7 +27,12 @@ public class DateTime {
 
     private LocalTime localTime;
 
-    public ZoneId getZone() {
+    @JsonCreator
+    public DateTime(@JsonProperty("zoneId") ZoneId zoneId) {
+        this.zoneId = zoneId;
+    }
+
+    public ZoneId getZoneId() {
         return zoneId;
     }
 
@@ -168,9 +177,8 @@ public class DateTime {
     }
 
     public static DateTime of(LocalDate localDate, LocalTime localTime, ZoneId zoneId) {
-        DateTime dateTime = new DateTime();
+        DateTime dateTime = new DateTime(zoneId);
 
-        dateTime.zoneId = zoneId;
         dateTime.localDate = localDate;
         dateTime.localTime = localTime;
 
@@ -178,9 +186,8 @@ public class DateTime {
     }
 
     public static DateTime of(ZonedDateTime zonedDateTime) {
-        DateTime dateTime = new DateTime();
+        DateTime dateTime = new DateTime(zonedDateTime.getZone());
 
-        dateTime.zoneId = zonedDateTime.getZone();
         dateTime.localDate = zonedDateTime.toLocalDate();
         dateTime.localTime = zonedDateTime.toLocalTime();
 

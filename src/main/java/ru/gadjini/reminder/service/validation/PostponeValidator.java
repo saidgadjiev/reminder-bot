@@ -52,10 +52,10 @@ public class PostponeValidator implements Validator {
 
         DateTime dateTime = fixedTime.getDateTime();
         if (!dateTime.hasTime()) {
-            if (dateTime.date().isBefore(LocalDate.now(dateTime.getZone()))) {
+            if (dateTime.date().isBefore(LocalDate.now(dateTime.getZoneId()))) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
             }
-        } else if (dateTime.toZonedDateTime().isBefore(ZonedDateTime.now(dateTime.getZone()))) {
+        } else if (dateTime.toZonedDateTime().isBefore(ZonedDateTime.now(dateTime.getZoneId()))) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
         }
     }

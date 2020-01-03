@@ -3,24 +3,22 @@ package ru.gadjini.reminder.bot.command.keyboard;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
+import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class UserReminderNotificationScheduleCommand implements KeyboardBotCommand, NavigableBotCommand {
 
-    //TODO:сотояние
-    private Map<Long, Integer> messagesByChat = new ConcurrentHashMap<>();
+    private CommandStateService stateService;
 
     private String name;
 
@@ -42,9 +40,9 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
                                                    UserReminderNotification.NotificationType notificationType,
                                                    UserReminderNotificationService userReminderNotificationService,
                                                    ReminderNotificationMessageBuilder messageBuilder,
-                                                   MessageService messageService,
-                                                   InlineKeyboardService inlineKeyboardService,
-                                                   ReplyKeyboardService replyKeyboardService) {
+                                                   MessageService messageService, InlineKeyboardService inlineKeyboardService,
+                                                   ReplyKeyboardService replyKeyboardService, CommandStateService stateService) {
+        this.stateService = stateService;
         this.notificationType = notificationType;
         this.name = name;
         this.historyName = historyName;
@@ -68,7 +66,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
                 message.getChatId(),
                 messageBuilder.getUserReminderNotifications(userReminderNotifications),
                 inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType),
-                msg -> messagesByChat.put(msg.getChatId(), msg.getMessageId())
+                msg -> stateService.setState(msg.getChatId(), msg.getMessageId())
         );
         messageService.sendMessageByCode(
                 message.getChatId(),
@@ -80,12 +78,9 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        if (!messagesByChat.containsKey(message.getChatId())) {
-            return;
-        }
         userReminderNotificationService.create(text, notificationType);
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(message.getFrom().getId(), notificationType);
-        int messageId = messagesByChat.get(message.getChatId());
+        int messageId = stateService.getState(message.getChatId());
 
         messageService.editMessage(
                 message.getChatId(),

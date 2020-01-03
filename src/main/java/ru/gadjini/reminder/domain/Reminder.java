@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.glassfish.jersey.server.JSONP;
 import org.jooq.Field;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.time.RepeatTime;
@@ -98,6 +100,7 @@ public class Reminder {
         return remindAt;
     }
 
+    @JsonIgnore
     public DateTime getRemindAtInReceiverZone() {
         return remindAt.withZoneSameInstant(receiver.getZone());
     }
@@ -130,6 +133,7 @@ public class Reminder {
         this.receiverId = receiverId;
     }
 
+    @JsonIgnore
     public List<ReminderNotification> getReminderNotifications() {
         return reminderNotifications;
     }
@@ -142,6 +146,7 @@ public class Reminder {
         return receiver;
     }
 
+    @JsonIgnore
     public ZoneId getReceiverZoneId() {
         return receiver.getZone();
     }
@@ -166,6 +171,7 @@ public class Reminder {
         this.remindMessage = remindMessage;
     }
 
+    @JsonIgnore
     public boolean hasRemindMessage() {
         return remindMessage != null;
     }
@@ -194,6 +200,7 @@ public class Reminder {
         this.note = note;
     }
 
+    @JsonIgnore
     public boolean isRepeatable() {
         return repeatRemindAt != null;
     }
@@ -202,6 +209,7 @@ public class Reminder {
         return repeatRemindAt;
     }
 
+    @JsonIgnore
     public RepeatTime getRepeatRemindAtInReceiverZone() {
         return repeatRemindAt == null ? null : repeatRemindAt.withZone(receiver.getZone());
     }
@@ -214,6 +222,7 @@ public class Reminder {
         return completedAt;
     }
 
+    @JsonIgnore
     public ZonedDateTime getCompletedAtInReceiverZone() {
         return completedAt.withZoneSameInstant(receiver.getZone());
     }
@@ -222,10 +231,12 @@ public class Reminder {
         this.completedAt = completedAt;
     }
 
+    @JsonIgnore
     public boolean isMySelf() {
         return creatorId == receiverId;
     }
 
+    @JsonIgnore
     public boolean isNotMySelf() {
         return creatorId != receiverId;
     }

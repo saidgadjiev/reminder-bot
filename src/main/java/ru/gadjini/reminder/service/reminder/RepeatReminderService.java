@@ -70,7 +70,7 @@ public class RepeatReminderService {
     @Transactional
     public Reminder complete(int id) {
         Reminder toComplete = reminderDao.getReminder(
-                ReminderTable.TABLE.ID.eq(id),
+                ReminderTable.TABLE.as("r").ID.eq(id),
                 new ReminderMapping()
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
                         .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
@@ -251,7 +251,7 @@ public class RepeatReminderService {
     }
 
     private DateTime getWeeklyNextRemindAt(DateTime reminderAt, RepeatTime repeatTime) {
-        ZoneId zoneId = reminderAt.getZone();
+        ZoneId zoneId = reminderAt.getZoneId();
         LocalDate nextDate = (LocalDate) TemporalAdjusters.next(repeatTime.getDayOfWeek()).adjustInto(reminderAt.date());
         LocalDate now = LocalDate.now();
 
@@ -267,7 +267,7 @@ public class RepeatReminderService {
     }
 
     private DateTime getIntervalNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
-        ZonedDateTime now = TimeUtils.now(remindAt.getZone());
+        ZonedDateTime now = TimeUtils.now(remindAt.getZoneId());
         ZonedDateTime nextRemindAt = JodaTimeUtils.plus(remindAt.toZonedDateTime(), repeatTime.getInterval());
 
         while (now.isAfter(nextRemindAt) || now.isEqual(nextRemindAt)) {

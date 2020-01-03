@@ -1,5 +1,8 @@
 package ru.gadjini.reminder.bot.command.callback;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -7,8 +10,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.model.CallbackRequest;
@@ -16,20 +19,18 @@ import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
-
-import java.util.concurrent.ConcurrentHashMap;
+import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 
 @Component
 public class PostponeReminderCommand implements CallbackBotCommand, NavigableBotCommand {
 
-    //TODO: состояние
-    private ConcurrentHashMap<Long, PostponeCommandState> reminderRequests = new ConcurrentHashMap<>();
+    private CommandStateService stateService;
 
     private MessageService messageService;
 
@@ -46,13 +47,15 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
     private LocalisationService localisationService;
 
     @Autowired
-    public PostponeReminderCommand(MessageService messageService,
+    public PostponeReminderCommand(CommandStateService stateService,
+                                   MessageService messageService,
                                    InlineKeyboardService inlineKeyboardService,
                                    ReplyKeyboardService replyKeyboardService,
                                    ReminderRequestService reminderRequestService,
                                    ReminderMessageSender reminderMessageSender,
                                    CommandNavigator commandNavigator,
                                    LocalisationService localisationService) {
+        this.stateService = stateService;
         this.replyKeyboardService = replyKeyboardService;
         this.localisationService = localisationService;
         this.messageService = messageService;
@@ -69,7 +72,8 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        reminderRequests.put(callbackQuery.getMessage().getChatId(), new PostponeCommandState(new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams), State.TIME));
+        PostponeCommandState state = new PostponeCommandState(new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams), State.TIME);
+        stateService.setState(callbackQuery.getMessage().getChatId(), state);
 
         String prevHistoryName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
         messageService.editReplyKeyboard(
@@ -88,7 +92,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        PostponeCommandState postponeCommandState = reminderRequests.get(message.getChatId());
+        PostponeCommandState postponeCommandState = stateService.getState(message.getChatId());
 
         if (postponeCommandState.state == State.TIME) {
             postponeTime(message, postponeCommandState);
@@ -108,6 +112,8 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         postponeCommandState.reminder = reminder;
         postponeCommandState.state = State.REASON;
 
+        stateService.setState(message.getChatId(), postponeCommandState);
+        stateService.getState(message.getChatId());
         if (reminder.getReceiverId() != reminder.getCreatorId()) {
             messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_POSTPONE_MESSAGE, replyKeyboardService.getPostponeMessagesKeyboard());
         } else {
@@ -117,13 +123,14 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     private void postpone(long chatId, String reason, PostponeCommandState postponeCommandState) {
         UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(postponeCommandState.reminder, postponeCommandState.postponeTime);
-        reminderRequests.remove(chatId);
+        stateService.deleteState(chatId);
 
         ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(chatId);
         reminderMessageSender.sendReminderPostponed(updateReminderResult, reason, replyKeyboard);
     }
 
-    private static class PostponeCommandState {
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+    public static class PostponeCommandState {
 
         private CallbackRequest callbackRequest;
 
@@ -133,13 +140,14 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
         private Time postponeTime;
 
-        private PostponeCommandState(CallbackRequest callbackRequest, State state) {
+        @JsonCreator
+        public PostponeCommandState(@JsonProperty("callbackRequest") CallbackRequest callbackRequest, @JsonProperty("state") State state) {
             this.callbackRequest = callbackRequest;
             this.state = state;
         }
     }
 
-    private enum State {
+    public enum State {
 
         TIME,
 

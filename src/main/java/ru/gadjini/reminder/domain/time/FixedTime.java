@@ -23,7 +23,7 @@ public class FixedTime {
     }
 
     public ZoneId getZone() {
-        return dateTime.getZone();
+        return dateTime.getZoneId();
     }
 
     public DateTime dayOfMonth(int dayOfMonth) {

@@ -1,10 +1,15 @@
 package ru.gadjini.reminder.configuration;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
@@ -14,6 +19,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.properties.WebHookProperties;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
+import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -22,7 +28,7 @@ import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageB
 import ru.gadjini.reminder.service.reminder.request.*;
 
 @Configuration
-public class BotConfiguration {
+public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
 
     public static final String PROFILE_PROD = "prod";
 
@@ -37,7 +43,7 @@ public class BotConfiguration {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public KeyboardBotCommand userReminderNotificationWithTimeCommand(LocalisationService localisationService,
+    public KeyboardBotCommand userReminderNotificationWithTimeCommand(CommandStateService stateService, LocalisationService localisationService,
                                                                       UserReminderNotificationService userReminderNotificationService,
                                                                       ReminderNotificationMessageBuilder messageBuilder,
                                                                       MessageService messageService,
@@ -45,20 +51,13 @@ public class BotConfiguration {
                                                                       ReplyKeyboardService replyKeyboardService
     ) {
         return new UserReminderNotificationScheduleCommand(
-                localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME),
-                CommandNames.USER_REMINDER_NOTIFICATION_WITH_TIME_HISTORY_NAME,
-                UserReminderNotification.NotificationType.WITH_TIME,
-                userReminderNotificationService,
-                messageBuilder,
-                messageService,
-                inlineKeyboardService,
-                replyKeyboardService
+                localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME), CommandNames.USER_REMINDER_NOTIFICATION_WITH_TIME_HISTORY_NAME, UserReminderNotification.NotificationType.WITH_TIME, userReminderNotificationService, messageBuilder, messageService, inlineKeyboardService, replyKeyboardService, stateService
         );
     }
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public KeyboardBotCommand userReminderNotificationWithoutTimeCommand(LocalisationService localisationService,
+    public KeyboardBotCommand userReminderNotificationWithoutTimeCommand(CommandStateService stateService, LocalisationService localisationService,
                                                                          UserReminderNotificationService userReminderNotificationService,
                                                                          ReminderNotificationMessageBuilder messageBuilder,
                                                                          MessageService messageService,
@@ -66,14 +65,7 @@ public class BotConfiguration {
                                                                          ReplyKeyboardService replyKeyboardService
     ) {
         return new UserReminderNotificationScheduleCommand(
-                localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME),
-                CommandNames.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_HISTORY_NAME,
-                UserReminderNotification.NotificationType.WITHOUT_TIME,
-                userReminderNotificationService,
-                messageBuilder,
-                messageService,
-                inlineKeyboardService,
-                replyKeyboardService
+                localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME), CommandNames.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_HISTORY_NAME, UserReminderNotification.NotificationType.WITHOUT_TIME, userReminderNotificationService, messageBuilder, messageService, inlineKeyboardService, replyKeyboardService, stateService
         );
     }
 
@@ -85,5 +77,10 @@ public class BotConfiguration {
         receiverIdRequestExtractor.setNext(withLoginRequestExtractor).setNext(friendRequestExtractor).setNext(mySelfRequestExtractor);
 
         return receiverIdRequestExtractor;
+    }
+
+    @Override
+    public void customize(Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder) {
+        jacksonObjectMapperBuilder.modules(new JavaTimeModule(), new JodaModule()).serializationInclusion(JsonInclude.Include.NON_NULL);
     }
 }

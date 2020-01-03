@@ -1,8 +1,11 @@
 package ru.gadjini.reminder.request;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class RequestParams {
 
     private Map<String, String> params = new HashMap<>();

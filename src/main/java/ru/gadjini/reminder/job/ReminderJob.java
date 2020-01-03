@@ -18,6 +18,7 @@ import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -53,6 +54,11 @@ public class ReminderJob {
         LOGGER.debug("Reminder job initialized and working");
     }
 
+    @PostConstruct
+    public void onStartup() {
+        sendReminders();
+    }
+
     @Scheduled(cron = "0 0 0 * * *")
     public void deleteCompletedReminders() {
         LocalDateTime now = LocalDateTime.now();
@@ -73,9 +79,9 @@ public class ReminderJob {
         }
     }
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(cron = "10 * * * * *")
     public void sendReminders() {
-        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().minusSeconds(8).withNano(0), 30);
+        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(TimeUtils.now(), 30);
 
         for (Reminder reminder : reminders) {
             if (restoreReminderService.isNeedRestore(reminder)) {

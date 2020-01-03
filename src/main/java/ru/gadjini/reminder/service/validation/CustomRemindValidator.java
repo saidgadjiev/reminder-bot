@@ -50,7 +50,7 @@ public class CustomRemindValidator implements Validator {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
         }
         DateTime dateTime = fixedTime.getDateTime();
-        if (dateTime.toZonedDateTime().isBefore(ZonedDateTime.now(dateTime.getZone()))) {
+        if (dateTime.toZonedDateTime().isBefore(ZonedDateTime.now(dateTime.getZoneId()))) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
         }
     }

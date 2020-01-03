@@ -1,5 +1,8 @@
 package ru.gadjini.reminder.domain.time;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.ZoneId;
@@ -14,7 +17,8 @@ public class Time {
 
     private ZoneId zoneId;
 
-    public Time(ZoneId zoneId) {
+    @JsonCreator
+    public Time(@JsonProperty("zoneId") ZoneId zoneId) {
         this.zoneId = zoneId;
     }
 
@@ -30,6 +34,7 @@ public class Time {
         this.repeatTime = repeatTime;
     }
 
+    @JsonIgnore
     public DateTime getFixedDateTime() {
         return fixedTime.getDateTime();
     }

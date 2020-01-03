@@ -106,7 +106,7 @@ public class TimeBuilder {
 
     public String time(DateTime dateTime) {
         if (!dateTime.hasTime()) {
-            return time(dateTime.date(), dateTime.getZone());
+            return time(dateTime.date(), dateTime.getZoneId());
         }
 
         return time(dateTime.toZonedDateTime());

@@ -60,7 +60,7 @@ public class CreateReminderValidator implements Validator {
 
     private void validate(DateTime dateTime) {
         if (!dateTime.hasTime()) {
-            if (dateTime.date().isBefore(LocalDate.now(dateTime.getZone()))) {
+            if (dateTime.date().isBefore(LocalDate.now(dateTime.getZoneId()))) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
             }
         } else {
