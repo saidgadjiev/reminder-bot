@@ -92,6 +92,11 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
     }
 
     @Override
+    public void leave(long chatId) {
+        stateService.deleteState(chatId);
+    }
+
+    @Override
     public String getHistoryName() {
         return historyName;
     }

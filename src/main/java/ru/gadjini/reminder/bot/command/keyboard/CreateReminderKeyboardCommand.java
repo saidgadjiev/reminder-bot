@@ -14,6 +14,7 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -23,13 +24,10 @@ import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.request.FriendRequestExtractor;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 @Component
 public class CreateReminderKeyboardCommand implements KeyboardBotCommand, NavigableBotCommand {
 
-    private final Map<Long, TgUser> receiverMap = new ConcurrentHashMap<>();
+    private CommandStateService stateService;
 
     private String forFriendStart;
 
@@ -48,10 +46,12 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
     private FriendshipMessageBuilder friendshipMessageBuilder;
 
     @Autowired
-    public CreateReminderKeyboardCommand(LocalisationService localisationService, FriendRequestExtractor friendRequestExtractor,
+    public CreateReminderKeyboardCommand(CommandStateService stateService, LocalisationService localisationService,
+                                         FriendRequestExtractor friendRequestExtractor,
                                          ReminderRequestService reminderRequestService, MessageService messageService,
                                          ReplyKeyboardService replyKeyboardService, CommandNavigator commandNavigator,
                                          ReminderMessageSender reminderMessageSender, FriendshipMessageBuilder friendshipMessageBuilder) {
+        this.stateService = stateService;
         this.forFriendStart = localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START).toLowerCase();
         this.friendRequestExtractor = friendRequestExtractor;
         this.reminderRequestService = reminderRequestService;
@@ -78,7 +78,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
         if (StringUtils.isBlank(extractReceiverResult.getText())) {
             TgUser receiver = extractReceiverResult.getReceiver();
-            receiverMap.put(message.getChatId(), receiver);
+            stateService.setState(message.getChatId(), receiver);
             messageService.sendMessage(
                     message.getChatId(),
                     friendshipMessageBuilder.getFriendDetailsWithFooterCode(receiver, MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT),
@@ -99,7 +99,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
                 return false;
             } catch (UserException ex) {
-                receiverMap.put(message.getChatId(), receiver);
+                stateService.setState(message.getChatId(), receiver);
                 messageService.sendMessage(message.getChatId(), friendshipMessageBuilder.getFriendDetails(receiver, ex.getMessage()), replyKeyboardService.goBackCommand());
 
                 return true;
@@ -120,19 +120,22 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        TgUser receiver = receiverMap.get(message.getChatId());
+        TgUser receiver = stateService.getState(message.getChatId());
         Reminder reminder = reminderRequestService.createReminder(new ReminderRequestContext()
                 .setText(text)
                 .setReceiverId(receiver.getUserId())
                 .setReceiverZone(receiver.getZone())
                 .setVoice(message.hasVoice())
                 .setMessageId(message.getMessageId()));
-
         reminder.getCreator().setChatId(message.getChatId());
 
-        receiverMap.remove(message.getChatId());
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
         reminderMessageSender.sendReminderCreated(reminder, replyKeyboardMarkup);
+    }
+
+    @Override
+    public void leave(long chatId) {
+        stateService.deleteState(chatId);
     }
 
     @Override

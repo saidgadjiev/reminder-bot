@@ -83,11 +83,15 @@ public class CreateReminderCallbackCommand implements CallbackBotCommand, Naviga
                         .setReceiverId(receiverId)
                         .setText(text)
                         .setMessageId(message.getMessageId()));
-
-        stateService.deleteState(message.getChatId());
         reminder.getCreator().setChatId(message.getChatId());
 
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
         reminderMessageSender.sendReminderCreated(reminder, replyKeyboardMarkup);
     }
+
+    @Override
+    public void leave(long chatId) {
+        stateService.deleteState(chatId);
+    }
+
 }

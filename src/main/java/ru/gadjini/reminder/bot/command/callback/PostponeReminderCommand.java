@@ -105,6 +105,11 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         }
     }
 
+    @Override
+    public void leave(long chatId) {
+        stateService.deleteState(chatId);
+    }
+
     private void postponeTime(Message message, PostponeCommandState postponeCommandState) {
         Reminder reminder = reminderRequestService.getReminderForPostpone(postponeCommandState.callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()));
         reminder.getReceiver().setChatId(message.getChatId());
@@ -123,8 +128,6 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     private void postpone(long chatId, String reason, PostponeCommandState postponeCommandState) {
         UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(postponeCommandState.reminder, postponeCommandState.postponeTime);
-        stateService.deleteState(chatId);
-
         ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(chatId);
         reminderMessageSender.sendReminderPostponed(updateReminderResult, reason, replyKeyboard);
     }

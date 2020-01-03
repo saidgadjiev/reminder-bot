@@ -24,7 +24,7 @@ import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageS
 @Component
 public class CustomRemindCommand implements CallbackBotCommand, NavigableBotCommand {
 
-    private CommandStateService commandStateService;
+    private CommandStateService stateService;
 
     private MessageService messageService;
 
@@ -39,14 +39,14 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
     private LocalisationService localisationService;
 
     @Autowired
-    public CustomRemindCommand(CommandStateService commandStateService,
+    public CustomRemindCommand(CommandStateService stateService,
                                MessageService messageService,
                                InlineKeyboardService inlineKeyboardService,
                                ReminderRequestService reminderService,
                                ReminderNotificationMessageSender reminderMessageSender,
                                CommandNavigator commandNavigator,
                                LocalisationService localisationService) {
-        this.commandStateService = commandStateService;
+        this.stateService = stateService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.reminderService = reminderService;
@@ -67,7 +67,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        commandStateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
+        stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         String prevHistoryName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
 
@@ -83,10 +83,8 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        CallbackRequest callbackRequest = commandStateService.getState(message.getChatId());
+        CallbackRequest callbackRequest = stateService.getState(message.getChatId());
         CustomRemindResult customRemindResult = reminderService.customRemind(callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), message.getText().trim());
-
-        commandStateService.deleteState(message.getChatId());
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
         String prevHistoryName = callbackRequest.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
@@ -97,4 +95,10 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
             reminderMessageSender.sendCustomRemindCreated(message.getChatId(), callbackRequest.getMessageId(), customRemindResult, replyKeyboardMarkup);
         }
     }
+
+    @Override
+    public void leave(long chatId) {
+        stateService.deleteState(chatId);
+    }
+
 }

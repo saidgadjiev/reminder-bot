@@ -13,19 +13,17 @@ import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 @Component
 public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBotCommand {
 
-    private Map<Long, CallbackRequest> callbackRequests = new ConcurrentHashMap<>();
+    private CommandStateService stateService;
 
     private MessageService messageService;
 
@@ -36,14 +34,16 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
     private InlineKeyboardService inlineKeyboardService;
 
     private CommandNavigator commandNavigator;
+
     private LocalisationService localisationService;
 
     @Autowired
-    public ChangeFriendNameCommand(MessageService messageService,
+    public ChangeFriendNameCommand(CommandStateService stateService, MessageService messageService,
                                    FriendshipService friendshipService,
                                    FriendshipMessageBuilder friendshipMessageBuilder,
                                    InlineKeyboardService inlineKeyboardService,
                                    LocalisationService localisationService) {
+        this.stateService = stateService;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
@@ -63,7 +63,7 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        callbackRequests.put(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
+        stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
@@ -75,7 +75,7 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        CallbackRequest callbackRequest = callbackRequests.get(message.getChatId());
+        CallbackRequest callbackRequest = stateService.getState(message.getChatId());
         RequestParams requestParams = callbackRequest.getRequestParams();
         TgUser friend = friendshipService.changeFriendName(requestParams.getInt(Arg.FRIEND_ID.getKey()), text);
 
@@ -86,6 +86,11 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
                 friendshipMessageBuilder.getFriendDetails(friend),
                 inlineKeyboardService.getFriendKeyboard(friend.getUserId())
         );
+    }
+
+    @Override
+    public void leave(long chatId) {
+        stateService.deleteState(chatId);
     }
 
     @Override
