@@ -24,7 +24,6 @@ import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestExtractor;
-import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.validation.CreateReminderValidator;
 import ru.gadjini.reminder.service.validation.ValidationEvent;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
@@ -48,8 +47,6 @@ public class ReminderRequestService {
 
     private LocalisationService localisationService;
 
-    private SecurityService securityService;
-
     private RepeatReminderService repeatReminderService;
 
     private ReminderRequestExtractor requestExtractor;
@@ -57,13 +54,12 @@ public class ReminderRequestService {
     @Autowired
     public ReminderRequestService(ReminderService reminderService, ValidatorFactory validatorFactory,
                                   RequestParser requestParser, LocalisationService localisationService,
-                                  SecurityService securityService, RepeatReminderService repeatReminderService,
+                                  RepeatReminderService repeatReminderService,
                                   ReminderRequestExtractor requestExtractor) {
         this.reminderService = reminderService;
         this.validatorFactory = validatorFactory;
         this.requestParser = requestParser;
         this.localisationService = localisationService;
-        this.securityService = securityService;
         this.repeatReminderService = repeatReminderService;
         this.requestExtractor = requestExtractor;
     }
@@ -72,8 +68,8 @@ public class ReminderRequestService {
         ReminderRequest reminderRequest = requestExtractor.extract(context);
         reminderRequest.setMessageId(context.getMessageId());
 
-        ((CreateReminderValidator) validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER)).validate(reminderRequest);
-        return createReminder(reminderRequest);
+        ((CreateReminderValidator) validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER)).validate(context.getUser(), reminderRequest);
+        return createReminder(context.getUser(), reminderRequest);
     }
 
     @Transactional
@@ -181,7 +177,7 @@ public class ReminderRequestService {
         return new UpdateReminderResult(oldReminder, changed);
     }
 
-    public Reminder getReminderForPostpone(int reminderId) {
+    public Reminder getReminderForPostpone(User user, int reminderId) {
         Reminder oldReminder = reminderService.getReminder(
                 reminderId,
                 new ReminderMapping()
@@ -189,7 +185,7 @@ public class ReminderRequestService {
                         .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
                         .setReceiverMapping(new Mapping())
         );
-        oldReminder.getReceiver().setFrom(securityService.getAuthenticatedUser());
+        oldReminder.getReceiver().setFrom(user);
 
         return oldReminder;
     }
@@ -285,7 +281,7 @@ public class ReminderRequestService {
         }
     }
 
-    private Reminder createReminder(ReminderRequest reminderRequest) {
+    private Reminder createReminder(User user, ReminderRequest reminderRequest) {
         Reminder reminder = new Reminder();
 
         reminder.setText(reminderRequest.getText());
@@ -293,7 +289,6 @@ public class ReminderRequestService {
         reminder.setMessageId(reminderRequest.getMessageId());
         setTime(reminder, reminderRequest.getTime());
 
-        User user = securityService.getAuthenticatedUser();
         TgUser creator = TgUser.from(user);
         reminder.setCreator(creator);
         reminder.setCreatorId(creator.getUserId());

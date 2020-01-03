@@ -2,7 +2,6 @@ package ru.gadjini.reminder.service.reminder.message;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -13,7 +12,6 @@ import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.RemindMessageService;
-import ru.gadjini.reminder.service.security.SecurityService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,19 +27,15 @@ public class ReminderMessageSender {
 
     private RemindMessageService remindMessageService;
 
-    private SecurityService securityService;
-
     @Autowired
     public ReminderMessageSender(ReminderMessageBuilder reminderMessageBuilder,
                                  MessageService messageService,
                                  InlineKeyboardService inlineKeyboardService,
-                                 RemindMessageService remindMessageService,
-                                 SecurityService securityService) {
+                                 RemindMessageService remindMessageService) {
         this.reminderMessageBuilder = reminderMessageBuilder;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.remindMessageService = remindMessageService;
-        this.securityService = securityService;
     }
 
     public void sendRepeatReminderSkippedFromList(String queryId, int messageId, Reminder reminder) {
@@ -344,7 +338,7 @@ public class ReminderMessageSender {
         messageService.sendAnswerCallbackQueryByMessageCode(queryId, MessagesProperties.MESSAGE_REMINDER_CANCELED_ANSWER);
     }
 
-    public void sendCompletedReminders(long chatId, int messageId, List<Reminder> reminders) {
+    public void sendCompletedReminders(int userId, long chatId, int messageId, List<Reminder> reminders) {
         if (reminders.isEmpty()) {
             messageService.editMessageByMessageCode(
                     chatId,
@@ -353,18 +347,16 @@ public class ReminderMessageSender {
                     inlineKeyboardService.getEmptyRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME)
             );
         } else {
-            User user = securityService.getAuthenticatedUser();
-
             messageService.editMessage(
                     chatId,
                     messageId,
-                    reminderMessageBuilder.getCompletedRemindersList(user.getId(), reminders),
+                    reminderMessageBuilder.getCompletedRemindersList(userId, reminders),
                     inlineKeyboardService.getCompletedRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME)
             );
         }
     }
 
-    public void sendActiveReminders(long chatId, int messageId, List<Reminder> reminders) {
+    public void sendActiveReminders(int userId, long chatId, int messageId, List<Reminder> reminders) {
         if (reminders.isEmpty()) {
             messageService.editMessageByMessageCode(
                     chatId,
@@ -373,12 +365,10 @@ public class ReminderMessageSender {
                     inlineKeyboardService.getEmptyRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME)
             );
         } else {
-            User user = securityService.getAuthenticatedUser();
-
             messageService.editMessage(
                     chatId,
                     messageId,
-                    reminderMessageBuilder.getActiveRemindersList(user.getId(), reminders),
+                    reminderMessageBuilder.getActiveRemindersList(userId, reminders),
                     inlineKeyboardService.getActiveRemindersListKeyboard(reminders.stream().map(Reminder::getId).collect(Collectors.toList()), CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME)
             );
         }
@@ -392,15 +382,14 @@ public class ReminderMessageSender {
         );
     }
 
-    public void sendReminderDetails(Long chatId, Integer messageId, Reminder reminder) {
+    public void sendReminderDetails(int userId, Long chatId, Integer messageId, Reminder reminder) {
         String text = reminderMessageBuilder.getReminderMessage(reminder);
-        User user = securityService.getAuthenticatedUser();
 
         messageService.editMessage(
                 chatId,
                 messageId,
                 text,
-                inlineKeyboardService.getReminderDetailsKeyboard(user.getId(), reminder)
+                inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder)
         );
     }
 

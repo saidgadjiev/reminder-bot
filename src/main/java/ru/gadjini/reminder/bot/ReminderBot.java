@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
@@ -18,9 +20,11 @@ import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.message.MessageTextExtractor;
+import ru.gadjini.reminder.service.metric.LatencyMeter;
+import ru.gadjini.reminder.service.metric.LatencyMeterFactory;
 
 @Component
-public class ReminderBot extends WorkerUpdatesBot {
+public class ReminderBot extends TelegramWebhookBot {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReminderBot.class);
 
@@ -36,23 +40,47 @@ public class ReminderBot extends WorkerUpdatesBot {
 
     private MessageTextExtractor messageTextExtractor;
 
+    private LatencyMeterFactory latencyMeterFactory;
+
     @Autowired
     public ReminderBot(BotProperties botProperties,
                        CommandExecutor commandExecutor,
                        CommandNavigator commandNavigator,
                        MessageService messageService,
                        ReplyKeyboardService replyKeyboardService,
-                       MessageTextExtractor messageTextExtractor) {
+                       MessageTextExtractor messageTextExtractor, LatencyMeterFactory latencyMeterFactory) {
         this.botProperties = botProperties;
         this.commandExecutor = commandExecutor;
         this.commandNavigator = commandNavigator;
         this.messageService = messageService;
         this.replyKeyboardService = replyKeyboardService;
         this.messageTextExtractor = messageTextExtractor;
+        this.latencyMeterFactory = latencyMeterFactory;
     }
 
     @Override
-    public void onUpdateReceived(Update update) {
+    public BotApiMethod onWebhookUpdateReceived(Update update) {
+        handleUpdate(update);
+
+        return null;
+    }
+
+    @Override
+    public String getBotUsername() {
+        return botProperties.getName();
+    }
+
+    @Override
+    public String getBotToken() {
+        return botProperties.getToken();
+    }
+
+    @Override
+    public String getBotPath() {
+        return botProperties.getName();
+    }
+
+    private void handleUpdate(Update update) {
         Long chatId = -1L;
 
         try {
@@ -62,17 +90,16 @@ public class ReminderBot extends WorkerUpdatesBot {
                     return;
                 }
 
-                StopWatch stopWatch = new StopWatch();
-                stopWatch.start();
+                LatencyMeter latencyMeter = latencyMeterFactory.getMeter();
+                latencyMeter.start();
 
                 String text = messageTextExtractor.extract(update.getMessage());
                 handleMessage(update.getMessage(), text);
 
-                stopWatch.stop();
                 if (update.getMessage().hasVoice()) {
-                    LOGGER.debug("Latency on voice request: {} = {}", text, stopWatch.getTime());
+                    latencyMeter.stop("Latency on voice request: {}", text);
                 } else {
-                    LOGGER.debug("Latency on request: {} = {}", text, stopWatch.getTime());
+                    latencyMeter.stop("Latency on request: {}", text);
                 }
             } else if (update.hasCallbackQuery()) {
                 StopWatch stopWatch = new StopWatch();
@@ -99,21 +126,6 @@ public class ReminderBot extends WorkerUpdatesBot {
             LOGGER.error(ex.getMessage(), ex);
             messageService.sendErrorMessage(chatId);
         }
-    }
-
-    @Override
-    public String getBotUsername() {
-        return botProperties.getName();
-    }
-
-    @Override
-    public String getBotToken() {
-        return botProperties.getToken();
-    }
-
-    @Override
-    public String getBotPath() {
-        return botProperties.getName();
     }
 
     private void handleMessage(Message message, String text) {

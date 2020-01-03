@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.service.reminder.request;
 
+import org.telegram.telegrambots.meta.api.objects.User;
+
 import java.time.ZoneId;
 
 public class ReminderRequestContext {
@@ -13,6 +15,8 @@ public class ReminderRequestContext {
     private ZoneId receiverZone;
 
     private int messageId;
+
+    private User user;
 
     public boolean isVoice() {
         return voice;
@@ -57,6 +61,16 @@ public class ReminderRequestContext {
 
     public ReminderRequestContext setMessageId(int messageId) {
         this.messageId = messageId;
+
+        return this;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public ReminderRequestContext setUser(User user) {
+        this.user = user;
 
         return this;
     }

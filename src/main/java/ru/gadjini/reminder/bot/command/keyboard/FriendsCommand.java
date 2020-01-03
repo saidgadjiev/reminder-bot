@@ -9,6 +9,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
@@ -49,7 +50,7 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
 
     @Override
     public boolean processMessage(Message message, String text) {
-        List<TgUser> friends = friendshipService.getFriends();
+        List<TgUser> friends = friendshipService.getFriends(message.getFrom().getId());
 
         messageService.sendMessage(
                 message.getChatId(),
@@ -66,12 +67,12 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
     }
 
     @Override
-    public void restore(long chatId, int messageId, String queryId, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
-        List<TgUser> friends = friendshipService.getFriends();
+    public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
+        List<TgUser> friends = friendshipService.getFriends(tgMessage.getUser().getId());
 
         messageService.editMessage(
-                chatId,
-                messageId,
+                tgMessage.getChatId(),
+                tgMessage.getMessageId(),
                 friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null),
                 inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.FRIEND_DETAILS_COMMAND_NAME)
         );

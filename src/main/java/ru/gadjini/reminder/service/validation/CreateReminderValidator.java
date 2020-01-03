@@ -12,7 +12,6 @@ import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
-import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.LocalDate;
@@ -25,13 +24,10 @@ public class CreateReminderValidator implements Validator {
 
     private FriendshipService friendshipService;
 
-    private SecurityService securityService;
-
     @Autowired
-    public CreateReminderValidator(LocalisationService localisationService, FriendshipService friendshipService, SecurityService securityService) {
+    public CreateReminderValidator(LocalisationService localisationService, FriendshipService friendshipService) {
         this.localisationService = localisationService;
         this.friendshipService = friendshipService;
-        this.securityService = securityService;
     }
 
     @Override
@@ -39,12 +35,10 @@ public class CreateReminderValidator implements Validator {
         return ValidationEvent.CREATE_REMINDER;
     }
 
-    public void validate(ReminderRequest reminderRequest) {
+    public void validate(User user, ReminderRequest reminderRequest) {
         if (reminderRequest.getReceiverName() != null) {
-            User user = securityService.getAuthenticatedUser();
             checkFriendShip(user.getId(), reminderRequest.getReceiverName());
         } else if (reminderRequest.getReceiverId() != null) {
-            User user = securityService.getAuthenticatedUser();
             checkFriendShip(user.getId(), reminderRequest.getReceiverId());
         }
         validate(reminderRequest.getTime());

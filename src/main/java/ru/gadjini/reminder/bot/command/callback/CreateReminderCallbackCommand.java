@@ -82,6 +82,7 @@ public class CreateReminderCallbackCommand implements CallbackBotCommand, Naviga
                         .setVoice(message.hasVoice())
                         .setReceiverId(receiverId)
                         .setText(text)
+                        .setUser(message.getFrom())
                         .setMessageId(message.getMessageId()));
         reminder.getCreator().setChatId(message.getChatId());
 

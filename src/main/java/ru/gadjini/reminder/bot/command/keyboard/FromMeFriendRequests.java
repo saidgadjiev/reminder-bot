@@ -47,7 +47,7 @@ public class FromMeFriendRequests implements KeyboardBotCommand, NavigableCallba
 
     @Override
     public boolean processMessage(Message message, String text) {
-        List<TgUser> requests = friendshipService.getFromMeFriendRequests();
+        List<TgUser> requests = friendshipService.getFromMeFriendRequests(message.getFrom().getId());
         messageService.sendMessage(
                 message.getChatId(),
                 friendshipMessageBuilder.getFriendsList(requests, MessagesProperties.MESSAGE_FROM_ME_FRIEND_REQUESTS_EMPTY, MessagesProperties.MESSAGE_CHOOSE_FRIEND_REQUEST_CANCEL),

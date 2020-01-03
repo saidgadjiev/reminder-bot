@@ -2,7 +2,6 @@ package ru.gadjini.reminder.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.dao.UserReminderNotificationDao;
 import ru.gadjini.reminder.domain.UserReminderNotification;
@@ -11,7 +10,6 @@ import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
-import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.service.validation.ValidationEvent;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
 
@@ -29,8 +27,6 @@ public class UserReminderNotificationService {
 
     private final LocalisationService localisationService;
 
-    private SecurityService securityService;
-
     private RequestParser requestParser;
 
     private ValidatorFactory validatorFactory;
@@ -38,11 +34,10 @@ public class UserReminderNotificationService {
     @Autowired
     public UserReminderNotificationService(UserReminderNotificationDao dao,
                                            LocalisationService localisationService,
-                                           SecurityService securityService, RequestParser requestParser,
+                                           RequestParser requestParser,
                                            ValidatorFactory validatorFactory) {
         this.dao = dao;
         this.localisationService = localisationService;
-        this.securityService = securityService;
         this.requestParser = requestParser;
         this.validatorFactory = validatorFactory;
     }
@@ -52,9 +47,8 @@ public class UserReminderNotificationService {
         this.userService = userService;
     }
 
-    public void create(String text, UserReminderNotification.NotificationType notificationType) {
-        User user = securityService.getAuthenticatedUser();
-        ZoneId zoneId = userService.getTimeZone(user.getId());
+    public void create(int userId, String text, UserReminderNotification.NotificationType notificationType) {
+        ZoneId zoneId = userService.getTimeZone(userId);
 
         Time time = parseCustomRemind(text, zoneId);
         validatorFactory.getValidator(ValidationEvent.USER_REMINDER_NOTIFICATION).validate(time);
@@ -65,7 +59,7 @@ public class UserReminderNotificationService {
         userReminderNotification.setTime(time.getOffsetTime().getTime());
         userReminderNotification.setHours(time.getOffsetTime().getHours());
         userReminderNotification.setMinutes(time.getOffsetTime().getMinutes());
-        userReminderNotification.setUserId(user.getId());
+        userReminderNotification.setUserId(userId);
         userReminderNotification.setType(notificationType);
 
         dao.create(userReminderNotification);

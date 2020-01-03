@@ -11,6 +11,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -77,11 +78,11 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
         if (message.hasContact()) {
             Contact contact = message.getContact();
 
-            createFriendRequestResult = friendshipService.createFriendRequest(contact.getUserID(), null);
+            createFriendRequestResult = friendshipService.createFriendRequest(TgMessage.from(message), contact.getUserID(), null);
         } else {
             String receiverName = removeUsernameStart(text);
 
-            createFriendRequestResult = friendshipService.createFriendRequest(null, receiverName);
+            createFriendRequestResult = friendshipService.createFriendRequest(TgMessage.from(message), null, receiverName);
         }
 
         ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());

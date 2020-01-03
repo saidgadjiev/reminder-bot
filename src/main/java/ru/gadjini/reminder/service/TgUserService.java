@@ -58,16 +58,19 @@ public class TgUserService {
         }
 
         return ZoneId.of(zone);
+
+        //return ZoneId.of("Europe/Moscow");
     }
 
     public ZoneId getTimeZone(String username) {
-        String zone = tgUserDao.getTimeZone(username);
+        /*String zone = tgUserDao.getTimeZone(username);
 
         if (zone == null) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_TIMEZONE_NOT_EXISTS));
         }
 
-        return ZoneId.of(zone);
+        return ZoneId.of(zone);*/
+        return ZoneId.of("Europe/Moscow");
     }
 
     public void saveZoneId(int userId, ZoneId zoneId) {

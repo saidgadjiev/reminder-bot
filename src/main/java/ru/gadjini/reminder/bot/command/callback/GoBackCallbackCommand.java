@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
@@ -41,13 +42,6 @@ public class GoBackCallbackCommand implements CallbackBotCommand {
         if (requestParams.contains(Arg.RESTORE_KEYBOARD.getKey())) {
             replyKeyboard = commandNavigator.silentPop(callbackQuery.getMessage().getChatId());
         }
-        callbackCommandNavigator.goTo(
-                callbackQuery.getMessage().getChatId(),
-                callbackQuery.getMessage().getMessageId(),
-                callbackQuery.getId(),
-                prevCommandName,
-                replyKeyboard,
-                requestParams
-        );
+        callbackCommandNavigator.goTo(TgMessage.from(callbackQuery.getMessage()), prevCommandName, replyKeyboard, requestParams);
     }
 }

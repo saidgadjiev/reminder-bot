@@ -74,7 +74,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     @Override
     public boolean processMessage(Message message, String text) {
-        FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(text, message.hasVoice());
+        FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(message.getFrom().getId(), text, message.hasVoice());
 
         if (StringUtils.isBlank(extractReceiverResult.getText())) {
             TgUser receiver = extractReceiverResult.getReceiver();
@@ -93,6 +93,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                         .setReceiverId(receiver.getUserId())
                         .setReceiverZone(receiver.getZone())
                         .setVoice(message.hasVoice())
+                        .setUser(message.getFrom())
                         .setMessageId(message.getMessageId()));
                 reminder.getCreator().setChatId(message.getChatId());
                 reminderMessageSender.sendReminderCreated(reminder, null);
@@ -109,7 +110,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     @Override
     public void processEditedMessage(Message editedMessage, String text) {
-        FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(text, editedMessage.hasVoice());
+        FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(editedMessage.getFrom().getId(), text, editedMessage.hasVoice());
 
         if (StringUtils.isNotBlank(extractReceiverResult.getText())) {
             UpdateReminderResult updateReminderResult = reminderRequestService.updateReminder(editedMessage.getMessageId(), extractReceiverResult.getText());
@@ -126,6 +127,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                 .setReceiverId(receiver.getUserId())
                 .setReceiverZone(receiver.getZone())
                 .setVoice(message.hasVoice())
+                .setUser(message.getFrom())
                 .setMessageId(message.getMessageId()));
         reminder.getCreator().setChatId(message.getChatId());
 

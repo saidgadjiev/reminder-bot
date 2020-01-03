@@ -20,7 +20,7 @@ public class MessageTextExtractor {
             return message.getText().trim();
         }
         if (message.hasVoice()) {
-            String voiceText = voiceRecognitionService.recognize(message.getVoice());
+            String voiceText = voiceRecognitionService.recognize(message.getFrom(), message.getVoice());
 
             return voiceText == null ? null : voiceText.trim();
         }

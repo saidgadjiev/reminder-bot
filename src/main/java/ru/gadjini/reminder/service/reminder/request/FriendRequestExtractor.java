@@ -27,7 +27,7 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
         this.localisationService = localisationService;
     }
 
-    public ExtractReceiverResult extractReceiver(String text, boolean voice) {
+    public ExtractReceiverResult extractReceiver(int userId, String text, boolean voice) {
         String textWithoutForFriendStart = text.substring(forFriendStart.length()).trim();
         String[] words = textWithoutForFriendStart.split(" ");
         Collection<String> names = new ArrayList<>();
@@ -41,7 +41,7 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
             names.add(nextValue.toString());
         });
         Collection<String> normalizedNames = normalizeNames(names);
-        FriendSearchResult searchResult = friendshipService.searchFriend(normalizedNames);
+        FriendSearchResult searchResult = friendshipService.searchFriend(userId, normalizedNames);
 
         if (searchResult.isNotFound()) {
             StringBuilder message = new StringBuilder();

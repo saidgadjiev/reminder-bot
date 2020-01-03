@@ -3,6 +3,7 @@ package ru.gadjini.reminder.service.speech;
 import com.google.cloud.speech.v1p1beta1.SpeechContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -29,8 +30,8 @@ public class FriendsNamesSpeechContextProvider implements SpeechContextProvider 
     }
 
     @Override
-    public List<SpeechContext> provide() {
-        Set<String> friendsNames = friendshipService.getAllFriendsNames();
+    public List<SpeechContext> provide(User user) {
+        Set<String> friendsNames = friendshipService.getAllFriendsNames(user.getId());
         float step = (UPPER_BOOST_BOUND - LOWER_BOOST_BOUND) / friendsNames.size();
 
         float startBoost = LOWER_BOOST_BOUND;

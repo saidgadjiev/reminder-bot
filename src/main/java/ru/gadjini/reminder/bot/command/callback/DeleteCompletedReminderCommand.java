@@ -6,8 +6,8 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.ReminderService;
+import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 
 @Component
 public class DeleteCompletedReminderCommand implements CallbackBotCommand {
@@ -32,7 +32,7 @@ public class DeleteCompletedReminderCommand implements CallbackBotCommand {
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        reminderService.deleteMyCompletedReminders();
+        reminderService.deleteMyCompletedReminders(callbackQuery.getFrom().getId());
 
         reminderMessageSender.sendCompletedRemindersDeleted(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
     }

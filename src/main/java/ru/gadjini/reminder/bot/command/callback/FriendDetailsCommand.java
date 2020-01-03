@@ -8,6 +8,7 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
@@ -43,7 +44,7 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         int friendUserId = requestParams.getInt(Arg.FRIEND_ID.getKey());
-        TgUser friend = friendshipService.getFriend(friendUserId);
+        TgUser friend = friendshipService.getFriend(callbackQuery.getFrom().getId(), friendUserId);
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
@@ -58,12 +59,12 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
     }
 
     @Override
-    public void restore(long chatId, int messageId, String queryId, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
+    public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         int friendUserId = requestParams.getInt(Arg.FRIEND_ID.getKey());
-        TgUser friend = friendshipService.getFriend(friendUserId);
+        TgUser friend = friendshipService.getFriend(tgMessage.getUser().getId(), friendUserId);
         messageService.editMessage(
-                chatId,
-                messageId,
+                tgMessage.getChatId(),
+                tgMessage.getMessageId(),
                 friendshipMessageBuilder.getFriendDetails(friend),
                 inlineKeyboardService.getFriendKeyboard(friendUserId)
         );

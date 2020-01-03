@@ -11,7 +11,7 @@ import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.FriendshipTable;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
-import ru.gadjini.reminder.service.security.SecurityService;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.service.validation.UserValidator;
 
 import java.util.Collection;
@@ -23,26 +23,21 @@ public class FriendshipService {
 
     private FriendshipDao friendshipDao;
 
-    private SecurityService securityService;
-
     private UserValidator userValidator;
 
     @Autowired
-    public FriendshipService(FriendshipDao friendshipDao, SecurityService securityService, UserValidator userValidator) {
+    public FriendshipService(FriendshipDao friendshipDao, UserValidator userValidator) {
         this.friendshipDao = friendshipDao;
-        this.securityService = securityService;
         this.userValidator = userValidator;
     }
 
-    public void deleteFriend(int friendId) {
-        User user = securityService.getAuthenticatedUser();
-
-        friendshipDao.deleteFriendship(user.getId(), friendId);
+    public void deleteFriend(TgMessage tgMessage, int friendId) {
+        friendshipDao.deleteFriendship(tgMessage.getUser().getId(), friendId);
     }
 
     @Transactional
-    public CreateFriendRequestResult createFriendRequest(Integer friendUserId, String friendUsername) {
-        User user = securityService.getAuthenticatedUser();
+    public CreateFriendRequestResult createFriendRequest(TgMessage tgMessage, Integer friendUserId, String friendUsername) {
+        User user = tgMessage.getUser();
         Friendship friendship;
 
         if (StringUtils.isNotBlank(friendUsername)) {
@@ -58,7 +53,7 @@ public class FriendshipService {
 
             createFriendRequestResult.setConflict(true);
             createFriendRequestResult.setFriendship(friendship);
-            setCreateFriendRequestState(user, createFriendRequestResult);
+            setCreateFriendRequestState(user.getId(), createFriendRequestResult);
 
             return createFriendRequestResult;
         }
@@ -87,69 +82,51 @@ public class FriendshipService {
 
         createFriendRequestResult.setFriendship(friendship);
 
-        setCreateFriendRequestState(user, createFriendRequestResult);
+        setCreateFriendRequestState(user.getId(), createFriendRequestResult);
 
         return createFriendRequestResult;
     }
 
-    public Set<String> getAllFriendsNames() {
-        User user = securityService.getAuthenticatedUser();
-
-        return friendshipDao.getAllFriendsNames(user.getId());
+    public Set<String> getAllFriendsNames(int userId) {
+        return friendshipDao.getAllFriendsNames(userId);
     }
 
-    public TgUser changeFriendName(int friendId, String name) {
-        User user = securityService.getAuthenticatedUser();
-
-        return friendshipDao.updateFriendName(user.getId(), friendId, Friendship.Status.ACCEPTED, name);
+    public TgUser changeFriendName(int userId, int friendId, String name) {
+        return friendshipDao.updateFriendName(userId, friendId, Friendship.Status.ACCEPTED, name);
     }
 
-    public TgUser getFriend(int friendId) {
-        User user = securityService.getAuthenticatedUser();
-
-        return friendshipDao.getFriend(user.getId(), friendId);
+    public TgUser getFriend(int userId, int friendId) {
+        return friendshipDao.getFriend(userId, friendId);
     }
 
-    public FriendSearchResult searchFriend(Collection<String> nameCandidates) {
-        User user = securityService.getAuthenticatedUser();
-
-        return friendshipDao.searchFriend(user.getId(), nameCandidates);
+    public FriendSearchResult searchFriend(int userId, Collection<String> nameCandidates) {
+        return friendshipDao.searchFriend(userId, nameCandidates);
     }
 
-    public List<TgUser> getToMeFriendRequests() {
-        User user = securityService.getAuthenticatedUser();
-
+    public List<TgUser> getToMeFriendRequests(int userId) {
         return friendshipDao.getFriendRequests(
-                user.getId(),
-                FriendshipTable.TABLE.USER_TWO_ID.eq(user.getId()).and(FriendshipTable.TABLE.STATUS.eq(Friendship.Status.REQUESTED.getCode()))
+                userId,
+                FriendshipTable.TABLE.USER_TWO_ID.eq(userId).and(FriendshipTable.TABLE.STATUS.eq(Friendship.Status.REQUESTED.getCode()))
         );
     }
 
-    public List<TgUser> getFromMeFriendRequests() {
-        User user = securityService.getAuthenticatedUser();
-
+    public List<TgUser> getFromMeFriendRequests(int userId) {
         return friendshipDao.getFriendRequests(
-                user.getId(),
-                FriendshipTable.TABLE.USER_ONE_ID.eq(user.getId()).and(FriendshipTable.TABLE.STATUS.eq(Friendship.Status.REQUESTED.getCode()))
+                userId,
+                FriendshipTable.TABLE.USER_ONE_ID.eq(userId).and(FriendshipTable.TABLE.STATUS.eq(Friendship.Status.REQUESTED.getCode()))
         );
     }
 
-    public void cancelFriendRequest(int friendId) {
-        User user = securityService.getAuthenticatedUser();
-
-        friendshipDao.deleteFriendship(user.getId(), friendId);
+    public void cancelFriendRequest(int userId, int friendId) {
+        friendshipDao.deleteFriendship(userId, friendId);
     }
 
-    public List<TgUser> getFriends() {
-        User user = securityService.getAuthenticatedUser();
-
-        return friendshipDao.getFriends(user.getId(), Friendship.Status.ACCEPTED);
+    public List<TgUser> getFriends(int userId) {
+        return friendshipDao.getFriends(userId, Friendship.Status.ACCEPTED);
     }
 
     @Transactional
-    public Friendship acceptFriendRequest(int friendId) {
-        User user = securityService.getAuthenticatedUser();
-
+    public Friendship acceptFriendRequest(User user, int friendId) {
         Friendship friendship = friendshipDao.updateFriendshipStatus(user.getId(), friendId, Friendship.Status.ACCEPTED);
 
         friendship.setUserTwo(TgUser.from(user));
@@ -159,9 +136,7 @@ public class FriendshipService {
     }
 
     @Transactional
-    public Friendship rejectFriendRequest(int friendId) {
-        User user = securityService.getAuthenticatedUser();
-
+    public Friendship rejectFriendRequest(User user, int friendId) {
         Friendship friendship = friendshipDao.updateFriendshipStatus(user.getId(), friendId, Friendship.Status.REJECTED);
 
         friendship.setUserTwo(TgUser.from(user));
@@ -190,10 +165,10 @@ public class FriendshipService {
         return friendship != null && friendship.getStatus() == status;
     }
 
-    private void setCreateFriendRequestState(User currUser, CreateFriendRequestResult createFriendRequestResult) {
+    private void setCreateFriendRequestState(int userId, CreateFriendRequestResult createFriendRequestResult) {
         if (createFriendRequestResult.isConflict()) {
             if (createFriendRequestResult.getFriendship().getStatus() == Friendship.Status.REQUESTED) {
-                if (createFriendRequestResult.getFriendship().getUserOneId() == currUser.getId()) {
+                if (createFriendRequestResult.getFriendship().getUserOneId() == userId) {
                     createFriendRequestResult.setState(CreateFriendRequestResult.State.ALREADY_REQUESTED);
                 } else {
                     createFriendRequestResult.setState(CreateFriendRequestResult.State.ALREADY_REQUESTED_TO_ME);

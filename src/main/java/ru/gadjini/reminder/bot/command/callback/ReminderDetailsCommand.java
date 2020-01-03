@@ -8,14 +8,14 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageBuilder;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
-import ru.gadjini.reminder.service.reminder.ReminderService;
-import ru.gadjini.reminder.service.security.SecurityService;
 
 @Component
 public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
@@ -28,19 +28,16 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
 
     private MessageService messageService;
 
-    private SecurityService securityService;
-
     private ReminderMessageBuilder messageBuilder;
 
     @Autowired
     public ReminderDetailsCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender,
                                   InlineKeyboardService inlineKeyboardService, MessageService messageService,
-                                  SecurityService securityService, ReminderMessageBuilder messageBuilder) {
+                                  ReminderMessageBuilder messageBuilder) {
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
         this.inlineKeyboardService = inlineKeyboardService;
         this.messageService = messageService;
-        this.securityService = securityService;
         this.messageBuilder = messageBuilder;
     }
 
@@ -53,7 +50,7 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Reminder reminder = reminderService.getReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
-        reminderMessageSender.sendReminderDetails(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), reminder);
+        reminderMessageSender.sendReminderDetails(callbackQuery.getFrom().getId(), callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), reminder);
     }
 
 
@@ -63,14 +60,14 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
     }
 
     @Override
-    public void restore(long chatId, int messageId, String queryId, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
+    public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         Reminder reminder = reminderService.getReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         messageService.editMessage(
-                chatId,
-                messageId,
+                tgMessage.getChatId(),
+                tgMessage.getMessageId(),
                 messageBuilder.getReminderMessage(reminder),
-                inlineKeyboardService.getReminderDetailsKeyboard(securityService.getAuthenticatedUser().getId(), reminder)
+                inlineKeyboardService.getReminderDetailsKeyboard(tgMessage.getUser().getId(), reminder)
         );
     }
 }

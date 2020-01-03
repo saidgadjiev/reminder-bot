@@ -3,6 +3,7 @@ package ru.gadjini.reminder.service.speech;
 import com.google.cloud.speech.v1p1beta1.SpeechContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -33,7 +34,7 @@ public class TimeSpeechContextProvider implements SpeechContextProvider {
     }
 
     @Override
-    public List<SpeechContext> provide() {
+    public List<SpeechContext> provide(User user) {
         List<String> values = new ArrayList<>();
 
         values.addAll(Arrays.asList(offsetTimePhrases.split(" ")));

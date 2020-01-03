@@ -85,6 +85,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
                 new ReminderRequestContext()
                         .setText(reminderText)
                         .setVoice(message.hasVoice())
+                        .setUser(message.getFrom())
                         .setMessageId(message.getMessageId()));
         reminder.getCreator().setChatId(message.getChatId());
 

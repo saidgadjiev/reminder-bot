@@ -8,6 +8,7 @@ import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -51,10 +52,10 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
     }
 
     @Override
-    public void restore(long chatId, int messageId, String queryId, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
+    public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         messageService.editMessageByMessageCode(
-                chatId,
-                messageId,
+                tgMessage.getChatId(),
+                tgMessage.getMessageId(),
                 MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS,
                 inlineKeyboardService.getRemindersMenu()
         );

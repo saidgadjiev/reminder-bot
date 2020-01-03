@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.util.ReflectionUtils;
 
@@ -32,9 +33,9 @@ public class CallbackCommandNavigator {
         ReflectionUtils.findImplements(botCommands, NavigableCallbackBotCommand.class).forEach(command -> navigableBotCommands.put(command.getHistoryName(), command));
     }
 
-    public void goTo(long chatId, int messageId, String queryId, String callbackCommandName, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
+    public void goTo(TgMessage tgMessage, String callbackCommandName, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         NavigableCallbackBotCommand callbackBotCommand = navigableBotCommands.get(callbackCommandName);
 
-        callbackBotCommand.restore(chatId, messageId, queryId, replyKeyboard, requestParams);
+        callbackBotCommand.restore(tgMessage, replyKeyboard, requestParams);
     }
 }

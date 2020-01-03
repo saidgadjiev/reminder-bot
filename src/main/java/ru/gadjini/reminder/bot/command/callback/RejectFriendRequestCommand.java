@@ -40,7 +40,7 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        Friendship friendship = friendshipService.rejectFriendRequest(requestParams.getInt(Arg.FRIEND_ID.getKey()));
+        Friendship friendship = friendshipService.rejectFriendRequest(callbackQuery.getFrom(), requestParams.getInt(Arg.FRIEND_ID.getKey()));
 
         messageService.sendMessageByCode(
                 friendship.getUserOne().getChatId(),

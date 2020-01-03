@@ -5,7 +5,6 @@ import org.jooq.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
@@ -18,7 +17,6 @@ import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationAI;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
-import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeUtils;
 
@@ -34,8 +32,6 @@ public class ReminderService {
 
     private ReminderDao reminderDao;
 
-    private SecurityService securityService;
-
     private ReminderNotificationService reminderNotificationService;
 
     private UserReminderNotificationService userReminderNotificationService;
@@ -43,18 +39,18 @@ public class ReminderService {
     private ReminderNotificationAI reminderNotificationAI;
 
     @Autowired
-    public ReminderService(ReminderDao reminderDao, SecurityService securityService,
+    public ReminderService(ReminderDao reminderDao,
                            ReminderNotificationService reminderNotificationService,
                            UserReminderNotificationService userReminderNotificationService,
                            ReminderNotificationAI reminderNotificationAI) {
         this.reminderDao = reminderDao;
-        this.securityService = securityService;
         this.reminderNotificationService = reminderNotificationService;
         this.userReminderNotificationService = userReminderNotificationService;
         this.reminderNotificationAI = reminderNotificationAI;
     }
 
     @Transactional
+    //TODO: need read how transactional works
     public Reminder createReminder(Reminder reminder) {
         Reminder created = reminderDao.create(reminder);
         List<ReminderNotification> reminderNotifications = getReminderNotifications(reminder.getRemindAt(), reminder.getReceiverId());
@@ -135,10 +131,8 @@ public class ReminderService {
         return reminderDao.updateReminderText(reminderId, newText);
     }
 
-    public List<Reminder> getCompletedReminders() {
-        User user = securityService.getAuthenticatedUser();
-
-        return reminderDao.getCompletedReminders(user.getId());
+    public List<Reminder> getCompletedReminders(int userId) {
+        return reminderDao.getCompletedReminders(userId);
     }
 
     public Reminder getReminder(int reminderId, ReminderMapping reminderMapping) {
@@ -161,32 +155,26 @@ public class ReminderService {
         Reminder completed = reminderDao.update(
                 Map.of(ReminderTable.TABLE.STATUS, Reminder.Status.COMPLETED.getCode()),
                 ReminderTable.TABLE.STATUS.equal(Reminder.Status.ACTIVE.getCode()).and(ReminderTable.TABLE.ID.equal(id)),
-                new ReminderMapping().setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID))).setReceiverMapping(new Mapping()).setRemindMessageMapping(new Mapping())
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
+                        .setRemindMessageMapping(new Mapping())
         );
         reminderNotificationService.deleteReminderNotifications(id);
-
-        if (completed == null) {
-            return null;
-        }
-        completed.getReceiver().setFrom(securityService.getAuthenticatedUser());
 
         return completed;
     }
 
-    public void deleteMyCompletedReminders() {
-        User user = securityService.getAuthenticatedUser();
-
-        reminderDao.deleteCompletedReminders(user.getId());
+    public void deleteMyCompletedReminders(int userId) {
+        reminderDao.deleteCompletedReminders(userId);
     }
 
     public int deleteCompletedReminders(LocalDateTime localDateTime) {
         return reminderDao.deleteCompletedReminders(localDateTime);
     }
 
-    public List<Reminder> getActiveReminders() {
-        User user = securityService.getAuthenticatedUser();
-
-        return reminderDao.getActiveReminders(user.getId());
+    public List<Reminder> getActiveReminders(int userId) {
+        return reminderDao.getActiveReminders(userId);
     }
 
     public Reminder delete(int reminderId) {

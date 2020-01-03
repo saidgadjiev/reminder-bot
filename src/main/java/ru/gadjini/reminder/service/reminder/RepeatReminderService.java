@@ -17,7 +17,6 @@ import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationAI;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
-import ru.gadjini.reminder.service.security.SecurityService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
@@ -41,20 +40,16 @@ public class RepeatReminderService {
 
     private UserReminderNotificationService userReminderNotificationService;
 
-    private SecurityService securityService;
-
     @Autowired
     public RepeatReminderService(ReminderDao reminderDao, CompletedReminderDao completedReminderDao,
                                  ReminderNotificationService reminderNotificationService,
                                  ReminderNotificationAI reminderNotificationAI,
-                                 UserReminderNotificationService userReminderNotificationService,
-                                 SecurityService securityService) {
+                                 UserReminderNotificationService userReminderNotificationService) {
         this.reminderDao = reminderDao;
         this.completedReminderDao = completedReminderDao;
         this.reminderNotificationService = reminderNotificationService;
         this.reminderNotificationAI = reminderNotificationAI;
         this.userReminderNotificationService = userReminderNotificationService;
-        this.securityService = securityService;
     }
 
     @Transactional
@@ -72,13 +67,12 @@ public class RepeatReminderService {
         Reminder toComplete = reminderDao.getReminder(
                 ReminderTable.TABLE.as("r").ID.eq(id),
                 new ReminderMapping()
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME)))
                         .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
                         .setRemindMessageMapping(new Mapping())
         );
         completedReminderDao.create(toComplete);
         moveReminderNotificationToNextPeriod(toComplete);
-        toComplete.getReceiver().setFrom(securityService.getAuthenticatedUser());
 
         return toComplete;
     }
@@ -113,11 +107,10 @@ public class RepeatReminderService {
         Reminder toSkip = reminderDao.getReminder(
                 ReminderTable.TABLE.ID.eq(id),
                 new ReminderMapping()
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME)))
                         .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
                         .setRemindMessageMapping(new Mapping())
         );
-        toSkip.getReceiver().setFrom(securityService.getAuthenticatedUser());
         moveReminderNotificationToNextPeriod(toSkip);
 
         return toSkip;

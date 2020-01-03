@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
@@ -38,7 +39,7 @@ public class DeleteFriendCommand implements CallbackBotCommand {
 
     @Override
     public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        friendshipService.deleteFriend(requestParams.getInt(Arg.FRIEND_ID.getKey()));
+        friendshipService.deleteFriend(TgMessage.from(callbackQuery), requestParams.getInt(Arg.FRIEND_ID.getKey()));
 
         messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_FRIEND_DELETED);
         messageService.editMessageByMessageCode(

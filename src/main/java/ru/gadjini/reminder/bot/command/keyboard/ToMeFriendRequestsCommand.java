@@ -6,9 +6,10 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
@@ -49,7 +50,7 @@ public class ToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableC
 
     @Override
     public boolean processMessage(Message message, String text) {
-        List<TgUser> friendRequests = friendshipService.getToMeFriendRequests();
+        List<TgUser> friendRequests = friendshipService.getToMeFriendRequests(message.getFrom().getId());
 
         messageService.sendMessage(
                 message.getChatId(),
@@ -65,12 +66,12 @@ public class ToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableC
     }
 
     @Override
-    public void restore(long chatId, int messageId, String queryId, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
-        List<TgUser> friendRequests = friendshipService.getToMeFriendRequests();
+    public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
+        List<TgUser> friendRequests = friendshipService.getToMeFriendRequests(tgMessage.getUser().getId());
 
         messageService.editMessage(
-                chatId,
-                messageId,
+                tgMessage.getChatId(),
+                tgMessage.getMessageId(),
                 friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null),
                 inlineKeyboardService.getFriendsListKeyboard(friendRequests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.GET_FRIEND_REQUEST_COMMAND_NAME)
         );
