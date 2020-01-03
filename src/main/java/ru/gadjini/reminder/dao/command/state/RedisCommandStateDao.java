@@ -1,29 +1,35 @@
-package ru.gadjini.reminder.dao;
+package ru.gadjini.reminder.dao.command.state;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
+import ru.gadjini.reminder.configuration.BotConfiguration;
 
 @Repository
-public class CommandStateDao {
+@Profile(BotConfiguration.PROFILE_PROD)
+public class RedisCommandStateDao implements CommandStateDao {
 
     private static final String KEY = "command:state";
 
     private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired
-    public CommandStateDao(RedisTemplate<String, Object> redisTemplate) {
+    public RedisCommandStateDao(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
+    @Override
     public void setState(long chatId, Object state) {
         redisTemplate.opsForHash().put(KEY, String.valueOf(chatId), state);
     }
 
+    @Override
     public <T> T getState(long chatId) {
         return (T) redisTemplate.opsForHash().get(KEY, String.valueOf(chatId));
     }
 
+    @Override
     public void deleteState(long chatId) {
         redisTemplate.opsForHash().delete(KEY, String.valueOf(chatId));
     }

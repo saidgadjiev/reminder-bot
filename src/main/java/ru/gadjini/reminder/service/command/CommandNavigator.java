@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
-import ru.gadjini.reminder.dao.CommandNavigatorDao;
+import ru.gadjini.reminder.dao.command.navigator.CommandNavigatorDao;
 import ru.gadjini.reminder.util.ReflectionUtils;
 
 import java.util.Collection;

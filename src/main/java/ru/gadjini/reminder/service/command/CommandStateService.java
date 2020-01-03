@@ -2,7 +2,7 @@ package ru.gadjini.reminder.service.command;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.gadjini.reminder.dao.CommandStateDao;
+import ru.gadjini.reminder.dao.command.state.CommandStateDao;
 
 @Service
 public class CommandStateService {

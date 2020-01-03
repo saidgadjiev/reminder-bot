@@ -1,7 +1,6 @@
 package ru.gadjini.reminder.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.glassfish.jersey.server.JSONP;
 import org.jooq.Field;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.time.RepeatTime;
