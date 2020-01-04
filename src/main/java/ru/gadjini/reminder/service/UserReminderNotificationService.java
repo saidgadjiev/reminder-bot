@@ -67,7 +67,11 @@ public class UserReminderNotificationService {
     }
 
     public List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType) {
-        return dao.getList(userId, notificationType);
+        return dao.getList(userId, notificationType, true);
+    }
+
+    public List<UserReminderNotification> getNonCachedList(int userId, UserReminderNotification.NotificationType notificationType) {
+        return dao.getList(userId, notificationType, false);
     }
 
     public void deleteById(int id) {

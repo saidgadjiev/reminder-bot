@@ -5,12 +5,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
+import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 @Qualifier("db")
@@ -26,11 +29,24 @@ public class DbUserReminderNotificationDao implements UserReminderNotificationDa
     }
 
     @Override
-    public void deleteById(int id) {
+    public UserReminderNotification deleteById(int id) {
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+
         jdbcTemplate.update(
-                "DELETE FROM user_reminder_notification WHERE id = ?",
-                ps -> ps.setInt(1, id)
+                con -> {
+                    PreparedStatement preparedStatement = con.prepareStatement("DELETE FROM user_reminder_notification WHERE id = ? RETURNING *");
+                    preparedStatement.setInt(1, id);
+                    return preparedStatement;
+                },
+                generatedKeyHolder
         );
+
+        UserReminderNotification deleted = new UserReminderNotification(null);
+        Map<String, Object> keys = generatedKeyHolder.getKeys();
+        deleted.setUserId((Integer) keys.get(UserReminderNotification.USER_ID));
+        deleted.setType((UserReminderNotification.NotificationType) keys.get(UserReminderNotification.TYPE));
+
+        return deleted;
     }
 
     @Override
@@ -60,7 +76,7 @@ public class DbUserReminderNotificationDao implements UserReminderNotificationDa
     }
 
     @Override
-    public List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType) {
+    public List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType, boolean useCache) {
         return jdbcTemplate.query(
                 "SELECT urn.*, rc.zone_id AS rc_zone_id FROM user_reminder_notification urn INNER JOIN tg_user rc ON urn.user_id = rc.user_id " +
                         "WHERE urn.user_id = ? AND urn.type = ? ORDER BY days DESC, time DESC, hours DESC, minutes DESC",

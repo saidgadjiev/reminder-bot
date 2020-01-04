@@ -25,7 +25,7 @@ public class InMemoryUserReminderNotificationDao implements UserReminderNotifica
                 public List<UserReminderNotification> load(@NonNull String key) {
                     Object[] objects = splitKey(key);
 
-                    return dbDao.getList((int) objects[0], (UserReminderNotification.NotificationType) objects[1]);
+                    return dbDao.getList((int) objects[0], (UserReminderNotification.NotificationType) objects[1], true);
                 }
             });
 
@@ -37,13 +37,17 @@ public class InMemoryUserReminderNotificationDao implements UserReminderNotifica
     }
 
     @Override
-    public void deleteById(int id) {
-        dbDao.deleteById(id);
+    public UserReminderNotification deleteById(int id) {
+        UserReminderNotification deleted = dbDao.deleteById(id);
+        cache.invalidate(getKey(deleted.getUserId(), deleted.getType()));
+        return deleted;
     }
 
     @Override
     public void create(UserReminderNotification userReminderNotification) {
         dbDao.create(userReminderNotification);
+
+        cache.invalidate(getKey(userReminderNotification.getUserId(), userReminderNotification.getType()));
     }
 
     @Override
@@ -52,8 +56,12 @@ public class InMemoryUserReminderNotificationDao implements UserReminderNotifica
     }
 
     @Override
-    public List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType) {
-        return cache.get(getKey(userId, notificationType));
+    public List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType, boolean useCache) {
+        if (useCache) {
+            return cache.get(getKey(userId, notificationType));
+        } else {
+            return dbDao.getList(userId, notificationType, false);
+        }
     }
 
     private String getKey(int userId, UserReminderNotification.NotificationType notificationType) {
