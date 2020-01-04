@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.service.command;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -22,7 +23,7 @@ public class CommandNavigator {
     private CommandNavigatorDao navigatorDao;
 
     @Autowired
-    public CommandNavigator(CommandNavigatorDao navigatorDao) {
+    public CommandNavigator(@Qualifier("redis") CommandNavigatorDao navigatorDao) {
         this.navigatorDao = navigatorDao;
     }
 

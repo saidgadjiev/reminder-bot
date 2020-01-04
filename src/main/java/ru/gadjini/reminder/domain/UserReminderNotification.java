@@ -1,5 +1,8 @@
 package ru.gadjini.reminder.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -41,7 +44,8 @@ public class UserReminderNotification {
 
     private ZoneId zoneId;
 
-    public UserReminderNotification(ZoneId zoneId) {
+    @JsonCreator
+    public UserReminderNotification(@JsonProperty("zoneId") ZoneId zoneId) {
         this.zoneId = zoneId;
     }
 

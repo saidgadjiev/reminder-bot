@@ -85,7 +85,7 @@ public class ReminderDao {
         return jdbcTemplate.query(
                 "SELECT *, (remind_at).*, (repeat_remind_at).*\n" +
                         "FROM reminder\n" +
-                        "WHERE repeat_remind_at::varchar IS NOT NULL\n" +
+                        "WHERE inactive = FALSE AND repeat_remind_at::varchar IS NOT NULL\n" +
                         "  AND (remind_at).dt_date < CURRENT_DATE",
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
         );
@@ -181,7 +181,7 @@ public class ReminderDao {
                         "         LEFT JOIN remind_message rm ON r.id = rm.reminder_id\n" +
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
                         "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
-                        "WHERE status = 0 AND CASE\n" +
+                        "WHERE inactive = FALSE AND status = 0 AND CASE\n" +
                         "          WHEN time_type = 0 THEN :curr_date >= fixed_time\n" +
                         "          ELSE date_diff_in_minute(:curr_date, last_reminder_at) >= minute(delay_time)\n" +
                         "          END\n" +

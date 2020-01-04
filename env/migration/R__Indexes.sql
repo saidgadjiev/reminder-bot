@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS reminder_time_reminder_id_idx ON reminder_time(reminder_id);

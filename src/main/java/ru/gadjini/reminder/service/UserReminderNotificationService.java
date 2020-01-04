@@ -1,9 +1,10 @@
 package ru.gadjini.reminder.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.dao.UserReminderNotificationDao;
+import ru.gadjini.reminder.dao.usernotification.UserReminderNotificationDao;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.ParseException;
@@ -32,7 +33,7 @@ public class UserReminderNotificationService {
     private ValidatorFactory validatorFactory;
 
     @Autowired
-    public UserReminderNotificationService(UserReminderNotificationDao dao,
+    public UserReminderNotificationService(@Qualifier("redis") UserReminderNotificationDao dao,
                                            LocalisationService localisationService,
                                            RequestParser requestParser,
                                            ValidatorFactory validatorFactory) {

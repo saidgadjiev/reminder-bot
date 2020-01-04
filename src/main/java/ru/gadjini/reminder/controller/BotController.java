@@ -2,18 +2,19 @@ package ru.gadjini.reminder.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiValidationException;
 import ru.gadjini.reminder.bot.ReminderBot;
 import ru.gadjini.reminder.configuration.BotConfiguration;
 
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+//TODO:выкинуть и запустить grizzly server. Надо тестить его.
 @Profile(BotConfiguration.PROFILE_TEST)
-@RestController
-@RequestMapping("/callback")
+@Path("/callback")
+@Controller
 public class BotController {
 
     private ReminderBot reminderBot;
@@ -23,22 +24,20 @@ public class BotController {
         this.reminderBot = reminderBot;
     }
 
-    @PostMapping("/{botPath}")
-    public ResponseEntity updateReceived(@PathVariable("botPath") String botPath, @RequestBody Update update) {
-        try {
-            BotApiMethod response = reminderBot.onWebhookUpdateReceived(update);
-            if (response != null) {
-                response.validate();
-            }
+    @POST
+    @Path("/{botPath}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateReceived(@PathParam("botPath") String botPath, Update update) {
+        reminderBot.onWebhookUpdateReceived(update);
 
-            return ResponseEntity.ok().build();
-        } catch (TelegramApiValidationException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return Response.ok(null).build();
     }
 
-    @GetMapping("/{botPath}")
-    public String testReceived(@PathVariable("botPath") String botPath) {
+    @GET
+    @Path("/{botPath}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String testReceived(@PathParam("botPath") String botPath) {
         return "Hi there " + botPath + "!";
     }
 }

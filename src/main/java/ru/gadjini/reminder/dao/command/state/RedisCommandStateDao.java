@@ -1,13 +1,12 @@
 package ru.gadjini.reminder.dao.command.state;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
-import ru.gadjini.reminder.configuration.BotConfiguration;
 
 @Repository
-@Profile(BotConfiguration.PROFILE_PROD)
+@Qualifier("redis")
 public class RedisCommandStateDao implements CommandStateDao {
 
     private static final String KEY = "command:state";

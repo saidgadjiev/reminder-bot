@@ -1,15 +1,13 @@
 package ru.gadjini.reminder.dao.command.state;
 
-import org.springframework.context.annotation.Profile;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import ru.gadjini.reminder.configuration.BotConfiguration;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-
-@Profile(BotConfiguration.PROFILE_TEST)
+@Qualifier("inMemory")
 public class InMemoryCommandState implements CommandStateDao {
 
     private Map<Long, Object> states = new ConcurrentHashMap<>();

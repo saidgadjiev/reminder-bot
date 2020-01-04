@@ -1,2 +1,2 @@
-server:
-  port: 8089
+web-hook:
+  internal-url: http://localhost:8089

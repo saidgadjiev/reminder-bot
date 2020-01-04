@@ -6,7 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.telegram.telegrambots.ApiContextInitializer;
+import ru.gadjini.reminder.bot.api.ApiContextInitializer;
 import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.properties.TimeZoneDbProperties;
 import ru.gadjini.reminder.properties.WebHookProperties;

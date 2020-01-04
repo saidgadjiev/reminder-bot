@@ -1,5 +1,6 @@
-package ru.gadjini.reminder.dao;
+package ru.gadjini.reminder.dao.usernotification;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -12,17 +13,19 @@ import java.sql.Time;
 import java.util.List;
 
 @Repository
-public class UserReminderNotificationDao {
+@Qualifier("db")
+public class DbUserReminderNotificationDao implements UserReminderNotificationDao {
 
     private JdbcTemplate jdbcTemplate;
 
     private ResultSetMapper resultSetMapper;
 
-    public UserReminderNotificationDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper) {
+    public DbUserReminderNotificationDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.resultSetMapper = resultSetMapper;
     }
 
+    @Override
     public void deleteById(int id) {
         jdbcTemplate.update(
                 "DELETE FROM user_reminder_notification WHERE id = ?",
@@ -30,6 +33,7 @@ public class UserReminderNotificationDao {
         );
     }
 
+    @Override
     public void create(UserReminderNotification userReminderNotification) {
         new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(UserReminderNotification.TABLE)
@@ -37,7 +41,8 @@ public class UserReminderNotificationDao {
                 .execute(parameterSource(userReminderNotification));
     }
 
-    public Integer count(int userId, UserReminderNotification.NotificationType notificationType) {
+    @Override
+    public int count(int userId, UserReminderNotification.NotificationType notificationType) {
         return jdbcTemplate.query(
                 "SELECT COUNT(*) as cnt FROM user_reminder_notification WHERE user_id = ? AND type = ?",
                 ps -> {
@@ -54,6 +59,7 @@ public class UserReminderNotificationDao {
         );
     }
 
+    @Override
     public List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType) {
         return jdbcTemplate.query(
                 "SELECT urn.*, rc.zone_id AS rc_zone_id FROM user_reminder_notification urn INNER JOIN tg_user rc ON urn.user_id = rc.user_id " +

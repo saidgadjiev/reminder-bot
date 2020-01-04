@@ -22,9 +22,13 @@ public class TimeZoneDbSenderJob {
     }
 
     @Scheduled(fixedDelay = 1000)
-    public void sendMessages() throws Exception {
-        Runnable job = blockingQueue.take();
-        job.run();
+    public void sendMessages() {
+        try {
+            Runnable job = blockingQueue.take();
+            job.run();
+        } catch (InterruptedException ignore) {
+
+        }
     }
 
     public void pushJob(Runnable job) {

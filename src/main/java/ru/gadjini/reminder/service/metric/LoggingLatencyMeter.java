@@ -4,6 +4,10 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
 public class LoggingLatencyMeter implements LatencyMeter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingLatencyMeter.class);
@@ -18,6 +22,10 @@ public class LoggingLatencyMeter implements LatencyMeter {
     @Override
     public void stop(String message, Object... args) {
         stopWatch.stop();
-        LOGGER.debug(message + " latency = {}", args, stopWatch.getTime());
+
+        Collection<Object> objects = new ArrayList<>(Arrays.asList(args));
+        objects.add(stopWatch.getTime());
+
+        LOGGER.debug(message + " latency = {}", objects.toArray());
     }
 }
