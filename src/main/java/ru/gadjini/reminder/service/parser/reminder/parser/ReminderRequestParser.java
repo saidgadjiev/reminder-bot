@@ -29,9 +29,7 @@ public class ReminderRequestParser {
     }
 
     public ReminderRequest parse(List<BaseLexem> lexems) {
-        if (lexemsConsumer.check(lexems, ReminderToken.LOGIN)) {
-            consumeLogin(lexems);
-        } else if (lexemsConsumer.check(lexems, ReminderToken.TEXT)) {
+        if (lexemsConsumer.check(lexems, ReminderToken.TEXT)) {
             consumeText(lexems);
         }
         if (lexemsConsumer.getPosition() < lexems.size()) {
@@ -48,11 +46,5 @@ public class ReminderRequestParser {
         if (lexemsConsumer.check(lexems, ReminderToken.NOTE)) {
             reminderRequest.setNote(lexemsConsumer.consume(lexems, ReminderToken.NOTE).getValue());
         }
-    }
-
-    private void consumeLogin(List<BaseLexem> lexems) {
-        reminderRequest.setReceiverName(lexemsConsumer.consume(lexems, ReminderToken.LOGIN).getValue());
-
-        consumeText(lexems);
     }
 }

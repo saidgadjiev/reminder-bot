@@ -1,17 +1,12 @@
 package ru.gadjini.reminder.service.parser.reminder.lexer;
 
 import org.apache.commons.lang3.StringUtils;
-import ru.gadjini.reminder.exception.ParseException;
-import ru.gadjini.reminder.regex.GroupMatcher;
-import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
-import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class ReminderRequestLexer {
 
@@ -40,24 +35,13 @@ public class ReminderRequestLexer {
     }
 
     private LinkedList<BaseLexem> tokenizeReminderTextAndNote(String tokenizeStr, LinkedList<BaseLexem> lexems) {
-        GroupPattern loginPattern = lexerConfig.getLoginPattern();
-        GroupMatcher loginMatcher = loginPattern.matcher(tokenizeStr);
+        lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, StringUtils.capitalize(removeHtmlTags(tokenizeStr).trim())));
 
-        if (loginMatcher.matches()) {
-            Map<String, String> values = loginMatcher.values();
-
-            lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, StringUtils.capitalize(values.get(PatternBuilder.TEXT)).trim()));
-            if (values.containsKey(PatternBuilder.LOGIN)) {
-                lexems.addFirst(new ReminderLexem(ReminderToken.LOGIN, values.get(PatternBuilder.LOGIN).trim()));
-            }
-            if (parts.length > 1) {
-                lexems.add(new ReminderLexem(ReminderToken.NOTE, parts[1]));
-            }
-
-            return lexems;
+        if (parts.length > 1) {
+            lexems.add(new ReminderLexem(ReminderToken.NOTE, parts[1]));
         }
 
-        throw new ParseException();
+        return lexems;
     }
 
     private String[] breakToTextAndNote(String str) {
@@ -68,5 +52,9 @@ public class ReminderRequestLexer {
         }
 
         return parts;
+    }
+
+    private String removeHtmlTags(String str) {
+        return str.replaceAll("<.*?>", "");
     }
 }
