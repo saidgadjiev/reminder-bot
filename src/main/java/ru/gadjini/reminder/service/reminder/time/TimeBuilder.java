@@ -156,7 +156,7 @@ public class TimeBuilder {
             time.append(declensionService.months(period.getMonths())).append(" ");
         }
         if (period.getDays() != 0) {
-            time.append(declensionService.day(period.getDays()));
+            time.append(declensionService.day(period.getDays())).append(" ");
         }
         if (period.getHours() != 0) {
             time.append(declensionService.hour(period.getHours())).append(" ");
