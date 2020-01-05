@@ -19,6 +19,7 @@ import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.UpdateReminderResult;
+import ru.gadjini.reminder.service.SuggestionService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
@@ -51,17 +52,20 @@ public class ReminderRequestService {
 
     private ReminderRequestExtractor requestExtractor;
 
+    private SuggestionService suggestionService;
+
     @Autowired
     public ReminderRequestService(ReminderService reminderService, ValidatorFactory validatorFactory,
                                   RequestParser requestParser, LocalisationService localisationService,
                                   RepeatReminderService repeatReminderService,
-                                  ReminderRequestExtractor requestExtractor) {
+                                  ReminderRequestExtractor requestExtractor, SuggestionService suggestionService) {
         this.reminderService = reminderService;
         this.validatorFactory = validatorFactory;
         this.requestParser = requestParser;
         this.localisationService = localisationService;
         this.repeatReminderService = repeatReminderService;
         this.requestExtractor = requestExtractor;
+        this.suggestionService = suggestionService;
     }
 
     public Reminder createReminder(ReminderRequestContext context) {
@@ -69,7 +73,9 @@ public class ReminderRequestService {
         reminderRequest.setMessageId(context.getMessageId());
 
         ((CreateReminderValidator) validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER)).validate(context.getUser(), reminderRequest);
-        return createReminder(context.getUser(), reminderRequest);
+        Reminder reminder = createReminder(context.getUser(), reminderRequest);
+
+
     }
 
     @Transactional
@@ -314,6 +320,14 @@ public class ReminderRequestService {
             return repeatReminderService.createReminder(reminder);
         } else {
             return reminderService.createReminder(reminder);
+        }
+    }
+
+    private void createSuggestion(Reminder reminder, ReminderRequestContext reminderRequestContext) {
+        if (reminder.isMySelf()) {
+            suggestionService.addSuggestion(reminder.getCreatorId(), reminderRequestContext.getText());
+        } else {
+
         }
     }
 }

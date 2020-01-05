@@ -43,7 +43,7 @@ public class CommandNames {
     public static final String EDIT_REMINDER_NOTE_COMMAND_NAME = "ah";
     public static final String GET_REMINDERS_COMMAND_HISTORY_NAME = "ai";
     public static final String GET_FRIENDS_COMMAND_HISTORY_NAME = "aj";
-    public static final String CREATE_REMINDER_COMMAND_NAME = "ak";
+    public static final String CREATE_FRIEND_REMINDER_COMMAND_NAME = "ak";
     public static final String DELETE_FRIEND_COMMAND_NAME = "al";
     public static final String COMPLETE_REMINDER_COMMAND_NAME = "am";
     public static final String CHANGE_FRIEND_NAME_COMMAND_NAME = "an";

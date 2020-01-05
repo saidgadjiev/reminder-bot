@@ -22,7 +22,7 @@ import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 
 @Component
-public class CreateReminderCallbackCommand implements CallbackBotCommand, NavigableBotCommand {
+public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, NavigableBotCommand {
 
     private CommandStateService stateService;
 
@@ -37,12 +37,12 @@ public class CreateReminderCallbackCommand implements CallbackBotCommand, Naviga
     private ReminderMessageSender reminderMessageSender;
 
     @Autowired
-    public CreateReminderCallbackCommand(CommandStateService stateService,
-                                         ReminderRequestService reminderService,
-                                         MessageService messageService,
-                                         ReplyKeyboardService replyKeyboardService,
-                                         CommandNavigator commandNavigator,
-                                         ReminderMessageSender reminderMessageSender) {
+    public CreateFriendReminderCallbackCommand(CommandStateService stateService,
+                                               ReminderRequestService reminderService,
+                                               MessageService messageService,
+                                               ReplyKeyboardService replyKeyboardService,
+                                               CommandNavigator commandNavigator,
+                                               ReminderMessageSender reminderMessageSender) {
         this.stateService = stateService;
         this.reminderService = reminderService;
         this.messageService = messageService;
@@ -53,7 +53,7 @@ public class CreateReminderCallbackCommand implements CallbackBotCommand, Naviga
 
     @Override
     public String getName() {
-        return CommandNames.CREATE_REMINDER_COMMAND_NAME;
+        return CommandNames.CREATE_FRIEND_REMINDER_COMMAND_NAME;
     }
 
     @Override

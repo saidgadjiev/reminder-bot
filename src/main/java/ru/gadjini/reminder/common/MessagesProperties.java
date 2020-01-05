@@ -2,7 +2,8 @@ package ru.gadjini.reminder.common;
 
 public class MessagesProperties {
 
-    private MessagesProperties() {}
+    private MessagesProperties() {
+    }
 
     public static final String MESSAGE_HELP = "message.help";
 
@@ -58,7 +59,7 @@ public class MessagesProperties {
 
     public static final String GET_FRIENDS_COMMAND_NAME = "get.friends.command.name";
 
-    public static final String CREATE_REMINDER_COMMAND_DESCRIPTION = "create.reminder.command.description";
+    public static final String CREATE_FRIEND_REMINDER_COMMAND_DESCRIPTION = "create.friend.reminder.command.description";
 
     public static final String GO_BACK_COMMAND_NAME = "go.back.command.name";
 
@@ -335,4 +336,6 @@ public class MessagesProperties {
     public static final String MESSAGE_TRIAL_SUBSCRIPTION_END_DATE = "message.trial.subscription.end.date";
 
     public static final String SUBSCRIPTION_COMMAND_NAME = "subscription.command.name";
+
+    public static final String CREATE_REMINDER_COMMAND_DESCRIPTION = "create.reminder.command.description";
 }

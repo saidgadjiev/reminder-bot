@@ -140,8 +140,8 @@ public class ButtonFactory {
     }
 
     public InlineKeyboardButton createFriendReminderButton(int friendUserId) {
-        InlineKeyboardButton createFriendReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_DESCRIPTION));
-        createFriendReminderButton.setCallbackData(CommandNames.CREATE_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+        InlineKeyboardButton createFriendReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CREATE_FRIEND_REMINDER_COMMAND_DESCRIPTION));
+        createFriendReminderButton.setCallbackData(CommandNames.CREATE_FRIEND_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.FRIEND_ID.getKey(), friendUserId)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
