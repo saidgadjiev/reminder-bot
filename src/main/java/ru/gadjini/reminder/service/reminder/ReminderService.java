@@ -196,7 +196,7 @@ public class ReminderService {
                 new ReminderMapping().setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID))).setReceiverMapping(new Mapping()).setRemindMessageMapping(new Mapping())
         );
 
-        List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAtInReceiverZone, receiverId);
+        List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAt, receiverId);
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
         reminderNotificationService.deleteReminderNotifications(reminderId);
         reminderNotificationService.create(reminderNotifications);
