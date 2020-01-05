@@ -105,7 +105,7 @@ public class RepeatReminderService {
     @Transactional
     public Reminder skip(int id) {
         Reminder toSkip = reminderDao.getReminder(
-                ReminderTable.TABLE.ID.eq(id),
+                ReminderTable.TABLE.as("r").ID.eq(id),
                 new ReminderMapping()
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME)))
                         .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
