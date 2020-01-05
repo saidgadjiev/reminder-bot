@@ -182,7 +182,7 @@ public class ReminderDao {
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
                         "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
                         "         INNER JOIN subscription sb ON r.receiver_id = sb.user_id\n" +
-                        "WHERE sb.end_date <= current_date AND r.inactive = FALSE AND r.status = 0 AND CASE\n" +
+                        "WHERE sb.end_date >= current_date AND r.inactive = FALSE AND r.status = 0 AND CASE\n" +
                         "          WHEN rt.time_type = 0 THEN :curr_date >= rt.fixed_time\n" +
                         "          ELSE date_diff_in_minute(:curr_date, rt.last_reminder_at) >= minute(rt.delay_time)\n" +
                         "          END\n" +
