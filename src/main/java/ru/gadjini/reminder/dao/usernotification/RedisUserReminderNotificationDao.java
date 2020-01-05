@@ -66,7 +66,7 @@ public class RedisUserReminderNotificationDao implements UserReminderNotificatio
 
                 return list;
             } else {
-                return members.stream().map(o -> (UserReminderNotification) o).collect(Collectors.toList());
+                return (List<UserReminderNotification>)(Object) members;
             }
         } else {
             return dbDao.getList(userId, notificationType, false);
