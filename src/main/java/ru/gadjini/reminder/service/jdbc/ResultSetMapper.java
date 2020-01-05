@@ -36,6 +36,32 @@ public class ResultSetMapper {
         return tgUser;
     }
 
+    public Plan mapPlan(ResultSet rs) throws SQLException {
+        Plan plan = new Plan();
+
+        plan.setId(rs.getInt(Plan.ID));
+        plan.setDescription(rs.getString(Plan.DESCRIPTION));
+        plan.setPeriod(JodaTimeUtils.toPeriod((PGInterval) rs.getObject(Plan.PERIOD)));
+        plan.setPrice(rs.getInt(Plan.PRICE));
+        plan.setActive(rs.getBoolean(Plan.ACTIVE));
+
+        return plan;
+    }
+
+    public Subscription mapSubscription(ResultSet rs) throws SQLException {
+        Subscription subscription = new Subscription();
+
+        subscription.setUserId(rs.getInt(Subscription.USER_ID));
+        subscription.setEndDate(rs.getDate(Subscription.END_DATE).toLocalDate());
+
+        int planId = rs.getInt(Subscription.PLAN_ID);
+        if (!rs.wasNull()) {
+            subscription.setPlanId(planId);
+        }
+
+        return subscription;
+    }
+
     public Reminder mapReminder(ResultSet rs) throws SQLException {
         Reminder reminder = new Reminder();
 

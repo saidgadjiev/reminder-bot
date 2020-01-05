@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.gadjini.reminder.bot.api.ApiContextInitializer;
 import ru.gadjini.reminder.properties.BotProperties;
+import ru.gadjini.reminder.properties.SubscriptionProperties;
 import ru.gadjini.reminder.properties.TimeZoneDbProperties;
 import ru.gadjini.reminder.properties.WebHookProperties;
 
@@ -16,7 +17,8 @@ import ru.gadjini.reminder.properties.WebHookProperties;
 @EnableConfigurationProperties(value = {
         BotProperties.class,
         WebHookProperties.class,
-        TimeZoneDbProperties.class
+        TimeZoneDbProperties.class,
+        SubscriptionProperties.class
 })
 @EnableScheduling
 public class ReminderApplication {

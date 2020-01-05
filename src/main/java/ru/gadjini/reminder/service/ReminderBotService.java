@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.bot;
+package ru.gadjini.reminder.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -6,15 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.exception.UserException;
-import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.service.command.CommandExecutor;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
@@ -24,11 +22,9 @@ import ru.gadjini.reminder.service.metric.LatencyMeter;
 import ru.gadjini.reminder.service.metric.LatencyMeterFactory;
 
 @Component
-public class ReminderBot extends TelegramWebhookBot {
+public class ReminderBotService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReminderBot.class);
-
-    private BotProperties botProperties;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReminderBotService.class);
 
     private CommandExecutor commandExecutor;
 
@@ -43,13 +39,12 @@ public class ReminderBot extends TelegramWebhookBot {
     private LatencyMeterFactory latencyMeterFactory;
 
     @Autowired
-    public ReminderBot(BotProperties botProperties,
-                       CommandExecutor commandExecutor,
-                       CommandNavigator commandNavigator,
-                       MessageService messageService,
-                       ReplyKeyboardService replyKeyboardService,
-                       MessageTextExtractor messageTextExtractor, LatencyMeterFactory latencyMeterFactory) {
-        this.botProperties = botProperties;
+    public ReminderBotService(CommandExecutor commandExecutor,
+                              CommandNavigator commandNavigator,
+                              MessageService messageService,
+                              ReplyKeyboardService replyKeyboardService,
+                              MessageTextExtractor messageTextExtractor,
+                              LatencyMeterFactory latencyMeterFactory) {
         this.commandExecutor = commandExecutor;
         this.commandNavigator = commandNavigator;
         this.messageService = messageService;
@@ -58,29 +53,7 @@ public class ReminderBot extends TelegramWebhookBot {
         this.latencyMeterFactory = latencyMeterFactory;
     }
 
-    @Override
-    public BotApiMethod onWebhookUpdateReceived(Update update) {
-        handleUpdate(update);
-
-        return null;
-    }
-
-    @Override
-    public String getBotUsername() {
-        return botProperties.getName();
-    }
-
-    @Override
-    public String getBotToken() {
-        return botProperties.getToken();
-    }
-
-    @Override
-    public String getBotPath() {
-        return botProperties.getName();
-    }
-
-    private void handleUpdate(Update update) {
+    public void handleUpdate(Update update) {
         Long chatId = -1L;
 
         try {
@@ -147,11 +120,11 @@ public class ReminderBot extends TelegramWebhookBot {
     }
 
     private boolean restoreIfNeed(long chatId, String command) {
-        if (StringUtils.isNotBlank(command) && command.startsWith(BotCommand.COMMAND_INIT_CHARACTER + MessagesProperties.START_COMMAND_NAME)) {
+        if (StringUtils.isNotBlank(command) && command.startsWith(BotCommand.COMMAND_INIT_CHARACTER + CommandNames.START_COMMAND_NAME)) {
             return false;
         }
         if (commandNavigator.isEmpty(chatId)) {
-            commandNavigator.zeroRestore(chatId, (NavigableBotCommand) commandExecutor.getBotCommand(MessagesProperties.START_COMMAND_NAME));
+            commandNavigator.zeroRestore(chatId, (NavigableBotCommand) commandExecutor.getBotCommand(CommandNames.START_COMMAND_NAME));
             messageService.sendBotRestartedMessage(chatId, replyKeyboardService.getMainMenu());
 
             return true;

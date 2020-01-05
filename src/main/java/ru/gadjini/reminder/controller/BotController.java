@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.gadjini.reminder.bot.ReminderBot;
+import ru.gadjini.reminder.service.ReminderBotService;
 import ru.gadjini.reminder.configuration.BotConfiguration;
 
 import javax.ws.rs.*;
@@ -17,11 +17,11 @@ import javax.ws.rs.core.Response;
 @Controller
 public class BotController {
 
-    private ReminderBot reminderBot;
+    private ReminderBotService reminderBotService;
 
     @Autowired
-    public BotController(ReminderBot reminderBot) {
-        this.reminderBot = reminderBot;
+    public BotController(ReminderBotService reminderBotService) {
+        this.reminderBotService = reminderBotService;
     }
 
     @POST
@@ -29,7 +29,7 @@ public class BotController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateReceived(@PathParam("botPath") String botPath, Update update) {
-        reminderBot.onWebhookUpdateReceived(update);
+        reminderBotService.onWebhookUpdateReceived(update);
 
         return Response.ok(null).build();
     }

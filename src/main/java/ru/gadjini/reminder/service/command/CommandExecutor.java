@@ -8,20 +8,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
-import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.request.RequestParamsParser;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class CommandExecutor {
-
-    public static final String COMMAND_ARG_SEPARATOR = "=";
-
-    public static final String COMMAND_NAME_SEPARATOR = ":";
 
     private Map<String, BotCommand> botCommandMap = new HashMap<>();
 
@@ -31,12 +24,12 @@ public class CommandExecutor {
 
     private CommandNavigator commandNavigator;
 
-    private RequestParamsParser requestParamsParser;
+    private CommandParser commandParser;
 
     @Autowired
-    public CommandExecutor(CommandNavigator commandNavigator, RequestParamsParser requestParamsParser) {
+    public CommandExecutor(CommandNavigator commandNavigator, CommandParser commandParser) {
         this.commandNavigator = commandNavigator;
-        this.requestParamsParser = requestParamsParser;
+        this.commandParser = commandParser;
     }
 
     @Autowired
@@ -97,15 +90,10 @@ public class CommandExecutor {
     }
 
     public void executeCallbackCommand(CallbackQuery callbackQuery) {
-        String text = callbackQuery.getData();
-        String[] commandSplit = text.split(COMMAND_NAME_SEPARATOR);
-        CallbackBotCommand botCommand = callbackBotCommandMap.get(commandSplit[0]);
-        RequestParams requestParams = new RequestParams();
+        CommandParser.CommandParseResult parseResult = commandParser.parseCallbackCommand(callbackQuery);
+        CallbackBotCommand botCommand = callbackBotCommandMap.get(parseResult.getCommandName());
 
-        if (commandSplit.length > 1) {
-            requestParams = requestParamsParser.parse(commandSplit[1]);
-        }
-        botCommand.processMessage(callbackQuery, requestParams);
+        botCommand.processMessage(callbackQuery, parseResult.getRequestParams());
 
         if (botCommand instanceof NavigableBotCommand) {
             commandNavigator.push(callbackQuery.getMessage().getChatId(), (NavigableBotCommand) botCommand);
@@ -113,14 +101,11 @@ public class CommandExecutor {
     }
 
     private boolean executeBotCommand(Message message) {
-        String text = message.getText().trim();
-        String[] commandSplit = text.split(COMMAND_ARG_SEPARATOR);
-        BotCommand botCommand = botCommandMap.get(commandSplit[0].substring(1));
+        CommandParser.CommandParseResult commandParseResult = commandParser.parseBotCommand(message);
+        BotCommand botCommand = botCommandMap.get(commandParseResult.getCommandName());
 
         if (botCommand != null) {
-            String[] parameters = Arrays.copyOfRange(commandSplit, 1, commandSplit.length);
-
-            botCommand.processMessage(null, message, parameters);
+            botCommand.processMessage(null, message, commandParseResult.getParameters());
 
             if (botCommand instanceof NavigableBotCommand) {
                 commandNavigator.push(message.getChatId(), (NavigableBotCommand) botCommand);

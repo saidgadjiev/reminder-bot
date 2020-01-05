@@ -6,6 +6,7 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.message.MessageService;
 
@@ -16,7 +17,7 @@ public class HelpCommand extends BotCommand {
 
     @Autowired
     public HelpCommand(MessageService messageService) {
-        super(MessagesProperties.HELP_COMMAND_NAME, "");
+        super(CommandNames.HELP_COMMAND_NAME, "");
         this.messageService = messageService;
     }
 

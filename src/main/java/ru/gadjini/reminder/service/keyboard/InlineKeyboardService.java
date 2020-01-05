@@ -11,7 +11,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.command.CommandExecutor;
+import ru.gadjini.reminder.service.command.CommandParser;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
 import java.util.ArrayList;
@@ -30,6 +30,15 @@ public class InlineKeyboardService {
         this.buttonFactory = buttonFactory;
     }
 
+    public InlineKeyboardMarkup getPaymentKeyboard(int planId) {
+        InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
+
+        List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
+        keyboard.add(List.of(buttonFactory.paymentButton(planId)));
+
+        return keyboardMarkup;
+    }
+
     public InlineKeyboardMarkup getUserReminderNotificationInlineKeyboard(List<Integer> reminderNotificationsIds, UserReminderNotification.NotificationType notificationType) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
@@ -41,11 +50,11 @@ public class InlineKeyboardService {
             for (int id : list) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(i++));
-                button.setCallbackData(CommandNames.DELETE_USER_REMINDER_NOTIFICATION_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR +
+                button.setCallbackData(CommandNames.DELETE_USER_REMINDER_NOTIFICATION_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                         new RequestParams()
                                 .add(Arg.USER_REMINDER_NOTIFICATION_ID.getKey(), id)
                                 .add(Arg.USER_REMINDER_NOTIFICATION_TYPE.getKey(), notificationType.getCode())
-                                .serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
+                                .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
                 row.add(button);
             }
 
@@ -75,10 +84,10 @@ public class InlineKeyboardService {
             for (int reminderTimeId : list) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(i++));
-                button.setCallbackData(CommandNames.REMINDER_TIME_DETAILS_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR +
+                button.setCallbackData(CommandNames.REMINDER_TIME_DETAILS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                         new RequestParams()
                                 .add(Arg.REMINDER_NOTIFICATION_ID.getKey(), reminderTimeId)
-                                .serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
+                                .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
                 row.add(button);
             }
 
@@ -101,10 +110,10 @@ public class InlineKeyboardService {
             for (int friendUserId : list) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(i++));
-                button.setCallbackData(commandName + CommandExecutor.COMMAND_NAME_SEPARATOR +
+                button.setCallbackData(commandName + CommandParser.COMMAND_NAME_SEPARATOR +
                         new RequestParams()
                                 .add(Arg.FRIEND_ID.getKey(), friendUserId)
-                                .serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
+                                .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
                 row.add(button);
             }
 
@@ -125,10 +134,10 @@ public class InlineKeyboardService {
             for (int remindId : list) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(i++));
-                button.setCallbackData(CommandNames.REMINDER_DETAILS_COMMAND_NAME + CommandExecutor.COMMAND_NAME_SEPARATOR +
+                button.setCallbackData(CommandNames.REMINDER_DETAILS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                         new RequestParams()
                                 .add(Arg.REMINDER_ID.getKey(), remindId)
-                                .serialize(CommandExecutor.COMMAND_ARG_SEPARATOR));
+                                .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
                 row.add(button);
             }
 

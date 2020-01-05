@@ -2,7 +2,9 @@ package ru.gadjini.reminder.service.keyboard;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -39,9 +41,14 @@ public class ReplyKeyboardService {
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.REFRESH_USER_DATA_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.SUBSCRIPTION_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
 
         return replyKeyboardMarkup;
+    }
+
+    public ReplyKeyboard removeKeyboard() {
+        return new ReplyKeyboardRemove();
     }
 
     public ReplyKeyboardMarkup getUserReminderNotificationSettingsKeyboard() {
@@ -106,7 +113,7 @@ public class ReplyKeyboardService {
         return replyKeyboardMarkup;
     }
 
-    private KeyboardRow keyboardRow(String ... buttons) {
+    private KeyboardRow keyboardRow(String... buttons) {
         KeyboardRow keyboardRow = new KeyboardRow();
         keyboardRow.addAll(Arrays.asList(buttons));
 

@@ -8,10 +8,6 @@ public class MessagesProperties {
 
     public static final String MESSAGE_START = "message.start";
 
-    public static final String START_COMMAND_NAME = "start";
-
-    public static final String HELP_COMMAND_NAME = "help";
-
     public static final String MESSAGE_NEW_REMINDER = "message.new.reminder";
 
     public static final String MESSAGE_REMINDER_FORMAT = "message.reminder.format";
@@ -325,4 +321,18 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_TIME_EDITED = "message.reminder.time.edited";
 
     public static final String MESSAGE_REMINDER_EDITED = "message.reminder.edited";
+
+    public static final String MESSAGE_SUBSCRIPTION_EXPIRED = "message.subscription.expired";
+
+    public static final String PROCESS_PAYMENT_COMMAND_DESCRIPTION = "process.payment.command.description";
+
+    public static final String MESSAGE_INVALID_PLAN = "message.invalid.plan";
+
+    public static final String MESSAGE_SUBSCRIPTION_RENEWED = "message.subscription.renewed";
+
+    public static final String MESSAGE_SUBSCRIPTION_END_DATE = "message.subscription.end.date";
+
+    public static final String MESSAGE_TRIAL_SUBSCRIPTION_END_DATE = "message.trial.subscription.end.date";
+
+    public static final String SUBSCRIPTION_COMMAND_NAME = "subscription.command.name";
 }

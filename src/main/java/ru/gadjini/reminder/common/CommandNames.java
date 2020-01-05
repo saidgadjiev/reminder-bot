@@ -4,6 +4,8 @@ public class CommandNames {
 
     private CommandNames() {}
 
+    public static final String START_COMMAND_NAME = "start";
+    public static final String HELP_COMMAND_NAME = "help";
     public static final String ACCEPT_FRIEND_REQUEST_COMMAND_NAME = "a";
     public static final String REJECT_FRIEND_REQUEST_COMMAND_NAME = "b";
     public static final String OK_COMMAND_NAME = "ok";
@@ -46,4 +48,5 @@ public class CommandNames {
     public static final String COMPLETE_REMINDER_COMMAND_NAME = "am";
     public static final String CHANGE_FRIEND_NAME_COMMAND_NAME = "an";
     public static final String CREATE_REMINDER_KEYBOARD_COMMAND_NAME = "ao";
+    public static final String PROCESS_PAYMENT_COMMAND_NAME = "ap";
 }

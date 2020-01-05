@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.UserReminderNotification;
@@ -36,6 +37,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     private UserReminderNotificationService userReminderNotificationService;
 
+
     @Autowired
     public StartCommand(MessageService messageService,
                         ReminderRequestService reminderRequestService,
@@ -43,7 +45,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
                         ReplyKeyboardService replyKeyboardService,
                         ReminderMessageSender reminderMessageSender,
                         UserReminderNotificationService userReminderNotificationService) {
-        super(MessagesProperties.START_COMMAND_NAME, "");
+        super(CommandNames.START_COMMAND_NAME, "");
         this.messageService = messageService;
         this.reminderRequestService = reminderRequestService;
         this.tgUserService = tgUserService;
@@ -61,7 +63,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     @Override
     public String getHistoryName() {
-        return MessagesProperties.START_COMMAND_NAME;
+        return CommandNames.START_COMMAND_NAME;
     }
 
     @Override

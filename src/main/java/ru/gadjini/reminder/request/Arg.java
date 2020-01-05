@@ -9,7 +9,8 @@ public enum Arg {
     CURR_HISTORY_NAME("e"),
     RESTORE_KEYBOARD("f"),
     FRIEND_ID("g"),
-    USER_REMINDER_NOTIFICATION_TYPE("h");
+    USER_REMINDER_NOTIFICATION_TYPE("h"),
+    PLAN_ID("i");
 
     private final String key;
 

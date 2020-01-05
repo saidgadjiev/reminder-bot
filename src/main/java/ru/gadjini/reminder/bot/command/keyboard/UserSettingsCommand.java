@@ -50,7 +50,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
 
     @Override
     public String getParentHistoryName() {
-        return MessagesProperties.START_COMMAND_NAME;
+        return CommandNames.START_COMMAND_NAME;
     }
 
     @Override

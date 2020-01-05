@@ -2,6 +2,7 @@ package ru.gadjini.reminder.model;
 
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 public class TgMessage {
@@ -65,5 +66,15 @@ public class TgMessage {
         tgMessage.user = message.getFrom();
 
         return tgMessage;
+    }
+
+    public static TgMessage from(Update update) {
+        if (update.hasCallbackQuery()) {
+            return from(update.getCallbackQuery());
+        } else if (update.hasEditedMessage()) {
+            return from(update.getEditedMessage());
+        }
+
+        return from(update.getMessage());
     }
 }

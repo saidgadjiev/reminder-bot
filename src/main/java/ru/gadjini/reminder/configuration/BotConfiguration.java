@@ -20,6 +20,9 @@ import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.properties.WebHookProperties;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.command.CommandStateService;
+import ru.gadjini.reminder.service.filter.BotFilter;
+import ru.gadjini.reminder.service.filter.ReminderBotFilter;
+import ru.gadjini.reminder.service.filter.SubscriptionFilter;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -82,5 +85,12 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
     @Override
     public void customize(Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder) {
         jacksonObjectMapperBuilder.modules(new JavaTimeModule(), new JodaModule()).serializationInclusion(JsonInclude.Include.NON_NULL);
+    }
+
+    @Bean
+    public BotFilter botFilter(SubscriptionFilter subscriptionFilter, ReminderBotFilter reminderBotFilter) {
+        subscriptionFilter.setNext(reminderBotFilter);
+
+        return subscriptionFilter;
     }
 }
