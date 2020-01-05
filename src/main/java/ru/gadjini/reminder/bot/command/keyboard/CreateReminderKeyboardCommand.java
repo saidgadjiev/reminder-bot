@@ -92,6 +92,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                         .setText(extractReceiverResult.getText())
                         .setReceiverId(receiver.getUserId())
                         .setReceiverZone(receiver.getZone())
+                        .setReceiverName(receiver.getName())
                         .setVoice(message.hasVoice())
                         .setUser(message.getFrom())
                         .setMessageId(message.getMessageId()));
@@ -128,6 +129,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                 .setReceiverZone(receiver.getZone())
                 .setVoice(message.hasVoice())
                 .setUser(message.getFrom())
+                .setReceiverName(receiver.getName())
                 .setMessageId(message.getMessageId()));
         reminder.getCreator().setChatId(message.getChatId());
 

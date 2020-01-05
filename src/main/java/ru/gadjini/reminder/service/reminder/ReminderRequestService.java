@@ -19,12 +19,13 @@ import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.UpdateReminderResult;
-import ru.gadjini.reminder.service.SuggestionService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestExtractor;
+import ru.gadjini.reminder.service.suggestion.SuggestionService;
+import ru.gadjini.reminder.service.suggestion.SuggestionTextBuilder;
 import ru.gadjini.reminder.service.validation.CreateReminderValidator;
 import ru.gadjini.reminder.service.validation.ValidationEvent;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
@@ -54,11 +55,14 @@ public class ReminderRequestService {
 
     private SuggestionService suggestionService;
 
+    private SuggestionTextBuilder suggestionTextBuilder;
+
     @Autowired
     public ReminderRequestService(ReminderService reminderService, ValidatorFactory validatorFactory,
                                   RequestParser requestParser, LocalisationService localisationService,
                                   RepeatReminderService repeatReminderService,
-                                  ReminderRequestExtractor requestExtractor, SuggestionService suggestionService) {
+                                  ReminderRequestExtractor requestExtractor,
+                                  SuggestionService suggestionService, SuggestionTextBuilder suggestionTextBuilder) {
         this.reminderService = reminderService;
         this.validatorFactory = validatorFactory;
         this.requestParser = requestParser;
@@ -66,6 +70,7 @@ public class ReminderRequestService {
         this.repeatReminderService = repeatReminderService;
         this.requestExtractor = requestExtractor;
         this.suggestionService = suggestionService;
+        this.suggestionTextBuilder = suggestionTextBuilder;
     }
 
     public Reminder createReminder(ReminderRequestContext context) {
@@ -75,7 +80,10 @@ public class ReminderRequestService {
         ((CreateReminderValidator) validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER)).validate(context.getUser(), reminderRequest);
         Reminder reminder = createReminder(context.getUser(), reminderRequest);
 
+        String suggestion = suggestionTextBuilder.getSuggestionText(reminder, context);
+        suggestionService.addSuggestion(reminder.getCreatorId(), suggestion);
 
+        return reminder;
     }
 
     @Transactional
@@ -221,11 +229,8 @@ public class ReminderRequestService {
         if (diff.get(ReminderTable.TABLE.REPEAT_REMIND_AT) != null) {
             return true;
         }
-        if (diff.get(ReminderTable.TABLE.REMIND_AT) != null) {
-            return true;
-        }
 
-        return false;
+        return diff.get(ReminderTable.TABLE.REMIND_AT) != null;
     }
 
     private void setTime(Reminder reminder, Time time) {
@@ -320,14 +325,6 @@ public class ReminderRequestService {
             return repeatReminderService.createReminder(reminder);
         } else {
             return reminderService.createReminder(reminder);
-        }
-    }
-
-    private void createSuggestion(Reminder reminder, ReminderRequestContext reminderRequestContext) {
-        if (reminder.isMySelf()) {
-            suggestionService.addSuggestion(reminder.getCreatorId(), reminderRequestContext.getText());
-        } else {
-
         }
     }
 }

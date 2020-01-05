@@ -12,6 +12,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service
 public class ReplyKeyboardService {
@@ -21,6 +22,15 @@ public class ReplyKeyboardService {
     @Autowired
     public ReplyKeyboardService(LocalisationService localisationService) {
         this.localisationService = localisationService;
+    }
+
+    public ReplyKeyboardMarkup getSuggestionsKeyboard(List<String> suggestions) {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+
+        List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
+        suggestions.forEach(s -> keyboard.add(keyboardRow(s)));
+
+        return replyKeyboardMarkup;
     }
 
     public ReplyKeyboardMarkup getFriendRequestsKeyboard() {

@@ -99,6 +99,10 @@ public class FriendshipService {
         return friendshipDao.getFriend(userId, friendId);
     }
 
+    public String getFriendName(int userId, int friendId) {
+        return friendshipDao.getFriendName(userId, friendId);
+    }
+
     public FriendSearchResult searchFriend(int userId, Collection<String> nameCandidates) {
         return friendshipDao.searchFriend(userId, nameCandidates);
     }

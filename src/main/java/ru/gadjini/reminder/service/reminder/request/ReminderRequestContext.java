@@ -10,6 +10,8 @@ public class ReminderRequestContext {
 
     private String text;
 
+    private String receiverName;
+
     private Integer receiverId;
 
     private ZoneId receiverZone;
@@ -71,6 +73,16 @@ public class ReminderRequestContext {
 
     public ReminderRequestContext setUser(User user) {
         this.user = user;
+
+        return this;
+    }
+
+    public String getReceiverName() {
+        return receiverName;
+    }
+
+    public ReminderRequestContext setReceiverName(String receiverName) {
+        this.receiverName = receiverName;
 
         return this;
     }

@@ -7,6 +7,9 @@ CREATE TABLE IF NOT EXISTS plan
     active      BOOLEAN DEFAULT FALSE
 );
 
+INSERT INTO plan(description, price, active, period)
+VALUES ('Чтобы продлить подписку вам нужно оптатить 49 <b>рублей</b>', 49, TRUE, '1 months');
+
 CREATE TABLE IF NOT EXISTS subscription
 (
     user_id  INTEGER UNIQUE NOT NULL REFERENCES tg_user (user_id),

@@ -338,4 +338,6 @@ public class MessagesProperties {
     public static final String SUBSCRIPTION_COMMAND_NAME = "subscription.command.name";
 
     public static final String CREATE_REMINDER_COMMAND_DESCRIPTION = "create.reminder.command.description";
+
+    public static final String MESSAGE_CREATE_REMINDER = "message.create.reminder";
 }

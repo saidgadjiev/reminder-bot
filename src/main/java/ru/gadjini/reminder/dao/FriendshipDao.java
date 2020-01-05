@@ -164,6 +164,23 @@ public class FriendshipDao {
         );
     }
 
+    public String getFriendName(int userId, int friendId) {
+        return namedParameterJdbcTemplate.query(
+                "SELECT CASE WHEN user_one_id = :user_id THEN user_two_name ELSE user_one_name END AS name\n" +
+                        "FROM friendship \n" +
+                        "WHERE (user_one_id = :user_id AND user_two_id = :friend_id)\n" +
+                        "   OR (user_one_id = :friend_id AND user_two_id = :user_id)\n",
+                new MapSqlParameterSource().addValue(USER_ID_PARAM, userId).addValue(FRIEND_ID_PARAM, friendId),
+                rs -> {
+                    if (rs.next()) {
+                        return rs.getString("name");
+                    }
+
+                    return null;
+                }
+        );
+    }
+
     public FriendSearchResult searchFriend(int userId, Collection<String> nameCandidates) {
         String names = nameCandidates.stream().map(s -> "'" + s + "'").collect(Collectors.joining(","));
 
