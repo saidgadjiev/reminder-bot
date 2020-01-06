@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.controller;
+package ru.gadjini.reminder.controller.test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -11,7 +11,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-//TODO:выкинуть и запустить grizzly server. Надо тестить его.
 @Profile(BotConfiguration.PROFILE_TEST)
 @Path("/callback")
 @Controller

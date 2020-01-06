@@ -10,11 +10,13 @@ import org.glassfish.grizzly.threadpool.ThreadPoolProbe;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.Webhook;
 import org.telegram.telegrambots.meta.generics.WebhookBot;
 import org.telegram.telegrambots.updatesreceivers.RestApi;
-import ru.gadjini.reminder.controller.ThreadLoggingProbe;
+import ru.gadjini.reminder.controller.test.ThreadLoggingProbe;
+import ru.gadjini.reminder.controller.webmoney.WebMoneyController;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,9 +30,16 @@ public class DefaultWebhook implements Webhook {
 
     private final RestApi restApi;
 
+    private WebMoneyController webMoneyController;
+
     @Inject
     public DefaultWebhook() {
         this.restApi = new RestApi();
+    }
+
+    @Autowired
+    public void setWebMoneyController(WebMoneyController webMoneyController) {
+        this.webMoneyController = webMoneyController;
     }
 
     @Override
@@ -54,6 +63,7 @@ public class DefaultWebhook implements Webhook {
     public void startServer() throws TelegramApiRequestException {
         ResourceConfig rc = new ResourceConfig();
         rc.register(restApi);
+        rc.register(webMoneyController);
         rc.register(JacksonFeature.class);
 
         final HttpServer grizzlyServer;

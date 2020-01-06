@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.controller;
+package ru.gadjini.reminder.controller.test;
 
 import org.glassfish.grizzly.threadpool.AbstractThreadPool;
 import org.glassfish.grizzly.threadpool.ThreadPoolProbe;

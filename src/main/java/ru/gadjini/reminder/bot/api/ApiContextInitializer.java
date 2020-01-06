@@ -11,6 +11,6 @@ public class ApiContextInitializer {
 
     public static void init() {
         ApiContext.register(BotSession.class, DefaultBotSession.class);
-        ApiContext.register(Webhook.class, DefaultWebhook.class);
+        ApiContext.registerSingleton(Webhook.class, DefaultWebhook.class);
     }
 }

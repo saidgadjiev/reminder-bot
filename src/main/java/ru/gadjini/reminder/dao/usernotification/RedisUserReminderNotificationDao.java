@@ -8,7 +8,6 @@ import ru.gadjini.reminder.domain.UserReminderNotification;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Qualifier("redis")
 @Repository
