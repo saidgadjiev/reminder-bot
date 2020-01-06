@@ -291,7 +291,7 @@ public class ReminderDao {
         );
     }
 
-    public Reminder delete(Condition condition, ReminderMapping reminderMapping) {
+    public List<Reminder> delete(Condition condition, ReminderMapping reminderMapping) {
         DeleteConditionStep<Record> delete = dslContext.delete(ReminderTable.TABLE)
                 .where(condition);
 
@@ -309,7 +309,7 @@ public class ReminderDao {
         return jdbcTemplate.query(
                 sql.append(buildSelect(reminderMapping).getSQL()).toString(),
                 new JooqPreparedSetter(delete.getParams()),
-                rs -> rs.next() ? resultSetMapper.mapReminder(rs) : null
+                (rs, rowNum) -> resultSetMapper.mapReminder(rs)
         );
     }
 

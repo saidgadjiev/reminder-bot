@@ -71,6 +71,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_FRIEND_DELETED = "message.friend.deleted";
 
+    public static final String MESSAGE_FRIEND_DELETED_ANSWER = "message.friend.deleted.answer";
+
     public static final String MESSAGE_ERROR = "message.error";
 
     public static final String MESSAGE_BOT_RESTARTED = "message.bot.restarted";
@@ -340,4 +342,6 @@ public class MessagesProperties {
     public static final String CREATE_REMINDER_COMMAND_NAME = "create.reminder.command.name";
 
     public static final String MESSAGE_CREATE_REMINDER = "message.create.reminder";
+
+    public static final String MESSAGE_FRIENDSHIP_INTERRUPTED = "message.friendship.interrupted";
 }

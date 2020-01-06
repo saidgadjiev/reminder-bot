@@ -141,7 +141,7 @@ public class FriendshipDao {
         return null;
     }
 
-    public void deleteFriendship(int userId, int friendId) {
+    public void cancelFriendshipRequest(int userId, int friendId) {
         namedParameterJdbcTemplate.update(
                 "DELETE FROM friendship " +
                         "WHERE (user_one_id = :user_id AND user_two_id = :friend_id) " +
@@ -149,6 +149,39 @@ public class FriendshipDao {
                 new MapSqlParameterSource()
                         .addValue(USER_ID_PARAM, userId)
                         .addValue(FRIEND_ID_PARAM, friendId)
+        );
+    }
+
+    public Friendship deleteFriendship(int userId, int friendId) {
+        return namedParameterJdbcTemplate.query(
+                "WITH f AS (DELETE FROM friendship WHERE (user_one_id = :user_id AND user_two_id = :friend_id) OR\n" +
+                        "                                        (user_one_id = :friend_id AND user_two_id = :user_id) RETURNING status, user_one_id, user_two_id, user_one_name, user_two_name)\n" +
+                        "SELECT f.*,\n" +
+                        "       uf.chat_id\n" +
+                        "FROM f\n" +
+                        "         INNER JOIN tg_user uf ON CASE\n" +
+                        "                                      WHEN f.user_one_id = :user_id THEN uf.user_id = f.user_two_id\n" +
+                        "                                      WHEN f.user_two_id = :user_id THEN uf.user_id = f.user_one_id\n" +
+                        "                                      ELSE FALSE END",
+                new MapSqlParameterSource()
+                        .addValue(USER_ID_PARAM, userId)
+                        .addValue(FRIEND_ID_PARAM, friendId),
+                rs -> {
+                    if (rs.next()) {
+                        Friendship friendship = resultSetMapper.mapFriendship(rs, new FriendshipMapping());
+
+                        long friendChatId = rs.getLong(TgUser.CHAT_ID);
+                        if (friendship.getUserOneId() == friendId) {
+                            friendship.getUserOne().setChatId(friendChatId);
+                        } else {
+                            friendship.getUserTwo().setChatId(friendChatId);
+                        }
+
+                        return friendship;
+                    }
+
+                    return null;
+                }
         );
     }
 

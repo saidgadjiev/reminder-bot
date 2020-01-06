@@ -183,14 +183,15 @@ public class ReminderService {
                         .setCreatorMapping(new Mapping())
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
                         .setRemindMessageMapping(new Mapping())
-        );
+        ).iterator().next();
     }
 
-    public void deleteFriendReminders(int userId, int friendId) {
-        reminderDao.delete(
+    public List<Reminder> deleteFriendReminders(int userId, int friendId) {
+        return reminderDao.delete(
                 ReminderTable.TABLE.CREATOR_ID.eq(userId).and(ReminderTable.TABLE.RECEIVER_ID.eq(friendId))
                         .or(ReminderTable.TABLE.CREATOR_ID.eq(friendId).and(ReminderTable.TABLE.RECEIVER_ID.eq(userId))),
-                null
+                new ReminderMapping()
+                        .setRemindMessageMapping(new Mapping())
         );
     }
 
@@ -218,7 +219,7 @@ public class ReminderService {
                         .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
                         .setRemindMessageMapping(new Mapping())
-        );
+        ).iterator().next();
     }
 
     public ReminderNotification customRemind(int reminderId, ZonedDateTime remindTime) {

@@ -98,6 +98,20 @@ public class Friendship {
         return friend;
     }
 
+    public TgUser getUser(int userId) {
+        TgUser friend = new TgUser();
+
+        if (getUserOneId() == userId) {
+            friend.setUserId(getUserOneId());
+            friend.setName(getUserOneName());
+        } else if (getUserTwoId() == userId) {
+            friend.setUserId(getUserTwoId());
+            friend.setName(getUserTwoName());
+        }
+
+        return friend;
+    }
+
     public enum Status {
 
         REQUESTED(0),

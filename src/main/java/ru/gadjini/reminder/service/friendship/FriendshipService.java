@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.FriendshipDao;
 import ru.gadjini.reminder.domain.FriendSearchResult;
 import ru.gadjini.reminder.domain.Friendship;
+import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.FriendshipTable;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
@@ -40,9 +41,11 @@ public class FriendshipService {
     }
 
     @Transactional
-    public void deleteFriend(TgMessage tgMessage, int friendId) {
-        friendshipDao.deleteFriendship(tgMessage.getUser().getId(), friendId);
-        reminderService.deleteFriendReminders(friendId, tgMessage.getMessageId());
+    public DeleteFriendResult deleteFriend(TgMessage tgMessage, int friendId) {
+        Friendship friendship = friendshipDao.deleteFriendship(tgMessage.getUser().getId(), friendId);
+        List<Reminder> reminders = reminderService.deleteFriendReminders(friendId, tgMessage.getMessageId());
+
+        return new DeleteFriendResult(friendship, reminders);
     }
 
     @Transactional
@@ -132,7 +135,7 @@ public class FriendshipService {
     }
 
     public void cancelFriendRequest(int userId, int friendId) {
-        friendshipDao.deleteFriendship(userId, friendId);
+        friendshipDao.cancelFriendshipRequest(userId, friendId);
     }
 
     public List<TgUser> getFriends(int userId) {
@@ -190,6 +193,26 @@ public class FriendshipService {
             } else {
                 createFriendRequestResult.setState(CreateFriendRequestResult.State.ALREADY_FRIEND);
             }
+        }
+    }
+
+    public static class DeleteFriendResult {
+
+        private Friendship friendship;
+
+        private List<Reminder> reminders;
+
+        public DeleteFriendResult(Friendship friendship, List<Reminder> reminders) {
+            this.friendship = friendship;
+            this.reminders = reminders;
+        }
+
+        public Friendship getFriendship() {
+            return friendship;
+        }
+
+        public List<Reminder> getReminders() {
+            return reminders;
         }
     }
 }
