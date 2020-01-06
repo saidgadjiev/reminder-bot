@@ -50,7 +50,6 @@ public class ReminderService {
     }
 
     @Transactional
-    //TODO: need read how transactional works
     public Reminder createReminder(Reminder reminder) {
         Reminder created = reminderDao.create(reminder);
         List<ReminderNotification> reminderNotifications = getReminderNotifications(reminder.getRemindAt(), reminder.getReceiverId());
@@ -184,6 +183,14 @@ public class ReminderService {
                         .setCreatorMapping(new Mapping())
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
                         .setRemindMessageMapping(new Mapping())
+        );
+    }
+
+    public void deleteFriendReminders(int userId, int friendId) {
+        reminderDao.delete(
+                ReminderTable.TABLE.CREATOR_ID.eq(userId).and(ReminderTable.TABLE.RECEIVER_ID.eq(friendId))
+                        .or(ReminderTable.TABLE.CREATOR_ID.eq(friendId).and(ReminderTable.TABLE.RECEIVER_ID.eq(userId))),
+                null
         );
     }
 

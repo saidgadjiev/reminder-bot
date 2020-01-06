@@ -12,6 +12,7 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.FriendshipTable;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
 import ru.gadjini.reminder.model.TgMessage;
+import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.validation.UserValidator;
 
 import java.util.Collection;
@@ -25,14 +26,23 @@ public class FriendshipService {
 
     private UserValidator userValidator;
 
+    private ReminderService reminderService;
+
     @Autowired
     public FriendshipService(FriendshipDao friendshipDao, UserValidator userValidator) {
         this.friendshipDao = friendshipDao;
         this.userValidator = userValidator;
     }
 
+    @Autowired
+    public void setReminderService(ReminderService reminderService) {
+        this.reminderService = reminderService;
+    }
+
+    @Transactional
     public void deleteFriend(TgMessage tgMessage, int friendId) {
         friendshipDao.deleteFriendship(tgMessage.getUser().getId(), friendId);
+        reminderService.deleteFriendReminders(friendId, tgMessage.getMessageId());
     }
 
     @Transactional

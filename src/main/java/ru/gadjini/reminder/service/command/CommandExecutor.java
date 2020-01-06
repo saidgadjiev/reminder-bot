@@ -110,7 +110,7 @@ public class CommandExecutor {
         sendAction(callbackQuery.getMessage().getChatId(), botCommand);
         String callbackAnswer = botCommand.processMessage(callbackQuery, parseResult.getRequestParams());
         if (StringUtils.isNotBlank(callbackAnswer)) {
-            messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), localisationService.getMessage(callbackAnswer));
+            messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), callbackAnswer);
         }
 
         if (botCommand instanceof NavigableBotCommand) {

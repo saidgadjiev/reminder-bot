@@ -58,19 +58,26 @@ public class ReminderRequestService {
     private SuggestionTextBuilder suggestionTextBuilder;
 
     @Autowired
-    public ReminderRequestService(ReminderService reminderService, ValidatorFactory validatorFactory,
-                                  RequestParser requestParser, LocalisationService localisationService,
+    public ReminderRequestService(RequestParser requestParser, LocalisationService localisationService,
                                   RepeatReminderService repeatReminderService,
                                   ReminderRequestExtractor requestExtractor,
                                   SuggestionService suggestionService, SuggestionTextBuilder suggestionTextBuilder) {
-        this.reminderService = reminderService;
-        this.validatorFactory = validatorFactory;
         this.requestParser = requestParser;
         this.localisationService = localisationService;
         this.repeatReminderService = repeatReminderService;
         this.requestExtractor = requestExtractor;
         this.suggestionService = suggestionService;
         this.suggestionTextBuilder = suggestionTextBuilder;
+    }
+
+    @Autowired
+    public void setValidatorFactory(ValidatorFactory validatorFactory) {
+        this.validatorFactory = validatorFactory;
+    }
+
+    @Autowired
+    public void setReminderService(ReminderService reminderService) {
+        this.reminderService = reminderService;
     }
 
     public Reminder createReminder(ReminderRequestContext context) {

@@ -35,11 +35,14 @@ public class UserReminderNotificationService {
     @Autowired
     public UserReminderNotificationService(@Qualifier("redis") UserReminderNotificationDao dao,
                                            LocalisationService localisationService,
-                                           RequestParser requestParser,
-                                           ValidatorFactory validatorFactory) {
+                                           RequestParser requestParser) {
         this.dao = dao;
         this.localisationService = localisationService;
         this.requestParser = requestParser;
+    }
+
+    @Autowired
+    public void setValidatorFactory(ValidatorFactory validatorFactory) {
         this.validatorFactory = validatorFactory;
     }
 
