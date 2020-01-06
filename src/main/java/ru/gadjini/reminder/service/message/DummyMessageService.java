@@ -3,6 +3,7 @@ package ru.gadjini.reminder.service.message;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.ActionType;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
@@ -26,7 +27,7 @@ public class DummyMessageService implements MessageService {
     }
 
     @Override
-    public void sendAction(long chatId) {
+    public void sendAction(long chatId, ActionType action) {
 
     }
 
@@ -89,11 +90,6 @@ public class DummyMessageService implements MessageService {
 
     @Override
     public void editMessageByMessageCode(long chatId, int messageId, String messageCode, InlineKeyboardMarkup keyboardMarkup) {
-
-    }
-
-    @Override
-    public void editMessageByMessageCode(long chatId, int messageId, String messageCode, Object[] args, InlineKeyboardMarkup keyboardMarkup) {
 
     }
 

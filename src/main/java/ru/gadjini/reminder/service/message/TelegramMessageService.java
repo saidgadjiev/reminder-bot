@@ -39,10 +39,10 @@ public class TelegramMessageService implements MessageService {
     }
 
     @Override
-    public void sendAction(long chatId) {
+    public void sendAction(long chatId, ActionType action) {
         SendChatAction chatAction = new SendChatAction();
 
-        chatAction.setAction(ActionType.UPLOADAUDIO);
+        chatAction.setAction(action);
         chatAction.setChatId(chatId);
 
         try {
@@ -175,11 +175,6 @@ public class TelegramMessageService implements MessageService {
     @Override
     public void editMessageByMessageCode(long chatId, int messageId, String messageCode, InlineKeyboardMarkup keyboardMarkup) {
         editMessage(chatId, messageId, localisationService.getMessage(messageCode), keyboardMarkup);
-    }
-
-    @Override
-    public void editMessageByMessageCode(long chatId, int messageId, String messageCode, Object[] args, InlineKeyboardMarkup keyboardMarkup) {
-        editMessage(chatId, messageId, localisationService.getMessage(messageCode, args), keyboardMarkup);
     }
 
     @Override

@@ -4,10 +4,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.methods.ActionType;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
+import ru.gadjini.reminder.bot.command.api.MyBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -79,6 +81,7 @@ public class CommandExecutor {
         NavigableBotCommand navigableBotCommand = commandNavigator.getCurrentCommand(message.getChatId());
 
         if (navigableBotCommand != null && navigableBotCommand.accept(message)) {
+            sendNonCommandUpdateAction(message.getChatId(), navigableBotCommand);
             navigableBotCommand.processNonCommandUpdate(message, text);
         }
     }
@@ -87,6 +90,7 @@ public class CommandExecutor {
         NavigableBotCommand navigableBotCommand = commandNavigator.getCurrentCommand(editedMessage.getChatId());
 
         if (navigableBotCommand != null && navigableBotCommand.accept(editedMessage)) {
+            sendNonCommandEditAction(editedMessage.getChatId(), navigableBotCommand);
             navigableBotCommand.processNonCommandEditedMessage(editedMessage, text);
         }
     }
@@ -103,6 +107,7 @@ public class CommandExecutor {
         CommandParser.CommandParseResult parseResult = commandParser.parseCallbackCommand(callbackQuery);
         CallbackBotCommand botCommand = callbackBotCommandMap.get(parseResult.getCommandName());
 
+        sendAction(callbackQuery.getMessage().getChatId(), botCommand);
         String callbackAnswer = botCommand.processMessage(callbackQuery, parseResult.getRequestParams());
         if (StringUtils.isNotBlank(callbackAnswer)) {
             messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), localisationService.getMessage(callbackAnswer));
@@ -113,11 +118,22 @@ public class CommandExecutor {
         }
     }
 
+    public void executeKeyBoardCommandEditedMessage(Message message, String text) {
+        KeyboardBotCommand botCommand = keyboardBotCommands.stream()
+                .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(text))
+                .findFirst()
+                .orElseThrow();
+
+        sendAction(message.getChatId(), botCommand);
+        botCommand.processEditedMessage(message, text);
+    }
+
     private boolean executeBotCommand(Message message) {
         CommandParser.CommandParseResult commandParseResult = commandParser.parseBotCommand(message);
         BotCommand botCommand = botCommandMap.get(commandParseResult.getCommandName());
 
         if (botCommand != null) {
+            sendAction(message.getChatId(), (MyBotCommand) botCommand);
             botCommand.processMessage(null, message, commandParseResult.getParameters());
 
             if (botCommand instanceof NavigableBotCommand) {
@@ -136,6 +152,7 @@ public class CommandExecutor {
                 .findFirst()
                 .orElseThrow();
 
+        sendAction(message.getChatId(), botCommand);
         boolean pushToHistory = botCommand.processMessage(message, text);
 
         if (pushToHistory) {
@@ -145,12 +162,27 @@ public class CommandExecutor {
         return true;
     }
 
-    public void executeKeyBoardCommandEditedMessage(Message message, String text) {
-        KeyboardBotCommand botCommand = keyboardBotCommands.stream()
-                .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(text))
-                .findFirst()
-                .orElseThrow();
+    private void sendAction(long chatId, MyBotCommand botCommand) {
+        ActionType action = botCommand.getAction();
 
-        botCommand.processEditedMessage(message, text);
+        if (action != null) {
+            messageService.sendAction(chatId, action);
+        }
+    }
+
+    private void sendNonCommandUpdateAction(long chatId, MyBotCommand botCommand) {
+        ActionType action = botCommand.getNonCommandUpdateAction();
+
+        if (action != null) {
+            messageService.sendAction(chatId, action);
+        }
+    }
+
+    private void sendNonCommandEditAction(long chatId, MyBotCommand botCommand) {
+        ActionType action = botCommand.getNonCommandEditAction();
+
+        if (action != null) {
+            messageService.sendAction(chatId, action);
+        }
     }
 }
