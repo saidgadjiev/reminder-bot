@@ -41,7 +41,7 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         ReminderNotification reminderNotification = reminderNotificationService.getReminderTime(requestParams.getInt(Arg.REMINDER_NOTIFICATION_ID.getKey()));
 
         messageService.editMessage(
@@ -50,5 +50,6 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
                 messageBuilder.getReminderTimeMessage(reminderNotification),
                 inlineKeyboardService.getReminderTimeKeyboard(requestParams.getInt(Arg.REMINDER_NOTIFICATION_ID.getKey()), reminderNotification.getReminderId())
         );
+        return null;
     }
 }

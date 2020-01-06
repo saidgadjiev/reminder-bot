@@ -57,10 +57,11 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
         messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT, replyKeyboardService.goBackCommand());
-        messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_CREATE_REMINDER_CALLBACK_ANSWER);
+
+        return MessagesProperties.MESSAGE_CREATE_REMINDER_CALLBACK_ANSWER;
     }
 
     @Override

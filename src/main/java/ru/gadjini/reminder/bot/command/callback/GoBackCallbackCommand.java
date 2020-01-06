@@ -35,7 +35,7 @@ public class GoBackCallbackCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         String prevCommandName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
         ReplyKeyboard replyKeyboard = null;
 
@@ -43,5 +43,6 @@ public class GoBackCallbackCommand implements CallbackBotCommand {
             replyKeyboard = commandNavigator.silentPop(callbackQuery.getMessage().getChatId());
         }
         callbackCommandNavigator.goTo(TgMessage.from(callbackQuery), prevCommandName, replyKeyboard, requestParams);
+        return null;
     }
 }

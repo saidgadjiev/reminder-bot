@@ -34,7 +34,7 @@ public class GetCompletedRemindersCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         List<Reminder> reminders = reminderService.getCompletedReminders(callbackQuery.getFrom().getId());
 
         reminderMessageSender.sendCompletedReminders(
@@ -43,5 +43,6 @@ public class GetCompletedRemindersCommand implements CallbackBotCommand {
                 callbackQuery.getMessage().getMessageId(),
                 reminders
         );
+        return null;
     }
 }

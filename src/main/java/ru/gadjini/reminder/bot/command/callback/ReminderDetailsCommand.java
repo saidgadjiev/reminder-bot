@@ -47,12 +47,13 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Reminder reminder = reminderService.getReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         reminderMessageSender.sendReminderDetails(callbackQuery.getFrom().getId(), callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), reminder);
-    }
 
+        return null;
+    }
 
     @Override
     public String getHistoryName() {

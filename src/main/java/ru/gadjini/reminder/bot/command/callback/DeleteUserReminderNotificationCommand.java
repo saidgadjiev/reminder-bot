@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -45,7 +45,7 @@ public class DeleteUserReminderNotificationCommand implements CallbackBotCommand
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         userReminderNotificationService.deleteById(requestParams.getInt(Arg.USER_REMINDER_NOTIFICATION_ID.getKey()));
         UserReminderNotification.NotificationType notificationType = UserReminderNotification.NotificationType.fromCode(requestParams.getInt(Arg.USER_REMINDER_NOTIFICATION_TYPE.getKey()));
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getNonCachedList(callbackQuery.getFrom().getId(), notificationType);
@@ -56,6 +56,7 @@ public class DeleteUserReminderNotificationCommand implements CallbackBotCommand
                 reminderNotificationMessageBuilder.getUserReminderNotifications(userReminderNotifications),
                 inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)
         );
-        messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION_DELETED);
+
+        return MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION_DELETED;
     }
 }

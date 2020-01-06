@@ -44,19 +44,20 @@ public class AcceptFriendRequestCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Friendship friendship = friendshipService.acceptFriendRequest(callbackQuery.getFrom(), requestParams.getInt(Arg.FRIEND_ID.getKey()));
 
         messageService.sendMessageByCode(friendship.getUserOne().getChatId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_ACCEPTED_INITIATOR, new Object[]{
                 UserUtils.userLink(friendship.getUserTwo())
         });
 
-        messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_ACCEPTED_ANSWER);
         messageService.editMessage(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 friendshipMessageBuilder.getFriendDetails(friendship.getUserOne()),
                 inlineKeyboardService.getFriendKeyboard(friendship.getUserOneId())
         );
+
+        return MessagesProperties.MESSAGE_FRIEND_REQUEST_ACCEPTED_ANSWER;
     }
 }

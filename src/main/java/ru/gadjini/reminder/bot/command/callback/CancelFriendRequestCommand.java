@@ -43,7 +43,7 @@ public class CancelFriendRequestCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         friendshipService.cancelFriendRequest(callbackQuery.getFrom().getId(), requestParams.getInt(Arg.FRIEND_ID.getKey()));
         List<TgUser> requests = friendshipService.getFromMeFriendRequests(callbackQuery.getFrom().getId());
         messageService.editMessage(
@@ -52,5 +52,7 @@ public class CancelFriendRequestCommand implements CallbackBotCommand {
                 friendshipMessageBuilder.getFriendsList(requests, MessagesProperties.MESSAGE_FROM_ME_FRIEND_REQUESTS_EMPTY, null),
                 inlineKeyboardService.getFriendsListKeyboard(requests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.CANCEL_FRIEND_REQUEST_COMMAND_NAME)
         );
+
+        return null;
     }
 }

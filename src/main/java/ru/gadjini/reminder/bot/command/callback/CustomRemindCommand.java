@@ -66,7 +66,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         String prevHistoryName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
@@ -78,7 +78,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
                 inlineKeyboardService.goBackCallbackButton(prevHistoryName, true, requestParams)
         );
 
-        messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION);
+        return MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION;
     }
 
     @Override

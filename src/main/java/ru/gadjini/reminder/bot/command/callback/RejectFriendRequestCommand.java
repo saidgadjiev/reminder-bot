@@ -39,7 +39,7 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Friendship friendship = friendshipService.rejectFriendRequest(callbackQuery.getFrom(), requestParams.getInt(Arg.FRIEND_ID.getKey()));
 
         messageService.sendMessageByCode(
@@ -47,13 +47,13 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
                 MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED_INITIATOR,
                 new Object[]{UserUtils.userLink(friendship.getUserTwo())}
         );
-
-        messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED);
         messageService.editMessageByMessageCode(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED,
                 inlineKeyboardService.goBackCallbackButton(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME)
         );
+
+        return MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED;
     }
 }

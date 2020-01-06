@@ -44,7 +44,7 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         List<ReminderNotification> reminderNotifications = reminderNotificationService.getCustomRemindersList(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         messageService.editMessage(
@@ -53,6 +53,7 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
                 reminderNotificationMessageBuilder.getReminderNotifications(reminderNotifications),
                 inlineKeyboardService.getReminderTimesListKeyboard(reminderNotifications.stream().map(ReminderNotification::getId).collect(Collectors.toList()), requestParams.getInt(Arg.REMINDER_ID.getKey()))
         );
+        return null;
     }
 
     @Override
@@ -71,5 +72,4 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
                 inlineKeyboardService.getReminderTimesListKeyboard(reminderNotifications.stream().map(ReminderNotification::getId).collect(Collectors.toList()), requestParams.getInt(Arg.REMINDER_ID.getKey()))
         );
     }
-
 }

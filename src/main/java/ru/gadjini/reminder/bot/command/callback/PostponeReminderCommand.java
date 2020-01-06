@@ -71,7 +71,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         PostponeCommandState state = new PostponeCommandState(new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams), State.TIME);
         stateService.setState(callbackQuery.getMessage().getChatId(), state);
 
@@ -81,8 +81,9 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
                 callbackQuery.getMessage().getMessageId(),
                 inlineKeyboardService.goBackCallbackButton(prevHistoryName, true, requestParams)
         );
-        messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION);
         messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_POSTPONE_TIME, replyKeyboardService.postponeTimeKeyboard());
+
+        return MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION;
     }
 
     @Override

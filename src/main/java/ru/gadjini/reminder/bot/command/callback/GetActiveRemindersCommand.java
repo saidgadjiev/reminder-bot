@@ -37,7 +37,7 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         List<Reminder> reminders = reminderService.getActiveReminders(callbackQuery.getFrom().getId());
 
         reminderMessageSender.sendActiveReminders(
@@ -46,8 +46,8 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
                 callbackQuery.getMessage().getMessageId(),
                 reminders
         );
+        return null;
     }
-
 
     @Override
     public String getHistoryName() {

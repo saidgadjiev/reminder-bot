@@ -7,5 +7,8 @@ public interface CallbackBotCommand extends MyBotCommand {
 
     String getName();
 
-    void processMessage(CallbackQuery callbackQuery, RequestParams requestParams);
+    /**
+     * @return an answer message code or null if command doesn't have an answer
+     */
+    String processMessage(CallbackQuery callbackQuery, RequestParams requestParams);
 }

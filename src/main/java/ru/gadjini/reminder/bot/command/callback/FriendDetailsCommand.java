@@ -42,7 +42,7 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         int friendUserId = requestParams.getInt(Arg.FRIEND_ID.getKey());
         TgUser friend = friendshipService.getFriend(callbackQuery.getFrom().getId(), friendUserId);
         messageService.editMessage(
@@ -51,6 +51,7 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
                 friendshipMessageBuilder.getFriendDetails(friend),
                 inlineKeyboardService.getFriendKeyboard(friendUserId)
         );
+        return null;
     }
 
     @Override

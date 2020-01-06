@@ -36,7 +36,7 @@ public class ProcessPaymentCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         messageService.deleteMessage(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
 
         LocalDate localDate = paymentService.processPayment(callbackQuery.getFrom().getId(), requestParams.getInt(Arg.PLAN_ID.getKey()));
@@ -47,5 +47,6 @@ public class ProcessPaymentCommand implements CallbackBotCommand {
                 new Object[]{localDate},
                 replyKeyboardService.getMainMenu()
         );
+        return null;
     }
 }

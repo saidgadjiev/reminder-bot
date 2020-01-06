@@ -63,7 +63,7 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         messageService.editMessage(
@@ -72,7 +72,8 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
                 callbackQuery.getMessage().getText() + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_EDIT_NOTE),
                 inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, true, requestParams)
         );
-        messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), MessagesProperties.MESSAGE_REMINDER_NOTE_ANSWER);
+
+        return MessagesProperties.MESSAGE_REMINDER_NOTE_ANSWER;
     }
 
     @Override

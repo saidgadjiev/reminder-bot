@@ -5,11 +5,12 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.RepeatReminderService;
+import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 
 import java.util.Objects;
 
@@ -32,14 +33,16 @@ public class SkipRepeatReminderCommand implements CallbackBotCommand {
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Reminder reminder = repeatReminderService.skip(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         String currHistoryName = requestParams.getString(Arg.CURR_HISTORY_NAME.getKey());
         if (Objects.equals(currHistoryName, CommandNames.REMINDER_DETAILS_COMMAND_NAME)) {
-            reminderMessageSender.sendRepeatReminderSkippedFromList(callbackQuery.getId(), callbackQuery.getMessage().getMessageId(), reminder);
+            reminderMessageSender.sendRepeatReminderSkippedFromList(callbackQuery.getMessage().getMessageId(), reminder);
         } else {
-            reminderMessageSender.sendRepeatReminderSkipped(callbackQuery.getId(), reminder);
+            reminderMessageSender.sendRepeatReminderSkipped(reminder);
         }
+
+        return MessagesProperties.MESSAGE_REMINDER_SKIPPED_ANSWER;
     }
 }

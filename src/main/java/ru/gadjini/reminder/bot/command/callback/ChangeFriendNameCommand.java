@@ -62,7 +62,7 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
     }
 
     @Override
-    public void processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+    public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         messageService.editMessage(
@@ -71,6 +71,8 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
                 localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_NAME),
                 inlineKeyboardService.goBackCallbackButton(CommandNames.FRIEND_DETAILS_COMMAND_NAME, false, requestParams)
         );
+
+        return null;
     }
 
     @Override

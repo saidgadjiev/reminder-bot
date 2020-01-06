@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.command;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
@@ -8,6 +9,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.message.MessageService;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,10 +29,17 @@ public class CommandExecutor {
 
     private CommandParser commandParser;
 
+    private MessageService messageService;
+
+    private LocalisationService localisationService;
+
     @Autowired
-    public CommandExecutor(CommandNavigator commandNavigator, CommandParser commandParser) {
+    public CommandExecutor(CommandNavigator commandNavigator, CommandParser commandParser,
+                           MessageService messageService, LocalisationService localisationService) {
         this.commandNavigator = commandNavigator;
         this.commandParser = commandParser;
+        this.messageService = messageService;
+        this.localisationService = localisationService;
     }
 
     @Autowired
@@ -93,7 +103,10 @@ public class CommandExecutor {
         CommandParser.CommandParseResult parseResult = commandParser.parseCallbackCommand(callbackQuery);
         CallbackBotCommand botCommand = callbackBotCommandMap.get(parseResult.getCommandName());
 
-        botCommand.processMessage(callbackQuery, parseResult.getRequestParams());
+        String callbackAnswer = botCommand.processMessage(callbackQuery, parseResult.getRequestParams());
+        if (StringUtils.isNotBlank(callbackAnswer)) {
+            messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), localisationService.getMessage(callbackAnswer));
+        }
 
         if (botCommand instanceof NavigableBotCommand) {
             commandNavigator.push(callbackQuery.getMessage().getChatId(), (NavigableBotCommand) botCommand);
