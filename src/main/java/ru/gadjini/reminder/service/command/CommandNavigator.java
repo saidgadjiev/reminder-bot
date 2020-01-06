@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.command;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -57,14 +58,19 @@ public class CommandNavigator {
     }
 
     public void pop(long chatId) {
-        NavigableBotCommand navigableBotCommand = getCurrentCommand(chatId);
-        navigableBotCommand.leave(chatId);
+        NavigableBotCommand currentCommand = getCurrentCommand(chatId);
+        String parentHistoryName = currentCommand.getParentHistoryName();
 
-        String parentHistoryName = navigableBotCommand.getParentHistoryName();
-        NavigableBotCommand parentCommand = navigableBotCommands.get(parentHistoryName);
+        if (StringUtils.isNotBlank(parentHistoryName)) {
+            currentCommand.leave(chatId);
 
-        setCurrentCommand(chatId, parentCommand);
-        parentCommand.restore(chatId);
+            NavigableBotCommand parentCommand = navigableBotCommands.get(parentHistoryName);
+
+            setCurrentCommand(chatId, parentCommand);
+            parentCommand.restore(chatId);
+        } else {
+            currentCommand.restore(chatId);
+        }
     }
 
     public ReplyKeyboardMarkup silentPop(long chatId) {

@@ -12,7 +12,6 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 @Service
 public class ReplyKeyboardService {
@@ -27,8 +26,13 @@ public class ReplyKeyboardService {
     public ReplyKeyboardMarkup getSuggestionsKeyboard(List<String> suggestions) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 
+        if (suggestions.isEmpty()) {
+            replyKeyboardMarkup.setResizeKeyboard(true);
+        }
+
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
         suggestions.forEach(s -> keyboard.add(keyboardRow(s)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
 
         return replyKeyboardMarkup;
     }
@@ -86,6 +90,7 @@ public class ReplyKeyboardService {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME)));

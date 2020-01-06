@@ -37,7 +37,6 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     private UserReminderNotificationService userReminderNotificationService;
 
-
     @Autowired
     public StartCommand(MessageService messageService,
                         ReminderRequestService reminderRequestService,
@@ -79,6 +78,11 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
     @Override
     public void restore(long chatId) {
         messageService.sendMessageByCode(chatId, MessagesProperties.MESSAGE_START, replyKeyboardService.getMainMenu());
+    }
+
+    @Override
+    public String getParentHistoryName() {
+        return null;
     }
 
     @Override
