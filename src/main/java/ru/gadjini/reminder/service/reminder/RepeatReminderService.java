@@ -74,6 +74,8 @@ public class RepeatReminderService {
                         .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
                         .setRemindMessageMapping(new Mapping())
         );
+        toComplete.setCurrentSeries(toComplete.getCurrentSeries() + 1);
+        toComplete.setMaxSeries(Math.max(toComplete.getMaxSeries(), toComplete.getCurrentSeries()));
         completedReminderDao.create(toComplete);
         moveReminderNotificationToNextPeriod(toComplete, UpdateSeries.INCREMENT);
 
@@ -127,6 +129,7 @@ public class RepeatReminderService {
                         .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
                         .setRemindMessageMapping(new Mapping())
         );
+        toSkip.setCurrentSeries(0);
         moveReminderNotificationToNextPeriod(toSkip, UpdateSeries.RESET);
 
         return toSkip;
@@ -148,6 +151,10 @@ public class RepeatReminderService {
         );
         boolean returned = moveReminderNotificationToPrevPeriod(toReturn);
 
+        if (returned) {
+            toReturn.setCurrentSeries(Math.max(0, toReturn.getCurrentSeries() - 1));
+        }
+
         return new ReturnReminderResult(toReturn, returned);
     }
 
@@ -159,14 +166,13 @@ public class RepeatReminderService {
                 break;
             case RESET:
                 updateValues.put(ReminderTable.TABLE.CURRENT_SERIES, 0);
-                updateValues.put(ReminderTable.TABLE.MAX_SERIES, DSL.greatest(ReminderTable.TABLE.MAX_SERIES, ReminderTable.TABLE.CURRENT_SERIES));
                 break;
             case INCREMENT:
                 updateValues.put(ReminderTable.TABLE.CURRENT_SERIES, ReminderTable.TABLE.CURRENT_SERIES.plus(1));
                 updateValues.put(ReminderTable.TABLE.MAX_SERIES, DSL.greatest(ReminderTable.TABLE.MAX_SERIES, ReminderTable.TABLE.CURRENT_SERIES.plus(1)));
                 break;
             case DECREMENT:
-                updateValues.put(ReminderTable.TABLE.CURRENT_SERIES, ReminderTable.TABLE.CURRENT_SERIES.minus(1));
+                updateValues.put(ReminderTable.TABLE.CURRENT_SERIES, DSL.greatest(0, ReminderTable.TABLE.CURRENT_SERIES.minus(1)));
                 break;
         }
 
