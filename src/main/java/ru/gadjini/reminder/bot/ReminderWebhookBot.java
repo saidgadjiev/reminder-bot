@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.bot;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
@@ -10,6 +12,8 @@ import ru.gadjini.reminder.service.filter.BotFilter;
 
 @Component
 public class ReminderWebhookBot extends TelegramWebhookBot {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReminderWebhookBot.class);
 
     private BotProperties botProperties;
 
@@ -23,7 +27,11 @@ public class ReminderWebhookBot extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod onWebhookUpdateReceived(Update update) {
-        botFilter.doFilter(update);
+        try {
+            botFilter.doFilter(update);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
 
         return null;
     }

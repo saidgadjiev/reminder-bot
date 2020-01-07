@@ -52,6 +52,12 @@ public class DateTime {
         return this;
     }
 
+    public DateTime minusDays(int days) {
+        localDate = localDate.minusDays(days);
+
+        return this;
+    }
+
     public DateTime plusHours(int hours) {
         localTime = localTime.plusHours(hours);
 

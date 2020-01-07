@@ -50,6 +50,13 @@ public class CommandParser {
         return new CommandParseResult(commandSplit[0].substring(1), parameters, null);
     }
 
+    public String parseBotCommandName(Message message) {
+        String text = message.getText().trim();
+        String[] commandSplit = text.split(COMMAND_ARG_SEPARATOR);
+
+        return commandSplit[0].substring(1);
+    }
+
     public static class CommandParseResult {
 
         private String commandName;

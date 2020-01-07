@@ -39,7 +39,7 @@ public class GoBackCallbackCommand implements CallbackBotCommand {
         String prevCommandName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
         ReplyKeyboard replyKeyboard = null;
 
-        if (requestParams.contains(Arg.RESTORE_KEYBOARD.getKey())) {
+        if (requestParams.getBoolean(Arg.RESTORE_KEYBOARD.getKey())) {
             replyKeyboard = commandNavigator.silentPop(callbackQuery.getMessage().getChatId());
         }
         callbackCommandNavigator.goTo(TgMessage.from(callbackQuery), prevCommandName, replyKeyboard, requestParams);

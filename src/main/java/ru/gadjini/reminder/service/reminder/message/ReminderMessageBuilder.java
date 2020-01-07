@@ -183,6 +183,17 @@ public class ReminderMessageBuilder {
         return message.toString();
     }
 
+    public String getRepeatReminderReturnedForReceiver(Reminder reminder) {
+        StringBuilder message = new StringBuilder();
+
+        message
+                .append(messageBuilder.getReminderReturned(reminder.getText())).append("\n")
+                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n")
+                .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
+
+        return message.toString();
+    }
+
     public String getRepeatReminderSkippedForCreator(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 

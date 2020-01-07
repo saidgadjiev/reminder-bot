@@ -344,4 +344,14 @@ public class MessagesProperties {
     public static final String MESSAGE_CREATE_REMINDER = "message.create.reminder";
 
     public static final String MESSAGE_FRIENDSHIP_INTERRUPTED = "message.friendship.interrupted";
+
+    public static final String RETURN_REPEAT_REMINDER_COMMAND_DESCRIPTION = "return.repeat.reminder.command.description";
+
+    public static final String MESSAGE_REMINDER_CANT_BE_RETURNED = "message.reminder.cant.be.returned";
+
+    public static final String MESSAGE_REMINDER_RETURNED_ANSWER = "message.reminder.returned.answer";
+
+    public static final String MESSAGE_REMINDER_CANT_BE_RETURNED_ANSWER = "message.reminder.cant.be.returned.answer";
+
+    public static final String MESSAGE_REMINDER_RETURNED = "message.reminder.returned";
 }

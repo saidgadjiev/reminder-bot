@@ -12,10 +12,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.model.UpdateReminderResult;
-import ru.gadjini.reminder.service.TgUserService;
-import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
@@ -29,34 +26,24 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     private ReminderRequestService reminderRequestService;
 
-    private TgUserService tgUserService;
-
     private ReplyKeyboardService replyKeyboardService;
 
     private ReminderMessageSender reminderMessageSender;
 
-    private UserReminderNotificationService userReminderNotificationService;
-
     @Autowired
     public StartCommand(MessageService messageService,
                         ReminderRequestService reminderRequestService,
-                        TgUserService tgUserService,
                         ReplyKeyboardService replyKeyboardService,
-                        ReminderMessageSender reminderMessageSender,
-                        UserReminderNotificationService userReminderNotificationService) {
+                        ReminderMessageSender reminderMessageSender) {
         super(CommandNames.START_COMMAND_NAME, "");
         this.messageService = messageService;
         this.reminderRequestService = reminderRequestService;
-        this.tgUserService = tgUserService;
         this.replyKeyboardService = replyKeyboardService;
         this.reminderMessageSender = reminderMessageSender;
-        this.userReminderNotificationService = userReminderNotificationService;
     }
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] args) {
-        tgUserService.createOrUpdateUser(chat.getId(), user);
-        createUserNotifications(user.getId());
         messageService.sendMessageByCode(chat.getId(), MessagesProperties.MESSAGE_START, replyKeyboardService.getMainMenu());
     }
 
@@ -107,17 +94,5 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         updateReminderResult.getOldReminder().getCreator().setChatId(editedMessage.getChatId());
 
         reminderMessageSender.sendReminderFullyUpdate(updateReminderResult);
-    }
-
-    private void createUserNotifications(int userId) {
-        int countWithTime = userReminderNotificationService.count(userId, UserReminderNotification.NotificationType.WITH_TIME);
-        if (countWithTime == 0) {
-            userReminderNotificationService.createDefaultNotificationsForWithTime(userId);
-        }
-
-        int countWithoutTime = userReminderNotificationService.count(userId, UserReminderNotification.NotificationType.WITHOUT_TIME);
-        if (countWithoutTime == 0) {
-            userReminderNotificationService.createDefaultNotificationsForWithoutTime(userId);
-        }
     }
 }

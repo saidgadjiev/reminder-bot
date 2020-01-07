@@ -81,8 +81,8 @@ public class RuTimeDeclensionService implements TimeDeclensionService {
             case MONDAY:
             case TUESDAY:
             case SUNDAY:
-                return dayOfWeek.getDisplayName(TextStyle.FULL, LOCALE);
             case THURSDAY:
+                return dayOfWeek.getDisplayName(TextStyle.FULL, LOCALE);
             case WEDNESDAY:
             case FRIDAY:
             case SATURDAY:

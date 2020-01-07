@@ -18,6 +18,10 @@ public class RequestParams {
         return Integer.parseInt(params.get(key));
     }
 
+    public boolean getBoolean(String key) {
+        return params.containsKey(key) && Boolean.parseBoolean(params.get(key));
+    }
+
     public RequestParams add(String key, String value) {
         params.put(key, value);
 

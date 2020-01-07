@@ -7,7 +7,7 @@ public class BaseBotFilter implements BotFilter {
     private BotFilter next;
 
     @Override
-    public BotFilter setNext(BotFilter next) {
+    public final BotFilter setNext(BotFilter next) {
         this.next = next;
 
         return next;

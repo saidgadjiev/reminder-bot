@@ -285,4 +285,14 @@ public class ButtonFactory {
 
         return button;
     }
+
+    public InlineKeyboardButton returnReminderButton(int reminderId) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.RETURN_REPEAT_REMINDER_COMMAND_DESCRIPTION));
+        button.setCallbackData(CommandNames.RETURN_REPEAT_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams()
+                        .add(Arg.REMINDER_ID.getKey(), reminderId)
+                        .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
 }

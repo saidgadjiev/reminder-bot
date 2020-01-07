@@ -62,7 +62,7 @@ public class TelegramMessageService implements MessageService {
         try {
             telegramService.execute(deleteMessage);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Error delete message {}", messageId);
         }
     }
 
@@ -129,7 +129,7 @@ public class TelegramMessageService implements MessageService {
         try {
             telegramService.execute(answerCallbackQuery);
         } catch (TelegramApiException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Error answer callback {} with text {}", callbackQueryId, text);
         }
     }
 
@@ -148,7 +148,7 @@ public class TelegramMessageService implements MessageService {
         try {
             telegramService.execute(editMessageText);
         } catch (TelegramApiException ex) {
-            LOGGER.error(ex.getMessage(), ex);
+            LOGGER.error("Error edit message {} with text {}", messageId, text);
         }
     }
 

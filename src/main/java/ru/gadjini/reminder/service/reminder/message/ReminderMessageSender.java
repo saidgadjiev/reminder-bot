@@ -38,18 +38,47 @@ public class ReminderMessageSender {
         this.remindMessageService = remindMessageService;
     }
 
-    public void sendRepeatReminderSkippedFromList(int messageId, Reminder reminder) {
+    public void sendRepeatReminderSkippedFromList(int messageId, int userId, Reminder reminder) {
         if (reminder.hasRemindMessage()) {
             messageService.deleteMessage(reminder.getReceiver().getChatId(), reminder.getRemindMessage().getMessageId());
             remindMessageService.delete(reminder.getId());
         }
 
         if (reminder.isMySelf()) {
-            messageService.editMessage(reminder.getReceiver().getChatId(), messageId, reminderMessageBuilder.getMySelfRepeatReminderSkipped(reminder));
+            messageService.editMessage(
+                    reminder.getReceiver().getChatId(),
+                    messageId,
+                    reminderMessageBuilder.getMySelfRepeatReminderSkipped(reminder),
+                    inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder)
+            );
         } else {
             messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getRepeatReminderSkippedForCreator(reminder));
-            messageService.editMessage(reminder.getReceiver().getChatId(), messageId, reminderMessageBuilder.getRepeatReminderSkippedForReceiver(reminder));
+            messageService.editMessage(
+                    reminder.getReceiver().getChatId(),
+                    messageId,
+                    reminderMessageBuilder.getRepeatReminderSkippedForReceiver(reminder),
+                    inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder)
+            );
         }
+    }
+
+    public void sendRepeatReminderCantBeReturned(long chatId, int messageId, int userId, Reminder reminder) {
+        messageService.editMessageByMessageCode(
+                chatId,
+                messageId,
+                MessagesProperties.MESSAGE_REMINDER_CANT_BE_RETURNED,
+                inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder));
+    }
+
+    public void sendRepeatReminderReturned(long chatId, int messageId, int userId, Reminder reminder) {
+        if (reminder.hasRemindMessage()) {
+            messageService.deleteMessage(reminder.getReceiver().getChatId(), reminder.getRemindMessage().getMessageId());
+            remindMessageService.delete(reminder.getId());
+        }
+        if (reminder.isNotMySelf()) {
+            messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getRepeatReminderReturnedForReceiver(reminder));
+        }
+        messageService.editMessage(chatId, messageId, reminderMessageBuilder.getReminderMessage(reminder), inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder));
     }
 
     public void sendRepeatReminderSkipped(Reminder reminder) {

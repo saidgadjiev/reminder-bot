@@ -86,6 +86,10 @@ public class MessageBuilder {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_SKIPPED, new Object[]{reminderText});
     }
 
+    public String getReminderReturned(String reminderText) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_RETURNED, new Object[]{reminderText});
+    }
+
     public String getReminderStopped(String reminderText) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_STOPPED, new Object[]{reminderText});
     }

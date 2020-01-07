@@ -48,7 +48,11 @@ public class JodaTimeUtils {
         return zonedDateTime.minusYears(period.getYears()).minusMonths(period.getMonths()).minusDays(period.getDays()).minusHours(period.getHours()).minusMinutes(period.getMinutes());
     }
 
-    public static LocalDate minus(LocalDate localDateTime, Period period) {
-        return localDateTime.minusYears(period.getYears()).minusMonths(period.getMonths()).minusDays(period.getDays());
+    public static LocalDate minus(LocalDate localDate, Period period) {
+        return localDate.minusYears(period.getYears()).minusMonths(period.getMonths()).minusDays(period.getDays());
+    }
+
+    public static LocalDate plus(LocalDate localDate, Period period) {
+        return localDate.plusYears(period.getYears()).plusMonths(period.getMonths()).plusDays(period.getDays());
     }
 }

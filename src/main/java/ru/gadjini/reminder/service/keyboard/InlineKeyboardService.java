@@ -325,7 +325,7 @@ public class InlineKeyboardService {
         if (repeatable) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminderId, currHistoryName), buttonFactory.cancelReminderButton(reminderId, currHistoryName)));
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.skipRepeatReminderButton(reminderId, currHistoryName), buttonFactory.stopRepeatReminderButton(reminderId, currHistoryName)));
-
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.returnReminderButton(reminderId)));
         } else {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId, currHistoryName), buttonFactory.cancelReminderButton(reminderId, currHistoryName)));
         }

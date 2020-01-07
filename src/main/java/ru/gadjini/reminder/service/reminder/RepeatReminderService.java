@@ -116,6 +116,20 @@ public class RepeatReminderService {
         return toSkip;
     }
 
+    @Transactional
+    public ReturnReminderResult returnReminder(int id) {
+        Reminder toReturn = reminderDao.getReminder(
+                ReminderTable.TABLE.as("r").ID.eq(id),
+                new ReminderMapping()
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME)))
+                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setRemindMessageMapping(new Mapping())
+        );
+        boolean returned = moveReminderNotificationToPrevPeriod(toReturn);
+
+        return new ReturnReminderResult(toReturn, returned);
+    }
+
     public void updateNextRemindAt(int reminderId, DateTime nextRemindAt) {
         reminderDao.update(
                 Map.ofEntries(
@@ -132,6 +146,22 @@ public class RepeatReminderService {
             return getWeeklyNextRemindAt(remindAt, repeatTime);
         } else {
             return getIntervalNextRemindAt(remindAt, repeatTime);
+        }
+    }
+
+    private DateTime getPrevRemindAt(DateTime remindAt, RepeatTime repeatTime) {
+        if (repeatTime.getDayOfWeek() != null) {
+            return remindAt.minusDays(7);
+        } else {
+            if (remindAt.hasTime()) {
+                ZonedDateTime prevRemindAt = JodaTimeUtils.minus(remindAt.toZonedDateTime(), repeatTime.getInterval());
+
+                return DateTime.of(prevRemindAt);
+            }
+
+            LocalDate prevRemindAt = JodaTimeUtils.minus(remindAt.date(), repeatTime.getInterval());
+
+            return DateTime.of(prevRemindAt, null, remindAt.getZoneId());
         }
     }
 
@@ -160,6 +190,55 @@ public class RepeatReminderService {
         reminder.setRemindAt(nextRemindAt);
 
         return reminder;
+    }
+
+    private boolean moveReminderNotificationToPrevPeriod(Reminder reminder) {
+        if (isCanMoveToPrev(reminder)) {
+            int id = reminder.getId();
+            List<ReminderNotification> reminderNotifications = reminderNotificationService.getList(id);
+            for (ReminderNotification reminderNotification : reminderNotifications) {
+                if (reminderNotification.getType().equals(ReminderNotification.Type.REPEAT) && isCanMoveToPrev(reminderNotification)) {
+                    ZonedDateTime prevLastRemindAt = JodaTimeUtils.minus(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime());
+                    reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), prevLastRemindAt.toLocalDateTime());
+                }
+            }
+            DateTime prevRemindAt = getPrevRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
+            updateNextRemindAt(id, prevRemindAt);
+            reminder.setRemindAt(prevRemindAt);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isCanMoveToPrev(Reminder reminder) {
+        if (reminder.getRepeatRemindAt().getDayOfWeek() != null ||
+                reminder.getRepeatRemindAt().getInterval().getDays() > 0 ||
+                reminder.getRepeatRemindAt().getInterval().getMonths() > 0 ||
+                reminder.getRepeatRemindAt().getInterval().getYears() > 0) {
+            LocalDate now = LocalDate.now();
+            LocalDate prevDate;
+
+            if (reminder.getRepeatRemindAt().getDayOfWeek() != null) {
+                prevDate = reminder.getRemindAt().date().minusDays(7);
+            } else {
+                prevDate = JodaTimeUtils.minus(reminder.getRemindAt().date(), reminder.getRepeatRemindAt().getInterval());
+            }
+
+            return now.isBefore(prevDate) || now.isEqual(prevDate);
+        } else {
+            ZonedDateTime now = TimeUtils.nowZoned();
+            ZonedDateTime prevRemindAt = JodaTimeUtils.minus(reminder.getRemindAt().toZonedDateTime(), reminder.getRepeatRemindAt().getInterval());
+
+            return now.isBefore(prevRemindAt);
+        }
+    }
+
+    private boolean isCanMoveToPrev(ReminderNotification reminderNotification) {
+        ZonedDateTime now = ZonedDateTime.now();
+
+        return now.isBefore(reminderNotification.getLastReminderAt());
     }
 
     private void moveReminderNotificationToNextPeriod(Reminder reminder) {
@@ -260,14 +339,25 @@ public class RepeatReminderService {
     }
 
     private DateTime getIntervalNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
-        ZonedDateTime now = TimeUtils.now(remindAt.getZoneId());
-        ZonedDateTime nextRemindAt = JodaTimeUtils.plus(remindAt.toZonedDateTime(), repeatTime.getInterval());
+        if (remindAt.hasTime()) {
+            ZonedDateTime now = TimeUtils.now(remindAt.getZoneId());
+            ZonedDateTime nextRemindAt = JodaTimeUtils.plus(remindAt.toZonedDateTime(), repeatTime.getInterval());
 
-        while (now.isAfter(nextRemindAt) || now.isEqual(nextRemindAt)) {
-            nextRemindAt = JodaTimeUtils.plus(nextRemindAt, repeatTime.getInterval());
+            while (now.isAfter(nextRemindAt) || now.isEqual(nextRemindAt)) {
+                nextRemindAt = JodaTimeUtils.plus(nextRemindAt, repeatTime.getInterval());
+            }
+
+            return DateTime.of(nextRemindAt);
+        } else {
+            LocalDate now = LocalDate.now(remindAt.getZoneId());
+            LocalDate nextRemindAt = JodaTimeUtils.plus(remindAt.date(), repeatTime.getInterval());
+
+            while (now.isAfter(nextRemindAt) || now.isEqual(nextRemindAt)) {
+                nextRemindAt = JodaTimeUtils.plus(nextRemindAt, repeatTime.getInterval());
+            }
+
+            return DateTime.of(nextRemindAt, null, remindAt.getZoneId());
         }
-
-        return DateTime.of(nextRemindAt);
     }
 
     private DateTime getMonthlyFirstRemindAt(RepeatTime repeatTime) {
@@ -448,5 +538,25 @@ public class RepeatReminderService {
         reminderNotifications.add(reminderNotification);
 
         return reminderNotification;
+    }
+
+    public static class ReturnReminderResult {
+
+        private Reminder reminder;
+
+        private boolean returned;
+
+        public ReturnReminderResult(Reminder reminder, boolean returned) {
+            this.reminder = reminder;
+            this.returned = returned;
+        }
+
+        public Reminder getReminder() {
+            return reminder;
+        }
+
+        public boolean isReturned() {
+            return returned;
+        }
     }
 }

@@ -177,13 +177,15 @@ public class ReminderService {
     }
 
     public Reminder delete(int reminderId) {
-        return reminderDao.delete(
+        List<Reminder> reminders = reminderDao.delete(
                 ReminderTable.TABLE.ID.equal(reminderId),
                 new ReminderMapping()
                         .setCreatorMapping(new Mapping())
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
                         .setRemindMessageMapping(new Mapping())
-        ).iterator().next();
+        );
+
+        return reminders.isEmpty() ? null : reminders.iterator().next();
     }
 
     public List<Reminder> deleteFriendReminders(int userId, int friendId) {
@@ -213,13 +215,15 @@ public class ReminderService {
     }
 
     public Reminder cancel(int reminderId) {
-        return reminderDao.delete(
+        List<Reminder> reminders = reminderDao.delete(
                 ReminderTable.TABLE.ID.equal(reminderId),
                 new ReminderMapping()
                         .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
                         .setRemindMessageMapping(new Mapping())
-        ).iterator().next();
+        );
+
+        return reminders.isEmpty() ? null : reminders.iterator().next();
     }
 
     public ReminderNotification customRemind(int reminderId, ZonedDateTime remindTime) {

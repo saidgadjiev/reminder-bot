@@ -49,4 +49,5 @@ public class CommandNames {
     public static final String CHANGE_FRIEND_NAME_COMMAND_NAME = "an";
     public static final String CREATE_REMINDER_KEYBOARD_COMMAND_NAME = "ao";
     public static final String PROCESS_PAYMENT_COMMAND_NAME = "ap";
+    public static final String RETURN_REPEAT_REMINDER_COMMAND_NAME = "aq";
 }

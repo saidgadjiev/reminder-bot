@@ -79,10 +79,10 @@ public class TimeBuilder {
             DayOfWeek dayOfWeek = lastRemindAt.getDayOfWeek();
 
             time.append(declensionService.getRepeatWord(dayOfWeek)).append(" ");
-            time.append(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())).append(" ");
+            time.append(declensionService.dayOfWeek(dayOfWeek)).append(" ");
             time.append(DATE_TIME_FORMATTER.format(lastRemindAt));
         } else if (reminderNotification.getDelayTime().getDays() != 0) {
-            time.append(time(reminderNotification.getDelayTime()));
+            time.append(time(reminderNotification.getDelayTime())).append(" ");
             time.append(DATE_TIME_FORMATTER.format(reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone())));
         } else if (reminderNotification.getDelayTime().getMonths() != 0) {
             time.append(time(reminderNotification.getDelayTime())).append(" ");
