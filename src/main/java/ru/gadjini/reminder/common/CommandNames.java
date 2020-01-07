@@ -50,4 +50,6 @@ public class CommandNames {
     public static final String CREATE_REMINDER_KEYBOARD_COMMAND_NAME = "ao";
     public static final String PROCESS_PAYMENT_COMMAND_NAME = "ap";
     public static final String RETURN_REPEAT_REMINDER_COMMAND_NAME = "aq";
+    public static final String DEACTIVATE_REMINDER_COMMAND_NAME = "ar";
+    public static final String ACTIVATE_REMINDER_COMMAND_NAME = "as";
 }

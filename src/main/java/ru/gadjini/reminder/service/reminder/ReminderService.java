@@ -59,6 +59,28 @@ public class ReminderService {
         return reminder;
     }
 
+    public Reminder deactivate(int reminderId) {
+        return reminderDao.update(
+                Map.of(ReminderTable.TABLE.INACTIVE, true),
+                ReminderTable.TABLE.ID.eq(reminderId),
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
+                        .setRemindMessageMapping(new Mapping())
+        );
+    }
+
+    public Reminder activate(int reminderId) {
+        return reminderDao.update(
+                Map.of(ReminderTable.TABLE.INACTIVE, false),
+                ReminderTable.TABLE.ID.eq(reminderId),
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
+                        .setRemindMessageMapping(new Mapping())
+        );
+    }
+
     public void updateReminderNotifications(int reminderId, int receiverId, DateTime remindAt) {
         reminderNotificationService.deleteReminderNotifications(reminderId);
         List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAt, receiverId);

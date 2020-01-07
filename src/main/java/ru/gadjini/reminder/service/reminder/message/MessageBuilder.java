@@ -198,10 +198,18 @@ public class MessageBuilder {
     }
 
     public String getCurrentSeries(int currentSeries) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_CURRENT_SERIES, new Object[] {currentSeries});
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CURRENT_SERIES, new Object[]{currentSeries});
     }
 
     public String getMaxSeries(int maxSeries) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_MAX_SERIES, new Object[] {maxSeries});
+        return localisationService.getMessage(MessagesProperties.MESSAGE_MAX_SERIES, new Object[]{maxSeries});
+    }
+
+    public String getReminderDeactivated(String text) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_DEACTIVATED_RECEIVER, new Object[]{text});
+    }
+
+    public String getReminderActivated(String text) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_ACTIVATED_RECEIVER, new Object[]{text});
     }
 }

@@ -47,14 +47,18 @@ public class ReminderMessageBuilder {
 
         result.append(text).append(" ");
 
-        if (reminder.isRepeatable()) {
-            result
-                    .append(timeBuilder.time(reminder.getRepeatRemindAtInReceiverZone())).append("\n")
-                    .append(messageBuilder.getNextRemindAt(nextRemindAt == null ? reminder.getRemindAtInReceiverZone() : nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId()))).append("\n")
-                    .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries())).append("\n")
-                    .append(messageBuilder.getMaxSeries(reminder.getMaxSeries()));
+        if (reminder.isInactive()) {
+            result.append("(<b>").append(timeBuilder.deactivated()).append("</b>)");
         } else {
-            result.append(timeBuilder.time(reminder.getRemindAtInReceiverZone()));
+            if (reminder.isRepeatable()) {
+                result
+                        .append(timeBuilder.time(reminder.getRepeatRemindAtInReceiverZone())).append("\n")
+                        .append(messageBuilder.getNextRemindAt(nextRemindAt == null ? reminder.getRemindAtInReceiverZone() : nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId()))).append("\n")
+                        .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries())).append("\n")
+                        .append(messageBuilder.getMaxSeries(reminder.getMaxSeries()));
+            } else {
+                result.append(timeBuilder.time(reminder.getRemindAtInReceiverZone()));
+            }
         }
         if (reminder.getCreatorId() != reminder.getReceiverId()) {
             if (messageReceiverId == reminder.getCreatorId()) {
@@ -246,8 +250,10 @@ public class ReminderMessageBuilder {
             String number = i++ + ") ";
             text.append(number).append(reminder.getText()).append("(").append(timeBuilder.time(reminder)).append(")\n");
 
-            if (reminder.isRepeatable()) {
-                text.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n");
+            if (!reminder.isInactive()) {
+                if (reminder.isRepeatable()) {
+                    text.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n");
+                }
             }
 
             if (reminder.getReceiverId() != reminder.getCreatorId()) {
@@ -349,6 +355,24 @@ public class ReminderMessageBuilder {
         message
                 .append(messageBuilder.getReminderCanceled(reminder.getText())).append("\n")
                 .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
+
+        return message.toString();
+    }
+
+    public String getReminderDeactivatedReceiver(Reminder reminder) {
+        StringBuilder message = new StringBuilder();
+
+        message.append(messageBuilder.getReminderDeactivated(reminder.getText())).append("\n")
+                .append(messageBuilder.getReminderCreator(reminder.getCreator()));
+
+        return message.toString();
+    }
+
+    public String getReminderActivatedReceiver(Reminder reminder) {
+        StringBuilder message = new StringBuilder();
+
+        message.append(messageBuilder.getReminderActivated(reminder.getText())).append("\n")
+                .append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
         return message.toString();
     }

@@ -38,6 +38,10 @@ public class TimeBuilder {
         declensionServices.forEach(timeDeclensionService -> declensionServiceMap.put(timeDeclensionService.getLanguage(), timeDeclensionService));
     }
 
+    public String deactivated() {
+        return localisationService.getMessage(MessagesProperties.DEACTIVATED_TIME);
+    }
+
     public String time(UserReminderNotification offsetTime) {
         StringBuilder builder = new StringBuilder();
 
@@ -227,6 +231,9 @@ public class TimeBuilder {
     }
 
     public String time(Reminder reminder) {
+        if (reminder.isInactive()) {
+            return "<b>" + deactivated() + "</b>";
+        }
         if (reminder.isRepeatable()) {
             return time(reminder.getRepeatRemindAtInReceiverZone());
         } else {

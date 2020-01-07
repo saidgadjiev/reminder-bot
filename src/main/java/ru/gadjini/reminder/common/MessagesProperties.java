@@ -358,4 +358,18 @@ public class MessagesProperties {
     public static final String MESSAGE_CURRENT_SERIES = "message.current.series";
 
     public static final String MESSAGE_MAX_SERIES = "message.max.series";
+
+    public static final String DEACTIVATE_REMINDER_COMMAND_DESCRIPTION = "deactivate.reminder.command.description";
+
+    public static final String ACTIVATE_REMINDER_COMMAND_DESCRIPTION = "activate.reminder.command.description";
+
+    public static final String MESSAGE_REMINDER_DEACTIVATED_ANSWER = "message.reminder.deactivated.answer";
+
+    public static final String MESSAGE_REMINDER_ACTIVATED_ANSWER = "message.reminder.activated.answer";
+
+    public static final String DEACTIVATED_TIME = "deactivated.time";
+
+    public static final String MESSAGE_REMINDER_DEACTIVATED_RECEIVER = "message.reminder.deactivated.receiver";
+
+    public static final String MESSAGE_REMINDER_ACTIVATED_RECEIVER = "message.reminder.activated.receiver";
 }

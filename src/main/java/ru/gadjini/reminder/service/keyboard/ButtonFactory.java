@@ -295,4 +295,24 @@ public class ButtonFactory {
 
         return button;
     }
+
+    public InlineKeyboardButton deactivateReminderButton(int reminderId) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.DEACTIVATE_REMINDER_COMMAND_DESCRIPTION));
+        button.setCallbackData(CommandNames.DEACTIVATE_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams()
+                        .add(Arg.REMINDER_ID.getKey(), reminderId)
+                        .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
+
+    public InlineKeyboardButton activateReminderButton(int reminderId) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.ACTIVATE_REMINDER_COMMAND_DESCRIPTION));
+        button.setCallbackData(CommandNames.ACTIVATE_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams()
+                        .add(Arg.REMINDER_ID.getKey(), reminderId)
+                        .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
 }

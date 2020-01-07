@@ -40,6 +40,8 @@ public class Reminder {
 
     public static final String MAX_SERIES = "max_series";
 
+    public static final String INACTIVE = "inactive";
+
     private int id;
 
     private String text;
@@ -73,6 +75,8 @@ public class Reminder {
     private int currentSeries;
 
     private int maxSeries;
+
+    private boolean inactive;
 
     public Reminder() {
     }
@@ -272,6 +276,14 @@ public class Reminder {
 
     public void setMaxSeries(int maxSeries) {
         this.maxSeries = maxSeries;
+    }
+
+    public boolean isInactive() {
+        return inactive;
+    }
+
+    public void setInactive(boolean inactive) {
+        this.inactive = inactive;
     }
 
     public Map<Field<?>, Object> getDiff(Reminder newReminder) {
