@@ -354,4 +354,8 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_CANT_BE_RETURNED_ANSWER = "message.reminder.cant.be.returned.answer";
 
     public static final String MESSAGE_REMINDER_RETURNED = "message.reminder.returned";
+
+    public static final String MESSAGE_CURRENT_SERIES = "message.current.series";
+
+    public static final String MESSAGE_MAX_SERIES = "message.max.series";
 }

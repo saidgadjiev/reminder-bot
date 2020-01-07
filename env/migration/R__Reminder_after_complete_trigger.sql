@@ -5,11 +5,9 @@ $BODY$
 BEGIN
     if (NEW.receiver_id != NEW.creator_id) THEN
         INSERT INTO completed_reminder(reminder_id, reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at,
-                                       initial_remind_at,
-                                       completed_at, note)
+                                       initial_remind_at, completed_at, note, current_series, max_series)
         VALUES (NEW.id, NEW.reminder_text, NEW.creator_id, NEW.receiver_id, NEW.remind_at, NEW.repeat_remind_at,
-                NEW.initial_remind_at, now(),
-                NEW.note);
+                NEW.initial_remind_at, now(), NEW.note, NEW.current_series, NEW.max_series);
     END IF;
 
     RETURN NEW;

@@ -128,17 +128,24 @@ public class ReminderMessageSender {
         );
     }
 
-    public void sendRepeatReminderCompletedFromList(int messageId, Reminder reminder) {
+    public void sendRepeatReminderCompletedFromList(int messageId, int userId, Reminder reminder) {
         if (reminder.hasRemindMessage()) {
             messageService.deleteMessage(reminder.getReceiver().getChatId(), reminder.getRemindMessage().getMessageId());
             remindMessageService.delete(reminder.getId());
         }
 
+        InlineKeyboardMarkup keyboardMarkup;
+        if (reminder.isRepeatable()) {
+            keyboardMarkup = inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder);
+        } else {
+            keyboardMarkup = inlineKeyboardService.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME);
+        }
+
         if (reminder.isMySelf()) {
-            messageService.editMessage(reminder.getReceiver().getChatId(), messageId, reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminder));
+            messageService.editMessage(reminder.getReceiver().getChatId(), messageId, reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminder), keyboardMarkup);
         } else {
             messageService.sendMessage(reminder.getCreator().getChatId(), reminderMessageBuilder.getRepeatReminderCompletedForCreator(reminder));
-            messageService.editMessage(reminder.getReceiver().getChatId(), messageId, reminderMessageBuilder.getRepeatReminderCompletedForReceiver(reminder));
+            messageService.editMessage(reminder.getReceiver().getChatId(), messageId, reminderMessageBuilder.getRepeatReminderCompletedForReceiver(reminder), keyboardMarkup);
         }
     }
 

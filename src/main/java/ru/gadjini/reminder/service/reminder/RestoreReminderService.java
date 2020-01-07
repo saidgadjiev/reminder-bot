@@ -48,9 +48,9 @@ public class RestoreReminderService {
             if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
                 reminderNotificationService.deleteReminderNotification(reminderNotification.getId());
             } else {
-                if (reminderNotification.isItsTime()) {
+                if (repeatReminderService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
                     DateTime nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
-                    repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
+                    repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt, RepeatReminderService.UpdateSeries.NONE);
                     reminder.setRemindAt(nextRemindAt);
                 }
                 ZonedDateTime restoredLastRemindAt = getNextLastRemindAt(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime());
@@ -89,9 +89,6 @@ public class RestoreReminderService {
     }
 
     private boolean isNeedRestoreStandardReminder(Reminder reminder) {
-        if (reminder.getReminderNotifications().size() > 1) {
-            return true;
-        }
-        return false;
+        return reminder.getReminderNotifications().size() > 1;
     }
 }

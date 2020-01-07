@@ -196,4 +196,12 @@ public class MessageBuilder {
     public String getReminderDeleted(String text) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_DELETED, new Object[]{text});
     }
+
+    public String getCurrentSeries(int currentSeries) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CURRENT_SERIES, new Object[] {currentSeries});
+    }
+
+    public String getMaxSeries(int maxSeries) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_MAX_SERIES, new Object[] {maxSeries});
+    }
 }

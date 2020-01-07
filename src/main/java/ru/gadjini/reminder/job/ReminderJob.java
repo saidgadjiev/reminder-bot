@@ -73,8 +73,7 @@ public class ReminderJob {
         List<Reminder> overdueReminders = repeatReminderService.getOverdueRepeatReminders();
 
         for (Reminder reminder : overdueReminders) {
-            DateTime nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
-            repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
+            repeatReminderService.autoSkip(reminder);
             LOGGER.debug("Overdue reminder with id {} moved not the next time", reminder.getId());
         }
     }
@@ -147,25 +146,14 @@ public class ReminderJob {
     private void sendRepeatReminderTimeForRepeatableReminder(Reminder reminder, ReminderNotification reminderNotification) {
         DateTime nextRemindAt = reminder.getRemindAt();
 
-        if (isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
+        if (repeatReminderService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
             nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
-            repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt);
+            repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt, RepeatReminderService.UpdateSeries.INCREMENT);
             reminder.setRemindAt(nextRemindAt);
         }
         reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), nextRemindAt);
 
         ZonedDateTime nextLastRemindAt = JodaTimeUtils.plus(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime());
         reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), nextLastRemindAt.toLocalDateTime());
-    }
-
-    private boolean isNeedUpdateNextRemindAt(Reminder reminder, ReminderNotification reminderNotification) {
-        if (reminder.getRepeatRemindAt().hasTime()) {
-            return false;
-        }
-        if (reminder.getRepeatRemindAt().getDayOfWeek() != null) {
-            return false;
-        }
-
-        return reminderNotification.isItsTime();
     }
 }

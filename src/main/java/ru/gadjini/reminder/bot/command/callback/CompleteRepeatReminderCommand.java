@@ -38,7 +38,7 @@ public class CompleteRepeatReminderCommand implements CallbackBotCommand {
 
         String currHistoryName = requestParams.getString(Arg.CURR_HISTORY_NAME.getKey());
         if (Objects.equals(currHistoryName, CommandNames.REMINDER_DETAILS_COMMAND_NAME)) {
-            reminderMessageSender.sendRepeatReminderCompletedFromList(callbackQuery.getMessage().getMessageId(), reminder);
+            reminderMessageSender.sendRepeatReminderCompletedFromList(callbackQuery.getMessage().getMessageId(), callbackQuery.getFrom().getId(), reminder);
         } else {
             reminderMessageSender.sendRepeatReminderCompleted(reminder);
         }

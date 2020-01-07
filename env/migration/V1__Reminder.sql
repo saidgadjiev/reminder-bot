@@ -20,7 +20,9 @@ CREATE TABLE IF NOT EXISTS reminder
     initial_remind_at TIMESTAMP(0) NOT NULL,
     status            INT          NOT NULL DEFAULT 0,
     note              TEXT,
-    completed_at      TIMESTAMP(0)
+    completed_at      TIMESTAMP(0),
+    current_series    INT                   DEFAULT 0,
+    max_series        INT                   DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS reminder_time

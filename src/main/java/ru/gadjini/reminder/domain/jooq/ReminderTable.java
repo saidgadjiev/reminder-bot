@@ -30,6 +30,10 @@ public class ReminderTable extends TableImpl<Record> {
 
     public TableField<Record, Integer> MESSAGE_ID;
 
+    public TableField<Record, Integer> CURRENT_SERIES;
+
+    public TableField<Record, Integer> MAX_SERIES;
+
     private ReminderTable() {
         this(DSL.name(Reminder.TYPE), null, null);
     }
@@ -55,6 +59,8 @@ public class ReminderTable extends TableImpl<Record> {
         STATUS = createField(Reminder.STATUS, SQLDataType.INTEGER);
         REPEAT_REMIND_AT = createField(Reminder.REPEAT_REMIND_AT, SQLDataType.OTHER);
         MESSAGE_ID = createField(Reminder.MESSAGE_ID, SQLDataType.INTEGER);
+        CURRENT_SERIES = createField(Reminder.CURRENT_SERIES, SQLDataType.INTEGER);
+        MAX_SERIES = createField(Reminder.MAX_SERIES, SQLDataType.INTEGER);
     }
 
     @Override

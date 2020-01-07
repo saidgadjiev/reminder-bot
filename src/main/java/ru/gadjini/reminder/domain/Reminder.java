@@ -36,6 +36,10 @@ public class Reminder {
 
     public static final String MESSAGE_ID = "message_id";
 
+    public static final String CURRENT_SERIES = "current_series";
+
+    public static final String MAX_SERIES = "max_series";
+
     private int id;
 
     private String text;
@@ -66,6 +70,10 @@ public class Reminder {
 
     private int messageId;
 
+    private int currentSeries;
+
+    private int maxSeries;
+
     public Reminder() {
     }
 
@@ -85,6 +93,8 @@ public class Reminder {
         this.messageId = reminder.messageId;
         this.remindMessage = reminder.remindMessage;
         this.reminderNotifications = reminder.reminderNotifications;
+        this.currentSeries = reminder.currentSeries;
+        this.maxSeries = reminder.maxSeries;
     }
 
     public int getId() {
@@ -246,6 +256,22 @@ public class Reminder {
 
     public void setMessageId(int messageId) {
         this.messageId = messageId;
+    }
+
+    public int getCurrentSeries() {
+        return currentSeries;
+    }
+
+    public void setCurrentSeries(int currentSeries) {
+        this.currentSeries = currentSeries;
+    }
+
+    public int getMaxSeries() {
+        return maxSeries;
+    }
+
+    public void setMaxSeries(int maxSeries) {
+        this.maxSeries = maxSeries;
     }
 
     public Map<Field<?>, Object> getDiff(Reminder newReminder) {

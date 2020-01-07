@@ -38,7 +38,10 @@ public class CompletedReminderDao {
                 .addValue(Reminder.NOTE, reminder.getNote())
                 .addValue(Reminder.REMIND_AT, reminder.getRemindAt().sql(), Types.OTHER)
                 .addValue(Reminder.INITIAL_REMIND_AT, reminder.getRemindAt().sql(), Types.OTHER)
-                .addValue(Reminder.REPEAT_REMIND_AT, reminder.getRepeatRemindAt() != null ? reminder.getRepeatRemindAt().sql() : null, Types.OTHER);
+                .addValue(Reminder.REPEAT_REMIND_AT, reminder.getRepeatRemindAt() != null ? reminder.getRepeatRemindAt().sql() : null, Types.OTHER)
+                .addValue("reminder_id", reminder.getId())
+                .addValue(Reminder.CURRENT_SERIES, reminder.getCurrentSeries())
+                .addValue(Reminder.MAX_SERIES, reminder.getMaxSeries());
 
     }
 }
