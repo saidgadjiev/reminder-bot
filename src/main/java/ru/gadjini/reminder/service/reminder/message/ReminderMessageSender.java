@@ -474,4 +474,8 @@ public class ReminderMessageSender {
             messageService.sendMessage(reminder.getReceiver().getChatId(), reminderMessageBuilder.getReminderActivatedReceiver(reminder));
         }
     }
+
+    public void sendCountSeriesEnabledOrDisabled(long chatId, int messageId, int userId, Reminder reminder) {
+        messageService.editMessage(chatId, messageId, reminderMessageBuilder.getReminderMessage(reminder), inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder));
+    }
 }

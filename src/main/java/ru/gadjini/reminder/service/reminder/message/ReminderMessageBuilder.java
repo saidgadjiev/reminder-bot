@@ -53,9 +53,14 @@ public class ReminderMessageBuilder {
             if (reminder.isRepeatable()) {
                 result
                         .append(timeBuilder.time(reminder.getRepeatRemindAtInReceiverZone())).append("\n")
-                        .append(messageBuilder.getNextRemindAt(nextRemindAt == null ? reminder.getRemindAtInReceiverZone() : nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId()))).append("\n")
-                        .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries())).append("\n")
-                        .append(messageBuilder.getMaxSeries(reminder.getMaxSeries()));
+                        .append(messageBuilder.getNextRemindAt(nextRemindAt == null ? reminder.getRemindAtInReceiverZone() : nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId())));
+
+                if (reminder.isCountSeries()) {
+                    result
+                            .append("\n")
+                            .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries())).append("\n")
+                            .append(messageBuilder.getMaxSeries(reminder.getMaxSeries()));
+                }
             } else {
                 result.append(timeBuilder.time(reminder.getRemindAtInReceiverZone()));
             }
@@ -437,8 +442,13 @@ public class ReminderMessageBuilder {
     }
 
     private void appendRepeatReminderCommonValues(StringBuilder message, Reminder reminder) {
-        message.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n")
-                .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries())).append("\n")
-                .append(messageBuilder.getMaxSeries(reminder.getMaxSeries()));
+        message.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone()));
+
+        if (reminder.isCountSeries()) {
+            message
+                    .append("\n")
+                    .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries())).append("\n")
+                    .append(messageBuilder.getMaxSeries(reminder.getMaxSeries()));
+        }
     }
 }

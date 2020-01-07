@@ -75,6 +75,7 @@ public class ResultSetMapper {
         reminder.setCurrentSeries(rs.getInt(Reminder.CURRENT_SERIES));
         reminder.setMaxSeries(rs.getInt(Reminder.MAX_SERIES));
         reminder.setInactive(rs.getBoolean(Reminder.INACTIVE));
+        reminder.setCountSeries(rs.getBoolean(Reminder.COUNT_SERIES));
         Timestamp completedAt = rs.getTimestamp(Reminder.COMPLETED_AT);
         if (completedAt != null) {
             reminder.setCompletedAt(ZonedDateTime.of(completedAt.toLocalDateTime(), ZoneOffset.UTC));

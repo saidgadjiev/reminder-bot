@@ -52,4 +52,6 @@ public class CommandNames {
     public static final String RETURN_REPEAT_REMINDER_COMMAND_NAME = "aq";
     public static final String DEACTIVATE_REMINDER_COMMAND_NAME = "ar";
     public static final String ACTIVATE_REMINDER_COMMAND_NAME = "as";
+    public static final String ENABLE_COUNT_SERIES_COMMAND_NAME = "at";
+    public static final String DISABLE_COUNT_SERIES_COMMAND_NAME = "au";
 }

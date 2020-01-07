@@ -140,6 +140,28 @@ public class RepeatReminderService {
         updateNextRemindAt(reminder.getId(), nextRemindAt, UpdateSeries.RESET);
     }
 
+    public Reminder enableCountSeries(int reminderId) {
+        return reminderDao.update(
+                Map.of(ReminderTable.TABLE.COUNT_SERIES, true, ReminderTable.TABLE.CURRENT_SERIES, 0, ReminderTable.TABLE.MAX_SERIES, 0),
+                ReminderTable.TABLE.ID.eq(reminderId),
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
+                        .setRemindMessageMapping(new Mapping())
+        );
+    }
+
+    public Reminder disableCountSeries(int reminderId) {
+        return reminderDao.update(
+                Map.of(ReminderTable.TABLE.COUNT_SERIES, false),
+                ReminderTable.TABLE.ID.eq(reminderId),
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
+                        .setRemindMessageMapping(new Mapping())
+        );
+    }
+
     @Transactional
     public ReturnReminderResult returnReminder(int id) {
         Reminder toReturn = reminderDao.getReminder(

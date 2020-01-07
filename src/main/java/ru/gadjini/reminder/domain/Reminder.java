@@ -42,6 +42,8 @@ public class Reminder {
 
     public static final String INACTIVE = "inactive";
 
+    public static final String COUNT_SERIES = "count_series";
+
     private int id;
 
     private String text;
@@ -78,6 +80,8 @@ public class Reminder {
 
     private boolean inactive;
 
+    private boolean countSeries;
+
     public Reminder() {
     }
 
@@ -99,6 +103,7 @@ public class Reminder {
         this.reminderNotifications = reminder.reminderNotifications;
         this.currentSeries = reminder.currentSeries;
         this.maxSeries = reminder.maxSeries;
+        this.countSeries = reminder.countSeries;
     }
 
     public int getId() {
@@ -284,6 +289,14 @@ public class Reminder {
 
     public void setInactive(boolean inactive) {
         this.inactive = inactive;
+    }
+
+    public boolean isCountSeries() {
+        return countSeries;
+    }
+
+    public void setCountSeries(boolean countSeries) {
+        this.countSeries = countSeries;
     }
 
     public Map<Field<?>, Object> getDiff(Reminder newReminder) {

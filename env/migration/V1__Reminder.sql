@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS reminder
     note              TEXT,
     completed_at      TIMESTAMP(0),
     current_series    INT                   DEFAULT 0,
-    max_series        INT                   DEFAULT 0
+    max_series        INT                   DEFAULT 0,
+    count_series      BOOLEAN      NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS reminder_time

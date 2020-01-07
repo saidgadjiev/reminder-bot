@@ -372,4 +372,12 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_DEACTIVATED_RECEIVER = "message.reminder.deactivated.receiver";
 
     public static final String MESSAGE_REMINDER_ACTIVATED_RECEIVER = "message.reminder.activated.receiver";
+
+    public static final String ENABLE_COUNT_SERIES_COMMAND_DESCRIPTION = "enable.count.series.command.description";
+
+    public static final String MESSAGE_COUNT_SERIES_ENABLED_ANSWER = "message.count.series.enabled.answer";
+
+    public static final String DISABLE_COUNT_SERIES_COMMAND_DESCRIPTION = "disable.count.series.command.description";
+
+    public static final String MESSAGE_COUNT_SERIES_DISABLED_ANSWER = "message.count.series.disabled.answer";
 }

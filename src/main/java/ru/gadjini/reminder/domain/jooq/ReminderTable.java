@@ -36,6 +36,8 @@ public class ReminderTable extends TableImpl<Record> {
 
     public TableField<Record, Boolean> INACTIVE;
 
+    public TableField<Record, Boolean> COUNT_SERIES;
+
     private ReminderTable() {
         this(DSL.name(Reminder.TYPE), null, null);
     }
@@ -64,6 +66,7 @@ public class ReminderTable extends TableImpl<Record> {
         CURRENT_SERIES = createField(Reminder.CURRENT_SERIES, SQLDataType.INTEGER);
         MAX_SERIES = createField(Reminder.MAX_SERIES, SQLDataType.INTEGER);
         INACTIVE = createField(Reminder.INACTIVE, SQLDataType.BOOLEAN);
+        COUNT_SERIES = createField(Reminder.COUNT_SERIES, SQLDataType.BOOLEAN);
     }
 
     @Override
