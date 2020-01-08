@@ -20,6 +20,7 @@ import ru.gadjini.reminder.util.TimeUtils;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -147,7 +148,7 @@ public class ReminderJob {
         DateTime nextRemindAt = reminder.getRemindAt();
 
         if (repeatReminderService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
-            nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
+            nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtInReceiverZone()).withZoneSameInstant(ZoneOffset.UTC);
             repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt, RepeatReminderService.UpdateSeries.INCREMENT);
             reminder.setRemindAt(nextRemindAt);
         }

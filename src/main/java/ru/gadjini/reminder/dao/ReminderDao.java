@@ -83,10 +83,12 @@ public class ReminderDao {
 
     public List<Reminder> getOverdueRepeatReminders() {
         return jdbcTemplate.query(
-                "SELECT *, (remind_at).*, (repeat_remind_at).*\n" +
-                        "FROM reminder\n" +
-                        "WHERE inactive = FALSE AND repeat_remind_at::varchar IS NOT NULL\n" +
-                        "  AND (remind_at).dt_date < CURRENT_DATE",
+                "SELECT r.*, (r.remind_at).*, (r.repeat_remind_at).*\n" +
+                        "FROM reminder r\n" +
+                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
+                        "WHERE r.inactive = FALSE\n" +
+                        "  AND r.repeat_remind_at::varchar IS NOT NULL\n" +
+                        "  AND (r.remind_at).dt_date < (now()::timestamp AT TIME ZONE 'UTC' AT TIME ZONE rc.zone_id)::date",
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
         );
     }

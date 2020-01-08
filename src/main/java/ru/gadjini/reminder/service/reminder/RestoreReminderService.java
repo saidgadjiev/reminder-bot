@@ -11,6 +11,7 @@ import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 @Service
@@ -49,7 +50,7 @@ public class RestoreReminderService {
                 reminderNotificationService.deleteReminderNotification(reminderNotification.getId());
             } else {
                 if (repeatReminderService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
-                    DateTime nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAt());
+                    DateTime nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtInReceiverZone()).withZoneSameInstant(ZoneOffset.UTC);
                     repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt, RepeatReminderService.UpdateSeries.NONE);
                     reminder.setRemindAt(nextRemindAt);
                 }
