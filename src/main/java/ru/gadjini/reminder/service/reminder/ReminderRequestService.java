@@ -94,7 +94,7 @@ public class ReminderRequestService {
     }
 
     @Transactional
-    public UpdateReminderResult updateReminder(int messageId, String text) {
+    public UpdateReminderResult updateReminder(int messageId, User user, String text) {
         Reminder oldReminder = reminderService.getReminderByMessageId(
                 messageId,
                 new ReminderMapping()
@@ -106,10 +106,11 @@ public class ReminderRequestService {
             return null;
         }
         ReminderRequestContext context = new ReminderRequestContext()
+                .setUser(user)
+                .setReceiverZone(oldReminder.getReceiverZoneId())
                 .setText(text);
         if (oldReminder.isNotMySelf()) {
             context.setReceiverId(oldReminder.getReceiverId());
-            context.setReceiverZone(oldReminder.getReceiverZoneId());
         }
 
         ReminderRequest reminderRequest = requestExtractor.extract(context);

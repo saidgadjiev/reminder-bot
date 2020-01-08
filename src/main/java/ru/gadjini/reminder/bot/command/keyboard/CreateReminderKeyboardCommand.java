@@ -114,7 +114,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
         FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(editedMessage.getFrom().getId(), text, editedMessage.hasVoice());
 
         if (StringUtils.isNotBlank(extractReceiverResult.getText())) {
-            UpdateReminderResult updateReminderResult = reminderRequestService.updateReminder(editedMessage.getMessageId(), extractReceiverResult.getText());
+            UpdateReminderResult updateReminderResult = reminderRequestService.updateReminder(editedMessage.getMessageId(), editedMessage.getFrom(), extractReceiverResult.getText());
             updateReminderResult.getOldReminder().getCreator().setChatId(editedMessage.getChatId());
             reminderMessageSender.sendReminderFullyUpdate(updateReminderResult);
         }

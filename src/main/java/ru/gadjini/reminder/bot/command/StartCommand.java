@@ -87,7 +87,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     @Override
     public void processNonCommandEditedMessage(Message editedMessage, String text) {
-        UpdateReminderResult updateReminderResult = reminderRequestService.updateReminder(editedMessage.getMessageId(), text);
+        UpdateReminderResult updateReminderResult = reminderRequestService.updateReminder(editedMessage.getMessageId(), editedMessage.getFrom(), text);
         if (updateReminderResult == null) {
             return;
         }
