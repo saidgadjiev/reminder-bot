@@ -83,7 +83,7 @@ public class ReminderDao {
 
     public List<Reminder> getOverdueRepeatReminders() {
         return jdbcTemplate.query(
-                "SELECT r.*, (r.remind_at).*, (r.repeat_remind_at).*\n" +
+                "SELECT r.*, (r.remind_at).*, (r.repeat_remind_at).*, rc.zone_id as rc_zone_id\n" +
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
                         "WHERE r.inactive = FALSE\n" +

@@ -58,6 +58,7 @@ public class ReminderJob {
     @PostConstruct
     public void onStartup() {
         sendReminders();
+        moveReminders();
     }
 
     @Scheduled(cron = "0 0 0 * * *")

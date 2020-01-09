@@ -10,6 +10,7 @@ import org.glassfish.grizzly.threadpool.ThreadPoolProbe;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.Webhook;
@@ -64,7 +65,8 @@ public class DefaultWebhook implements Webhook {
         ResourceConfig rc = new ResourceConfig();
         rc.register(restApi);
         rc.register(webMoneyController);
-        rc.register(JacksonFeature.class);
+        rc.property(FreemarkerMvcFeature.TEMPLATE_BASE_PATH, "templates");
+        rc.register(FreemarkerMvcFeature.class);
 
         final HttpServer grizzlyServer;
         if (keystoreServerFile != null && keystoreServerPwd != null) {

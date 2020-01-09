@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.gadjini.reminder.bot.api.ApiContextInitializer;
 import ru.gadjini.reminder.properties.BotProperties;
@@ -28,7 +29,10 @@ public class ReminderApplication {
     public static void main(String[] args) {
         ApiContextInitializer.init();
         try {
-            SpringApplication.run(ReminderApplication.class);
+            SpringApplication application = new SpringApplication(ReminderApplication.class);
+            application.setApplicationContextClass(AnnotationConfigApplicationContext.class);
+
+            application.run();
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             throw ex;
