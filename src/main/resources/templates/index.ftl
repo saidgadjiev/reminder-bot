@@ -19,11 +19,12 @@
 <div style="text-align: center; font-size: 20px">
     Бот для создания напоминаний как себе так и друзьям. <b>С этим ботом вы ничего не забудете</b>. <a href="https://t.me/mega_reminder_bot">Ссылка на бот</a>
 </div>
-<div style="text-align: center">
-    Бот работает по системе подписок. Пробный период <b>${trialPeriod} дней<b>. Далее оплата по плану.
+<br>
+<div style="text-align: center; font-size: 20px;">
+    Бот работает по системе подписок. Пробный период <b>${trialPeriod} дней</b>. Далее оплата по плану:
 </div>
+<br>
 <div>
-    <h2 style="text-align: center">Текущий план:</h2>
     <table style="margin-left: auto; margin-right: auto">
         <tr>
             <th>Цена</th>

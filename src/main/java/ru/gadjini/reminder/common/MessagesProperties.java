@@ -385,5 +385,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_CHOOSE_PAYMENT_TYPE = "message.choose.payment.type";
 
+    public static final String PAYMENT_WEB_MONEY_DESCRIPTION = "payment.web.money.description";
+
     public static final String MESSAGE_BAD_PAYMENT_REQUEST = "message.bad.payment.request";
 }

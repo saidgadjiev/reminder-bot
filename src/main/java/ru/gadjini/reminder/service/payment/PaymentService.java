@@ -12,7 +12,9 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.subscription.PlanService;
 import ru.gadjini.reminder.service.subscription.SubscriptionService;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.Map;
 
 @Service
@@ -51,7 +53,7 @@ public class PaymentService {
                 "userId", userId,
                 "paymentType", paymentType.getType(),
                 "price", plan.getPrice(),
-                "paymentDescription", plan.getPaymentDescription(),
+                "paymentDescription", Base64.getEncoder().encodeToString(plan.getPaymentDescription().getBytes(StandardCharsets.UTF_8)),
                 "payeePurse", webMoneyProperties.getPurse());
     }
 

@@ -3,7 +3,8 @@ package ru.gadjini.reminder.domain;
 public enum PaymentType {
 
     CARD(4),
-    BEELINE(12);
+    BEELINE(12),
+    WEB_MONEY(-1);
 
     private final int type;
 
