@@ -40,10 +40,11 @@ public class ResultSetMapper {
         Plan plan = new Plan();
 
         plan.setId(rs.getInt(Plan.ID));
-        plan.setDescription(rs.getString(Plan.DESCRIPTION));
+        plan.setDescription(rs.getString(Plan.PAYMENT_DESCRIPTION));
         plan.setPeriod(JodaTimeUtils.toPeriod((PGInterval) rs.getObject(Plan.PERIOD)));
-        plan.setPrice(rs.getInt(Plan.PRICE));
+        plan.setPrice(rs.getDouble(Plan.PRICE));
         plan.setActive(rs.getBoolean(Plan.ACTIVE));
+        plan.setPaymentDescription(rs.getString(Plan.PAYMENT_DESCRIPTION));
 
         return plan;
     }

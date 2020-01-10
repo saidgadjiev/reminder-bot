@@ -3,7 +3,6 @@ package ru.gadjini.reminder.service.filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Plan;
 import ru.gadjini.reminder.domain.Subscription;
@@ -17,12 +16,9 @@ import ru.gadjini.reminder.service.subscription.PlanService;
 import ru.gadjini.reminder.service.subscription.SubscriptionService;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @Component
 public class SubscriptionFilter extends BaseBotFilter {
-
-    private Set<String> exclude = Set.of(CommandNames.PROCESS_PAYMENT_COMMAND_NAME);
 
     private CommandParser commandParser;
 
@@ -53,26 +49,12 @@ public class SubscriptionFilter extends BaseBotFilter {
 
     @Override
     public void doFilter(Update update) {
-        if (isExcluded(update)) {
+        TgMessage tgMessage = TgMessage.from(update);
+        boolean checkSubscriptionResult = checkSubscription(tgMessage.getChatId(), tgMessage.getUser().getId());
+
+        if (checkSubscriptionResult) {
             super.doFilter(update);
-        } else {
-            TgMessage tgMessage = TgMessage.from(update);
-            boolean checkSubscriptionResult = checkSubscription(tgMessage.getChatId(), tgMessage.getUser().getId());
-
-            if (checkSubscriptionResult) {
-                super.doFilter(update);
-            }
         }
-    }
-
-    private boolean isExcluded(Update update) {
-        if (update.hasCallbackQuery()) {
-            String commandName = commandParser.parseCallbackCommandName(update.getCallbackQuery());
-
-            return exclude.contains(commandName);
-        }
-
-        return false;
     }
 
     private boolean checkSubscription(long chatId, int userId) {
@@ -84,7 +66,7 @@ public class SubscriptionFilter extends BaseBotFilter {
             return true;
         }
         if (subscription.getEndDate().isBefore(LocalDate.now())) {
-            sendSubscriptionExpired(chatId);
+            sendSubscriptionExpired(userId, chatId);
 
             return false;
         }
@@ -92,10 +74,14 @@ public class SubscriptionFilter extends BaseBotFilter {
         return true;
     }
 
-    private void sendSubscriptionExpired(long chatId) {
+    private void sendSubscriptionExpired(int userId, long chatId) {
         messageService.sendMessage(chatId, localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_EXPIRED), replyKeyboardService.removeKeyboard());
 
         Plan plan = planService.getActivePlan();
-        messageService.sendMessage(chatId, plan.getDescription(), inlineKeyboardService.getPaymentKeyboard(plan.getId()));
+        messageService.sendMessage(chatId, getNeedPayMessage(plan.getDescription()), inlineKeyboardService.getPaymentKeyboard(userId, plan.getId()));
+    }
+
+    private String getNeedPayMessage(String planDesc) {
+        return planDesc + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_CHOOSE_PAYMENT_TYPE);
     }
 }

@@ -3,12 +3,15 @@ package ru.gadjini.reminder.service.keyboard;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.domain.PaymentType;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.UserReminderNotification;
+import ru.gadjini.reminder.properties.AppProperties;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandParser;
@@ -24,17 +27,23 @@ public class InlineKeyboardService {
 
     private ButtonFactory buttonFactory;
 
+    private AppProperties appProperties;
+
+    private static final String PAYMENT_API_PATH = "payment/pay";
+
     @Autowired
-    public InlineKeyboardService(LocalisationService localisationService, ButtonFactory buttonFactory) {
+    public InlineKeyboardService(LocalisationService localisationService, ButtonFactory buttonFactory, AppProperties appProperties) {
         this.localisationService = localisationService;
         this.buttonFactory = buttonFactory;
+        this.appProperties = appProperties;
     }
 
-    public InlineKeyboardMarkup getPaymentKeyboard(int planId) {
+    public InlineKeyboardMarkup getPaymentKeyboard(int userId, int planId) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(List.of(buttonFactory.paymentButton(planId)));
+        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getMessage(MessagesProperties.PAYMENT_BEELINE_COMMAND_DESCRIPTION), buildPayUrl(userId, planId, PaymentType.BEELINE))));
+        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getMessage(MessagesProperties.PAYMENT_CARD_COMMAND_DESCRIPTION), buildPayUrl(userId, planId, PaymentType.CARD))));
 
         return keyboardMarkup;
     }
@@ -346,5 +355,14 @@ public class InlineKeyboardService {
             }
         }
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderButton(reminder.getId())));
+    }
+
+    private String buildPayUrl(int userId, int planId, PaymentType paymentType) {
+        return UriComponentsBuilder.fromHttpUrl(appProperties.getUrl())
+                .path(PAYMENT_API_PATH)
+                .queryParam("planId", planId)
+                .queryParam("userId", userId)
+                .queryParam("paymentType", paymentType.getType())
+                .toUriString();
     }
 }

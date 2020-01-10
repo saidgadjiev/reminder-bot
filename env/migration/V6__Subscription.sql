@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS plan
 (
     id          SERIAL PRIMARY KEY,
     description TEXT NOT NULL,
+    payment_description TEXT NOT NULL,
     price       INT  NOT NULL,
     period      INTERVAL NOT NULL,
     active      BOOLEAN DEFAULT FALSE

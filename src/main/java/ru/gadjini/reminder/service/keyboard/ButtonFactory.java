@@ -276,12 +276,9 @@ public class ButtonFactory {
         return button;
     }
 
-    public InlineKeyboardButton paymentButton(int planId) {
-        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.PROCESS_PAYMENT_COMMAND_DESCRIPTION));
-        button.setCallbackData(CommandNames.PROCESS_PAYMENT_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
-                new RequestParams()
-                        .add(Arg.PLAN_ID.getKey(), planId)
-                        .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+    public InlineKeyboardButton paymentButton(String desc, String url) {
+        InlineKeyboardButton button = new InlineKeyboardButton(desc);
+        button.setUrl(url);
 
         return button;
     }

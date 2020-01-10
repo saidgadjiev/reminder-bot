@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.Webhook;
 import org.telegram.telegrambots.meta.generics.WebhookBot;
 import org.telegram.telegrambots.updatesreceivers.RestApi;
+import ru.gadjini.reminder.controller.RootController;
 import ru.gadjini.reminder.controller.test.ThreadLoggingProbe;
 import ru.gadjini.reminder.controller.webmoney.WebMoneyController;
 
@@ -33,6 +34,8 @@ public class DefaultWebhook implements Webhook {
 
     private WebMoneyController webMoneyController;
 
+    private RootController rootController;
+
     @Inject
     public DefaultWebhook() {
         this.restApi = new RestApi();
@@ -41,6 +44,11 @@ public class DefaultWebhook implements Webhook {
     @Autowired
     public void setWebMoneyController(WebMoneyController webMoneyController) {
         this.webMoneyController = webMoneyController;
+    }
+
+    @Autowired
+    public void setRootController(RootController rootController) {
+        this.rootController = rootController;
     }
 
     @Override
@@ -65,6 +73,7 @@ public class DefaultWebhook implements Webhook {
         ResourceConfig rc = new ResourceConfig();
         rc.register(restApi);
         rc.register(webMoneyController);
+        rc.register(rootController);
         rc.property(FreemarkerMvcFeature.TEMPLATE_BASE_PATH, "templates");
         rc.register(FreemarkerMvcFeature.class);
 

@@ -8,6 +8,8 @@ public class Plan {
 
     public static final String DESCRIPTION = "description";
 
+    public static final String PAYMENT_DESCRIPTION = "payment_description";
+
     public static final String PRICE = "price";
 
     public static final String PERIOD = "period";
@@ -18,7 +20,9 @@ public class Plan {
 
     private String description;
 
-    private int price;
+    private String paymentDescription;
+
+    private double price;
 
     private Period period;
 
@@ -40,11 +44,11 @@ public class Plan {
         this.description = description;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -62,5 +66,13 @@ public class Plan {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getPaymentDescription() {
+        return paymentDescription;
+    }
+
+    public void setPaymentDescription(String paymentDescription) {
+        this.paymentDescription = paymentDescription;
     }
 }

@@ -1,3 +1,5 @@
 web-hook:
-  external-url: https://b9921b24.ngrok.io
+  external-url: https://c946abbf.ngrok.io
   internal-url: http://localhost:8000
+app:
+  url: https://c946abbf.ngrok.io

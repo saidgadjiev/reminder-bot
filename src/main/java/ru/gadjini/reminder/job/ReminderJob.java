@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
+import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.RestoreReminderService;
@@ -40,17 +41,21 @@ public class ReminderJob {
 
     private RestoreReminderService restoreReminderService;
 
+    private MessageService messageService;
+
     @Autowired
     public ReminderJob(ReminderService reminderService,
                        ReminderNotificationService reminderNotificationService,
                        ReminderNotificationMessageSender reminderNotificationMessageSender,
                        RepeatReminderService repeatReminderService,
-                       RestoreReminderService restoreReminderService) {
+                       RestoreReminderService restoreReminderService,
+                       MessageService messageService) {
         this.reminderService = reminderService;
         this.reminderNotificationService = reminderNotificationService;
         this.reminderNotificationMessageSender = reminderNotificationMessageSender;
         this.repeatReminderService = repeatReminderService;
         this.restoreReminderService = restoreReminderService;
+        this.messageService = messageService;
 
         LOGGER.debug("Reminder job initialized and working");
     }
@@ -76,6 +81,8 @@ public class ReminderJob {
 
         for (Reminder reminder : overdueReminders) {
             repeatReminderService.autoSkip(reminder);
+            messageService.deleteMessage(reminder.getReceiver().getChatId(), reminder.getRemindMessage().getMessageId());
+
             LOGGER.debug("Overdue reminder with id {} moved not the next time", reminder.getId());
         }
     }

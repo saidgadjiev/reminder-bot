@@ -327,8 +327,6 @@ public class MessagesProperties {
 
     public static final String MESSAGE_SUBSCRIPTION_EXPIRED = "message.subscription.expired";
 
-    public static final String PROCESS_PAYMENT_COMMAND_DESCRIPTION = "process.payment.command.description";
-
     public static final String MESSAGE_INVALID_PLAN = "message.invalid.plan";
 
     public static final String MESSAGE_SUBSCRIPTION_RENEWED = "message.subscription.renewed";
@@ -380,4 +378,12 @@ public class MessagesProperties {
     public static final String DISABLE_COUNT_SERIES_COMMAND_DESCRIPTION = "disable.count.series.command.description";
 
     public static final String MESSAGE_COUNT_SERIES_DISABLED_ANSWER = "message.count.series.disabled.answer";
+
+    public static final String PAYMENT_BEELINE_COMMAND_DESCRIPTION = "payment.beeline.command.description";
+
+    public static final String PAYMENT_CARD_COMMAND_DESCRIPTION = "payment.card.command.description";
+
+    public static final String MESSAGE_CHOOSE_PAYMENT_TYPE = "message.choose.payment.type";
+
+    public static final String MESSAGE_BAD_PAYMENT_REQUEST = "message.bad.payment.request";
 }
