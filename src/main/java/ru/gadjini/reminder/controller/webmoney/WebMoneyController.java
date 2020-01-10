@@ -13,6 +13,7 @@ import ru.gadjini.reminder.common.WebMoneyConstants;
 import ru.gadjini.reminder.domain.PaymentType;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.WebMoneyPayment;
+import ru.gadjini.reminder.properties.AppProperties;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -20,6 +21,7 @@ import ru.gadjini.reminder.service.payment.PaymentService;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -39,14 +41,37 @@ public class WebMoneyController {
 
     private TgUserService userService;
 
+    private AppProperties appProperties;
+
     @Autowired
     public WebMoneyController(ReplyKeyboardService replyKeyboardService, PaymentService paymentService,
-                              MessageService messageService, TgUserService userService) {
+                              MessageService messageService, TgUserService userService, AppProperties appProperties) {
         this.replyKeyboardService = replyKeyboardService;
         this.paymentService = paymentService;
         this.messageService = messageService;
         this.userService = userService;
+        this.appProperties = appProperties;
         LOGGER.debug("WebMoneyController initialized");
+    }
+
+
+    @POST
+    @Path("/success")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response success() {
+        return Response.seeOther(URI.create(appProperties.getTelegramRedirectUrl())).build();
+    }
+
+    @POST
+    @Path("/fail")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response fail(@FormParam("user_id") int userId) {
+        messageService.sendMessageByCode(
+                userService.getChatId(userId),
+                MessagesProperties.MESSAGE_PAYMENT_FAIL
+        );
+
+        return Response.seeOther(URI.create(appProperties.getTelegramRedirectUrl())).build();
     }
 
     @Path("/pay")
@@ -64,9 +89,10 @@ public class WebMoneyController {
     @Path("/process")
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_HTML)
     public Response processPayment(@Context ContainerRequest request) {
         if (request.getMediaType() == null) {
-            return handleUrlCheck();
+            return processUrlCheck();
         }
         Form form = request.readEntity(Form.class);
         MultivaluedMap<String, String> formData = form.asMap();
@@ -85,25 +111,25 @@ public class WebMoneyController {
         );
     }
 
-    private Response handleUrlCheck() {
+    private Response processUrlCheck() {
         return Response.ok().build();
     }
 
     private Response preProcessPayment() {
-        return Response.ok().build();
+        return Response.ok("YES").build();
     }
 
     private Response processPayment(String payeePurse, double paymentAmount, String secretKey, int userId, int planId) {
-        if (StringUtils.isBlank(payeePurse)) {
-            return Response.ok().build();
-        }
         try {
-            LocalDate localDate = paymentService.processPayment(new WebMoneyPayment()
+            WebMoneyPayment webMoneyPayment = new WebMoneyPayment()
                     .payeePurse(payeePurse)
                     .paymentAmount(paymentAmount)
                     .secretKey(secretKey)
                     .userId(userId)
-                    .planId(planId));
+                    .planId(planId);
+            validate(webMoneyPayment);
+
+            LocalDate localDate = paymentService.processPayment(webMoneyPayment);
             try {
                 messageService.sendMessageByCode(
                         userService.getChatId(userId),
@@ -118,6 +144,15 @@ public class WebMoneyController {
             return Response.ok().build();
         } catch (Exception ex) {
             return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
+    private void validate(WebMoneyPayment payment) {
+        if (StringUtils.isBlank(payment.payeePurse())) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+        if (StringUtils.isBlank(payment.payeePurse())) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
     }
 }

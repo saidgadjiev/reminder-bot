@@ -8,7 +8,6 @@ import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.grizzly.strategies.WorkerThreadIOStrategy;
 import org.glassfish.grizzly.threadpool.ThreadPoolProbe;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +73,7 @@ public class DefaultWebhook implements Webhook {
         rc.register(restApi);
         rc.register(webMoneyController);
         rc.register(rootController);
-        rc.property(FreemarkerMvcFeature.TEMPLATE_BASE_PATH, "templates");
+        rc.property(FreemarkerMvcFeature.TEMPLATE_BASE_PATH, "public/html");
         rc.register(FreemarkerMvcFeature.class);
 
         final HttpServer grizzlyServer;

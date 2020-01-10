@@ -74,7 +74,7 @@ public class PaymentService {
     }
 
     private void validate(Plan plan, double paymentAmount) {
-        if (plan.getPrice() != paymentAmount) {
+        if (plan.getPrice() > paymentAmount) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST));
         }
     }

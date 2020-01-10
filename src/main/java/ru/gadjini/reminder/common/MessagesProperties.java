@@ -388,4 +388,6 @@ public class MessagesProperties {
     public static final String PAYMENT_WEB_MONEY_DESCRIPTION = "payment.web.money.description";
 
     public static final String MESSAGE_BAD_PAYMENT_REQUEST = "message.bad.payment.request";
+
+    public static final String MESSAGE_PAYMENT_FAIL = "message.payment.fail";
 }
