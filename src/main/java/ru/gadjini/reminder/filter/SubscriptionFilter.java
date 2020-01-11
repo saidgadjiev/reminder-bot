@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service.filter;
+package ru.gadjini.reminder.filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -7,11 +7,11 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Plan;
 import ru.gadjini.reminder.domain.Subscription;
 import ru.gadjini.reminder.model.TgMessage;
-import ru.gadjini.reminder.service.command.CommandParser;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.service.subscription.PaymentMessageService;
 import ru.gadjini.reminder.service.subscription.PlanService;
 import ru.gadjini.reminder.service.subscription.SubscriptionService;
 
@@ -19,8 +19,6 @@ import java.time.LocalDate;
 
 @Component
 public class SubscriptionFilter extends BaseBotFilter {
-
-    private CommandParser commandParser;
 
     private MessageService messageService;
 
@@ -34,17 +32,20 @@ public class SubscriptionFilter extends BaseBotFilter {
 
     private InlineKeyboardService inlineKeyboardService;
 
+    private PaymentMessageService paymentMessageService;
+
     @Autowired
-    public SubscriptionFilter(CommandParser commandParser, MessageService messageService,
+    public SubscriptionFilter(MessageService messageService,
                               LocalisationService localisationService, SubscriptionService subscriptionService,
-                              PlanService planService, ReplyKeyboardService replyKeyboardService, InlineKeyboardService inlineKeyboardService) {
-        this.commandParser = commandParser;
+                              PlanService planService, ReplyKeyboardService replyKeyboardService,
+                              InlineKeyboardService inlineKeyboardService, PaymentMessageService paymentMessageService) {
         this.messageService = messageService;
         this.localisationService = localisationService;
         this.subscriptionService = subscriptionService;
         this.planService = planService;
         this.replyKeyboardService = replyKeyboardService;
         this.inlineKeyboardService = inlineKeyboardService;
+        this.paymentMessageService = paymentMessageService;
     }
 
     @Override
@@ -77,8 +78,18 @@ public class SubscriptionFilter extends BaseBotFilter {
     private void sendSubscriptionExpired(int userId, long chatId) {
         messageService.sendMessage(chatId, localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_EXPIRED), replyKeyboardService.removeKeyboard());
 
+        Integer messageId = paymentMessageService.getMessageId(chatId);
+        if (messageId != null) {
+            messageService.deleteMessage(chatId, messageId);
+        }
+
         Plan plan = planService.getActivePlan();
-        messageService.sendMessage(chatId, getNeedPayMessage(plan.getDescription()), inlineKeyboardService.getPaymentKeyboard(userId, plan.getId()));
+        messageService.sendMessage(
+                chatId,
+                getNeedPayMessage(plan.getDescription()),
+                inlineKeyboardService.getPaymentKeyboard(userId, plan.getId()),
+                message -> paymentMessageService.create(chatId, message.getMessageId())
+        );
     }
 
     private String getNeedPayMessage(String planDesc) {

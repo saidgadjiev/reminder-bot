@@ -49,8 +49,8 @@ public class GrizzlyStarter {
         try {
             httpServer.start();
         } catch (IOException e) {
-            httpServer.shutdown();
             LOGGER.error(e.getMessage(), e);
+            httpServer.shutdown();
         }
     }
 }

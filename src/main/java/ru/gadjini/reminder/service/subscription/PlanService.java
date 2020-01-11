@@ -2,7 +2,7 @@ package ru.gadjini.reminder.service.subscription;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.gadjini.reminder.dao.subscription.PlanDao;
+import ru.gadjini.reminder.dao.plan.PlanDao;
 import ru.gadjini.reminder.domain.Plan;
 
 @Service

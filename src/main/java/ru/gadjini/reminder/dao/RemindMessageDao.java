@@ -16,9 +16,9 @@ public class RemindMessageDao {
     }
 
     public void create(RemindMessage remindMessage) {
-        jdbcTemplate.batchUpdate(
-                "DELETE FROM remind_message WHERE reminder_id = " + remindMessage.getReminderId(),
-                "INSERT INTO remind_message(reminder_id, message_id) VALUES (" + remindMessage.getReminderId() + ", " + remindMessage.getMessageId() + ")"
+        jdbcTemplate.update(
+                "INSERT INTO remind_message(reminder_id, message_id) VALUES (" + remindMessage.getReminderId() + ", " + remindMessage.getMessageId() + ") " +
+                        "ON CONFLICT (reminder_id) DO UPDATE SET message_id = excluded.message_id"
         );
     }
 

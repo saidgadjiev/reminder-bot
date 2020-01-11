@@ -8,7 +8,7 @@ import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.properties.BotProperties;
-import ru.gadjini.reminder.service.filter.BotFilter;
+import ru.gadjini.reminder.filter.BotFilter;
 
 @Component
 public class ReminderWebhookBot extends TelegramWebhookBot {

@@ -94,6 +94,7 @@ public class ReminderBotService {
                 LOGGER.debug("Latency on edit message request: {} = {}", text, stopWatch.getTime());
             }
         } catch (UserException ex) {
+            LOGGER.error(ex.getMessage());
             messageService.sendMessage(chatId, ex.getMessage());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);

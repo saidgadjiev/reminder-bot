@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.dao.subscription;
+package ru.gadjini.reminder.dao.plan;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -27,7 +27,7 @@ public class TimeZoneDbSenderJob {
             Runnable job = blockingQueue.take();
             job.run();
         } catch (InterruptedException ignore) {
-
+            LOGGER.error("Time zone db sender interrupted");
         }
     }
 

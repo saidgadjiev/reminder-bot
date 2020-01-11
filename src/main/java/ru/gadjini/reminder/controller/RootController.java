@@ -36,7 +36,13 @@ public class RootController {
     public Map<String, Object> get() {
         Plan activePlan = planService.getActivePlan();
 
-        return Map.of("template", "index.ftl", "number", 171241421, "trialPeriod", subscriptionProperties.getTrialPeriod(), "price", activePlan.getPrice(), "period", getPeriod(activePlan.getPeriod()));
+        return Map.of(
+                "template", "index.ftl",
+                "number", 171241421,
+                "trialPeriod", subscriptionProperties.getTrialPeriod(),
+                "price", activePlan.getPrice(),
+                "period", getPeriod(activePlan.getPeriod())
+        );
     }
 
     private String getPeriod(Period period) {

@@ -82,6 +82,7 @@ public class WebMoneyController {
         try {
             return paymentService.processPaymentRequest(planId, userId, PaymentType.fromType(paymentType));
         } catch (UserException ex) {
+            LOGGER.error(ex.getMessage());
             throw new WebApplicationException(ex.getMessage(), Response.status(Response.Status.BAD_REQUEST).build());
         }
     }
@@ -102,13 +103,7 @@ public class WebMoneyController {
             return preProcessPayment();
         }
 
-        return processPayment(
-                formData.getFirst(WebMoneyConstants.LMI_PAYEE_PURSE),
-                NumberUtils.toDouble(formData.getFirst(WebMoneyConstants.LMI_PAYMENT_AMOUNT)),
-                formData.getFirst(WebMoneyConstants.LMI_SECRET_KEY),
-                NumberUtils.toInt(formData.getFirst("user_id")),
-                NumberUtils.toInt(formData.getFirst("plan_id"))
-        );
+        return processPayment(formData);
     }
 
     private Response processUrlCheck() {
@@ -119,32 +114,33 @@ public class WebMoneyController {
         return Response.ok("YES").build();
     }
 
-    private Response processPayment(String payeePurse, double paymentAmount, String secretKey, int userId, int planId) {
+    private Response processPayment(MultivaluedMap<String, String> formData) {
         try {
             WebMoneyPayment webMoneyPayment = new WebMoneyPayment()
-                    .payeePurse(payeePurse)
-                    .paymentAmount(paymentAmount)
-                    .secretKey(secretKey)
-                    .userId(userId)
-                    .planId(planId);
+                    .payeePurse(formData.getFirst(WebMoneyConstants.LMI_PAYEE_PURSE))
+                    .paymentAmount(NumberUtils.toDouble(formData.getFirst(WebMoneyConstants.LMI_PAYMENT_AMOUNT)))
+                    .secretKey(formData.getFirst(WebMoneyConstants.LMI_SECRET_KEY))
+                    .userId(NumberUtils.toInt(formData.getFirst("user_id")))
+                    .planId(NumberUtils.toInt(formData.getFirst("plan_id")));
+
             validate(webMoneyPayment);
 
-            LocalDate localDate = paymentService.processPayment(webMoneyPayment);
-            try {
-                messageService.sendMessageByCode(
-                        userService.getChatId(userId),
-                        MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED,
-                        new Object[]{localDate},
-                        replyKeyboardService.getMainMenu()
-                );
-            } catch (Exception ex) {
-                LOGGER.error(ex.getMessage(), ex);
-            }
-
-            return Response.ok().build();
+            return processPayment(webMoneyPayment);
         } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
+    }
+
+    private Response processPayment(WebMoneyPayment webMoneyPayment) {
+        PaymentService.PaymentProcessResult paymentProcessResult = paymentService.processPayment(webMoneyPayment);
+
+        if (paymentProcessResult.getPaymentMessageId() != null) {
+            deletePaymentMessage(paymentProcessResult.getChatId(), paymentProcessResult.getPaymentMessageId());
+        }
+        sendSubscriptionRenewed(paymentProcessResult.getChatId(), paymentProcessResult.getSubscriptionEnd());
+
+        return Response.ok().build();
     }
 
     private void validate(WebMoneyPayment payment) {
@@ -153,6 +149,27 @@ public class WebMoneyController {
         }
         if (StringUtils.isBlank(payment.payeePurse())) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+    }
+
+    private void deletePaymentMessage(long chatId, int messageId) {
+        try {
+            messageService.deleteMessage(chatId, messageId);
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
+    }
+
+    private void sendSubscriptionRenewed(long chatId, LocalDate subscriptionEnd) {
+        try {
+            messageService.sendMessageByCode(
+                    chatId,
+                    MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED,
+                    new Object[]{subscriptionEnd},
+                    replyKeyboardService.getMainMenu()
+            );
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
         }
     }
 }

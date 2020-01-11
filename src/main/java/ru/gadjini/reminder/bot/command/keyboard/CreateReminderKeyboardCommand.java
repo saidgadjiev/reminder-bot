@@ -1,6 +1,8 @@
 package ru.gadjini.reminder.bot.command.keyboard;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -26,6 +28,8 @@ import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 
 @Component
 public class CreateReminderKeyboardCommand implements KeyboardBotCommand, NavigableBotCommand {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateReminderKeyboardCommand.class);
 
     private CommandStateService stateService;
 
@@ -101,6 +105,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
                 return false;
             } catch (UserException ex) {
+                LOGGER.error(ex.getMessage());
                 stateService.setState(message.getChatId(), receiver);
                 messageService.sendMessage(message.getChatId(), friendshipMessageBuilder.getFriendDetails(receiver, ex.getMessage()), replyKeyboardService.goBackCommand());
 

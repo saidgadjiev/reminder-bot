@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service.filter;
+package ru.gadjini.reminder.filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
