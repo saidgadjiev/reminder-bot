@@ -255,10 +255,8 @@ public class ReminderMessageBuilder {
             String number = i++ + ") ";
             text.append(number).append(reminder.getText()).append("(").append(timeBuilder.time(reminder)).append(")\n");
 
-            if (!reminder.isInactive()) {
-                if (reminder.isRepeatable()) {
-                    text.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n");
-                }
+            if (!reminder.isInactive() && reminder.isRepeatable()) {
+                text.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n");
             }
 
             if (reminder.getReceiverId() != reminder.getCreatorId()) {
