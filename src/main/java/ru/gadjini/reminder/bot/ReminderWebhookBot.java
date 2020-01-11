@@ -7,8 +7,10 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.filter.BotFilter;
+import ru.gadjini.reminder.model.TgMessage;
+import ru.gadjini.reminder.properties.BotProperties;
+import ru.gadjini.reminder.service.message.MessageService;
 
 @Component
 public class ReminderWebhookBot extends TelegramWebhookBot {
@@ -19,10 +21,13 @@ public class ReminderWebhookBot extends TelegramWebhookBot {
 
     private BotFilter botFilter;
 
+    private MessageService messageService;
+
     @Autowired
-    public ReminderWebhookBot(BotProperties botProperties, BotFilter botFilter) {
+    public ReminderWebhookBot(BotProperties botProperties, BotFilter botFilter, MessageService messageService) {
         this.botProperties = botProperties;
         this.botFilter = botFilter;
+        this.messageService = messageService;
     }
 
     @Override
@@ -31,6 +36,7 @@ public class ReminderWebhookBot extends TelegramWebhookBot {
             botFilter.doFilter(update);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
+            messageService.sendErrorMessage(TgMessage.getChatId(update));
         }
 
         return null;

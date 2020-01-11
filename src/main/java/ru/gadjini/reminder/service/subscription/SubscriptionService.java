@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.service.subscription;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.dao.subscription.SubscriptionDao;
 import ru.gadjini.reminder.domain.Plan;
@@ -17,7 +18,7 @@ public class SubscriptionService {
     private SubscriptionDao subscriptionDao;
 
     @Autowired
-    public SubscriptionService(SubscriptionProperties subscriptionProperties, SubscriptionDao subscriptionDao) {
+    public SubscriptionService(SubscriptionProperties subscriptionProperties, @Qualifier("redis") SubscriptionDao subscriptionDao) {
         this.subscriptionProperties = subscriptionProperties;
         this.subscriptionDao = subscriptionDao;
     }

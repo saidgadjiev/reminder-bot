@@ -77,4 +77,14 @@ public class TgMessage {
 
         return from(update.getMessage());
     }
+
+    public static long getChatId(Update update) {
+        if (update.hasCallbackQuery()) {
+            return update.getCallbackQuery().getMessage().getChatId();
+        } else if (update.hasEditedMessage()) {
+            return update.getEditedMessage().getChatId();
+        }
+
+        return update.getMessage().getChatId();
+    }
 }
