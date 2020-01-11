@@ -185,7 +185,7 @@ public class InlineKeyboardService {
         InlineKeyboardMarkup inlineKeyboardMarkup = getReceiverReminderKeyboard(reminderId, repeatable, hasTime);
 
         if (!itsTime) {
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.okButton()));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.okButton(reminderId)));
         }
 
         return inlineKeyboardMarkup;

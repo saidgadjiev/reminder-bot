@@ -239,9 +239,12 @@ public class ButtonFactory {
         return button;
     }
 
-    public InlineKeyboardButton okButton() {
+    public InlineKeyboardButton okButton(int reminderId) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.OK_COMMAND_DESCRIPTION));
-        button.setCallbackData(CommandNames.OK_COMMAND_NAME);
+        button.setCallbackData(CommandNames.OK_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams()
+                        .add(Arg.REMINDER_ID.getKey(), reminderId)
+                        .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;
     }
