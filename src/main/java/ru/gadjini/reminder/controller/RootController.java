@@ -4,7 +4,9 @@ import org.glassfish.jersey.server.mvc.Template;
 import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import ru.gadjini.reminder.common.TemplateConstants;
 import ru.gadjini.reminder.domain.Plan;
+import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.properties.SubscriptionProperties;
 import ru.gadjini.reminder.service.subscription.PlanService;
 
@@ -22,10 +24,13 @@ public class RootController {
 
     private SubscriptionProperties subscriptionProperties;
 
+    private BotProperties botProperties;
+
     @Autowired
-    public RootController(PlanService planService, SubscriptionProperties subscriptionProperties) {
+    public RootController(PlanService planService, SubscriptionProperties subscriptionProperties, BotProperties botProperties) {
         this.planService = planService;
         this.subscriptionProperties = subscriptionProperties;
+        this.botProperties = botProperties;
     }
 
     @Template(name = "/base.ftl")
@@ -35,11 +40,11 @@ public class RootController {
         Plan activePlan = planService.getActivePlan();
 
         return Map.of(
-                "template", "index.ftl",
-                "number", 171241421,
-                "trialPeriod", subscriptionProperties.getTrialPeriod(),
-                "price", activePlan.getPrice(),
-                "period", getPeriod(activePlan.getPeriod())
+                TemplateConstants.BOT_NAME, botProperties.getName(),
+                TemplateConstants.TEMPLATE, "index.ftl",
+                TemplateConstants.TRIAL_PERIOD, subscriptionProperties.getTrialPeriod(),
+                TemplateConstants.PRICE, activePlan.getPrice(),
+                TemplateConstants.PERIOD, getPeriod(activePlan.getPeriod())
         );
     }
 

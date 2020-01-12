@@ -78,6 +78,7 @@ public class WebMoneyController {
     @Produces(MediaType.TEXT_HTML)
     public Map<String, Object> paymentResult(@QueryParam("fail") boolean fail) {
         return Map.of(
+                FAIL, fail,
                 TEMPLATE, "payment_result.ftl",
                 PAYMENT_RESULT, localisationService.getMessage(fail ? MessagesProperties.MESSAGE_PAYMENT_FAIL : MessagesProperties.MESSAGE_PAYMENT_SUCCESS),
                 REDIRECT, localisationService.getMessage(MessagesProperties.MESSAGE_TELEGRAM_REDIRECT),

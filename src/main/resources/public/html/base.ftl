@@ -9,9 +9,15 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
+    <style>
+        p, h1, h2, h3, h4, h5, h6 {
+            color: #212121;
+        }
+    </style>
+
     <title>Reminder</title>
 </head>
-<body style="background-color: #fff" class="text-center d-flex flex-column h-100">
+<body style="background-color: #fff" class="d-flex flex-column h-100">
 <#include template>
 </body>
 </html>

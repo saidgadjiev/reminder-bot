@@ -1,10 +1,3 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Payment request form</title>
-</head>
-<body>
 <form name="paymentRequestForm" id="paymentRequestForm" action="https://merchant.webmoney.ru/lmi/payment.asp"
       accept-charset="utf-8" method="POST">
     <input type="hidden" name="LMI_PAYMENT_AMOUNT" value="${price}">
@@ -16,5 +9,3 @@
 <script>
     document.paymentRequestForm.submit();
 </script>
-</body>
-</html>
