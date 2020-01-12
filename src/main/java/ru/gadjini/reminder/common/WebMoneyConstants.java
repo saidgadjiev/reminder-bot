@@ -4,7 +4,7 @@ public class WebMoneyConstants {
 
     private WebMoneyConstants() {}
 
-    public static final String LMI_PREREQUEST = "LMI_PREREQUEST";
+    public static final String LMI_PRE_REQUEST = "LMI_PREREQUEST";
 
     public static final String LMI_PAYEE_PURSE = "LMI_PAYEE_PURSE";
 

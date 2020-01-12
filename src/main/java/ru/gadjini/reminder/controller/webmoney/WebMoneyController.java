@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.util.UriComponentsBuilder;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.WebMoneyConstants;
 import ru.gadjini.reminder.domain.PaymentType;
@@ -15,6 +16,7 @@ import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.WebMoneyPayment;
 import ru.gadjini.reminder.properties.AppProperties;
+import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -27,11 +29,17 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.Map;
 
-@Path("/payment")
+import static ru.gadjini.reminder.common.TemplateConstants.*;
+
+@Path(WebMoneyController.CONTROLLER_PATH)
 @Controller
 public class WebMoneyController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebMoneyController.class);
+
+    static final String CONTROLLER_PATH = "/payment";
+
+    private static final String PAYMENT_RESULT_PATH = "/result";
 
     private static final int PRE_REQUEST = 1;
 
@@ -43,30 +51,45 @@ public class WebMoneyController {
 
     private TgUserService userService;
 
-    private AppProperties appProperties;
-
     private LocalisationService localisationService;
+
+    private BotProperties botProperties;
+
+    private AppProperties appProperties;
 
     @Autowired
     public WebMoneyController(ReplyKeyboardService replyKeyboardService, PaymentService paymentService,
                               MessageService messageService, TgUserService userService,
-                              AppProperties appProperties, LocalisationService localisationService) {
+                              LocalisationService localisationService, BotProperties botProperties, AppProperties appProperties) {
         this.replyKeyboardService = replyKeyboardService;
         this.paymentService = paymentService;
         this.messageService = messageService;
         this.userService = userService;
-        this.appProperties = appProperties;
         this.localisationService = localisationService;
+        this.botProperties = botProperties;
+        this.appProperties = appProperties;
 
         LOGGER.debug("WebMoneyController initialized");
     }
 
+    @Template(name = "/base.ftl")
+    @GET
+    @Path(WebMoneyController.PAYMENT_RESULT_PATH)
+    @Produces(MediaType.TEXT_HTML)
+    public Map<String, Object> paymentResult(@QueryParam("fail") boolean fail) {
+        return Map.of(
+                TEMPLATE, "payment_result.ftl",
+                PAYMENT_RESULT, localisationService.getMessage(fail ? MessagesProperties.MESSAGE_PAYMENT_FAIL : MessagesProperties.MESSAGE_PAYMENT_SUCCESS),
+                REDIRECT, localisationService.getMessage(MessagesProperties.MESSAGE_TELEGRAM_REDIRECT),
+                BOT_NAME, botProperties.getName()
+        );
+    }
 
     @POST
     @Path("/success")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response success() {
-        return Response.seeOther(URI.create(appProperties.getTelegramRedirectUrl())).build();
+        return Response.seeOther(URI.create(redirectUrl(false))).build();
     }
 
     @POST
@@ -75,11 +98,11 @@ public class WebMoneyController {
     public Response fail(@FormParam("user_id") int userId) {
         messageService.sendMessage(new SendMessageContext().chatId(userService.getChatId(userId)).text(localisationService.getMessage(MessagesProperties.MESSAGE_PAYMENT_FAIL)));
 
-        return Response.seeOther(URI.create(appProperties.getTelegramRedirectUrl())).build();
+        return Response.seeOther(URI.create(redirectUrl(true))).build();
     }
 
-    @Path("/pay")
     @Template(name = "/payment_request.ftl")
+    @Path("/pay")
     @GET
     @Produces(MediaType.TEXT_HTML)
     public Map<String, Object> paymentRequest(@QueryParam("planId") int planId, @QueryParam("userId") int userId, @QueryParam("paymentType") int paymentType) {
@@ -101,7 +124,7 @@ public class WebMoneyController {
         }
         Form form = request.readEntity(Form.class);
         MultivaluedMap<String, String> formData = form.asMap();
-        int preRequest = NumberUtils.toInt(formData.getFirst(WebMoneyConstants.LMI_PREREQUEST), -1);
+        int preRequest = NumberUtils.toInt(formData.getFirst(WebMoneyConstants.LMI_PRE_REQUEST), -1);
 
         if (preRequest == PRE_REQUEST) {
             return preProcessPayment();
@@ -175,5 +198,12 @@ public class WebMoneyController {
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
+    }
+
+    private String redirectUrl(boolean fail) {
+        return UriComponentsBuilder.fromHttpUrl(appProperties.getUrl())
+                .path(CONTROLLER_PATH + PAYMENT_RESULT_PATH)
+                .queryParam("fail", fail)
+                .toUriString();
     }
 }

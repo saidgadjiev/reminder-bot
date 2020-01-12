@@ -390,4 +390,8 @@ public class MessagesProperties {
     public static final String MESSAGE_BAD_PAYMENT_REQUEST = "message.bad.payment.request";
 
     public static final String MESSAGE_PAYMENT_FAIL = "message.payment.fail";
+
+    public static final String MESSAGE_PAYMENT_SUCCESS = "message.payment.success";
+
+    public static final String MESSAGE_TELEGRAM_REDIRECT = "message.telegram.redirect";
 }

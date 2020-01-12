@@ -7,8 +7,6 @@ public class AppProperties {
 
     private String url;
 
-    private String telegramRedirectUrl;
-
     public String getUrl() {
         return url;
     }
@@ -17,11 +15,4 @@ public class AppProperties {
         this.url = url;
     }
 
-    public String getTelegramRedirectUrl() {
-        return telegramRedirectUrl;
-    }
-
-    public void setTelegramRedirectUrl(String telegramRedirectUrl) {
-        this.telegramRedirectUrl = telegramRedirectUrl;
-    }
 }
