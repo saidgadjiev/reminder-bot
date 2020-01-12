@@ -11,11 +11,13 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.CallbackRequest;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
@@ -36,19 +38,22 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
 
     private ReminderMessageSender reminderMessageSender;
 
+    private LocalisationService localisationService;
+
     @Autowired
     public CreateFriendReminderCallbackCommand(CommandStateService stateService,
                                                ReminderRequestService reminderService,
                                                MessageService messageService,
                                                ReplyKeyboardService replyKeyboardService,
                                                CommandNavigator commandNavigator,
-                                               ReminderMessageSender reminderMessageSender) {
+                                               ReminderMessageSender reminderMessageSender, LocalisationService localisationService) {
         this.stateService = stateService;
         this.reminderService = reminderService;
         this.messageService = messageService;
         this.replyKeyboardService = replyKeyboardService;
         this.commandNavigator = commandNavigator;
         this.reminderMessageSender = reminderMessageSender;
+        this.localisationService = localisationService;
     }
 
     @Override
@@ -59,7 +64,12 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
-        messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT, replyKeyboardService.goBackCommand());
+        messageService.sendMessage(
+                new SendMessageContext()
+                        .chatId(callbackQuery.getMessage().getChatId())
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT))
+                        .replyKeyboard(replyKeyboardService.goBackCommand())
+        );
 
         return MessagesProperties.MESSAGE_CREATE_REMINDER_CALLBACK_ANSWER;
     }

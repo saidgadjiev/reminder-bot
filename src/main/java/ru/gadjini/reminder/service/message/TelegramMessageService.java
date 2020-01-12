@@ -18,6 +18,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.configuration.BotConfiguration;
+import ru.gadjini.reminder.model.AnswerCallbackContext;
+import ru.gadjini.reminder.model.EditMessageContext;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.TelegramService;
 
 import java.util.function.Consumer;
@@ -67,15 +70,15 @@ public class TelegramMessageService implements MessageService {
     }
 
     @Override
-    public void sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard, Consumer<Message> callback) {
+    public void sendMessage(SendMessageContext messageContext, Consumer<Message> callback) {
         SendMessage sendMessage = new SendMessage();
 
-        sendMessage.setChatId(chatId);
+        sendMessage.setChatId(messageContext.chatId());
         sendMessage.enableHtml(true);
-        sendMessage.setText(message);
+        sendMessage.setText(messageContext.text());
 
-        if (replyKeyboard != null) {
-            sendMessage.setReplyMarkup(replyKeyboard);
+        if (messageContext.hasKeyboard()) {
+            sendMessage.setReplyMarkup(messageContext.replyKeyboard());
         }
 
         try {
@@ -90,71 +93,41 @@ public class TelegramMessageService implements MessageService {
     }
 
     @Override
-    public void sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard) {
-        sendMessage(chatId, message, replyKeyboard, null);
+    public void sendMessage(SendMessageContext messageContext) {
+        sendMessage(messageContext, null);
     }
 
     @Override
-    public void sendMessage(long chatId, String message) {
-        sendMessage(chatId, message, null, null);
-    }
-
-    @Override
-    public void sendMessageByCode(long chatId, String messageCode) {
-        sendMessage(chatId, localisationService.getMessage(messageCode), null);
-    }
-
-    @Override
-    public void sendMessageByCode(long chatId, String messageCode, ReplyKeyboard replyKeyboard) {
-        sendMessage(chatId, localisationService.getMessage(messageCode), replyKeyboard);
-    }
-
-    @Override
-    public void sendMessageByCode(long chatId, String messageCode, Object[] args) {
-        sendMessage(chatId, localisationService.getMessage(messageCode, args), null);
-    }
-
-    @Override
-    public void sendMessageByCode(long chatId, String messageCode, Object[] args, ReplyKeyboard replyKeyboard) {
-        sendMessage(chatId, localisationService.getMessage(messageCode, args), replyKeyboard, null);
-    }
-
-    @Override
-    public void sendAnswerCallbackQuery(String callbackQueryId, String text) {
+    public void sendAnswerCallbackQuery(AnswerCallbackContext callbackContext) {
         AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
 
-        answerCallbackQuery.setText(text);
-        answerCallbackQuery.setCallbackQueryId(callbackQueryId);
+        answerCallbackQuery.setText(callbackContext.text());
+        answerCallbackQuery.setCallbackQueryId(callbackContext.queryId());
 
         try {
             telegramService.execute(answerCallbackQuery);
         } catch (TelegramApiException e) {
-            LOGGER.error("Error answer callback {} with text {}", callbackQueryId, text);
+            LOGGER.error("Error answer callback {} with text {}", callbackContext.queryId(), callbackContext.text());
         }
     }
 
     @Override
-    public void editMessage(long chatId, int messageId, String text, InlineKeyboardMarkup replyKeyboard) {
+    public void editMessage(EditMessageContext messageContext) {
         EditMessageText editMessageText = new EditMessageText();
 
-        editMessageText.setMessageId(messageId);
+        editMessageText.setMessageId(messageContext.messageId());
         editMessageText.enableHtml(true);
-        editMessageText.setChatId(chatId);
-        editMessageText.setText(text);
-        if (replyKeyboard != null) {
-            editMessageText.setReplyMarkup(replyKeyboard);
+        editMessageText.setChatId(messageContext.chatId());
+        editMessageText.setText(messageContext.text());
+        if (messageContext.hasKeyboard()) {
+            editMessageText.setReplyMarkup(messageContext.replyKeyboard());
         }
 
         try {
             telegramService.execute(editMessageText);
         } catch (TelegramApiException ex) {
-            LOGGER.error("Error edit message {} with text {}", messageId, text);
+            LOGGER.error("Error edit message {} with text {}", messageContext.messageId(), messageContext.text());
         }
-    }
-
-    @Override
-    public void editMessage(long chatId, int messageId, String text) {
-        editMessage(chatId, messageId, text, null);
     }
 
     @Override
@@ -173,18 +146,13 @@ public class TelegramMessageService implements MessageService {
     }
 
     @Override
-    public void editMessageByMessageCode(long chatId, int messageId, String messageCode, InlineKeyboardMarkup keyboardMarkup) {
-        editMessage(chatId, messageId, localisationService.getMessage(messageCode), keyboardMarkup);
-    }
-
-    @Override
-    public void sendAnswerCallbackQueryByMessageCode(String callbackQueryId, String messageCode) {
-        sendAnswerCallbackQuery(callbackQueryId, localisationService.getMessage(messageCode));
-    }
-
-    @Override
     public void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard) {
-        sendMessageByCode(chatId, MessagesProperties.MESSAGE_ERROR, replyKeyboard);
+        sendMessage(
+                new SendMessageContext()
+                        .chatId(chatId)
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_ERROR))
+                        .replyKeyboard(replyKeyboard)
+        );
     }
 
     @Override
@@ -194,6 +162,11 @@ public class TelegramMessageService implements MessageService {
 
     @Override
     public void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard) {
-        sendMessageByCode(chatId, MessagesProperties.MESSAGE_BOT_RESTARTED, replyKeyboard);
+        sendMessage(
+                new SendMessageContext()
+                        .chatId(chatId)
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_BOT_RESTARTED))
+                        .replyKeyboard(replyKeyboard)
+        );
     }
 }

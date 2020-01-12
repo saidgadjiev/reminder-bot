@@ -7,11 +7,14 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
+import ru.gadjini.reminder.model.EditMessageContext;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
 
@@ -28,11 +31,15 @@ public class AcceptFriendRequestCommand implements CallbackBotCommand {
 
     private FriendshipMessageBuilder friendshipMessageBuilder;
 
+    private LocalisationService localisationService;
+
     @Autowired
-    public AcceptFriendRequestCommand(FriendshipService friendshipService, MessageService messageService, InlineKeyboardService inlineKeyboardService,
-                                      FriendshipMessageBuilder friendshipMessageBuilder) {
+    public AcceptFriendRequestCommand(FriendshipService friendshipService, MessageService messageService,
+                                      InlineKeyboardService inlineKeyboardService,
+                                      FriendshipMessageBuilder friendshipMessageBuilder, LocalisationService localisationService) {
         this.inlineKeyboardService = inlineKeyboardService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
+        this.localisationService = localisationService;
         this.name = CommandNames.ACCEPT_FRIEND_REQUEST_COMMAND_NAME;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
@@ -47,15 +54,18 @@ public class AcceptFriendRequestCommand implements CallbackBotCommand {
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Friendship friendship = friendshipService.acceptFriendRequest(callbackQuery.getFrom(), requestParams.getInt(Arg.FRIEND_ID.getKey()));
 
-        messageService.sendMessageByCode(friendship.getUserOne().getChatId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_ACCEPTED_INITIATOR, new Object[]{
-                UserUtils.userLink(friendship.getUserTwo())
-        });
+        messageService.sendMessage(
+                new SendMessageContext()
+                        .chatId(friendship.getUserOne().getChatId())
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ACCEPTED_INITIATOR, new Object[]{
+                                UserUtils.userLink(friendship.getUserTwo())
+                        }))
+        );
 
         messageService.editMessage(
-                callbackQuery.getMessage().getChatId(),
-                callbackQuery.getMessage().getMessageId(),
-                friendshipMessageBuilder.getFriendDetails(friendship.getUserOne()),
-                inlineKeyboardService.getFriendKeyboard(friendship.getUserOneId())
+                EditMessageContext.from(callbackQuery)
+                        .text(friendshipMessageBuilder.getFriendDetails(friendship.getUserOne()))
+                        .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendship.getUserOneId()))
         );
 
         return MessagesProperties.MESSAGE_FRIEND_REQUEST_ACCEPTED_ANSWER;

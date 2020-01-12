@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
@@ -40,10 +41,9 @@ public class GetToMeFriendRequestCommand implements CallbackBotCommand {
         TgUser mayBeFriend = friendshipService.getFriend(callbackQuery.getFrom().getId(), friendId);
 
         messageService.editMessage(
-                callbackQuery.getMessage().getChatId(),
-                callbackQuery.getMessage().getMessageId(),
-                UserUtils.userLink(mayBeFriend),
-                inlineKeyboardService.getFriendRequestKeyboard(friendId)
+                EditMessageContext.from(callbackQuery)
+                        .text(UserUtils.userLink(mayBeFriend))
+                        .replyKeyboard(inlineKeyboardService.getFriendRequestKeyboard(friendId))
         );
         return null;
     }

@@ -9,6 +9,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.CallbackRequest;
+import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -64,10 +65,9 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         messageService.editMessage(
-                callbackQuery.getMessage().getChatId(),
-                callbackQuery.getMessage().getMessageId(),
-                callbackQuery.getMessage().getText() + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME),
-                inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, true, requestParams)
+                EditMessageContext.from(callbackQuery)
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, true, requestParams))
         );
 
         return MessagesProperties.MESSAGE_REMINDER_TIME_ANSWER;

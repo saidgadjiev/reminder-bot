@@ -12,10 +12,12 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.WebMoneyConstants;
 import ru.gadjini.reminder.domain.PaymentType;
 import ru.gadjini.reminder.exception.UserException;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.WebMoneyPayment;
 import ru.gadjini.reminder.properties.AppProperties;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.payment.PaymentService;
 
@@ -43,14 +45,19 @@ public class WebMoneyController {
 
     private AppProperties appProperties;
 
+    private LocalisationService localisationService;
+
     @Autowired
     public WebMoneyController(ReplyKeyboardService replyKeyboardService, PaymentService paymentService,
-                              MessageService messageService, TgUserService userService, AppProperties appProperties) {
+                              MessageService messageService, TgUserService userService,
+                              AppProperties appProperties, LocalisationService localisationService) {
         this.replyKeyboardService = replyKeyboardService;
         this.paymentService = paymentService;
         this.messageService = messageService;
         this.userService = userService;
         this.appProperties = appProperties;
+        this.localisationService = localisationService;
+
         LOGGER.debug("WebMoneyController initialized");
     }
 
@@ -66,10 +73,7 @@ public class WebMoneyController {
     @Path("/fail")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response fail(@FormParam("user_id") int userId) {
-        messageService.sendMessageByCode(
-                userService.getChatId(userId),
-                MessagesProperties.MESSAGE_PAYMENT_FAIL
-        );
+        messageService.sendMessage(new SendMessageContext().chatId(userService.getChatId(userId)).text(localisationService.getMessage(MessagesProperties.MESSAGE_PAYMENT_FAIL)));
 
         return Response.seeOther(URI.create(appProperties.getTelegramRedirectUrl())).build();
     }
@@ -162,11 +166,11 @@ public class WebMoneyController {
 
     private void sendSubscriptionRenewed(long chatId, LocalDate subscriptionEnd) {
         try {
-            messageService.sendMessageByCode(
-                    chatId,
-                    MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED,
-                    new Object[]{subscriptionEnd},
-                    replyKeyboardService.getMainMenu()
+            messageService.sendMessage(
+                    new SendMessageContext()
+                            .chatId(chatId)
+                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}))
+                            .replyKeyboard(replyKeyboardService.getMainMenu())
             );
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);

@@ -6,8 +6,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -17,6 +18,8 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
 
     private String name;
 
+    private final LocalisationService localisationService;
+
     private MessageService messageService;
 
     private ReplyKeyboardService replyKeyboardService;
@@ -24,6 +27,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
     @Autowired
     public UserSettingsCommand(LocalisationService localisationService, MessageService messageService, ReplyKeyboardService replyKeyboardService) {
         this.name = localisationService.getMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME);
+        this.localisationService = localisationService;
         this.messageService = messageService;
         this.replyKeyboardService = replyKeyboardService;
     }
@@ -35,10 +39,11 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
 
     @Override
     public boolean processMessage(Message message, String text) {
-        messageService.sendMessageByCode(
-                message.getChatId(),
-                MessagesProperties.MESSAGE_USER_SETTINGS,
-                replyKeyboardService.getUserSettingsKeyboard()
+        messageService.sendMessage(
+                new SendMessageContext()
+                        .chatId(message.getChatId())
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_SETTINGS))
+                        .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard())
         );
         return true;
     }
@@ -55,10 +60,11 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
 
     @Override
     public void restore(long chatId) {
-        messageService.sendMessageByCode(
-                chatId,
-                MessagesProperties.MESSAGE_USER_SETTINGS,
-                replyKeyboardService.getUserSettingsKeyboard()
+        messageService.sendMessage(
+                new SendMessageContext()
+                        .chatId(chatId)
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_SETTINGS))
+                        .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard())
         );
     }
 

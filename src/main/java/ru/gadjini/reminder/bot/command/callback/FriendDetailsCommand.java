@@ -8,6 +8,7 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -46,10 +47,9 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
         int friendUserId = requestParams.getInt(Arg.FRIEND_ID.getKey());
         TgUser friend = friendshipService.getFriend(callbackQuery.getFrom().getId(), friendUserId);
         messageService.editMessage(
-                callbackQuery.getMessage().getChatId(),
-                callbackQuery.getMessage().getMessageId(),
-                friendshipMessageBuilder.getFriendDetails(friend),
-                inlineKeyboardService.getFriendKeyboard(friendUserId)
+                EditMessageContext.from(callbackQuery)
+                        .text(friendshipMessageBuilder.getFriendDetails(friend))
+                        .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendUserId))
         );
         return null;
     }
@@ -64,10 +64,11 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
         int friendUserId = requestParams.getInt(Arg.FRIEND_ID.getKey());
         TgUser friend = friendshipService.getFriend(tgMessage.getUser().getId(), friendUserId);
         messageService.editMessage(
-                tgMessage.getChatId(),
-                tgMessage.getMessageId(),
-                friendshipMessageBuilder.getFriendDetails(friend),
-                inlineKeyboardService.getFriendKeyboard(friendUserId)
+                new EditMessageContext()
+                        .chatId(tgMessage.getChatId())
+                        .messageId(tgMessage.getMessageId())
+                        .text(friendshipMessageBuilder.getFriendDetails(friend))
+                        .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendUserId))
         );
     }
 }

@@ -7,6 +7,7 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.UserReminderNotification;
+import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
@@ -51,10 +52,9 @@ public class DeleteUserReminderNotificationCommand implements CallbackBotCommand
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getNonCachedList(callbackQuery.getFrom().getId(), notificationType);
 
         messageService.editMessage(
-                callbackQuery.getMessage().getChatId(),
-                callbackQuery.getMessage().getMessageId(),
-                reminderNotificationMessageBuilder.getUserReminderNotifications(userReminderNotifications),
-                inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)
+                EditMessageContext.from(callbackQuery)
+                .text(reminderNotificationMessageBuilder.getUserReminderNotifications(userReminderNotifications))
+                .replyKeyboard(inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType))
         );
 
         return MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION_DELETED;

@@ -11,6 +11,7 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.CustomRemindResult;
+import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
@@ -72,10 +73,9 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
         String prevHistoryName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
 
         messageService.editMessage(
-                callbackQuery.getMessage().getChatId(),
-                callbackQuery.getMessage().getMessageId(),
-                localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND),
-                inlineKeyboardService.goBackCallbackButton(prevHistoryName, true, requestParams)
+                EditMessageContext.from(callbackQuery)
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(prevHistoryName, true, requestParams))
         );
 
         return MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION;

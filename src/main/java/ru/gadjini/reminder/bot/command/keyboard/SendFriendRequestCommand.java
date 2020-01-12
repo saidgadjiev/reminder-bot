@@ -11,6 +11,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
@@ -23,17 +24,19 @@ import ru.gadjini.reminder.util.UserUtils;
 @Component
 public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBotCommand {
 
+    private final LocalisationService localisationService;
+
     private FriendshipService friendshipService;
 
     private MessageService messageService;
-
-    private String name;
 
     private InlineKeyboardService inlineKeyboardService;
 
     private ReplyKeyboardService replyKeyboardService;
 
     private CommandNavigator commandNavigator;
+
+    private String name;
 
     @Autowired
     public SendFriendRequestCommand(LocalisationService localisationService,
@@ -42,6 +45,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
                                     InlineKeyboardService inlineKeyboardService,
                                     ReplyKeyboardService replyKeyboardService,
                                     CommandNavigator commandNavigator) {
+        this.localisationService = localisationService;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
         this.name = localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME);
@@ -62,7 +66,12 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
 
     @Override
     public boolean processMessage(Message message, String text) {
-        messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME, replyKeyboardService.goBackCommand());
+        messageService.sendMessage(
+                new SendMessageContext()
+                        .chatId(message.getChatId())
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME))
+                        .replyKeyboard(replyKeyboardService.goBackCommand())
+        );
         return true;
     }
 
@@ -89,28 +98,29 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
 
         switch (createFriendRequestResult.getState()) {
             case ALREADY_REQUESTED:
-                messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT);
+                messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT)));
                 break;
             case ALREADY_REQUESTED_TO_ME:
-                messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT_ME);
+                messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT_ME)));
                 break;
             case ALREADY_FRIEND:
-                messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_ALREADY_FRIEND);
+                messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_ALREADY_FRIEND)));
                 break;
             case NONE:
                 Friendship friendship = createFriendRequestResult.getFriendship();
 
-                messageService.sendMessageByCode(
-                        message.getChatId(),
-                        MessagesProperties.MESSAGE_FRIEND_REQUEST_SENT,
-                        new Object[]{UserUtils.userLink(friendship.getUserTwo())},
-                        replyKeyboardMarkup
+                messageService.sendMessage(
+                        new SendMessageContext()
+                                .chatId(message.getChatId())
+                                .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_SENT,
+                                        new Object[]{UserUtils.userLink(friendship.getUserTwo())}))
+                                .replyKeyboard(replyKeyboardMarkup)
                 );
-                messageService.sendMessageByCode(
-                        friendship.getUserTwo().getChatId(),
-                        MessagesProperties.MESSAGE_NEW_FRIEND_REQUEST,
-                        new Object[]{UserUtils.userLink(friendship.getUserOne())},
-                        inlineKeyboardService.getFriendRequestKeyboard(friendship.getUserOne().getUserId())
+                messageService.sendMessage(
+                        new SendMessageContext()
+                                .chatId(friendship.getUserTwo().getChatId())
+                                .text(localisationService.getMessage(MessagesProperties.MESSAGE_NEW_FRIEND_REQUEST, new Object[]{UserUtils.userLink(friendship.getUserOne())}))
+                                .replyKeyboard(inlineKeyboardService.getFriendRequestKeyboard(friendship.getUserOne().getUserId()))
                 );
                 break;
         }

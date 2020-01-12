@@ -5,8 +5,9 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -18,6 +19,8 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
 
     private MessageService messageService;
 
+    private final LocalisationService localisationService;
+
     private String name;
 
     @Autowired
@@ -25,6 +28,7 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
         this.replyKeyboardService = replyKeyboardService;
         this.messageService = messageService;
         this.name = localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME);
+        this.localisationService = localisationService;
     }
 
     @Override
@@ -34,10 +38,11 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
 
     @Override
     public boolean processMessage(Message message, String text) {
-        messageService.sendMessageByCode(
-                message.getChatId(),
-                MessagesProperties.MESSAGE_FRIEND_REQUESTS,
-                replyKeyboardService.getFriendRequestsKeyboard()
+        messageService.sendMessage(
+                new SendMessageContext()
+                        .chatId(message.getChatId())
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUESTS))
+                        .replyKeyboard(replyKeyboardService.getFriendRequestsKeyboard())
         );
 
         return true;

@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Plan;
 import ru.gadjini.reminder.domain.Subscription;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
@@ -76,7 +77,12 @@ public class SubscriptionFilter extends BaseBotFilter {
     }
 
     private void sendSubscriptionExpired(int userId, long chatId) {
-        messageService.sendMessage(chatId, localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_EXPIRED), replyKeyboardService.removeKeyboard());
+        messageService.sendMessage(
+                new SendMessageContext()
+                        .chatId(chatId)
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_EXPIRED))
+                        .replyKeyboard(replyKeyboardService.removeKeyboard())
+        );
 
         Integer messageId = paymentMessageService.getMessageId(chatId);
         if (messageId != null) {
@@ -85,9 +91,10 @@ public class SubscriptionFilter extends BaseBotFilter {
 
         Plan plan = planService.getActivePlan();
         messageService.sendMessage(
-                chatId,
-                getNeedPayMessage(plan.getDescription()),
-                inlineKeyboardService.getPaymentKeyboard(userId, plan.getId()),
+                new SendMessageContext()
+                        .chatId(chatId)
+                        .text(getNeedPayMessage(plan.getDescription()))
+                        .replyKeyboard(inlineKeyboardService.getPaymentKeyboard(userId, plan.getId())),
                 message -> paymentMessageService.create(chatId, message.getMessageId())
         );
     }

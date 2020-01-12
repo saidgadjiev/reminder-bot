@@ -8,6 +8,7 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -65,10 +66,11 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
         Reminder reminder = reminderService.getReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         messageService.editMessage(
-                tgMessage.getChatId(),
-                tgMessage.getMessageId(),
-                messageBuilder.getReminderMessage(reminder),
-                inlineKeyboardService.getReminderDetailsKeyboard(tgMessage.getUser().getId(), reminder)
+                new EditMessageContext()
+                        .chatId(tgMessage.getChatId())
+                        .messageId(tgMessage.getMessageId())
+                        .text(messageBuilder.getReminderMessage(reminder))
+                        .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(tgMessage.getUser().getId(), reminder))
         );
     }
 }

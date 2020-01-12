@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Subscription;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.subscription.SubscriptionService;
@@ -39,7 +40,7 @@ public class SubscriptionInfoCommand implements KeyboardBotCommand {
     public boolean processMessage(Message message, String text) {
         Subscription subscription = subscriptionService.getSubscription(message.getFrom().getId());
 
-        messageService.sendMessage(message.getChatId(), getSubscriptionInfo(subscription));
+        messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(getSubscriptionInfo(subscription)));
 
         return false;
     }

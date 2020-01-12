@@ -13,9 +13,12 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.exception.UserException;
+import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.service.command.CommandExecutor;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.message.MessageTextExtractor;
 import ru.gadjini.reminder.service.metric.LatencyMeter;
@@ -38,27 +41,27 @@ public class ReminderBotService {
 
     private LatencyMeterFactory latencyMeterFactory;
 
+    private LocalisationService localisationService;
+
     @Autowired
     public ReminderBotService(CommandExecutor commandExecutor,
                               CommandNavigator commandNavigator,
                               MessageService messageService,
                               ReplyKeyboardService replyKeyboardService,
                               MessageTextExtractor messageTextExtractor,
-                              LatencyMeterFactory latencyMeterFactory) {
+                              LatencyMeterFactory latencyMeterFactory, LocalisationService localisationService) {
         this.commandExecutor = commandExecutor;
         this.commandNavigator = commandNavigator;
         this.messageService = messageService;
         this.replyKeyboardService = replyKeyboardService;
         this.messageTextExtractor = messageTextExtractor;
         this.latencyMeterFactory = latencyMeterFactory;
+        this.localisationService = localisationService;
     }
 
     public void handleUpdate(Update update) {
-        Long chatId = -1L;
-
         try {
             if (update.hasMessage()) {
-                chatId = update.getMessage().getChatId();
                 if (restoreIfNeed(update.getMessage().getChatId(), update.getMessage().hasText() ? update.getMessage().getText().trim() : null)) {
                     return;
                 }
@@ -78,7 +81,6 @@ public class ReminderBotService {
                 StopWatch stopWatch = new StopWatch();
                 stopWatch.start();
 
-                chatId = update.getCallbackQuery().getMessage().getChatId();
                 commandExecutor.executeCallbackCommand(update.getCallbackQuery());
 
                 stopWatch.stop();
@@ -95,17 +97,17 @@ public class ReminderBotService {
             }
         } catch (UserException ex) {
             LOGGER.error(ex.getMessage());
-            messageService.sendMessage(chatId, ex.getMessage());
+            messageService.sendMessage(new SendMessageContext().chatId(TgMessage.getChatId(update)).text(ex.getMessage()));
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
-            messageService.sendErrorMessage(chatId);
+            messageService.sendErrorMessage(TgMessage.getChatId(update));
         }
     }
 
     private void handleMessage(Message message, String text) {
         if (commandExecutor.isCommand(message, text)) {
             if (!commandExecutor.executeCommand(message, text)) {
-                messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_UNKNOWN_COMMAND);
+                messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_UNKNOWN_COMMAND)));
             }
         } else {
             commandExecutor.processNonCommandUpdate(message, text);

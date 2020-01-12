@@ -8,6 +8,7 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.ReminderNotification;
+import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -48,10 +49,9 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
         List<ReminderNotification> reminderNotifications = reminderNotificationService.getCustomRemindersList(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         messageService.editMessage(
-                callbackQuery.getMessage().getChatId(),
-                callbackQuery.getMessage().getMessageId(),
-                reminderNotificationMessageBuilder.getReminderNotifications(reminderNotifications),
-                inlineKeyboardService.getReminderTimesListKeyboard(reminderNotifications.stream().map(ReminderNotification::getId).collect(Collectors.toList()), requestParams.getInt(Arg.REMINDER_ID.getKey()))
+                EditMessageContext.from(callbackQuery)
+                        .text(reminderNotificationMessageBuilder.getReminderNotifications(reminderNotifications))
+                        .replyKeyboard(inlineKeyboardService.getReminderTimesListKeyboard(reminderNotifications.stream().map(ReminderNotification::getId).collect(Collectors.toList()), requestParams.getInt(Arg.REMINDER_ID.getKey())))
         );
         return null;
     }
@@ -66,10 +66,11 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
         List<ReminderNotification> reminderNotifications = reminderNotificationService.getCustomRemindersList(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         messageService.editMessage(
-                tgMessage.getChatId(),
-                tgMessage.getMessageId(),
-                reminderNotificationMessageBuilder.getReminderNotifications(reminderNotifications),
-                inlineKeyboardService.getReminderTimesListKeyboard(reminderNotifications.stream().map(ReminderNotification::getId).collect(Collectors.toList()), requestParams.getInt(Arg.REMINDER_ID.getKey()))
+                new EditMessageContext()
+                        .chatId(tgMessage.getChatId())
+                        .messageId(tgMessage.getMessageId())
+                        .text(reminderNotificationMessageBuilder.getReminderNotifications(reminderNotifications))
+                        .replyKeyboard(inlineKeyboardService.getReminderTimesListKeyboard(reminderNotifications.stream().map(ReminderNotification::getId).collect(Collectors.toList()), requestParams.getInt(Arg.REMINDER_ID.getKey())))
         );
     }
 }

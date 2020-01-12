@@ -6,10 +6,13 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.UserReminderNotification;
+import ru.gadjini.reminder.model.EditMessageContext;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 
@@ -36,12 +39,15 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
 
     private ReplyKeyboardService replyKeyboardService;
 
+    private LocalisationService localisationService;
+
     public UserReminderNotificationScheduleCommand(String name, String historyName,
                                                    UserReminderNotification.NotificationType notificationType,
                                                    UserReminderNotificationService userReminderNotificationService,
                                                    ReminderNotificationMessageBuilder messageBuilder,
                                                    MessageService messageService, InlineKeyboardService inlineKeyboardService,
-                                                   ReplyKeyboardService replyKeyboardService, CommandStateService stateService) {
+                                                   ReplyKeyboardService replyKeyboardService, CommandStateService stateService,
+                                                   LocalisationService localisationService) {
         this.stateService = stateService;
         this.notificationType = notificationType;
         this.name = name;
@@ -51,6 +57,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.replyKeyboardService = replyKeyboardService;
+        this.localisationService = localisationService;
     }
 
     @Override
@@ -63,15 +70,17 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getNonCachedList(message.getFrom().getId(), notificationType);
 
         messageService.sendMessage(
-                message.getChatId(),
-                messageBuilder.getUserReminderNotifications(userReminderNotifications),
-                inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType),
+                new SendMessageContext()
+                        .chatId(message.getChatId())
+                        .text(messageBuilder.getUserReminderNotifications(userReminderNotifications))
+                        .replyKeyboard(inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)),
                 msg -> stateService.setState(msg.getChatId(), msg.getMessageId())
         );
-        messageService.sendMessageByCode(
-                message.getChatId(),
-                MessagesProperties.MESSAGE_EDIT_USER_REMINDER_NOTIFICATION,
-                replyKeyboardService.goBackCommand()
+        messageService.sendMessage(
+                new SendMessageContext()
+                        .chatId(message.getChatId())
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_EDIT_USER_REMINDER_NOTIFICATION))
+                        .replyKeyboard(replyKeyboardService.goBackCommand())
         );
         return true;
     }
@@ -83,10 +92,11 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
         int messageId = stateService.getState(message.getChatId());
 
         messageService.editMessage(
-                message.getChatId(),
-                messageId,
-                messageBuilder.getUserReminderNotifications(userReminderNotifications),
-                inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)
+                new EditMessageContext()
+                        .chatId(message.getChatId())
+                        .messageId(messageId)
+                        .text(messageBuilder.getUserReminderNotifications(userReminderNotifications))
+                        .replyKeyboard(inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType))
         );
         messageService.deleteMessage(message.getChatId(), message.getMessageId());
     }

@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -18,6 +19,8 @@ public class CreateReminderCommand implements KeyboardBotCommand {
 
     private String name;
 
+    private final LocalisationService localisationService;
+
     private SuggestionService suggestionService;
 
     private ReplyKeyboardService replyKeyboardService;
@@ -28,6 +31,7 @@ public class CreateReminderCommand implements KeyboardBotCommand {
     public CreateReminderCommand(LocalisationService localisationService, SuggestionService suggestionService,
                                  ReplyKeyboardService replyKeyboardService, MessageService messageService) {
         this.name = localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME);
+        this.localisationService = localisationService;
         this.suggestionService = suggestionService;
         this.replyKeyboardService = replyKeyboardService;
         this.messageService = messageService;
@@ -43,7 +47,12 @@ public class CreateReminderCommand implements KeyboardBotCommand {
         List<String> suggestions = suggestionService.getSuggestions(message.getFrom().getId());
         ReplyKeyboardMarkup suggestionsKeyboard = replyKeyboardService.getSuggestionsKeyboard(suggestions);
 
-        messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_CREATE_REMINDER, suggestionsKeyboard);
+        messageService.sendMessage(
+                new SendMessageContext()
+                        .chatId(message.getChatId())
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_CREATE_REMINDER))
+                        .replyKeyboard(suggestionsKeyboard)
+        );
 
         return false;
     }

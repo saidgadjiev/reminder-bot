@@ -9,6 +9,8 @@ import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.model.EditMessageContext;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
@@ -53,9 +55,10 @@ public class ToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableC
         List<TgUser> friendRequests = friendshipService.getToMeFriendRequests(message.getFrom().getId());
 
         messageService.sendMessage(
-                message.getChatId(),
-                friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null),
-                inlineKeyboardService.getFriendsListKeyboard(friendRequests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.GET_FRIEND_REQUEST_COMMAND_NAME)
+                new SendMessageContext()
+                        .chatId(message.getChatId())
+                        .text(friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null))
+                        .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(friendRequests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.GET_FRIEND_REQUEST_COMMAND_NAME))
         );
         return false;
     }
@@ -70,10 +73,11 @@ public class ToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableC
         List<TgUser> friendRequests = friendshipService.getToMeFriendRequests(tgMessage.getUser().getId());
 
         messageService.editMessage(
-                tgMessage.getChatId(),
-                tgMessage.getMessageId(),
-                friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null),
-                inlineKeyboardService.getFriendsListKeyboard(friendRequests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.GET_FRIEND_REQUEST_COMMAND_NAME)
+                new EditMessageContext()
+                        .chatId(tgMessage.getChatId())
+                        .messageId(tgMessage.getMessageId())
+                        .text(friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null))
+                        .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(friendRequests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.GET_FRIEND_REQUEST_COMMAND_NAME))
         );
     }
 }

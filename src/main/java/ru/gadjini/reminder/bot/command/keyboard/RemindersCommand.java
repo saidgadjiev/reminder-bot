@@ -6,8 +6,10 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.model.EditMessageContext;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -19,6 +21,8 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
 
     private String name;
 
+    private final LocalisationService localisationService;
+
     private MessageService messageService;
 
     private InlineKeyboardService inlineKeyboardService;
@@ -26,6 +30,7 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
     @Autowired
     public RemindersCommand(LocalisationService localisationService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
         this.name = localisationService.getMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME);
+        this.localisationService = localisationService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
     }
@@ -37,10 +42,11 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
 
     @Override
     public boolean processMessage(Message message, String text) {
-        messageService.sendMessageByCode(
-                message.getChatId(),
-                MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS,
-                inlineKeyboardService.getRemindersMenu()
+        messageService.sendMessage(
+                new SendMessageContext()
+                        .chatId(message.getChatId())
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS))
+                        .replyKeyboard(inlineKeyboardService.getRemindersMenu())
         );
 
         return false;
@@ -53,11 +59,12 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
 
     @Override
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
-        messageService.editMessageByMessageCode(
-                tgMessage.getChatId(),
-                tgMessage.getMessageId(),
-                MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS,
-                inlineKeyboardService.getRemindersMenu()
+        messageService.editMessage(
+                new EditMessageContext()
+                        .chatId(tgMessage.getChatId())
+                        .messageId(tgMessage.getMessageId())
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS))
+                        .replyKeyboard(inlineKeyboardService.getRemindersMenu())
         );
     }
 }

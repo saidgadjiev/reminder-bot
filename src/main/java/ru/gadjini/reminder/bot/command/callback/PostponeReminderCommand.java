@@ -15,6 +15,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.model.CallbackRequest;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -81,7 +82,12 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
                 callbackQuery.getMessage().getMessageId(),
                 inlineKeyboardService.goBackCallbackButton(prevHistoryName, true, requestParams)
         );
-        messageService.sendMessageByCode(callbackQuery.getMessage().getChatId(), MessagesProperties.MESSAGE_POSTPONE_TIME, replyKeyboardService.postponeTimeKeyboard());
+        messageService.sendMessage(
+                new SendMessageContext()
+                        .chatId(callbackQuery.getMessage().getChatId())
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_TIME))
+                        .replyKeyboard(replyKeyboardService.postponeTimeKeyboard())
+        );
 
         return MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION;
     }
@@ -124,7 +130,12 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         stateService.setState(message.getChatId(), postponeCommandState);
         stateService.getState(message.getChatId());
         if (reminder.getReceiverId() != reminder.getCreatorId()) {
-            messageService.sendMessageByCode(message.getChatId(), MessagesProperties.MESSAGE_POSTPONE_MESSAGE, replyKeyboardService.getPostponeMessagesKeyboard());
+            messageService.sendMessage(
+                    new SendMessageContext()
+                            .chatId(message.getChatId())
+                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_MESSAGE))
+                            .replyKeyboard(replyKeyboardService.getPostponeMessagesKeyboard())
+            );
         } else {
             postpone(message.getChatId(), null, postponeCommandState);
         }

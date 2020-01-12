@@ -7,10 +7,13 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
+import ru.gadjini.reminder.model.EditMessageContext;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
 
@@ -25,9 +28,13 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
 
     private InlineKeyboardService inlineKeyboardService;
 
+    private LocalisationService localisationService;
+
     @Autowired
-    public RejectFriendRequestCommand(FriendshipService friendshipService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
+    public RejectFriendRequestCommand(FriendshipService friendshipService, MessageService messageService,
+                                      InlineKeyboardService inlineKeyboardService, LocalisationService localisationService) {
         this.inlineKeyboardService = inlineKeyboardService;
+        this.localisationService = localisationService;
         this.name = CommandNames.REJECT_FRIEND_REQUEST_COMMAND_NAME;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
@@ -42,16 +49,17 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Friendship friendship = friendshipService.rejectFriendRequest(callbackQuery.getFrom(), requestParams.getInt(Arg.FRIEND_ID.getKey()));
 
-        messageService.sendMessageByCode(
-                friendship.getUserOne().getChatId(),
-                MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED_INITIATOR,
-                new Object[]{UserUtils.userLink(friendship.getUserTwo())}
+        messageService.sendMessage(
+                new SendMessageContext()
+                        .chatId(friendship.getUserOne().getChatId())
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED_INITIATOR,
+                                new Object[]{UserUtils.userLink(friendship.getUserTwo())}
+                        ))
         );
-        messageService.editMessageByMessageCode(
-                callbackQuery.getMessage().getChatId(),
-                callbackQuery.getMessage().getMessageId(),
-                MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED,
-                inlineKeyboardService.goBackCallbackButton(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME)
+        messageService.editMessage(
+                EditMessageContext.from(callbackQuery)
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME))
         );
 
         return MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED;

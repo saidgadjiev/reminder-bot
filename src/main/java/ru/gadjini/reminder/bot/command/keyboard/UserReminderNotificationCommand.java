@@ -6,8 +6,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -39,9 +40,10 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
     @Override
     public boolean processMessage(Message message, String text) {
         messageService.sendMessage(
-                message.getChatId(),
-                localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION),
-                replyKeyboardService.getUserReminderNotificationSettingsKeyboard()
+                new SendMessageContext()
+                        .chatId(message.getChatId())
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION))
+                        .replyKeyboard(replyKeyboardService.getUserReminderNotificationSettingsKeyboard())
         );
         return true;
     }
@@ -59,9 +61,10 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
     @Override
     public void restore(long chatId) {
         messageService.sendMessage(
-                chatId,
-                localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION),
-                replyKeyboardService.getUserReminderNotificationSettingsKeyboard()
+                new SendMessageContext()
+                        .chatId(chatId)
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION))
+                        .replyKeyboard(replyKeyboardService.getUserReminderNotificationSettingsKeyboard())
         );
     }
 

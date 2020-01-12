@@ -10,6 +10,7 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.CallbackRequest;
+import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
@@ -66,10 +67,9 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         messageService.editMessage(
-                callbackQuery.getMessage().getChatId(),
-                callbackQuery.getMessage().getMessageId(),
-                localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_NAME),
-                inlineKeyboardService.goBackCallbackButton(CommandNames.FRIEND_DETAILS_COMMAND_NAME, false, requestParams)
+                EditMessageContext.from(callbackQuery)
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_NAME))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.FRIEND_DETAILS_COMMAND_NAME, false, requestParams))
         );
 
         return null;
@@ -83,10 +83,11 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
 
         commandNavigator.silentPop(message.getChatId());
         messageService.editMessage(
-                message.getChatId(),
-                callbackRequest.getMessageId(),
-                friendshipMessageBuilder.getFriendDetails(friend),
-                inlineKeyboardService.getFriendKeyboard(friend.getUserId())
+                new EditMessageContext()
+                        .chatId(message.getChatId())
+                        .messageId(callbackRequest.getMessageId())
+                        .text(friendshipMessageBuilder.getFriendDetails(friend))
+                        .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friend.getUserId()))
         );
     }
 

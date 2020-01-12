@@ -7,6 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.domain.RemindMessage;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.CustomRemindResult;
+import ru.gadjini.reminder.model.EditMessageContext;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.RemindMessageService;
@@ -57,19 +59,21 @@ public class ReminderNotificationMessageSender {
         }
 
         InlineKeyboardMarkup keyboard = inlineKeyboardService.getRemindKeyboard(reminder.getId(), itsTime, reminder.isRepeatable(), reminder.getRemindAt().hasTime());
-        messageService.sendMessage(reminder.getReceiver().getChatId(), message, keyboard, msg -> {
-            remindMessageService.create(reminder.getId(), msg.getMessageId());
-        });
+        messageService.sendMessage(
+                new SendMessageContext().chatId(reminder.getReceiver().getChatId()).text(message).replyKeyboard(keyboard),
+                msg -> remindMessageService.create(reminder.getId(), msg.getMessageId())
+        );
     }
 
     public void sendCustomRemindCreatedFromReminderTimeDetails(long chatId, int messageId, CustomRemindResult customRemindResult, ReplyKeyboardMarkup replyKeyboardMarkup) {
         String text = reminderNotificationMessageBuilder.getReminderTimeMessage(customRemindResult.getReminderNotification());
 
         messageService.editMessage(
-                chatId,
-                messageId,
-                text,
-                inlineKeyboardService.getReminderTimeKeyboard(customRemindResult.getReminderNotification().getId(), customRemindResult.getReminderNotification().getReminderId())
+                new EditMessageContext()
+                        .chatId(chatId)
+                        .messageId(messageId)
+                        .text(text)
+                        .replyKeyboard(inlineKeyboardService.getReminderTimeKeyboard(customRemindResult.getReminderNotification().getId(), customRemindResult.getReminderNotification().getReminderId()))
         );
     }
 
@@ -77,14 +81,15 @@ public class ReminderNotificationMessageSender {
         String text = reminderMessageBuilder.getReminderMessage(customRemindResult.getReminderNotification().getReminder());
 
         messageService.editMessage(
-                chatId,
-                messageId,
-                text + "\n\n" + reminderMessageBuilder.getCustomRemindText(customRemindResult),
-                inlineKeyboardService.getReceiverReminderKeyboard(
-                        customRemindResult.getReminderNotification().getReminderId(),
-                        customRemindResult.getReminderNotification().getReminder().isRepeatable(),
-                        customRemindResult.getReminderNotification().getReminder().getRemindAt().hasTime()
-                )
+                new EditMessageContext()
+                        .chatId(chatId)
+                        .messageId(messageId)
+                        .text(text + "\n\n" + reminderMessageBuilder.getCustomRemindText(customRemindResult))
+                        .replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(
+                                customRemindResult.getReminderNotification().getReminderId(),
+                                customRemindResult.getReminderNotification().getReminder().isRepeatable(),
+                                customRemindResult.getReminderNotification().getReminder().getRemindAt().hasTime()
+                        ))
         );
     }
 }

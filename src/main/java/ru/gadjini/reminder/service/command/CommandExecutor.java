@@ -11,6 +11,8 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.MyBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.model.AnswerCallbackContext;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
 import java.util.Collection;
@@ -32,12 +34,15 @@ public class CommandExecutor {
 
     private MessageService messageService;
 
+    private LocalisationService localisationService;
+
     @Autowired
     public CommandExecutor(CommandNavigator commandNavigator, CommandParser commandParser,
-                           MessageService messageService) {
+                           MessageService messageService, LocalisationService localisationService) {
         this.commandNavigator = commandNavigator;
         this.commandParser = commandParser;
         this.messageService = messageService;
+        this.localisationService = localisationService;
     }
 
     @Autowired
@@ -106,7 +111,7 @@ public class CommandExecutor {
         sendAction(callbackQuery.getMessage().getChatId(), botCommand);
         String callbackAnswer = botCommand.processMessage(callbackQuery, parseResult.getRequestParams());
         if (StringUtils.isNotBlank(callbackAnswer)) {
-            messageService.sendAnswerCallbackQueryByMessageCode(callbackQuery.getId(), callbackAnswer);
+            messageService.sendAnswerCallbackQuery(new AnswerCallbackContext().queryId(callbackQuery.getId()).text(localisationService.getMessage(callbackAnswer)));
         }
 
         if (botCommand instanceof NavigableBotCommand) {

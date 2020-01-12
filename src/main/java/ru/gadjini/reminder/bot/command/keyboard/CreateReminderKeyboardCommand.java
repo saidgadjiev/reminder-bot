@@ -14,6 +14,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.exception.UserException;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
@@ -84,9 +85,10 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
             TgUser receiver = extractReceiverResult.getReceiver();
             stateService.setState(message.getChatId(), receiver);
             messageService.sendMessage(
-                    message.getChatId(),
-                    friendshipMessageBuilder.getFriendDetailsWithFooterCode(receiver, MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT),
-                    replyKeyboardService.goBackCommand()
+                    new SendMessageContext()
+                            .chatId(message.getChatId())
+                            .text(friendshipMessageBuilder.getFriendDetailsWithFooterCode(receiver, MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT))
+                            .replyKeyboard(replyKeyboardService.goBackCommand())
             );
             return true;
         } else {
@@ -107,7 +109,12 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
             } catch (UserException ex) {
                 LOGGER.error(ex.getMessage());
                 stateService.setState(message.getChatId(), receiver);
-                messageService.sendMessage(message.getChatId(), friendshipMessageBuilder.getFriendDetails(receiver, ex.getMessage()), replyKeyboardService.goBackCommand());
+                messageService.sendMessage(
+                        new SendMessageContext()
+                                .chatId(message.getChatId())
+                                .text(friendshipMessageBuilder.getFriendDetails(receiver, ex.getMessage()))
+                                .replyKeyboard(replyKeyboardService.goBackCommand())
+                );
 
                 return true;
             }

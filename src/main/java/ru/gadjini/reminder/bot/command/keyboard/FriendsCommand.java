@@ -6,9 +6,11 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.model.EditMessageContext;
+import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
@@ -53,9 +55,10 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
         List<TgUser> friends = friendshipService.getFriends(message.getFrom().getId());
 
         messageService.sendMessage(
-                message.getChatId(),
-                friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null),
-                inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.FRIEND_DETAILS_COMMAND_NAME)
+                new SendMessageContext()
+                        .chatId(message.getChatId())
+                        .text(friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null))
+                        .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.FRIEND_DETAILS_COMMAND_NAME))
         );
 
         return false;
@@ -71,10 +74,11 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
         List<TgUser> friends = friendshipService.getFriends(tgMessage.getUser().getId());
 
         messageService.editMessage(
-                tgMessage.getChatId(),
-                tgMessage.getMessageId(),
-                friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null),
-                inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.FRIEND_DETAILS_COMMAND_NAME)
+                new EditMessageContext()
+                        .chatId(tgMessage.getChatId())
+                        .messageId(tgMessage.getMessageId())
+                        .text(friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null))
+                        .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.FRIEND_DETAILS_COMMAND_NAME))
         );
     }
 }

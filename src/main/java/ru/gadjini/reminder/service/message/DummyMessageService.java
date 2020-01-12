@@ -8,6 +8,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.configuration.BotConfiguration;
+import ru.gadjini.reminder.model.AnswerCallbackContext;
+import ru.gadjini.reminder.model.EditMessageContext;
+import ru.gadjini.reminder.model.SendMessageContext;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -37,64 +40,27 @@ public class DummyMessageService implements MessageService {
     }
 
     @Override
-    public void sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard, Consumer<Message> callback) {
+    public void sendMessage(SendMessageContext messageContext, Consumer<Message> callback) {
         callback.accept(dummyMessage);
     }
 
     @Override
-    public void sendMessage(long chatId, String message, ReplyKeyboard replyKeyboard) {
-    }
-
-    @Override
-    public void sendMessage(long chatId, String message) {
-    }
-
-    @Override
-    public void sendMessageByCode(long chatId, String messageCode) {
+    public void sendMessage(SendMessageContext messageContext) {
 
     }
 
     @Override
-    public void sendMessageByCode(long chatId, String messageCode, ReplyKeyboard replyKeyboard) {
+    public void sendAnswerCallbackQuery(AnswerCallbackContext callbackContext) {
 
     }
 
     @Override
-    public void sendMessageByCode(long chatId, String messageCode, Object[] args) {
-
-    }
-
-    @Override
-    public void sendMessageByCode(long chatId, String messageCode, Object[] args, ReplyKeyboard replyKeyboard) {
-    }
-
-    @Override
-    public void sendAnswerCallbackQuery(String callbackQueryId, String text) {
-
-    }
-
-    @Override
-    public void editMessage(long chatId, int messageId, String text, InlineKeyboardMarkup replyKeyboard) {
-
-    }
-
-    @Override
-    public void editMessage(long chatId, int messageId, String text) {
+    public void editMessage(EditMessageContext messageContext) {
 
     }
 
     @Override
     public void editReplyKeyboard(long chatId, int messageId, InlineKeyboardMarkup replyKeyboard) {
-
-    }
-
-    @Override
-    public void editMessageByMessageCode(long chatId, int messageId, String messageCode, InlineKeyboardMarkup keyboardMarkup) {
-
-    }
-
-    @Override
-    public void sendAnswerCallbackQueryByMessageCode(String callbackQueryId, String messageCode) {
 
     }
 
