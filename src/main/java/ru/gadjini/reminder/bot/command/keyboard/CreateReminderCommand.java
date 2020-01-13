@@ -7,7 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.SendMessageContext;
-import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.suggestion.SuggestionService;
@@ -29,7 +30,7 @@ public class CreateReminderCommand implements KeyboardBotCommand {
 
     @Autowired
     public CreateReminderCommand(LocalisationService localisationService, SuggestionService suggestionService,
-                                 ReplyKeyboardService replyKeyboardService, MessageService messageService) {
+                                 CurrReplyKeyboard replyKeyboardService, MessageService messageService) {
         this.name = localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME);
         this.localisationService = localisationService;
         this.suggestionService = suggestionService;
@@ -45,7 +46,7 @@ public class CreateReminderCommand implements KeyboardBotCommand {
     @Override
     public boolean processMessage(Message message, String text) {
         List<String> suggestions = suggestionService.getSuggestions(message.getFrom().getId());
-        ReplyKeyboardMarkup suggestionsKeyboard = replyKeyboardService.getSuggestionsKeyboard(suggestions);
+        ReplyKeyboardMarkup suggestionsKeyboard = replyKeyboardService.getSuggestionsKeyboard(message.getChatId(), suggestions);
 
         messageService.sendMessage(
                 new SendMessageContext()

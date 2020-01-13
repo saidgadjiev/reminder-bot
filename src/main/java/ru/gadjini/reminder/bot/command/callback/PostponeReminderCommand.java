@@ -22,7 +22,8 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
-import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
@@ -51,7 +52,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
     public PostponeReminderCommand(CommandStateService stateService,
                                    MessageService messageService,
                                    InlineKeyboardService inlineKeyboardService,
-                                   ReplyKeyboardService replyKeyboardService,
+                                   CurrReplyKeyboard replyKeyboardService,
                                    ReminderRequestService reminderRequestService,
                                    ReminderMessageSender reminderMessageSender,
                                    CommandNavigator commandNavigator,
@@ -86,7 +87,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
                 new SendMessageContext()
                         .chatId(callbackQuery.getMessage().getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_TIME))
-                        .replyKeyboard(replyKeyboardService.postponeTimeKeyboard())
+                        .replyKeyboard(replyKeyboardService.postponeTimeKeyboard(callbackQuery.getMessage().getChatId()))
         );
 
         return MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION;
@@ -134,7 +135,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
                     new SendMessageContext()
                             .chatId(message.getChatId())
                             .text(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_MESSAGE))
-                            .replyKeyboard(replyKeyboardService.getPostponeMessagesKeyboard())
+                            .replyKeyboard(replyKeyboardService.getPostponeMessagesKeyboard(message.getChatId()))
             );
         } else {
             postpone(message.getChatId(), null, postponeCommandState);

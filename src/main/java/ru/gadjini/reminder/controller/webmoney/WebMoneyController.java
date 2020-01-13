@@ -18,7 +18,8 @@ import ru.gadjini.reminder.model.WebMoneyPayment;
 import ru.gadjini.reminder.properties.AppProperties;
 import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.service.TgUserService;
-import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.payment.PaymentService;
@@ -58,7 +59,7 @@ public class WebMoneyController {
     private AppProperties appProperties;
 
     @Autowired
-    public WebMoneyController(ReplyKeyboardService replyKeyboardService, PaymentService paymentService,
+    public WebMoneyController(CurrReplyKeyboard replyKeyboardService, PaymentService paymentService,
                               MessageService messageService, TgUserService userService,
                               LocalisationService localisationService, BotProperties botProperties, AppProperties appProperties) {
         this.replyKeyboardService = replyKeyboardService;
@@ -194,7 +195,7 @@ public class WebMoneyController {
                     new SendMessageContext()
                             .chatId(chatId)
                             .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}))
-                            .replyKeyboard(replyKeyboardService.getMainMenu((int) chatId))
+                            .replyKeyboard(replyKeyboardService.getMainMenu(chatId, (int) chatId))
             );
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);

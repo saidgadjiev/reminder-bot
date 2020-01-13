@@ -16,7 +16,8 @@ import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
-import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
@@ -44,7 +45,7 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
     public CreateFriendReminderCallbackCommand(CommandStateService stateService,
                                                ReminderRequestService reminderService,
                                                MessageService messageService,
-                                               ReplyKeyboardService replyKeyboardService,
+                                               CurrReplyKeyboard replyKeyboardService,
                                                CommandNavigator commandNavigator,
                                                ReminderMessageSender reminderMessageSender, LocalisationService localisationService) {
         this.stateService = stateService;
@@ -68,7 +69,7 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
                 new SendMessageContext()
                         .chatId(callbackQuery.getMessage().getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT))
-                        .replyKeyboard(replyKeyboardService.goBackCommand())
+                        .replyKeyboard(replyKeyboardService.goBackCommand(callbackQuery.getMessage().getChatId()))
         );
 
         return MessagesProperties.MESSAGE_CREATE_REMINDER_CALLBACK_ANSWER;

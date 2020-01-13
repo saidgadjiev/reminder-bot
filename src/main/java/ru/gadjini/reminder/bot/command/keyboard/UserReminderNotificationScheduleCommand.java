@@ -11,7 +11,8 @@ import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
-import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
@@ -46,7 +47,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
                                                    UserReminderNotificationService userReminderNotificationService,
                                                    ReminderNotificationMessageBuilder messageBuilder,
                                                    MessageService messageService, InlineKeyboardService inlineKeyboardService,
-                                                   ReplyKeyboardService replyKeyboardService, CommandStateService stateService,
+                                                   CurrReplyKeyboard replyKeyboardService, CommandStateService stateService,
                                                    LocalisationService localisationService) {
         this.stateService = stateService;
         this.notificationType = notificationType;
@@ -80,7 +81,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
                 new SendMessageContext()
                         .chatId(message.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_EDIT_USER_REMINDER_NOTIFICATION))
-                        .replyKeyboard(replyKeyboardService.goBackCommand())
+                        .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
         );
         return true;
     }

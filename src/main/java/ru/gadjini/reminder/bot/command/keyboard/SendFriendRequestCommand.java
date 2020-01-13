@@ -16,7 +16,8 @@ import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
-import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
@@ -43,7 +44,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
                                     FriendshipService friendshipService,
                                     MessageService messageService,
                                     InlineKeyboardService inlineKeyboardService,
-                                    ReplyKeyboardService replyKeyboardService,
+                                    CurrReplyKeyboard replyKeyboardService,
                                     CommandNavigator commandNavigator) {
         this.localisationService = localisationService;
         this.friendshipService = friendshipService;
@@ -70,7 +71,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
                 new SendMessageContext()
                         .chatId(message.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME))
-                        .replyKeyboard(replyKeyboardService.goBackCommand())
+                        .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
         );
         return true;
     }

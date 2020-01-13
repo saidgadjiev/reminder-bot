@@ -1,6 +1,7 @@
-package ru.gadjini.reminder.service.keyboard;
+package ru.gadjini.reminder.service.keyboard.reply;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -14,16 +15,18 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class ReplyKeyboardService {
+@Qualifier("keyboard")
+public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
 
     private LocalisationService localisationService;
 
     @Autowired
-    public ReplyKeyboardService(LocalisationService localisationService) {
+    public ReplyKeyboardServiceImpl(LocalisationService localisationService) {
         this.localisationService = localisationService;
     }
 
-    public ReplyKeyboardMarkup getSuggestionsKeyboard(List<String> suggestions) {
+    @Override
+    public ReplyKeyboardMarkup getSuggestionsKeyboard(long chatId, List<String> suggestions) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 
         if (suggestions.isEmpty()) {
@@ -37,7 +40,8 @@ public class ReplyKeyboardService {
         return replyKeyboardMarkup;
     }
 
-    public ReplyKeyboardMarkup getFriendRequestsKeyboard() {
+    @Override
+    public ReplyKeyboardMarkup getFriendRequestsKeyboard(long chatId) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
@@ -48,7 +52,8 @@ public class ReplyKeyboardService {
         return replyKeyboardMarkup;
     }
 
-    public ReplyKeyboardMarkup getUserSettingsKeyboard() {
+    @Override
+    public ReplyKeyboardMarkup getUserSettingsKeyboard(long chatId) {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
@@ -61,11 +66,13 @@ public class ReplyKeyboardService {
         return replyKeyboardMarkup;
     }
 
-    public ReplyKeyboard removeKeyboard() {
+    @Override
+    public ReplyKeyboard removeKeyboard(long chatId) {
         return new ReplyKeyboardRemove();
     }
 
-    public ReplyKeyboardMarkup getUserReminderNotificationSettingsKeyboard() {
+    @Override
+    public ReplyKeyboardMarkup getUserReminderNotificationSettingsKeyboard(long chatId) {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
@@ -76,7 +83,8 @@ public class ReplyKeyboardService {
         return replyKeyboardMarkup;
     }
 
-    public ReplyKeyboardMarkup getPostponeMessagesKeyboard() {
+    @Override
+    public ReplyKeyboardMarkup getPostponeMessagesKeyboard(long chatId) {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
@@ -86,7 +94,8 @@ public class ReplyKeyboardService {
         return replyKeyboardMarkup;
     }
 
-    public ReplyKeyboardMarkup getMainMenu(int userId) {
+    @Override
+    public ReplyKeyboardMarkup getMainMenu(long chatId, int userId) {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
@@ -104,7 +113,8 @@ public class ReplyKeyboardService {
         return replyKeyboardMarkup;
     }
 
-    public ReplyKeyboardMarkup goBackCommand() {
+    @Override
+    public ReplyKeyboardMarkup goBackCommand(long chatId) {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
@@ -113,7 +123,8 @@ public class ReplyKeyboardService {
         return replyKeyboardMarkup;
     }
 
-    public ReplyKeyboardMarkup postponeTimeKeyboard() {
+    @Override
+    public ReplyKeyboardMarkup postponeTimeKeyboard(long chatId) {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();

@@ -22,7 +22,8 @@ import ru.gadjini.reminder.properties.WebHookProperties;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
-import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
@@ -49,7 +50,7 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
                                                                       ReminderNotificationMessageBuilder messageBuilder,
                                                                       MessageService messageService,
                                                                       InlineKeyboardService inlineKeyboardService,
-                                                                      ReplyKeyboardService replyKeyboardService
+                                                                      CurrReplyKeyboard replyKeyboardService
     ) {
         return new UserReminderNotificationScheduleCommand(
                 localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME), CommandNames.USER_REMINDER_NOTIFICATION_WITH_TIME_HISTORY_NAME, UserReminderNotification.NotificationType.WITH_TIME, userReminderNotificationService, messageBuilder, messageService, inlineKeyboardService, replyKeyboardService, stateService,
@@ -63,7 +64,7 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
                                                                          ReminderNotificationMessageBuilder messageBuilder,
                                                                          MessageService messageService,
                                                                          InlineKeyboardService inlineKeyboardService,
-                                                                         ReplyKeyboardService replyKeyboardService
+                                                                         CurrReplyKeyboard replyKeyboardService
     ) {
         return new UserReminderNotificationScheduleCommand(
                 localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME), CommandNames.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_HISTORY_NAME, UserReminderNotification.NotificationType.WITHOUT_TIME, userReminderNotificationService, messageBuilder, messageService, inlineKeyboardService, replyKeyboardService, stateService,

@@ -60,6 +60,12 @@ public class CommandExecutor {
         botCommands.forEach(botCommand -> botCommandMap.put(botCommand.getCommandIdentifier(), botCommand));
     }
 
+    public boolean isTextCommand(String text) {
+        return keyboardBotCommands
+                .stream()
+                .anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(text) && keyboardBotCommand.isTextCommand());
+    }
+
     public BotCommand getBotCommand(String startCommandName) {
         return botCommandMap.get(startCommandName);
     }
@@ -67,15 +73,11 @@ public class CommandExecutor {
     public boolean isKeyboardCommand(String text) {
         return keyboardBotCommands
                 .stream()
-                .anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(text));
+                .anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(text) && !keyboardBotCommand.isTextCommand());
     }
 
-    public boolean isCommand(Message message, String text) {
-        if (message.isCommand()) {
-            return true;
-        }
-
-        return isKeyboardCommand(text);
+    public boolean isBotCommand(Message message) {
+        return message.isCommand();
     }
 
     public void processNonCommandUpdate(Message message, String text) {
@@ -93,14 +95,6 @@ public class CommandExecutor {
         if (navigableBotCommand != null && navigableBotCommand.accept(editedMessage)) {
             sendNonCommandEditAction(editedMessage.getChatId(), navigableBotCommand);
             navigableBotCommand.processNonCommandEditedMessage(editedMessage, text);
-        }
-    }
-
-    public boolean executeCommand(Message message, String text) {
-        if (message.isCommand()) {
-            return executeBotCommand(message);
-        } else {
-            return executeKeyBoardCommand(message, text);
         }
     }
 
@@ -129,7 +123,7 @@ public class CommandExecutor {
         botCommand.processEditedMessage(message, text);
     }
 
-    private boolean executeBotCommand(Message message) {
+    public boolean executeBotCommand(Message message) {
         CommandParser.CommandParseResult commandParseResult = commandParser.parseBotCommand(message);
         BotCommand botCommand = botCommandMap.get(commandParseResult.getCommandName());
 
@@ -147,7 +141,7 @@ public class CommandExecutor {
         return false;
     }
 
-    private boolean executeKeyBoardCommand(Message message, String text) {
+    public void executeKeyBoardCommand(Message message, String text) {
         KeyboardBotCommand botCommand = keyboardBotCommands.stream()
                 .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(text))
                 .findFirst()
@@ -159,8 +153,6 @@ public class CommandExecutor {
         if (pushToHistory) {
             commandNavigator.push(message.getChatId(), (NavigableBotCommand) botCommand);
         }
-
-        return true;
     }
 
     private void sendAction(long chatId, MyBotCommand botCommand) {

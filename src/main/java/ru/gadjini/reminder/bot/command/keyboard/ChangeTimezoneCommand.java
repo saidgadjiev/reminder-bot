@@ -13,7 +13,8 @@ import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.TimezoneService;
 import ru.gadjini.reminder.service.command.CommandNavigator;
-import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.time.DateTimeFormats;
@@ -46,7 +47,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                                  TgUserService tgUserService,
                                  TimezoneService timezoneService,
                                  CommandNavigator commandNavigator,
-                                 ReplyKeyboardService replyKeyboardService, LocalisationService localisationService1) {
+                                 CurrReplyKeyboard replyKeyboardService, LocalisationService localisationService1) {
         name = localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME);
         this.messageService = messageService;
         this.tgUserService = tgUserService;
@@ -71,7 +72,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                         .text(localisationService.getMessage(MessagesProperties.CURRENT_TIMEZONE, new Object[]{
                                 zoneId.getDisplayName(TextStyle.FULL, Locale.getDefault()),
                                 DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(ZonedDateTime.now(zoneId))
-                        })).replyKeyboard(replyKeyboardService.goBackCommand())
+                        })).replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
         );
 
         return true;

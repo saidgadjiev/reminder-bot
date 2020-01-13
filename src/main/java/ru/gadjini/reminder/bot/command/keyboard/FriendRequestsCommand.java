@@ -8,7 +8,8 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.SendMessageContext;
-import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
@@ -24,7 +25,7 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
     private String name;
 
     @Autowired
-    public FriendRequestsCommand(ReplyKeyboardService replyKeyboardService, MessageService messageService, LocalisationService localisationService) {
+    public FriendRequestsCommand(CurrReplyKeyboard replyKeyboardService, MessageService messageService, LocalisationService localisationService) {
         this.replyKeyboardService = replyKeyboardService;
         this.messageService = messageService;
         this.name = localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME);
@@ -42,7 +43,7 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
                 new SendMessageContext()
                         .chatId(message.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUESTS))
-                        .replyKeyboard(replyKeyboardService.getFriendRequestsKeyboard())
+                        .replyKeyboard(replyKeyboardService.getFriendRequestsKeyboard(message.getChatId()))
         );
 
         return true;

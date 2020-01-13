@@ -19,7 +19,8 @@ import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
-import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
@@ -54,7 +55,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
     public CreateReminderKeyboardCommand(CommandStateService stateService, LocalisationService localisationService,
                                          FriendRequestExtractor friendRequestExtractor,
                                          ReminderRequestService reminderRequestService, MessageService messageService,
-                                         ReplyKeyboardService replyKeyboardService, CommandNavigator commandNavigator,
+                                         CurrReplyKeyboard replyKeyboardService, CommandNavigator commandNavigator,
                                          ReminderMessageSender reminderMessageSender, FriendshipMessageBuilder friendshipMessageBuilder) {
         this.stateService = stateService;
         this.forFriendStart = localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START).toLowerCase();
@@ -78,6 +79,11 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
     }
 
     @Override
+    public boolean isTextCommand() {
+        return true;
+    }
+
+    @Override
     public boolean processMessage(Message message, String text) {
         FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(message.getFrom().getId(), text, message.hasVoice());
 
@@ -88,7 +94,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                     new SendMessageContext()
                             .chatId(message.getChatId())
                             .text(friendshipMessageBuilder.getFriendDetailsWithFooterCode(receiver, MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT))
-                            .replyKeyboard(replyKeyboardService.goBackCommand())
+                            .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
             );
             return true;
         } else {
@@ -113,7 +119,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                         new SendMessageContext()
                                 .chatId(message.getChatId())
                                 .text(friendshipMessageBuilder.getFriendDetails(receiver, ex.getMessage()))
-                                .replyKeyboard(replyKeyboardService.goBackCommand())
+                                .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
                 );
 
                 return true;

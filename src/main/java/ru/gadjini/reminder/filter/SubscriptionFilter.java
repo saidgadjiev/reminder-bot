@@ -9,7 +9,8 @@ import ru.gadjini.reminder.domain.Subscription;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
-import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.subscription.PaymentMessageService;
@@ -38,7 +39,7 @@ public class SubscriptionFilter extends BaseBotFilter {
     @Autowired
     public SubscriptionFilter(MessageService messageService,
                               LocalisationService localisationService, SubscriptionService subscriptionService,
-                              PlanService planService, ReplyKeyboardService replyKeyboardService,
+                              PlanService planService, CurrReplyKeyboard replyKeyboardService,
                               InlineKeyboardService inlineKeyboardService, PaymentMessageService paymentMessageService) {
         this.messageService = messageService;
         this.localisationService = localisationService;
@@ -68,7 +69,7 @@ public class SubscriptionFilter extends BaseBotFilter {
             return true;
         }
         if (subscription.getEndDate().isBefore(LocalDate.now())) {
-            sendSubscriptionExpired(userId, chatId);
+            sendSubscriptionExpired(chatId, userId);
 
             return false;
         }
@@ -76,12 +77,12 @@ public class SubscriptionFilter extends BaseBotFilter {
         return true;
     }
 
-    private void sendSubscriptionExpired(int userId, long chatId) {
+    private void sendSubscriptionExpired(long chatId, int userId) {
         messageService.sendMessage(
                 new SendMessageContext()
                         .chatId(chatId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_EXPIRED))
-                        .replyKeyboard(replyKeyboardService.removeKeyboard())
+                        .replyKeyboard(replyKeyboardService.removeKeyboard(chatId))
         );
 
         Integer messageId = paymentMessageService.getMessageId(chatId);

@@ -9,7 +9,8 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.SendMessageContext;
-import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
+import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
@@ -25,7 +26,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
     private ReplyKeyboardService replyKeyboardService;
 
     @Autowired
-    public UserSettingsCommand(LocalisationService localisationService, MessageService messageService, ReplyKeyboardService replyKeyboardService) {
+    public UserSettingsCommand(LocalisationService localisationService, MessageService messageService, CurrReplyKeyboard replyKeyboardService) {
         this.name = localisationService.getMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME);
         this.localisationService = localisationService;
         this.messageService = messageService;
@@ -43,7 +44,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
                 new SendMessageContext()
                         .chatId(message.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_SETTINGS))
-                        .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard())
+                        .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(message.getChatId()))
         );
         return true;
     }
@@ -64,12 +65,12 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
                 new SendMessageContext()
                         .chatId(chatId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_SETTINGS))
-                        .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard())
+                        .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(chatId))
         );
     }
 
     @Override
     public ReplyKeyboardMarkup silentRestore(long chatId) {
-        return replyKeyboardService.getUserSettingsKeyboard();
+        return replyKeyboardService.getUserSettingsKeyboard(chatId);
     }
 }
