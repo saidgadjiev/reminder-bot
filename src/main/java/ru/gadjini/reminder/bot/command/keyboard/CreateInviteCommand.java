@@ -31,9 +31,11 @@ public class CreateInviteCommand implements KeyboardBotCommand {
 
     @Override
     public boolean processMessage(Message message, String text) {
-        String token = inviteService.createInvite();
+        if (message.getFrom().getId() == 171271164) {
+            String token = inviteService.createInvite();
 
-        messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(token));
+            messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(token));
+        }
 
         return false;
     }
