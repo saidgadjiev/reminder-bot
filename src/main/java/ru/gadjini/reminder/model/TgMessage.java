@@ -75,7 +75,7 @@ public class TgMessage {
         tgMessage.chatId = message.getChatId();
         tgMessage.messageId = message.getMessageId();
         tgMessage.user = message.getFrom();
-        tgMessage.text = message.getText().trim();
+        tgMessage.text = message.hasText() ? message.getText().trim() : "";
 
         return tgMessage;
     }
