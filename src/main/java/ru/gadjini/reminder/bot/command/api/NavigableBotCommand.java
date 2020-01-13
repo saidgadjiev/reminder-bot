@@ -15,7 +15,7 @@ public interface NavigableBotCommand extends MyBotCommand {
 
     }
 
-    default ReplyKeyboardMarkup silentRestore(long chatId) {
+    default ReplyKeyboardMarkup getKeyboard(long chatId) {
         throw new UnsupportedOperationException();
     }
 

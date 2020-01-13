@@ -70,7 +70,7 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
     }
 
     @Override
-    public ReplyKeyboardMarkup silentRestore(long chatId) {
+    public ReplyKeyboardMarkup getKeyboard(long chatId) {
         return replyKeyboardService.getUserReminderNotificationSettingsKeyboard(chatId);
     }
 }

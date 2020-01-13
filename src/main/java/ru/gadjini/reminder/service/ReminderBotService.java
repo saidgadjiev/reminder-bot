@@ -64,7 +64,7 @@ public class ReminderBotService {
     public void handleUpdate(Update update) {
         try {
             if (update.hasMessage()) {
-                if (restoreIfNeed(
+                if (restoreCommand(
                         update.getMessage().getChatId(),
                         update.getMessage().hasText() ? update.getMessage().getText().trim() : null
                 )) {
@@ -139,7 +139,7 @@ public class ReminderBotService {
         }
     }
 
-    private boolean restoreIfNeed(long chatId, String command) {
+    private boolean restoreCommand(long chatId, String command) {
         if (StringUtils.isNotBlank(command) && command.startsWith(BotCommand.COMMAND_INIT_CHARACTER + CommandNames.START_COMMAND_NAME)) {
             return false;
         }

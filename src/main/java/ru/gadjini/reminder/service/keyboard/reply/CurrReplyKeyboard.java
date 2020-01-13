@@ -23,58 +23,58 @@ public class CurrReplyKeyboard implements ReplyKeyboardService {
 
     @Override
     public ReplyKeyboardMarkup getSuggestionsKeyboard(long chatId, List<String> suggestions) {
-        return storeKeyboard(chatId, keyboardService.getSuggestionsKeyboard(chatId, suggestions));
+        return setCurrentKeyboard(chatId, keyboardService.getSuggestionsKeyboard(chatId, suggestions));
     }
 
     @Override
     public ReplyKeyboardMarkup getFriendRequestsKeyboard(long chatId) {
-        return storeKeyboard(chatId, keyboardService.getFriendRequestsKeyboard(chatId));
+        return setCurrentKeyboard(chatId, keyboardService.getFriendRequestsKeyboard(chatId));
     }
 
     @Override
     public ReplyKeyboardMarkup getUserSettingsKeyboard(long chatId) {
-        return storeKeyboard(chatId, keyboardService.getUserSettingsKeyboard(chatId));
+        return setCurrentKeyboard(chatId, keyboardService.getUserSettingsKeyboard(chatId));
     }
 
     @Override
     public ReplyKeyboard removeKeyboard(long chatId) {
         ReplyKeyboard replyKeyboard = keyboardService.removeKeyboard(chatId);
 
-        storeKeyboard(chatId, new ReplyKeyboardMarkup());
+        setCurrentKeyboard(chatId, new ReplyKeyboardMarkup());
 
         return replyKeyboard;
     }
 
     @Override
     public ReplyKeyboardMarkup getUserReminderNotificationSettingsKeyboard(long chatId) {
-        return storeKeyboard(chatId, keyboardService.getUserReminderNotificationSettingsKeyboard(chatId));
+        return setCurrentKeyboard(chatId, keyboardService.getUserReminderNotificationSettingsKeyboard(chatId));
     }
 
     @Override
     public ReplyKeyboardMarkup getPostponeMessagesKeyboard(long chatId) {
-        return storeKeyboard(chatId, keyboardService.getPostponeMessagesKeyboard(chatId));
+        return setCurrentKeyboard(chatId, keyboardService.getPostponeMessagesKeyboard(chatId));
     }
 
     @Override
     public ReplyKeyboardMarkup getMainMenu(long chatId, int userId) {
-        return storeKeyboard(chatId, keyboardService.getMainMenu(chatId, userId));
+        return setCurrentKeyboard(chatId, keyboardService.getMainMenu(chatId, userId));
     }
 
     @Override
     public ReplyKeyboardMarkup goBackCommand(long chatId) {
-        return storeKeyboard(chatId, keyboardService.goBackCommand(chatId));
+        return setCurrentKeyboard(chatId, keyboardService.goBackCommand(chatId));
     }
 
     @Override
     public ReplyKeyboardMarkup postponeTimeKeyboard(long chatId) {
-        return storeKeyboard(chatId, keyboardService.postponeTimeKeyboard(chatId));
+        return setCurrentKeyboard(chatId, keyboardService.postponeTimeKeyboard(chatId));
     }
 
     public ReplyKeyboardMarkup getCurrentReplyKeyboard(long chatId) {
         return replyKeyboardDao.get(chatId);
     }
 
-    private ReplyKeyboardMarkup storeKeyboard(long chatId, ReplyKeyboardMarkup replyKeyboardMarkup) {
+    public ReplyKeyboardMarkup setCurrentKeyboard(long chatId, ReplyKeyboardMarkup replyKeyboardMarkup) {
         replyKeyboardDao.store(chatId, replyKeyboardMarkup);
 
         return replyKeyboardMarkup;

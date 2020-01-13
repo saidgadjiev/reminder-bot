@@ -59,7 +59,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
     }
 
     @Override
-    public ReplyKeyboardMarkup silentRestore(long chatId) {
+    public ReplyKeyboardMarkup getKeyboard(long chatId) {
         return replyKeyboardService.getMainMenu(chatId, (int) chatId);
     }
 

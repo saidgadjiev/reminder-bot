@@ -47,7 +47,8 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                                  TgUserService tgUserService,
                                  TimezoneService timezoneService,
                                  CommandNavigator commandNavigator,
-                                 CurrReplyKeyboard replyKeyboardService, LocalisationService localisationService1) {
+                                 CurrReplyKeyboard replyKeyboardService,
+                                 LocalisationService localisationService1) {
         name = localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME);
         this.messageService = messageService;
         this.tgUserService = tgUserService;

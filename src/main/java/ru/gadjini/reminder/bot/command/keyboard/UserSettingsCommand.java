@@ -70,7 +70,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
     }
 
     @Override
-    public ReplyKeyboardMarkup silentRestore(long chatId) {
+    public ReplyKeyboardMarkup getKeyboard(long chatId) {
         return replyKeyboardService.getUserSettingsKeyboard(chatId);
     }
 }

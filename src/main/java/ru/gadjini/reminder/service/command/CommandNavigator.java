@@ -85,7 +85,7 @@ public class CommandNavigator {
 
         setCurrentCommand(chatId, parentCommand);
 
-        return parentCommand.silentRestore(chatId);
+        return parentCommand.getKeyboard(chatId);
     }
 
     public void zeroRestore(long chatId, NavigableBotCommand botCommand) {
