@@ -10,7 +10,8 @@ public enum Arg {
     RESTORE_KEYBOARD("f"),
     FRIEND_ID("g"),
     USER_REMINDER_NOTIFICATION_TYPE("h"),
-    PLAN_ID("i");
+    PLAN_ID("i"),
+    SAVED_QUERY_ID("j");
 
     private final String key;
 

@@ -4,9 +4,12 @@ import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.FriendSearchResult;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.parser.RequestParser;
+import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,10 +24,31 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
 
     private LocalisationService localisationService;
 
-    public FriendRequestExtractor(LocalisationService localisationService, FriendshipService friendshipService) {
+    private RequestParser requestParser;
+
+    public FriendRequestExtractor(LocalisationService localisationService, FriendshipService friendshipService, RequestParser requestParser) {
         this.forFriendStart = localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START).toLowerCase();
         this.friendshipService = friendshipService;
         this.localisationService = localisationService;
+        this.requestParser = requestParser;
+    }
+
+    @Override
+    public ReminderRequest extract(ReminderRequestContext context) {
+        if (context.getText().toLowerCase().startsWith(forFriendStart)) {
+            ExtractReceiverResult extractReceiverResult = extractReceiver(context.getUser().getId(), context.getText(), context.isVoice());
+
+            try {
+                ReminderRequest reminderRequest = requestParser.parseRequest(extractReceiverResult.text, extractReceiverResult.receiver.getZone());
+                reminderRequest.setReceiverId(extractReceiverResult.receiver.getUserId());
+
+                return reminderRequest;
+            } catch (ParseException ex) {
+                throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+            }
+        }
+
+        return super.extract(context);
     }
 
     public ExtractReceiverResult extractReceiver(int userId, String text, boolean voice) {

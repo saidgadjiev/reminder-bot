@@ -319,7 +319,7 @@ public class ReminderDao {
     private Reminder createByReceiverId(Reminder reminder) {
         jdbcTemplate.query("WITH r AS (\n" +
                         "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
-                        "                       note, message_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, receiver_id, creator_id\n" +
+                        "                       note, message_id, read) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, receiver_id, creator_id\n" +
                         ")\n" +
                         "SELECT r.id,\n" +
                         "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
@@ -338,7 +338,8 @@ public class ReminderDao {
                         new SqlParameterValue(Types.OTHER, reminder.getRepeatRemindAt() != null ? reminder.getRepeatRemindAt().sql() : null),
                         new SqlParameterValue(Types.OTHER, reminder.getRemindAt().sql()),
                         new SqlParameterValue(Types.VARCHAR, reminder.getNote()),
-                        new SqlParameterValue(Types.INTEGER, reminder.getMessageId())
+                        new SqlParameterValue(Types.INTEGER, reminder.getMessageId()),
+                        new SqlParameterValue(Types.BOOLEAN, reminder.isRead())
                 },
                 rs -> {
                     reminder.setId(rs.getInt(Reminder.ID));
@@ -355,7 +356,7 @@ public class ReminderDao {
         jdbcTemplate.query("\n" +
                         "WITH r AS (\n" +
                         "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, initial_remind_at,\n" +
-                        "                          note, message_id) SELECT ?, ?, user_id, ?, ?, ? FROM tg_user WHERE username = ? RETURNING id, receiver_id, creator_id\n" +
+                        "                          note, message_id, read) SELECT ?, ?, user_id, ?, ?, ?, ? FROM tg_user WHERE username = ? RETURNING id, receiver_id, creator_id\n" +
                         ")\n" +
                         "SELECT r.id,\n" +
                         "       r.receiver_id,\n" +
@@ -374,7 +375,8 @@ public class ReminderDao {
                         new SqlParameterValue(Types.OTHER, reminder.getRemindAt().sql()),
                         new SqlParameterValue(Types.VARCHAR, reminder.getReceiver().getUsername()),
                         new SqlParameterValue(Types.VARCHAR, reminder.getNote()),
-                        new SqlParameterValue(Types.INTEGER, reminder.getMessageId())
+                        new SqlParameterValue(Types.INTEGER, reminder.getMessageId()),
+                        new SqlParameterValue(Types.BOOLEAN, reminder.isRead())
                 },
                 rs -> {
                     reminder.setId(rs.getInt(Reminder.ID));

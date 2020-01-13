@@ -24,6 +24,16 @@ import java.util.Set;
 @Service
 public class ResultSetMapper {
 
+    public SavedQuery mapSavedQuery(ResultSet rs) throws SQLException {
+        SavedQuery savedQuery = new SavedQuery();
+
+        savedQuery.setId(rs.getInt(SavedQuery.ID));
+        savedQuery.setQuery(rs.getString(SavedQuery.QUERY));
+        savedQuery.setUserId(rs.getInt(SavedQuery.USER_ID));
+
+        return savedQuery;
+    }
+
     public TgUser mapUser(ResultSet resultSet) throws SQLException {
         TgUser tgUser = new TgUser();
 
@@ -77,6 +87,7 @@ public class ResultSetMapper {
         reminder.setMaxSeries(rs.getInt(Reminder.MAX_SERIES));
         reminder.setInactive(rs.getBoolean(Reminder.INACTIVE));
         reminder.setCountSeries(rs.getBoolean(Reminder.COUNT_SERIES));
+        reminder.setRead(rs.getBoolean(Reminder.READ));
         Timestamp completedAt = rs.getTimestamp(Reminder.COMPLETED_AT);
         if (completedAt != null) {
             reminder.setCompletedAt(ZonedDateTime.of(completedAt.toLocalDateTime(), ZoneOffset.UTC));

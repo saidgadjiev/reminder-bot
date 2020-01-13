@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS reminder
     completed_at      TIMESTAMP(0),
     current_series    INT                   DEFAULT 0,
     max_series        INT                   DEFAULT 0,
-    count_series      BOOLEAN      NOT NULL DEFAULT FALSE
+    count_series      BOOLEAN      NOT NULL DEFAULT FALSE,
+    read              BOOLEAN      NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS reminder_time

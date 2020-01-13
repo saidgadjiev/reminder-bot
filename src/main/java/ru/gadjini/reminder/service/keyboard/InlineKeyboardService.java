@@ -38,6 +38,28 @@ public class InlineKeyboardService {
         this.appProperties = appProperties;
     }
 
+    public InlineKeyboardMarkup getSavedQueriesKeyboard(List<Integer> queries) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
+
+        int i = 1;
+        List<List<Integer>> lists = Lists.partition(queries, 4);
+        for (List<Integer> list : lists) {
+            List<InlineKeyboardButton> row = new ArrayList<>();
+
+            for (int id : list) {
+                InlineKeyboardButton button = new InlineKeyboardButton();
+                button.setText(String.valueOf(i++));
+                button.setCallbackData(CommandNames.DELETE_SAVED_QUERY_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                        new RequestParams().add(Arg.SAVED_QUERY_ID.getKey(), id).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+                row.add(button);
+            }
+
+            inlineKeyboardMarkup.getKeyboard().add(row);
+        }
+
+        return inlineKeyboardMarkup;
+    }
+
     public InlineKeyboardMarkup getPaymentKeyboard(int userId, int planId) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
@@ -181,31 +203,34 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getRemindKeyboard(int reminderId, boolean itsTime, boolean repeatable, boolean hasTime) {
-        InlineKeyboardMarkup inlineKeyboardMarkup = getReceiverReminderKeyboard(reminderId, repeatable, hasTime);
+    public InlineKeyboardMarkup getRemindKeyboard(Reminder reminder) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = getReceiverReminderKeyboard(reminder);
 
-        if (!itsTime) {
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.okButton(reminderId)));
+        if (!reminder.getRemindAt().hasTime()) {
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.okButton(reminder.getId())));
         }
 
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getReceiverReminderKeyboard(int reminderId, boolean repeatable, boolean hasTime) {
+    public InlineKeyboardMarkup getReceiverReminderKeyboard(Reminder reminder) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
-        if (repeatable) {
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME), buttonFactory.cancelReminderButton(reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.skipRepeatReminderButton(reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME), buttonFactory.stopRepeatReminderButton(reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
+        if (reminder.isRepeatable()) {
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME), buttonFactory.cancelReminderButton(reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.skipRepeatReminderButton(reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME), buttonFactory.stopRepeatReminderButton(reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
         } else {
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME), buttonFactory.cancelReminderButton(reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME), buttonFactory.cancelReminderButton(reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
             List<InlineKeyboardButton> keyboardButtons = new ArrayList<>();
-            keyboardButtons.add(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME));
-            if (hasTime) {
-                keyboardButtons.add(buttonFactory.postponeReminderButton(reminderId, CommandNames.RECEIVER_REMINDER_COMMAND_NAME));
+            keyboardButtons.add(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME));
+            if (reminder.getRemindAt().hasTime()) {
+                keyboardButtons.add(buttonFactory.postponeReminderButton(reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME));
             }
             inlineKeyboardMarkup.getKeyboard().add(keyboardButtons);
+        }
+        if (reminder.isNotMySelf() && reminder.isUnread()) {
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.readButton(reminder.getId())));
         }
 
         return inlineKeyboardMarkup;

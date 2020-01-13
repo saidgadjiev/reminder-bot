@@ -3,6 +3,7 @@ package ru.gadjini.reminder.service.reminder;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Field;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -24,8 +25,6 @@ import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestExtractor;
-import ru.gadjini.reminder.service.suggestion.SuggestionService;
-import ru.gadjini.reminder.service.suggestion.SuggestionTextBuilder;
 import ru.gadjini.reminder.service.validation.CreateReminderValidator;
 import ru.gadjini.reminder.service.validation.ValidationEvent;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
@@ -53,21 +52,15 @@ public class ReminderRequestService {
 
     private ReminderRequestExtractor requestExtractor;
 
-    private SuggestionService suggestionService;
-
-    private SuggestionTextBuilder suggestionTextBuilder;
-
     @Autowired
     public ReminderRequestService(RequestParser requestParser, LocalisationService localisationService,
                                   RepeatReminderService repeatReminderService,
-                                  ReminderRequestExtractor requestExtractor,
-                                  SuggestionService suggestionService, SuggestionTextBuilder suggestionTextBuilder) {
+                                  @Qualifier("chain") ReminderRequestExtractor requestExtractor
+    ) {
         this.requestParser = requestParser;
         this.localisationService = localisationService;
         this.repeatReminderService = repeatReminderService;
         this.requestExtractor = requestExtractor;
-        this.suggestionService = suggestionService;
-        this.suggestionTextBuilder = suggestionTextBuilder;
     }
 
     @Autowired
@@ -85,12 +78,8 @@ public class ReminderRequestService {
         reminderRequest.setMessageId(context.getMessageId());
 
         ((CreateReminderValidator) validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER)).validate(context.getUser(), reminderRequest);
-        Reminder reminder = createReminder(context.getUser(), reminderRequest);
 
-        String suggestion = suggestionTextBuilder.getSuggestionText(reminder, context);
-        suggestionService.addSuggestion(reminder.getCreatorId(), suggestion);
-
-        return reminder;
+        return createReminder(context.getUser(), reminderRequest);
     }
 
     @Transactional
@@ -317,16 +306,19 @@ public class ReminderRequestService {
             TgUser receiver = new TgUser();
             receiver.setUsername(reminderRequest.getReceiverName());
             reminder.setReceiver(receiver);
+            reminder.setRead(false);
         } else if (reminderRequest.getReceiverId() != null) {
             TgUser receiver = new TgUser();
             receiver.setUserId(reminderRequest.getReceiverId());
             reminder.setReceiver(receiver);
             reminder.setReceiverId(reminderRequest.getReceiverId());
+            reminder.setRead(false);
         } else {
             TgUser receiver = new TgUser();
             receiver.setUserId(reminder.getCreatorId());
             reminder.setReceiver(receiver);
             reminder.setReceiverId(reminder.getCreatorId());
+            reminder.setRead(true);
         }
         reminder.getReceiver().setZone(reminderRequest.getZone());
         setTime(reminder, reminderRequest.getTime());

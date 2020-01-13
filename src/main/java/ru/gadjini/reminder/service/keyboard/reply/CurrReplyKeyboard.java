@@ -22,8 +22,8 @@ public class CurrReplyKeyboard implements ReplyKeyboardService {
     }
 
     @Override
-    public ReplyKeyboardMarkup getSuggestionsKeyboard(long chatId, List<String> suggestions) {
-        return setCurrentKeyboard(chatId, keyboardService.getSuggestionsKeyboard(chatId, suggestions));
+    public ReplyKeyboardMarkup getSavedQueriesKeyboard(long chatId, List<String> queries) {
+        return setCurrentKeyboard(chatId, keyboardService.getSavedQueriesKeyboard(chatId, queries));
     }
 
     @Override

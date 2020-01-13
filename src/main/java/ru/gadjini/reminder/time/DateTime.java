@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.postgresql.util.PGobject;
+import ru.gadjini.reminder.util.TimeUtils;
 
 import java.sql.SQLException;
 import java.time.*;
@@ -143,7 +144,7 @@ public class DateTime {
     }
 
     public static DateTime now(ZoneId zoneId) {
-        return of(ZonedDateTime.now(zoneId));
+        return of(TimeUtils.now(zoneId));
     }
 
     public DateTime withZoneSameInstant(ZoneId targetZone) {

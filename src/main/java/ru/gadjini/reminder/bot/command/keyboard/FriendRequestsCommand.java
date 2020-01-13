@@ -33,7 +33,7 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
     }
 
     @Override
-    public boolean canHandle(String command) {
+    public boolean canHandle(long chatId, String command) {
         return name.equals(command);
     }
 

@@ -48,9 +48,12 @@ public class CommandNames {
     public static final String COMPLETE_REMINDER_COMMAND_NAME = "am";
     public static final String CHANGE_FRIEND_NAME_COMMAND_NAME = "an";
     public static final String CREATE_REMINDER_KEYBOARD_COMMAND_NAME = "ao";
+    public static final String READ_REMINDER_COMMAND_NAME = "ap";
     public static final String RETURN_REPEAT_REMINDER_COMMAND_NAME = "aq";
     public static final String DEACTIVATE_REMINDER_COMMAND_NAME = "ar";
     public static final String ACTIVATE_REMINDER_COMMAND_NAME = "as";
     public static final String ENABLE_COUNT_SERIES_COMMAND_NAME = "at";
     public static final String DISABLE_COUNT_SERIES_COMMAND_NAME = "au";
+    public static final String SAVED_QUERY_COMMAND_HISTORY_NAME = "av";
+    public static final String DELETE_SAVED_QUERY_COMMAND_NAME = "aw";
 }

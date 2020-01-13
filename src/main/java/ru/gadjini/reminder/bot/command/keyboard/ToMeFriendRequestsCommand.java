@@ -46,7 +46,7 @@ public class ToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableC
     }
 
     @Override
-    public boolean canHandle(String command) {
+    public boolean canHandle(long chatId, String command) {
         return name.equals(command);
     }
 

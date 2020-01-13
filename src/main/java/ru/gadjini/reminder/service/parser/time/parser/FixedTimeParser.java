@@ -9,6 +9,7 @@ import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import ru.gadjini.reminder.time.DateTime;
+import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.*;
 import java.time.format.TextStyle;
@@ -67,9 +68,11 @@ public class FixedTimeParser {
         } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             LocalTime time = consumeTime(lexems);
             fixedTime.time(time);
+        } else {
+            fixedTime.time(LocalTime.now(fixedTime.getZone()));
         }
 
-        ZonedDateTime now = ZonedDateTime.now(fixedTime.getZone());
+        ZonedDateTime now = TimeUtils.now(fixedTime.getZone());
         if (fixedTime.date().isBefore(now.toLocalDate())) {
             fixedTime.year(now.getYear() + 1);
         }

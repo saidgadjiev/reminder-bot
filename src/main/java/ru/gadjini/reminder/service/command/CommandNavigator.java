@@ -102,6 +102,16 @@ public class CommandNavigator {
         return navigableBotCommands.get(currCommand);
     }
 
+    public boolean isCurrentCommandThat(long chatId, String expectedCommand) {
+        String currCommand = navigatorDao.get(chatId);
+
+        if (currCommand == null) {
+            return false;
+        }
+
+        return currCommand.equals(expectedCommand);
+    }
+
     private void setCurrentCommand(long chatId, NavigableBotCommand navigableBotCommand) {
         navigatorDao.set(chatId, navigableBotCommand.getHistoryName());
     }

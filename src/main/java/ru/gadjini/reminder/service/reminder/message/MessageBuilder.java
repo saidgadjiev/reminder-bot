@@ -212,4 +212,16 @@ public class MessageBuilder {
     public String getReminderActivated(String text) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_ACTIVATED_RECEIVER, new Object[]{text});
     }
+
+    public String getReminderRead() {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_READ_REMINDER_STATUS, new Object[] {localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_READ)});
+    }
+
+    public String getReminderUnread() {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_READ_REMINDER_STATUS, new Object[] {localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_UNREAD)});
+    }
+
+    public String getReadReminderCreator(TgUser receiver, String text) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_READ_REMINDER_CREATOR, new Object[] {UserUtils.userLink(receiver), text});
+    }
 }

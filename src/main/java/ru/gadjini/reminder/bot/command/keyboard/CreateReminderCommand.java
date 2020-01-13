@@ -11,7 +11,7 @@ import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.suggestion.SuggestionService;
+import ru.gadjini.reminder.service.savedquery.SavedQueryService;
 
 import java.util.List;
 
@@ -22,37 +22,37 @@ public class CreateReminderCommand implements KeyboardBotCommand {
 
     private final LocalisationService localisationService;
 
-    private SuggestionService suggestionService;
+    private SavedQueryService savedQueryService;
 
     private ReplyKeyboardService replyKeyboardService;
 
     private MessageService messageService;
 
     @Autowired
-    public CreateReminderCommand(LocalisationService localisationService, SuggestionService suggestionService,
+    public CreateReminderCommand(LocalisationService localisationService, SavedQueryService savedQueryService,
                                  CurrReplyKeyboard replyKeyboardService, MessageService messageService) {
         this.name = localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME);
         this.localisationService = localisationService;
-        this.suggestionService = suggestionService;
+        this.savedQueryService = savedQueryService;
         this.replyKeyboardService = replyKeyboardService;
         this.messageService = messageService;
     }
 
     @Override
-    public boolean canHandle(String command) {
+    public boolean canHandle(long chatId, String command) {
         return name.equals(command);
     }
 
     @Override
     public boolean processMessage(Message message, String text) {
-        List<String> suggestions = suggestionService.getSuggestions(message.getFrom().getId());
-        ReplyKeyboardMarkup suggestionsKeyboard = replyKeyboardService.getSuggestionsKeyboard(message.getChatId(), suggestions);
+        List<String> queries = savedQueryService.getQueriesOnly(message.getFrom().getId());
+        ReplyKeyboardMarkup savedQueriesKeyboard = replyKeyboardService.getSavedQueriesKeyboard(message.getChatId(), queries);
 
         messageService.sendMessage(
                 new SendMessageContext()
                         .chatId(message.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_CREATE_REMINDER))
-                        .replyKeyboard(suggestionsKeyboard)
+                        .replyKeyboard(savedQueriesKeyboard)
         );
 
         return false;

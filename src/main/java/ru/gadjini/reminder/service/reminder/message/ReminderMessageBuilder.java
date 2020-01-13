@@ -65,7 +65,10 @@ public class ReminderMessageBuilder {
                 result.append(timeBuilder.time(reminder.getRemindAtInReceiverZone()));
             }
         }
-        if (reminder.getCreatorId() != reminder.getReceiverId()) {
+        if (reminder.isNotMySelf()) {
+            result.append("\n")
+                    .append(reminder.isRead() ? messageBuilder.getReminderRead() : messageBuilder.getReminderUnread());
+
             if (messageReceiverId == reminder.getCreatorId()) {
                 result
                         .append("\n")
@@ -234,7 +237,7 @@ public class ReminderMessageBuilder {
 
             text.append(messageBuilder.getCompletedAt(reminder.getCompletedAtInReceiverZone())).append("\n");
 
-            if (reminder.getReceiverId() != reminder.getCreatorId()) {
+            if (reminder.isNotMySelf()) {
                 if (requesterId == reminder.getReceiverId()) {
                     text.append(messageBuilder.getReminderCreator(reminder.getCreator()));
                 } else {
@@ -378,6 +381,10 @@ public class ReminderMessageBuilder {
                 .append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
         return message.toString();
+    }
+
+    public String getReadReminderCreator(Reminder reminder) {
+        return messageBuilder.getReadReminderCreator(reminder.getReceiver(), reminder.getText());
     }
 
     public String getFullyUpdateMessageForReceiver(Reminder oldReminder, Reminder newReminder) {

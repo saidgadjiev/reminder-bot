@@ -181,7 +181,7 @@ public class ReminderMessageSender {
                         .chatId(oldReminder.getReceiver().getChatId())
                         .messageId(oldReminder.getRemindMessage().getMessageId())
                         .text(receiverMessage)
-                        .replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(oldReminder.getId(), newReminder.isRepeatable(), newReminder.getRemindAt().hasTime()))
+                        .replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(newReminder))
         );
     }
 
@@ -287,7 +287,7 @@ public class ReminderMessageSender {
                             .replyKeyboard(replyKeyboardMarkup)
             );
         }
-        InlineKeyboardMarkup keyboard = inlineKeyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable(), reminder.getRemindAt().hasTime());
+        InlineKeyboardMarkup keyboard = inlineKeyboardService.getReceiverReminderKeyboard(reminder);
         messageService.sendMessage(
                 new SendMessageContext().chatId(reminder.getReceiver().getChatId()).text(messageForReceiver).replyKeyboard(keyboard),
                 message -> remindMessageService.create(reminder.getId(), message.getMessageId())
@@ -329,7 +329,7 @@ public class ReminderMessageSender {
                                     reminder.getText(),
                                     updateReminderResult.getNewReminder().getRemindAtInReceiverZone(),
                                     null
-                            )).replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(reminder.getId(), reminder.isRepeatable(), reminder.getRemindAt().hasTime()))
+                            )).replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(reminder))
             );
         }
         if (reminder.isNotMySelf()) {
@@ -672,5 +672,21 @@ public class ReminderMessageSender {
                         .text(reminderMessageBuilder.getReminderMessage(reminder))
                         .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
         );
+    }
+
+    public void sendReminderRead(long chatId, int messageId, Reminder reminder) {
+        if (reminder.isNotMySelf()) {
+            messageService.sendMessage(
+                    new SendMessageContext()
+                            .chatId(reminder.getCreator().getChatId())
+                            .text(reminderMessageBuilder.getReadReminderCreator(reminder))
+            );
+            messageService.editMessage(
+                    new EditMessageContext()
+                            .chatId(chatId)
+                            .messageId(messageId)
+                            .text(reminderMessageBuilder.getReminderMessage(reminder))
+                            .replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(reminder)));
+        }
     }
 }

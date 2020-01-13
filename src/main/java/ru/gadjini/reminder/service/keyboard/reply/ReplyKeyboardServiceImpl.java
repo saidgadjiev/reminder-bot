@@ -26,15 +26,15 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
     }
 
     @Override
-    public ReplyKeyboardMarkup getSuggestionsKeyboard(long chatId, List<String> suggestions) {
+    public ReplyKeyboardMarkup getSavedQueriesKeyboard(long chatId, List<String> queries) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 
-        if (suggestions.isEmpty()) {
+        if (queries.isEmpty()) {
             replyKeyboardMarkup.setResizeKeyboard(true);
         }
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
-        suggestions.forEach(s -> keyboard.add(keyboardRow(s)));
+        queries.forEach(s -> keyboard.add(keyboardRow(s)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
 
         return replyKeyboardMarkup;
@@ -105,6 +105,7 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.SAVED_QUERY_COMMAND_NAME)));
 
         if (userId == 171271164) {
             keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.CREATE_INVITE_COMMAND_NAME)));

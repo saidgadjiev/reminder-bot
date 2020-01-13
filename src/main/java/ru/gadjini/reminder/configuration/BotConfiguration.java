@@ -3,6 +3,7 @@ package ru.gadjini.reminder.configuration;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -72,6 +73,7 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
     }
 
     @Bean
+    @Qualifier("chain")
     public ReminderRequestExtractor requestExtractor(MySelfRequestExtractor mySelfRequestExtractor,
                                                      ReceiverIdRequestExtractor receiverIdRequestExtractor,
                                                      WithLoginRequestExtractor withLoginRequestExtractor,

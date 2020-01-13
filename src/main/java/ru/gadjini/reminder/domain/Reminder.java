@@ -44,6 +44,8 @@ public class Reminder {
 
     public static final String COUNT_SERIES = "count_series";
 
+    public static final String READ = "read";
+
     private int id;
 
     private String text;
@@ -82,6 +84,8 @@ public class Reminder {
 
     private boolean countSeries;
 
+    private boolean read;
+
     public Reminder() {
     }
 
@@ -104,6 +108,8 @@ public class Reminder {
         this.currentSeries = reminder.currentSeries;
         this.maxSeries = reminder.maxSeries;
         this.countSeries = reminder.countSeries;
+        this.inactive = reminder.inactive;
+        this.read = reminder.read;
     }
 
     public int getId() {
@@ -297,6 +303,19 @@ public class Reminder {
 
     public void setCountSeries(boolean countSeries) {
         this.countSeries = countSeries;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    @JsonIgnore
+    public boolean isUnread() {
+        return !isRead();
+    }
+
+    public void setRead(boolean read) {
+        this.read = read;
     }
 
     public Map<Field<?>, Object> getDiff(Reminder newReminder) {

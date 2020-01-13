@@ -42,7 +42,7 @@ public class FromMeFriendRequests implements KeyboardBotCommand, NavigableCallba
     }
 
     @Override
-    public boolean canHandle(String command) {
+    public boolean canHandle(long chatId, String command) {
         return name.equals(command);
     }
 

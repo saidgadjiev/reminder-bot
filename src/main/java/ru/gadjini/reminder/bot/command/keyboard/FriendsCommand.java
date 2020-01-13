@@ -46,7 +46,7 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
     }
 
     @Override
-    public boolean canHandle(String command) {
+    public boolean canHandle(long chatId, String command) {
         return this.name.equals(command);
     }
 

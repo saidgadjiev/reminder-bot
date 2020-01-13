@@ -60,20 +60,20 @@ public class CommandExecutor {
         botCommands.forEach(botCommand -> botCommandMap.put(botCommand.getCommandIdentifier(), botCommand));
     }
 
-    public boolean isTextCommand(String text) {
+    public boolean isTextCommand(long chatId, String text) {
         return keyboardBotCommands
                 .stream()
-                .anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(text) && keyboardBotCommand.isTextCommand());
+                .anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(chatId, text) && keyboardBotCommand.isTextCommand());
     }
 
     public BotCommand getBotCommand(String startCommandName) {
         return botCommandMap.get(startCommandName);
     }
 
-    public boolean isKeyboardCommand(String text) {
+    public boolean isKeyboardCommand(long chatId, String text) {
         return keyboardBotCommands
                 .stream()
-                .anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(text) && !keyboardBotCommand.isTextCommand());
+                .anyMatch(keyboardBotCommand -> keyboardBotCommand.canHandle(chatId, text) && !keyboardBotCommand.isTextCommand());
     }
 
     public boolean isBotCommand(Message message) {
@@ -115,7 +115,7 @@ public class CommandExecutor {
 
     public void executeKeyBoardCommandEditedMessage(Message message, String text) {
         KeyboardBotCommand botCommand = keyboardBotCommands.stream()
-                .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(text))
+                .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(message.getChatId(), text))
                 .findFirst()
                 .orElseThrow();
 
@@ -143,7 +143,7 @@ public class CommandExecutor {
 
     public void executeKeyBoardCommand(Message message, String text) {
         KeyboardBotCommand botCommand = keyboardBotCommands.stream()
-                .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(text))
+                .filter(keyboardBotCommand -> keyboardBotCommand.canHandle(message.getChatId(), text))
                 .findFirst()
                 .orElseThrow();
 

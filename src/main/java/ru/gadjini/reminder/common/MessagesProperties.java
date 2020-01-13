@@ -400,4 +400,22 @@ public class MessagesProperties {
     public static final String MESSAGE_INVITE_TOKEN_NOT_FOUND = "message.invite.token.not.found";
 
     public static final String CREATE_INVITE_COMMAND_NAME = "create.invite.command.name";
+
+    public static final String READ_REMINDER_COMMAND_DESCRIPTION = "read.reminder.command.description";
+
+    public static final String MESSAGE_READ_REMINDER_ANSWER = "message.read.reminder.answer";
+
+    public static final String MESSAGE_READ_REMINDER_STATUS = "message.read.reminder.status";
+
+    public static final String MESSAGE_REMINDER_READ = "message.reminder.read";
+
+    public static final String MESSAGE_REMINDER_UNREAD = "message.reminder.unread";
+
+    public static final String MESSAGE_READ_REMINDER_CREATOR = "message.read.reminder.creator";
+
+    public static final String SAVED_QUERY_COMMAND_NAME = "saved.query.command.name";
+
+    public static final String MESSAGE_SAVED_QUERY = "message.saved.query";
+
+    public static final String MESSAGE_SAVED_QUERY_EMPTY = "message.saved.query.empty";
 }

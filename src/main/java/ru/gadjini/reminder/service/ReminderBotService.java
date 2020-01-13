@@ -110,7 +110,7 @@ public class ReminderBotService {
     }
 
     private void handleMessage(Message message, String text) {
-        if (commandExecutor.isKeyboardCommand(text)) {
+        if (commandExecutor.isKeyboardCommand(message.getChatId(), text)) {
             if (isOnCurrentMenu(message.getChatId(), text)) {
                 commandExecutor.executeKeyBoardCommand(message, text);
 
@@ -122,7 +122,7 @@ public class ReminderBotService {
             } else {
                 messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_UNKNOWN_COMMAND)));
             }
-        } else if (commandExecutor.isTextCommand(text)) {
+        } else if (commandExecutor.isTextCommand(message.getChatId(), text)) {
             commandExecutor.executeKeyBoardCommand(message, text);
 
             return;
@@ -132,7 +132,7 @@ public class ReminderBotService {
     }
 
     private void handleEditedMessage(Message editedMessage, String text) {
-        if (commandExecutor.isKeyboardCommand(text)) {
+        if (commandExecutor.isKeyboardCommand(editedMessage.getChatId(), text)) {
             commandExecutor.executeKeyBoardCommandEditedMessage(editedMessage, text);
         } else {
             commandExecutor.processNonCommandEditedMessage(editedMessage, text);

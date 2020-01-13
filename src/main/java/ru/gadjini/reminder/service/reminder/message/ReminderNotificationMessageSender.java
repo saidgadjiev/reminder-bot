@@ -58,7 +58,7 @@ public class ReminderNotificationMessageSender {
             message = reminderNotificationMessageBuilder.getReminderNotificationForReceiver(reminder, itsTime, nextRemindAt);
         }
 
-        InlineKeyboardMarkup keyboard = inlineKeyboardService.getRemindKeyboard(reminder.getId(), itsTime, reminder.isRepeatable(), reminder.getRemindAt().hasTime());
+        InlineKeyboardMarkup keyboard = inlineKeyboardService.getRemindKeyboard(reminder);
         messageService.sendMessage(
                 new SendMessageContext().chatId(reminder.getReceiver().getChatId()).text(message).replyKeyboard(keyboard),
                 msg -> remindMessageService.create(reminder.getId(), msg.getMessageId())
@@ -85,11 +85,7 @@ public class ReminderNotificationMessageSender {
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(text + "\n\n" + reminderMessageBuilder.getCustomRemindText(customRemindResult))
-                        .replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(
-                                customRemindResult.getReminderNotification().getReminderId(),
-                                customRemindResult.getReminderNotification().getReminder().isRepeatable(),
-                                customRemindResult.getReminderNotification().getReminder().getRemindAt().hasTime()
-                        ))
+                        .replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(customRemindResult.getReminderNotification().getReminder()))
         );
     }
 }

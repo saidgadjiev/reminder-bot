@@ -13,6 +13,7 @@ import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.time.DateTime;
+import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
@@ -63,7 +64,7 @@ public class CreateReminderValidator implements Validator {
     }
 
     private void validate(ZonedDateTime dateTime) {
-        if (dateTime.isBefore(ZonedDateTime.now(dateTime.getZone()))) {
+        if (dateTime.isBefore(TimeUtils.now(dateTime.getZone()))) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
         }
     }

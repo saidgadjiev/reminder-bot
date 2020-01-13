@@ -22,7 +22,7 @@ public class GoBackCommand implements KeyboardBotCommand {
     }
 
     @Override
-    public boolean canHandle(String command) {
+    public boolean canHandle(long chatId, String command) {
         return description.equals(command);
     }
 

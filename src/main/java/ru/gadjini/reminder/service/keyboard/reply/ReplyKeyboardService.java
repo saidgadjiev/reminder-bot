@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import java.util.List;
 
 public interface ReplyKeyboardService {
-    ReplyKeyboardMarkup getSuggestionsKeyboard(long chatId, List<String> suggestions);
+    ReplyKeyboardMarkup getSavedQueriesKeyboard(long chatId, List<String> queries);
 
     ReplyKeyboardMarkup getFriendRequestsKeyboard(long chatId);
 

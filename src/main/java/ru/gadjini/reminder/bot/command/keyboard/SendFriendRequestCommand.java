@@ -61,7 +61,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
     }
 
     @Override
-    public boolean canHandle(String command) {
+    public boolean canHandle(long chatId, String command) {
         return name.equals(command);
     }
 

@@ -70,6 +70,17 @@ public class ReminderService {
         );
     }
 
+    public Reminder read(int reminderId) {
+        return reminderDao.update(
+                Map.of(ReminderTable.TABLE.READ, true),
+                ReminderTable.TABLE.ID.eq(reminderId),
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
+                        .setRemindMessageMapping(new Mapping())
+        );
+    }
+
     public Reminder activate(int reminderId) {
         return reminderDao.update(
                 Map.of(ReminderTable.TABLE.INACTIVE, false),
