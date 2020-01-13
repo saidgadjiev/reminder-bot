@@ -64,7 +64,11 @@ public class ReminderBotService {
     public void handleUpdate(Update update) {
         try {
             if (update.hasMessage()) {
-                if (restoreIfNeed(update.getMessage().getChatId(), update.getMessage().hasText() ? update.getMessage().getText().trim() : null)) {
+                if (restoreIfNeed(
+                        update.getMessage().getChatId(),
+                        update.getMessage().getFrom().getId(),
+                        update.getMessage().hasText() ? update.getMessage().getText().trim() : null
+                )) {
                     return;
                 }
 
@@ -136,7 +140,10 @@ public class ReminderBotService {
         }
     }
 
-    private boolean restoreIfNeed(long chatId, String command) {
+    private boolean restoreIfNeed(long chatId, int userId, String command) {
+        if (replyKeyboardService.getCurrentReplyKeyboard(chatId) == null) {
+            replyKeyboardService.getMainMenu(chatId, userId);
+        }
         if (StringUtils.isNotBlank(command) && command.startsWith(BotCommand.COMMAND_INIT_CHARACTER + CommandNames.START_COMMAND_NAME)) {
             return false;
         }
