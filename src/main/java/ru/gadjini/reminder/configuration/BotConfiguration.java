@@ -17,13 +17,10 @@ import ru.gadjini.reminder.bot.command.keyboard.UserReminderNotificationSchedule
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.UserReminderNotification;
+import ru.gadjini.reminder.filter.*;
 import ru.gadjini.reminder.properties.WebHookProperties;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.command.CommandStateService;
-import ru.gadjini.reminder.filter.BotFilter;
-import ru.gadjini.reminder.filter.ReminderBotFilter;
-import ru.gadjini.reminder.filter.StartCommandFilter;
-import ru.gadjini.reminder.filter.SubscriptionFilter;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -89,9 +86,9 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
     }
 
     @Bean
-    public BotFilter botFilter(SubscriptionFilter subscriptionFilter, ReminderBotFilter reminderBotFilter, StartCommandFilter startCommandFilter) {
-        startCommandFilter.setNext(subscriptionFilter).setNext(reminderBotFilter);
+    public BotFilter botFilter(SubscriptionFilter subscriptionFilter, ReminderBotFilter reminderBotFilter, StartCommandFilter startCommandFilter, InviteFilter inviteFilter) {
+        inviteFilter.setNext(startCommandFilter).setNext(subscriptionFilter).setNext(reminderBotFilter);
 
-        return startCommandFilter;
+        return inviteFilter;
     }
 }

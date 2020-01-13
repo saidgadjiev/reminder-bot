@@ -394,4 +394,10 @@ public class MessagesProperties {
     public static final String MESSAGE_PAYMENT_SUCCESS = "message.payment.success";
 
     public static final String MESSAGE_TELEGRAM_REDIRECT = "message.telegram.redirect";
+
+    public static final String MESSAGE_BOT_CLOSE_TESTING = "message.bot.close.testing";
+
+    public static final String MESSAGE_INVITE_TOKEN_NOT_FOUND = "message.invite.token.not.found";
+
+    public static final String CREATE_INVITE_COMMAND_NAME = "create.invite.command.name";
 }

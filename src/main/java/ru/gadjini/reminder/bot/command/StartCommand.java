@@ -49,7 +49,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] args) {
-        messageService.sendMessage(new SendMessageContext().chatId(chat.getId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_START)).replyKeyboard(replyKeyboardService.getMainMenu()));
+        messageService.sendMessage(new SendMessageContext().chatId(chat.getId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_START)).replyKeyboard(replyKeyboardService.getMainMenu(user.getId())));
     }
 
     @Override
@@ -58,8 +58,8 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
     }
 
     @Override
-    public ReplyKeyboardMarkup silentRestore() {
-        return replyKeyboardService.getMainMenu();
+    public ReplyKeyboardMarkup silentRestore(long chatId) {
+        return replyKeyboardService.getMainMenu((int) chatId);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     @Override
     public void restore(long chatId) {
-        messageService.sendMessage(new SendMessageContext().chatId(chatId).text(localisationService.getMessage(MessagesProperties.MESSAGE_START)).replyKeyboard(replyKeyboardService.getMainMenu()));
+        messageService.sendMessage(new SendMessageContext().chatId(chatId).text(localisationService.getMessage(MessagesProperties.MESSAGE_START)).replyKeyboard(replyKeyboardService.getMainMenu((int) chatId)));
     }
 
     @Override

@@ -15,6 +15,8 @@ public class TgMessage {
 
     private User user;
 
+    private String text;
+
     public long getChatId() {
         return chatId;
     }
@@ -47,6 +49,14 @@ public class TgMessage {
         this.user = user;
     }
 
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
     public static TgMessage from(CallbackQuery callbackQuery) {
         TgMessage tgMessage = new TgMessage();
 
@@ -54,6 +64,7 @@ public class TgMessage {
         tgMessage.messageId = callbackQuery.getMessage().getMessageId();
         tgMessage.callbackQueryId = callbackQuery.getId();
         tgMessage.user = callbackQuery.getFrom();
+        tgMessage.text = callbackQuery.getData();
 
         return tgMessage;
     }
@@ -64,6 +75,7 @@ public class TgMessage {
         tgMessage.chatId = message.getChatId();
         tgMessage.messageId = message.getMessageId();
         tgMessage.user = message.getFrom();
+        tgMessage.text = message.getText().trim();
 
         return tgMessage;
     }
@@ -86,5 +98,15 @@ public class TgMessage {
         }
 
         return update.getMessage().getChatId();
+    }
+
+    public static int getUserId(Update update) {
+        if (update.hasCallbackQuery()) {
+            return update.getCallbackQuery().getFrom().getId();
+        } else if (update.hasEditedMessage()) {
+            return update.getEditedMessage().getFrom().getId();
+        }
+
+        return update.getMessage().getFrom().getId();
     }
 }

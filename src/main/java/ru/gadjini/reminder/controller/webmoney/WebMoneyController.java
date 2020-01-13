@@ -194,7 +194,7 @@ public class WebMoneyController {
                     new SendMessageContext()
                             .chatId(chatId)
                             .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}))
-                            .replyKeyboard(replyKeyboardService.getMainMenu())
+                            .replyKeyboard(replyKeyboardService.getMainMenu((int) chatId))
             );
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
