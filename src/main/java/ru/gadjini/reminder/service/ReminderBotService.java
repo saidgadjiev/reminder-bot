@@ -66,7 +66,6 @@ public class ReminderBotService {
             if (update.hasMessage()) {
                 if (restoreIfNeed(
                         update.getMessage().getChatId(),
-                        update.getMessage().getFrom().getId(),
                         update.getMessage().hasText() ? update.getMessage().getText().trim() : null
                 )) {
                     return;
@@ -140,10 +139,7 @@ public class ReminderBotService {
         }
     }
 
-    private boolean restoreIfNeed(long chatId, int userId, String command) {
-        if (replyKeyboardService.getCurrentReplyKeyboard(chatId) == null) {
-            replyKeyboardService.getMainMenu(chatId, userId);
-        }
+    private boolean restoreIfNeed(long chatId, String command) {
         if (StringUtils.isNotBlank(command) && command.startsWith(BotCommand.COMMAND_INIT_CHARACTER + CommandNames.START_COMMAND_NAME)) {
             return false;
         }
@@ -159,6 +155,10 @@ public class ReminderBotService {
 
     private boolean isOnCurrentMenu(long chatId, String commandText) {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardService.getCurrentReplyKeyboard(chatId);
+
+        if (replyKeyboardMarkup == null) {
+            return true;
+        }
 
         for (KeyboardRow keyboardRow : replyKeyboardMarkup.getKeyboard()) {
             if (keyboardRow.stream().anyMatch(keyboardButton -> keyboardButton.getText().equals(commandText))) {
