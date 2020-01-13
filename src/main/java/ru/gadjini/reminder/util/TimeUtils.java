@@ -17,4 +17,8 @@ public class TimeUtils {
     public static ZonedDateTime nowZoned() {
         return ZonedDateTime.now().withSecond(0).withNano(0);
     }
+
+    public static LocalTime nowTime(ZoneId zoneId) {
+        return LocalTime.now(zoneId).withSecond(0).withNano(0);
+    }
 }

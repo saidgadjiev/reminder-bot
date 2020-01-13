@@ -1,6 +1,3 @@
 web-hook:
   external-url: https://c946abbf.ngrok.io
   internal-url: http://localhost:8000
-app:
-  url: https://c946abbf.ngrok.io
-  telegram-redirect-url: https://teleg.run/mega_reminder_bot

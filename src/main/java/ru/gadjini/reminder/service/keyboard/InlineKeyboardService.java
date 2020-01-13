@@ -11,7 +11,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.PaymentType;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.UserReminderNotification;
-import ru.gadjini.reminder.properties.AppProperties;
+import ru.gadjini.reminder.properties.WebHookProperties;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandParser;
@@ -27,15 +27,15 @@ public class InlineKeyboardService {
 
     private ButtonFactory buttonFactory;
 
-    private AppProperties appProperties;
+    private WebHookProperties webHookProperties;
 
     private static final String PAYMENT_API_PATH = "payment/pay";
 
     @Autowired
-    public InlineKeyboardService(LocalisationService localisationService, ButtonFactory buttonFactory, AppProperties appProperties) {
+    public InlineKeyboardService(LocalisationService localisationService, ButtonFactory buttonFactory, WebHookProperties webHookProperties) {
         this.localisationService = localisationService;
         this.buttonFactory = buttonFactory;
-        this.appProperties = appProperties;
+        this.webHookProperties = webHookProperties;
     }
 
     public InlineKeyboardMarkup getSavedQueriesKeyboard(List<Integer> queries) {
@@ -384,7 +384,7 @@ public class InlineKeyboardService {
     }
 
     private String buildPayUrl(int userId, int planId, PaymentType paymentType) {
-        return UriComponentsBuilder.fromHttpUrl(appProperties.getUrl())
+        return UriComponentsBuilder.fromHttpUrl(webHookProperties.getExternalUrl())
                 .path(PAYMENT_API_PATH)
                 .queryParam("planId", planId)
                 .queryParam("userId", userId)

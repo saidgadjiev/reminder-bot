@@ -18,7 +18,6 @@ import ru.gadjini.reminder.properties.*;
         TimeZoneDbProperties.class,
         SubscriptionProperties.class,
         WebHookProperties.class,
-        AppProperties.class,
         WebMoneyProperties.class
 })
 @EnableScheduling

@@ -15,8 +15,8 @@ import ru.gadjini.reminder.domain.PaymentType;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.WebMoneyPayment;
-import ru.gadjini.reminder.properties.AppProperties;
 import ru.gadjini.reminder.properties.BotProperties;
+import ru.gadjini.reminder.properties.WebHookProperties;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
@@ -56,19 +56,19 @@ public class WebMoneyController {
 
     private BotProperties botProperties;
 
-    private AppProperties appProperties;
+    private WebHookProperties webHookProperties;
 
     @Autowired
     public WebMoneyController(CurrReplyKeyboard replyKeyboardService, PaymentService paymentService,
                               MessageService messageService, TgUserService userService,
-                              LocalisationService localisationService, BotProperties botProperties, AppProperties appProperties) {
+                              LocalisationService localisationService, BotProperties botProperties, WebHookProperties webHookProperties) {
         this.replyKeyboardService = replyKeyboardService;
         this.paymentService = paymentService;
         this.messageService = messageService;
         this.userService = userService;
         this.localisationService = localisationService;
         this.botProperties = botProperties;
-        this.appProperties = appProperties;
+        this.webHookProperties = webHookProperties;
 
         LOGGER.debug("WebMoneyController initialized");
     }
@@ -203,7 +203,7 @@ public class WebMoneyController {
     }
 
     private String redirectUrl(boolean fail) {
-        return UriComponentsBuilder.fromHttpUrl(appProperties.getUrl())
+        return UriComponentsBuilder.fromHttpUrl(webHookProperties.getExternalUrl())
                 .path(CONTROLLER_PATH + PAYMENT_RESULT_PATH)
                 .queryParam("fail", fail)
                 .toUriString();

@@ -69,7 +69,7 @@ public class FixedTimeParser {
             LocalTime time = consumeTime(lexems);
             fixedTime.time(time);
         } else {
-            fixedTime.time(LocalTime.now(fixedTime.getZone()));
+            fixedTime.time(TimeUtils.nowTime(fixedTime.getZone()));
         }
 
         ZonedDateTime now = TimeUtils.now(fixedTime.getZone());
