@@ -582,6 +582,15 @@ public class ReminderMessageSender {
     }
 
     public void sendReminderNoteChanged(Reminder reminder, int messageId) {
+        if (reminder.getRemindMessage() != null) {
+            messageService.editMessage(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
+                            .chatId(reminder.getReceiver().getChatId())
+                            .messageId(reminder.getRemindMessage().getMessageId())
+                            .text(reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId()))
+                            .replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(reminder))
+            );
+        }
         if (reminder.isNotMySelf()) {
             String text = reminderMessageBuilder.getReminderNoteChangedForReceiver(reminder.getText(), reminder.getNote(), reminder.getCreator());
             messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getReceiver().getChatId()).text(text));
@@ -597,6 +606,15 @@ public class ReminderMessageSender {
     }
 
     public void sendReminderNoteDeleted(int messageId, Reminder reminder) {
+        if (reminder.getRemindMessage() != null) {
+            messageService.editMessage(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
+                            .chatId(reminder.getReceiver().getChatId())
+                            .messageId(reminder.getRemindMessage().getMessageId())
+                            .text(reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId()))
+                            .replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(reminder))
+            );
+        }
         if (reminder.isNotMySelf()) {
             String text = reminderMessageBuilder.getReminderNoteDeletedReceiver(reminder.getCreator(), reminder.getText());
             messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getReceiver().getChatId()).text(text));
