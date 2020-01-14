@@ -17,7 +17,7 @@ public class MessageSenderJob {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageSenderJob.class);
 
-    private BlockingQueue<PriorityJob> jobsQueue = new PriorityBlockingQueue<>(30, Comparator.comparing(PriorityJob::getPriority));
+    private BlockingQueue<PriorityJob> jobsQueue = new PriorityBlockingQueue<>(40, Comparator.comparing(PriorityJob::getPriority));
 
     public MessageSenderJob() {
         LOGGER.debug("Message sender job initialized and working");
