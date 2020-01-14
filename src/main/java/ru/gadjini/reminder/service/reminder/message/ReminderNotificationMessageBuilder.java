@@ -7,7 +7,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
+import ru.gadjini.reminder.service.reminder.time.ReminderNotificationTimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 
@@ -19,17 +19,17 @@ public class ReminderNotificationMessageBuilder {
 
     private MessageBuilder messageBuilder;
 
-    private TimeBuilder timeBuilder;
+    private ReminderNotificationTimeBuilder reminderNotificationTimeBuilder;
 
     private ReminderMessageBuilder reminderMessageBuilder;
 
     private LocalisationService localisationService;
 
     @Autowired
-    public ReminderNotificationMessageBuilder(MessageBuilder messageBuilder, TimeBuilder timeBuilder,
+    public ReminderNotificationMessageBuilder(MessageBuilder messageBuilder, ReminderNotificationTimeBuilder reminderNotificationTimeBuilder,
                                               ReminderMessageBuilder reminderMessageBuilder, LocalisationService localisationService) {
         this.messageBuilder = messageBuilder;
-        this.timeBuilder = timeBuilder;
+        this.reminderNotificationTimeBuilder = reminderNotificationTimeBuilder;
         this.reminderMessageBuilder = reminderMessageBuilder;
         this.localisationService = localisationService;
     }
@@ -52,9 +52,9 @@ public class ReminderNotificationMessageBuilder {
 
     public String getReminderTimeMessage(ReminderNotification reminderNotification) {
         if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
-            return timeBuilder.time(reminderNotification);
+            return reminderNotificationTimeBuilder.time(reminderNotification);
         } else {
-            StringBuilder message = new StringBuilder(timeBuilder.time(reminderNotification));
+            StringBuilder message = new StringBuilder(reminderNotificationTimeBuilder.time(reminderNotification));
 
             ZonedDateTime nextRemindAt = JodaTimeUtils.plus(reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone()), reminderNotification.getDelayTime());
             message.append("\n").append(messageBuilder.getNextReminderNotificationAt(nextRemindAt));
@@ -74,7 +74,7 @@ public class ReminderNotificationMessageBuilder {
             if (message.length() > 0) {
                 message.append("\n");
             }
-            message.append(i++).append(") ").append(timeBuilder.time(reminderNotification));
+            message.append(i++).append(") ").append(reminderNotificationTimeBuilder.time(reminderNotification));
         }
 
         return message.toString();
@@ -91,7 +91,7 @@ public class ReminderNotificationMessageBuilder {
             if (message.length() > 0) {
                 message.append("\n");
             }
-            message.append(i++).append(") ").append(timeBuilder.time(userReminderNotification.withZone(userReminderNotification.getUser().getZone())));
+            message.append(i++).append(") ").append(reminderNotificationTimeBuilder.time(userReminderNotification.withZone(userReminderNotification.getUser().getZone())));
         }
 
         return message.toString();

@@ -8,6 +8,8 @@ import ru.gadjini.reminder.domain.Plan;
 import ru.gadjini.reminder.domain.Subscription;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
+import ru.gadjini.reminder.properties.SubscriptionProperties;
+import ru.gadjini.reminder.service.declension.TimeDeclensionService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
@@ -18,6 +20,10 @@ import ru.gadjini.reminder.service.subscription.PlanService;
 import ru.gadjini.reminder.service.subscription.SubscriptionService;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 @Component
 public class SubscriptionFilter extends BaseBotFilter {
@@ -36,11 +42,16 @@ public class SubscriptionFilter extends BaseBotFilter {
 
     private PaymentMessageService paymentMessageService;
 
+    private SubscriptionProperties subscriptionProperties;
+
+    private Map<String, TimeDeclensionService> declensionServiceMap = new HashMap<>();
+
     @Autowired
     public SubscriptionFilter(MessageService messageService,
                               LocalisationService localisationService, SubscriptionService subscriptionService,
                               PlanService planService, CurrReplyKeyboard replyKeyboardService,
-                              InlineKeyboardService inlineKeyboardService, PaymentMessageService paymentMessageService) {
+                              InlineKeyboardService inlineKeyboardService, PaymentMessageService paymentMessageService,
+                              SubscriptionProperties subscriptionProperties, Collection<TimeDeclensionService> declensionServices) {
         this.messageService = messageService;
         this.localisationService = localisationService;
         this.subscriptionService = subscriptionService;
@@ -48,6 +59,8 @@ public class SubscriptionFilter extends BaseBotFilter {
         this.replyKeyboardService = replyKeyboardService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.paymentMessageService = paymentMessageService;
+        this.subscriptionProperties = subscriptionProperties;
+        declensionServices.forEach(timeDeclensionService -> declensionServiceMap.put(timeDeclensionService.getLanguage(), timeDeclensionService));
     }
 
     @Override
@@ -65,8 +78,9 @@ public class SubscriptionFilter extends BaseBotFilter {
 
         if (subscription == null) {
             subscriptionService.createTrialSubscription(userId);
+            sendTrialSubscriptionStarted(chatId, userId);
 
-            return true;
+            return false;
         }
         if (subscription.getEndDate().isBefore(LocalDate.now())) {
             sendSubscriptionExpired(chatId, userId);
@@ -75,6 +89,17 @@ public class SubscriptionFilter extends BaseBotFilter {
         }
 
         return true;
+    }
+
+    private void sendTrialSubscriptionStarted(long chatId, int userId) {
+        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
+
+        messageService.sendMessage(
+                new SendMessageContext()
+                        .chatId(chatId)
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_TRIAL_PERIOD_STARTED, new Object[]{declensionService.day(subscriptionProperties.getTrialPeriod())}))
+                        .replyKeyboard(replyKeyboardService.getMainMenu(chatId, userId))
+        );
     }
 
     private void sendSubscriptionExpired(long chatId, int userId) {

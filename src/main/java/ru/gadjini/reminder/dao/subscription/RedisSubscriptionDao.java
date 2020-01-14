@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.Subscription;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -76,7 +77,7 @@ public class RedisSubscriptionDao implements SubscriptionDao {
             try {
                 Subscription subscription = new Subscription();
 
-                subscription.setPlanId(objectMapper.readValue((String) objects.get(0), Integer.class));
+                subscription.setPlanId(objects.get(0) == null ? null : objectMapper.readValue((String) objects.get(0), Integer.class));
                 subscription.setEndDate(objectMapper.readValue((String) objects.get(1), LocalDate.class));
                 subscription.setUserId(userId);
 
@@ -91,7 +92,14 @@ public class RedisSubscriptionDao implements SubscriptionDao {
 
     private void storeToRedis(Subscription subscription) {
         String key = getKey(subscription.getUserId());
-        redisTemplate.opsForHash().putAll(key, Map.of(Subscription.PLAN_ID, subscription.getPlanId(), Subscription.END_DATE, subscription.getEndDate()));
+
+        Map<String, Object> values = new HashMap<>();
+        if (subscription.getPlanId() != null) {
+            values.put(Subscription.PLAN_ID, subscription.getPlanId());
+        }
+        values.put(Subscription.END_DATE, subscription.getEndDate());
+
+        redisTemplate.opsForHash().putAll(key, values);
         redisTemplate.expire(key, 1, TimeUnit.DAYS);
     }
 

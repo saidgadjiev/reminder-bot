@@ -1,0 +1,63 @@
+package ru.gadjini.reminder.service.reminder.time;
+
+import org.joda.time.Period;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.domain.ReminderNotification;
+import ru.gadjini.reminder.domain.UserReminderNotification;
+import ru.gadjini.reminder.domain.time.OffsetTime;
+import ru.gadjini.reminder.domain.time.RepeatTime;
+import ru.gadjini.reminder.service.declension.TimeDeclensionService;
+
+import java.time.ZonedDateTime;
+import java.util.Locale;
+
+@Service
+public class ReminderNotificationTimeBuilder {
+
+    private TimeBuilder timeBuilder;
+
+    @Autowired
+    public ReminderNotificationTimeBuilder(TimeBuilder timeBuilder) {
+        this.timeBuilder = timeBuilder;
+    }
+
+    public String time(ReminderNotification reminderNotification) {
+        if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
+            return timeBuilder.time(reminderNotification.getFixedTime().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone()));
+        }
+
+        RepeatTime repeatTime = new RepeatTime(reminderNotification.getLastReminderAt().getZone());
+        ZonedDateTime lastRemindAt = reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone());
+        if (reminderNotification.getDelayTime().getDays() == 7) {
+            repeatTime.setDayOfWeek(lastRemindAt.getDayOfWeek());
+            repeatTime.setTime(lastRemindAt.toLocalTime());
+        } else if (reminderNotification.getDelayTime().getDays() != 0) {
+            repeatTime.setInterval(reminderNotification.getDelayTime());
+            repeatTime.setTime(lastRemindAt.toLocalTime());
+        } else if (reminderNotification.getDelayTime().getMonths() != 0) {
+            repeatTime.setInterval(reminderNotification.getDelayTime());
+            repeatTime.setDay(lastRemindAt.getDayOfMonth());
+            repeatTime.setTime(lastRemindAt.toLocalTime());
+        } else if (reminderNotification.getDelayTime().getYears() != 0) {
+            repeatTime.setInterval(reminderNotification.getDelayTime());
+            repeatTime.setMonth(lastRemindAt.getMonth());
+            repeatTime.setDay(lastRemindAt.getDayOfMonth());
+            repeatTime.setTime(lastRemindAt.toLocalTime());
+        } else {
+            return timeBuilder.time(reminderNotification.getDelayTime());
+        }
+
+        return timeBuilder.time(repeatTime);
+    }
+
+    public String time(UserReminderNotification userReminderNotification) {
+        OffsetTime offsetTime = new OffsetTime(userReminderNotification.getZoneId());
+        offsetTime.setTime(userReminderNotification.getTime());
+        offsetTime.setType(OffsetTime.Type.BEFORE);
+        offsetTime.setPeriod(new Period().withDays(userReminderNotification.getDays()).withHours(userReminderNotification.getHours()).withMinutes(userReminderNotification.getMinutes()));
+
+        return timeBuilder.time(offsetTime);
+    }
+}

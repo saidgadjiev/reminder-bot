@@ -4,15 +4,12 @@ import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.ReminderNotification;
-import ru.gadjini.reminder.domain.UserReminderNotification;
+import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.service.declension.TimeDeclensionService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -42,7 +39,7 @@ public class TimeBuilder {
         return localisationService.getMessage(MessagesProperties.DEACTIVATED_TIME);
     }
 
-    public String time(UserReminderNotification offsetTime) {
+    public String time(OffsetTime offsetTime) {
         StringBuilder builder = new StringBuilder();
 
         builder.append("<b>");
@@ -70,38 +67,34 @@ public class TimeBuilder {
         return builder.toString().trim();
     }
 
-    public String time(ReminderNotification reminderNotification) {
-        if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
-            return time(reminderNotification.getFixedTime().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone()));
-        }
-
-        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
+    public String time(RepeatTime repeatTime) {
         StringBuilder time = new StringBuilder();
+
         time.append("<b>");
-        if (reminderNotification.getDelayTime().getDays() == 7) {
-            ZonedDateTime lastRemindAt = reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone());
-            DayOfWeek dayOfWeek = lastRemindAt.getDayOfWeek();
-
-            time.append(declensionService.getRepeatWord(dayOfWeek)).append(" ");
-            time.append(declensionService.dayOfWeek(dayOfWeek)).append(" ");
-            time.append(DATE_TIME_FORMATTER.format(lastRemindAt));
-        } else if (reminderNotification.getDelayTime().getDays() != 0) {
-            time.append(time(reminderNotification.getDelayTime())).append(" ");
-            time.append(DATE_TIME_FORMATTER.format(reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone())));
-        } else if (reminderNotification.getDelayTime().getMonths() != 0) {
-            time.append(time(reminderNotification.getDelayTime())).append(" ");
-
-            ZonedDateTime lastRemindAt = reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone());
-            time.append(lastRemindAt.getDayOfMonth()).append(" ").append(localisationService.getMessage(MessagesProperties.REGEXP_MONTH_DAY_PREFIX));
-            time.append(DATE_TIME_FORMATTER.format(lastRemindAt));
-        } else if (reminderNotification.getDelayTime().getYears() != 0) {
-            time.append(time(reminderNotification.getDelayTime())).append(" ");
-
-            ZonedDateTime lastRemindAt = reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone());
-            time.append(lastRemindAt.getDayOfMonth()).append(" ").append(lastRemindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()));
-            time.append(DATE_TIME_FORMATTER.format(lastRemindAt));
-        } else {
-            time.append(time(reminderNotification.getDelayTime()));
+        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
+        if (repeatTime.getDayOfWeek() != null) {
+            time.append(declensionService.getRepeatWord(repeatTime.getDayOfWeek())).append(" ");
+            time.append(declensionService.dayOfWeek(repeatTime.getDayOfWeek())).append(" ");
+            if (repeatTime.getTime() != null) {
+                time.append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
+            }
+        } else if (repeatTime.getInterval().getMonths() != 0) {
+            time.append(time(repeatTime.getInterval())).append(" ");
+            time.append(repeatTime.getDay()).append(" ").append(localisationService.getMessage(MessagesProperties.REGEXP_MONTH_DAY_PREFIX));
+            if (repeatTime.getTime() != null) {
+                time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
+            }
+        } else if (repeatTime.getInterval().getYears() != 0) {
+            time.append(time(repeatTime.getInterval())).append(" ");
+            time.append(repeatTime.getDay()).append(" ").append(repeatTime.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()));
+            if (repeatTime.getTime() != null) {
+                time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
+            }
+        } else if (repeatTime.getInterval() != null) {
+            time.append(time(repeatTime.getInterval()));
+            if (repeatTime.getTime() != null) {
+                time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
+            }
         }
         time.append("</b>");
 
@@ -148,11 +141,11 @@ public class TimeBuilder {
         return fixedDay(remindAt);
     }
 
-    private String time(Period period) {
+    public String time(Period period) {
         StringBuilder time = new StringBuilder();
 
         TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
-        time.append(declensionService.getRepeatWord(period)).append(" ");
+        time.append("<b>").append(declensionService.getRepeatWord(period)).append(" ");
         if (period.getYears() != 0) {
             time.append(declensionService.year(period.getYears())).append(" ");
         }
@@ -168,6 +161,7 @@ public class TimeBuilder {
         if (period.getMinutes() != 0) {
             time.append(declensionService.minute(period.getMinutes())).append(" ");
         }
+        time.append("</b>");
 
         return time.toString().trim();
     }
@@ -228,50 +222,5 @@ public class TimeBuilder {
         String today = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
 
         return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
-    }
-
-    public String time(Reminder reminder) {
-        if (reminder.isInactive()) {
-            return "<b>" + deactivated() + "</b>";
-        }
-        if (reminder.isRepeatable()) {
-            return time(reminder.getRepeatRemindAtInReceiverZone());
-        } else {
-            return time(reminder.getRemindAtInReceiverZone());
-        }
-    }
-
-    public String time(RepeatTime repeatTime) {
-        StringBuilder time = new StringBuilder();
-
-        time.append("<b>");
-        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
-        if (repeatTime.getDayOfWeek() != null) {
-            time.append(declensionService.getRepeatWord(repeatTime.getDayOfWeek())).append(" ");
-            time.append(declensionService.dayOfWeek(repeatTime.getDayOfWeek())).append(" ");
-            if (repeatTime.getTime() != null) {
-                time.append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
-            }
-        } else if (repeatTime.getInterval().getMonths() != 0) {
-            time.append(time(repeatTime.getInterval())).append(" ");
-            time.append(repeatTime.getDay()).append(" ").append(localisationService.getMessage(MessagesProperties.REGEXP_MONTH_DAY_PREFIX));
-            if (repeatTime.getTime() != null) {
-                time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
-            }
-        } else if (repeatTime.getInterval().getYears() != 0) {
-            time.append(time(repeatTime.getInterval())).append(" ");
-            time.append(repeatTime.getDay()).append(" ").append(repeatTime.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()));
-            if (repeatTime.getTime() != null) {
-                time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
-            }
-        } else if (repeatTime.getInterval() != null) {
-            time.append(time(repeatTime.getInterval()));
-            if (repeatTime.getTime() != null) {
-                time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
-            }
-        }
-        time.append("</b>");
-
-        return time.toString();
     }
 }

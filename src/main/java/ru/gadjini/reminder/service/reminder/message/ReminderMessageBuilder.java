@@ -8,6 +8,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.model.CustomRemindResult;
+import ru.gadjini.reminder.service.reminder.time.ReminderTimeBuilder;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
 
@@ -22,10 +23,13 @@ public class ReminderMessageBuilder {
 
     private TimeBuilder timeBuilder;
 
+    private ReminderTimeBuilder reminderTimeBuilder;
+
     @Autowired
-    public ReminderMessageBuilder(MessageBuilder messageBuilder, TimeBuilder timeBuilder) {
+    public ReminderMessageBuilder(MessageBuilder messageBuilder, TimeBuilder timeBuilder, ReminderTimeBuilder reminderTimeBuilder) {
         this.messageBuilder = messageBuilder;
         this.timeBuilder = timeBuilder;
+        this.reminderTimeBuilder = reminderTimeBuilder;
     }
 
     public String getReminderMessage(Reminder reminder) {
@@ -233,7 +237,7 @@ public class ReminderMessageBuilder {
         int i = 1;
         for (Reminder reminder : reminders) {
             String number = i++ + ") ";
-            text.append(number).append(reminder.getText()).append("(").append(timeBuilder.time(reminder)).append(")\n");
+            text.append(number).append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder)).append(")\n");
 
             text.append(messageBuilder.getCompletedAt(reminder.getCompletedAtInReceiverZone())).append("\n");
 
@@ -256,7 +260,7 @@ public class ReminderMessageBuilder {
         int i = 1;
         for (Reminder reminder : reminders) {
             String number = i++ + ") ";
-            text.append(number).append(reminder.getText()).append("(").append(timeBuilder.time(reminder)).append(")\n");
+            text.append(number).append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder)).append(")\n");
 
             if (!reminder.isInactive() && reminder.isRepeatable()) {
                 text.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n");
