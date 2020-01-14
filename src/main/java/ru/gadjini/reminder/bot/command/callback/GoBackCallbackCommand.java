@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.bot.command.callback;
 
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -39,10 +40,49 @@ public class GoBackCallbackCommand implements CallbackBotCommand {
         String prevCommandName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
         ReplyKeyboard replyKeyboard = null;
 
-        if (requestParams.getBoolean(Arg.RESTORE_KEYBOARD.getKey())) {
-            replyKeyboard = commandNavigator.silentPop(callbackQuery.getMessage().getChatId());
+        int code = requestParams.getInt(Arg.RESTORE_KEYBOARD.getKey());
+        RestoreKeyboard restoreKeyboard = RestoreKeyboard.fromCode(code);
+
+        switch (restoreKeyboard) {
+            case RESTORE_KEYBOARD:
+                replyKeyboard = commandNavigator.silentPop(callbackQuery.getMessage().getChatId());
+                break;
+            case RESTORE_HISTORY:
+                commandNavigator.silentPop(callbackQuery.getMessage().getChatId());
+                break;
+            case NONE:
+                break;
         }
         callbackCommandNavigator.goTo(TgMessage.from(callbackQuery), prevCommandName, replyKeyboard, requestParams);
         return null;
+    }
+
+    public enum RestoreKeyboard {
+
+        RESTORE_KEYBOARD(0),
+
+        RESTORE_HISTORY(1),
+
+        NONE(2);
+
+        private final int code;
+
+        RestoreKeyboard(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public static RestoreKeyboard fromCode(int code) {
+            for (RestoreKeyboard value: values()) {
+                if (value.code == code) {
+                    return value;
+                }
+            }
+
+            throw new IllegalArgumentException();
+        }
     }
 }

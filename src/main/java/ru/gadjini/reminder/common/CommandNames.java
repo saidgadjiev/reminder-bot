@@ -56,4 +56,5 @@ public class CommandNames {
     public static final String DISABLE_COUNT_SERIES_COMMAND_NAME = "au";
     public static final String SAVED_QUERY_COMMAND_HISTORY_NAME = "av";
     public static final String DELETE_SAVED_QUERY_COMMAND_NAME = "aw";
+    public static final String CREATOR_REMINDER_COMMAND_NAME = "ax";
 }

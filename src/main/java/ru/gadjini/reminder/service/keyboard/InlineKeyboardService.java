@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import ru.gadjini.reminder.bot.command.callback.GoBackCallbackCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.PaymentType;
@@ -100,7 +101,7 @@ public class InlineKeyboardService {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderTimeButton(reminderTimeId)));
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.SCHEDULE_COMMAND_NAME, false, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.SCHEDULE_COMMAND_NAME, GoBackCallbackCommand.RestoreKeyboard.NONE, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
 
         return keyboardMarkup;
     }
@@ -126,7 +127,7 @@ public class InlineKeyboardService {
             inlineKeyboardMarkup.getKeyboard().add(row);
         }
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CREATE_REMIND_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.SCHEDULE_COMMAND_NAME)));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.REMINDER_DETAILS_COMMAND_NAME, false, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.REMINDER_DETAILS_COMMAND_NAME, GoBackCallbackCommand.RestoreKeyboard.NONE, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
 
         return inlineKeyboardMarkup;
     }
@@ -213,6 +214,15 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
+    public InlineKeyboardMarkup getCreatorReminderKeyboard(Reminder reminder) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
+
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.changeReminderNote(reminder.getId(), CommandNames.CREATOR_REMINDER_COMMAND_NAME)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderNote(reminder.getId(), CommandNames.CREATOR_REMINDER_COMMAND_NAME)));
+
+        return inlineKeyboardMarkup;
+    }
+
     public InlineKeyboardMarkup getReceiverReminderKeyboard(Reminder reminder) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
@@ -228,6 +238,10 @@ public class InlineKeyboardService {
                 keyboardButtons.add(buttonFactory.postponeReminderButton(reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME));
             }
             inlineKeyboardMarkup.getKeyboard().add(keyboardButtons);
+        }
+        if (reminder.isMySelf()) {
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.changeReminderNote(reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderNote(reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
         }
         if (reminder.isNotMySelf() && reminder.isUnread()) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.readButton(reminder.getId())));
@@ -289,7 +303,7 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup goBackCallbackButton(String prevHistoryName, boolean restoreKeyboard, RequestParams requestParams) {
+    public InlineKeyboardMarkup goBackCallbackButton(String prevHistoryName, GoBackCallbackCommand.RestoreKeyboard restoreKeyboard, RequestParams requestParams) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, restoreKeyboard, requestParams)));
@@ -333,11 +347,11 @@ public class InlineKeyboardService {
 
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminderTimeButton(reminderId)));
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminderTextButton(reminderId)));
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.changeReminderNote(reminderId)));
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderNote(reminderId)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.changeReminderNote(reminderId, CommandNames.EDIT_REMINDER_COMMAND_NAME)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderNote(reminderId, CommandNames.EDIT_REMINDER_COMMAND_NAME)));
 
         if (prevHistoryName != null) {
-            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, false, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, GoBackCallbackCommand.RestoreKeyboard.NONE, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
         }
 
         return keyboardMarkup;

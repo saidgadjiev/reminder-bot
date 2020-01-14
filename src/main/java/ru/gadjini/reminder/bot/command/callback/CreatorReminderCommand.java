@@ -22,31 +22,31 @@ import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageBuilder;
 
 @Component
-public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
+public class CreatorReminderCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
+
+    private ReminderService reminderService;
 
     private MessageService messageService;
 
-    private InlineKeyboardService inlineKeyboardService;
-
     private ReminderMessageBuilder messageBuilder;
 
-    private ReminderService reminderService;
+    private InlineKeyboardService inlineKeyboardService;
 
     private LocalisationService localisationService;
 
     @Autowired
-    public ReceiverReminderCommand(MessageService messageService, InlineKeyboardService inlineKeyboardService, ReminderMessageBuilder messageBuilder,
-                                   ReminderService reminderService, LocalisationService localisationService) {
-        this.messageService = messageService;
-        this.inlineKeyboardService = inlineKeyboardService;
-        this.messageBuilder = messageBuilder;
+    public CreatorReminderCommand(ReminderService reminderService, MessageService messageService,
+                                  ReminderMessageBuilder messageBuilder, InlineKeyboardService inlineKeyboardService, LocalisationService localisationService) {
         this.reminderService = reminderService;
+        this.messageService = messageService;
+        this.messageBuilder = messageBuilder;
+        this.inlineKeyboardService = inlineKeyboardService;
         this.localisationService = localisationService;
     }
 
     @Override
     public String getName() {
-        return CommandNames.RECEIVER_REMINDER_COMMAND_NAME;
+        return CommandNames.CREATOR_REMINDER_COMMAND_NAME;
     }
 
     @Override
@@ -59,6 +59,7 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
         return getName();
     }
 
+
     @Override
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         Reminder reminder = reminderService.getReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
@@ -67,8 +68,8 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
-                        .text(messageBuilder.getReminderMessage(reminder))
-                        .replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(reminder))
+                        .text(messageBuilder.getReminderMessage(reminder, reminder.getCreatorId()))
+                        .replyKeyboard(inlineKeyboardService.getCreatorReminderKeyboard(reminder))
         );
         if (replyKeyboard != null) {
             messageService.sendMessageAsync(

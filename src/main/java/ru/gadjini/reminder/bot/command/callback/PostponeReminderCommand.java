@@ -82,7 +82,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         messageService.editReplyKeyboard(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
-                inlineKeyboardService.goBackCallbackButton(prevHistoryName, true, requestParams)
+                inlineKeyboardService.goBackCallbackButton(prevHistoryName, GoBackCallbackCommand.RestoreKeyboard.RESTORE_KEYBOARD, requestParams)
         );
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)

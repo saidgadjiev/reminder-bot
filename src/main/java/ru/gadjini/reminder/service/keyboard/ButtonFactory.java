@@ -3,6 +3,7 @@ package ru.gadjini.reminder.service.keyboard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import ru.gadjini.reminder.bot.command.callback.GoBackCallbackCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.request.Arg;
@@ -38,9 +39,9 @@ public class ButtonFactory {
         return button;
     }
 
-    public InlineKeyboardButton goBackCallbackButton(String prevHistoryName, boolean restoreKeyboard, RequestParams requestParams) {
+    public InlineKeyboardButton goBackCallbackButton(String prevHistoryName, GoBackCallbackCommand.RestoreKeyboard restoreKeyboard, RequestParams requestParams) {
         Objects.requireNonNull(prevHistoryName);
-        requestParams.add(Arg.RESTORE_KEYBOARD.getKey(), restoreKeyboard);
+        requestParams.add(Arg.RESTORE_KEYBOARD.getKey(), restoreKeyboard.getCode());
         requestParams.add(Arg.PREV_HISTORY_NAME.getKey(), prevHistoryName);
 
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_CALLBACK_COMMAND_DESCRIPTION));
@@ -209,21 +210,23 @@ public class ButtonFactory {
         return button;
     }
 
-    public InlineKeyboardButton changeReminderNote(int reminderId) {
+    public InlineKeyboardButton changeReminderNote(int reminderId, String prevHistory) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_NOTE_COMMAND_DESCRIPTION));
         button.setCallbackData(CommandNames.EDIT_REMINDER_NOTE_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
+                        .add(Arg.PREV_HISTORY_NAME.getKey(), prevHistory)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;
     }
 
-    public InlineKeyboardButton deleteReminderNote(int reminderId) {
+    public InlineKeyboardButton deleteReminderNote(int reminderId, String currHistory) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.DELETE_REMINDER_NOTE_COMMAND_DESCRIPTION));
         button.setCallbackData(CommandNames.DELETE_REMINDER_NOTE_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
+                        .add(Arg.CURR_HISTORY_NAME.getKey(), currHistory)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;

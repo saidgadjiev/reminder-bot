@@ -67,10 +67,11 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
+        String prevHistory = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_EDIT_NOTE))
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, true, requestParams))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(prevHistory, GoBackCallbackCommand.RestoreKeyboard.RESTORE_HISTORY, requestParams))
         );
 
         return MessagesProperties.MESSAGE_REMINDER_NOTE_ANSWER;
@@ -83,8 +84,13 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
         Reminder reminder = reminderService.changeReminderNote(reminderId, text);
         reminder.getCreator().setChatId(message.getChatId());
 
+        String prevHistory = request.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
         commandNavigator.silentPop(message.getChatId());
-        reminderMessageSender.sendReminderNoteChanged(reminder, request.getMessageId());
+        if (prevHistory.equals(CommandNames.EDIT_REMINDER_COMMAND_NAME)) {
+            reminderMessageSender.sendReminderNoteChangedFromList(reminder, request.getMessageId());
+        } else {
+            reminderMessageSender.sendReminderNoteChanged(reminder, request.getMessageId());
+        }
     }
 
     @Override
