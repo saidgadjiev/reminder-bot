@@ -171,7 +171,7 @@ public class ReminderDao {
                         "       rt.id as rt_id,\n" +
                         "       rc.chat_id                                       as rc_chat_id,\n" +
                         "       rc.zone_id                                       as rc_zone_id,\n" +
-                        "       cr.name                                    as cr_name,\n" +
+                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name,\n" +
                         "       rt.last_reminder_at as rt_last_reminder_at,\n" +
                         "       rt.reminder_id as rt_reminder_id,\n" +
                         "       rt.fixed_time as rt_fixed_time,\n" +
@@ -185,6 +185,9 @@ public class ReminderDao {
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
                         "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
                         "         INNER JOIN subscription sb ON r.receiver_id = sb.user_id\n" +
+                        "         LEFT JOIN friendship f ON CASE\n" +
+                        "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
+                        "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
                         "WHERE sb.end_date >= current_date AND r.inactive = FALSE AND r.status = 0 AND CASE\n" +
                         "          WHEN rt.time_type = 0 THEN :curr_date >= rt.fixed_time\n" +
                         "          ELSE date_diff_in_minute(:curr_date, rt.last_reminder_at) >= minute(rt.delay_time)\n" +
