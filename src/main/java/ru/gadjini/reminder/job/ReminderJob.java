@@ -86,7 +86,7 @@ public class ReminderJob {
 
             LOGGER.debug("Overdue reminder with id {} moved not the next time", reminder.getId());
         }
-        LOGGER.debug("Move reminders finished at {}", LocalDate.now());
+        LOGGER.debug("Move reminders finished at {}", LocalDateTime.now());
     }
 
     @Scheduled(cron = "10 * * * * *")
