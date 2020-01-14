@@ -12,6 +12,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
@@ -50,7 +51,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] args) {
-        messageService.sendMessage(new SendMessageContext().chatId(chat.getId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_START)).replyKeyboard(replyKeyboardService.getMainMenu(chat.getId(), user.getId())));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(chat.getId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_START)).replyKeyboard(replyKeyboardService.getMainMenu(chat.getId(), user.getId())));
     }
 
     @Override
@@ -70,7 +71,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     @Override
     public void restore(long chatId) {
-        messageService.sendMessage(new SendMessageContext().chatId(chatId).text(localisationService.getMessage(MessagesProperties.MESSAGE_START)).replyKeyboard(replyKeyboardService.getMainMenu(chatId, (int) chatId)));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(chatId).text(localisationService.getMessage(MessagesProperties.MESSAGE_START)).replyKeyboard(replyKeyboardService.getMainMenu(chatId, (int) chatId)));
     }
 
     @Override

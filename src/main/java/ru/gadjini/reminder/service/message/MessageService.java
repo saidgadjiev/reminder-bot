@@ -16,11 +16,15 @@ public interface MessageService {
 
     void deleteMessage(long chatId, int messageId);
 
+    void sendMessageAsync(SendMessageContext messageContext, Consumer<Message> callback);
+
+    void sendMessageAsync(SendMessageContext messageContext);
+
     void sendMessage(SendMessageContext messageContext, Consumer<Message> callback);
 
-    void sendMessage(SendMessageContext messageContext);
-
     void sendAnswerCallbackQuery(AnswerCallbackContext callbackContext);
+
+    void editMessageAsync(EditMessageContext messageContext);
 
     void editMessage(EditMessageContext messageContext);
 

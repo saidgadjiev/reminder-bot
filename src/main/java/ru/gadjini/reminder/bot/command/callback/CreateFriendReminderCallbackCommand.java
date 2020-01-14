@@ -10,6 +10,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.request.Arg;
@@ -65,8 +66,8 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(callbackQuery.getMessage().getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT))
                         .replyKeyboard(replyKeyboardService.goBackCommand(callbackQuery.getMessage().getChatId()))

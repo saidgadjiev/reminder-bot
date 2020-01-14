@@ -6,6 +6,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.UserReminderNotification;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
@@ -70,15 +71,15 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
     public boolean processMessage(Message message, String text) {
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getNonCachedList(message.getFrom().getId(), notificationType);
 
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .text(messageBuilder.getUserReminderNotifications(userReminderNotifications))
                         .replyKeyboard(inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)),
                 msg -> stateService.setState(msg.getChatId(), msg.getMessageId())
         );
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_EDIT_USER_REMINDER_NOTIFICATION))
                         .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
@@ -92,8 +93,8 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getNonCachedList(message.getFrom().getId(), notificationType);
         int messageId = stateService.getState(message.getChatId());
 
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .messageId(messageId)
                         .text(messageBuilder.getUserReminderNotifications(userReminderNotifications))

@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.domain.RemindMessage;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
@@ -59,8 +60,8 @@ public class ReminderNotificationMessageSender {
         }
 
         InlineKeyboardMarkup keyboard = inlineKeyboardService.getRemindKeyboard(reminder);
-        messageService.sendMessage(
-                new SendMessageContext().chatId(reminder.getReceiver().getChatId()).text(message).replyKeyboard(keyboard),
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getReceiver().getChatId()).text(message).replyKeyboard(keyboard),
                 msg -> remindMessageService.create(reminder.getId(), msg.getMessageId())
         );
     }
@@ -68,8 +69,8 @@ public class ReminderNotificationMessageSender {
     public void sendCustomRemindCreatedFromReminderTimeDetails(long chatId, int messageId, CustomRemindResult customRemindResult, ReplyKeyboardMarkup replyKeyboardMarkup) {
         String text = reminderNotificationMessageBuilder.getReminderTimeMessage(customRemindResult.getReminderNotification());
 
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(text)
@@ -80,8 +81,8 @@ public class ReminderNotificationMessageSender {
     public void sendCustomRemindCreated(long chatId, int messageId, CustomRemindResult customRemindResult, ReplyKeyboardMarkup replyKeyboardMarkup) {
         String text = reminderMessageBuilder.getReminderMessage(customRemindResult.getReminderNotification().getReminder());
 
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(text + "\n\n" + reminderMessageBuilder.getCustomRemindText(customRemindResult))

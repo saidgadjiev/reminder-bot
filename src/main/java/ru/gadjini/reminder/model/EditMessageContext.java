@@ -2,6 +2,7 @@ package ru.gadjini.reminder.model;
 
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import ru.gadjini.reminder.job.PriorityJob;
 
 public class EditMessageContext {
 
@@ -12,6 +13,12 @@ public class EditMessageContext {
     private String text;
 
     private InlineKeyboardMarkup replyKeyboard;
+
+    private PriorityJob.Priority priority;
+
+    public EditMessageContext(PriorityJob.Priority priority) {
+        this.priority = priority;
+    }
 
     public long chatId() {
         return this.chatId;
@@ -53,7 +60,11 @@ public class EditMessageContext {
         return replyKeyboard != null;
     }
 
+    public PriorityJob.Priority priority() {
+        return priority;
+    }
+
     public static EditMessageContext from(CallbackQuery callbackQuery) {
-        return new EditMessageContext().chatId(callbackQuery.getMessage().getChatId()).messageId(callbackQuery.getMessage().getMessageId());
+        return new EditMessageContext(PriorityJob.Priority.MEDIUM).chatId(callbackQuery.getMessage().getChatId()).messageId(callbackQuery.getMessage().getMessageId());
     }
 }

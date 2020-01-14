@@ -7,6 +7,7 @@ import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
@@ -39,8 +40,8 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
 
     @Override
     public boolean processMessage(Message message, String text) {
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUESTS))
                         .replyKeyboard(replyKeyboardService.getFriendRequestsKeyboard(message.getChatId()))

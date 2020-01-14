@@ -15,6 +15,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.exception.UserException;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.service.command.CommandExecutor;
@@ -102,7 +103,7 @@ public class ReminderBotService {
             }
         } catch (UserException ex) {
             LOGGER.error(ex.getMessage());
-            messageService.sendMessage(new SendMessageContext().chatId(TgMessage.getChatId(update)).text(ex.getMessage()));
+            messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(TgMessage.getChatId(update)).text(ex.getMessage()));
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             messageService.sendErrorMessage(TgMessage.getChatId(update));
@@ -120,7 +121,7 @@ public class ReminderBotService {
             if (commandExecutor.executeBotCommand(message)) {
                 return;
             } else {
-                messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_UNKNOWN_COMMAND)));
+                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_UNKNOWN_COMMAND)));
             }
         } else if (commandExecutor.isTextCommand(message.getChatId(), text)) {
             commandExecutor.executeKeyBoardCommand(message, text);

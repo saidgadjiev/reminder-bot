@@ -6,6 +6,7 @@ import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Plan;
 import ru.gadjini.reminder.domain.Subscription;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -49,7 +50,7 @@ public class SubscriptionInfoCommand implements KeyboardBotCommand {
     public boolean processMessage(Message message, String text) {
         Subscription subscription = subscriptionService.getSubscription(message.getFrom().getId());
 
-        messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(getSubscriptionInfo(subscription)));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(getSubscriptionInfo(subscription)));
 
         return false;
     }

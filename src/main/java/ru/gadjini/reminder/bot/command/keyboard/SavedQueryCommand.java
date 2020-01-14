@@ -9,6 +9,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.SavedQuery;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.command.CommandStateService;
@@ -70,16 +71,16 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
     @Override
     public boolean processMessage(Message message, String text) {
         List<SavedQuery> queries = savedQueryService.getQueries(message.getFrom().getId());
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .text(messageBuilder.getMessage(queries))
                         .replyKeyboard(inlineKeyboardService.getSavedQueriesKeyboard(queries.stream().map(SavedQuery::getId).collect(Collectors.toList()))),
                 msg -> stateService.setState(msg.getChatId(), msg.getMessageId())
         );
 
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_SAVED_QUERY))
                         .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
@@ -99,8 +100,8 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
 
         List<SavedQuery> queries = savedQueryService.getQueries(message.getFrom().getId());
         int messageId = stateService.getState(message.getChatId());
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .messageId(messageId)
                         .text(messageBuilder.getMessage(queries))

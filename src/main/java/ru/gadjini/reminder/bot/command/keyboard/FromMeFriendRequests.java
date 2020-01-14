@@ -8,6 +8,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
@@ -49,8 +50,8 @@ public class FromMeFriendRequests implements KeyboardBotCommand, NavigableCallba
     @Override
     public boolean processMessage(Message message, String text) {
         List<TgUser> requests = friendshipService.getFromMeFriendRequests(message.getFrom().getId());
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .text(friendshipMessageBuilder.getFriendsList(requests, MessagesProperties.MESSAGE_FROM_ME_FRIEND_REQUESTS_EMPTY, MessagesProperties.MESSAGE_CHOOSE_FRIEND_REQUEST_CANCEL))
                         .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(requests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.CANCEL_FRIEND_REQUEST_COMMAND_NAME))

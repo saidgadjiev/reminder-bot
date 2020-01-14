@@ -10,6 +10,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
@@ -67,8 +68,8 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
 
     @Override
     public boolean processMessage(Message message, String text) {
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME))
                         .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
@@ -99,26 +100,26 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
 
         switch (createFriendRequestResult.getState()) {
             case ALREADY_REQUESTED:
-                messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT)));
+                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT)));
                 break;
             case ALREADY_REQUESTED_TO_ME:
-                messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT_ME)));
+                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT_ME)));
                 break;
             case ALREADY_FRIEND:
-                messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_ALREADY_FRIEND)));
+                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_ALREADY_FRIEND)));
                 break;
             case NONE:
                 Friendship friendship = createFriendRequestResult.getFriendship();
 
-                messageService.sendMessage(
-                        new SendMessageContext()
+                messageService.sendMessageAsync(
+                        new SendMessageContext(PriorityJob.Priority.MEDIUM)
                                 .chatId(message.getChatId())
                                 .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_SENT,
                                         new Object[]{UserUtils.userLink(friendship.getUserTwo())}))
                                 .replyKeyboard(replyKeyboardMarkup)
                 );
-                messageService.sendMessage(
-                        new SendMessageContext()
+                messageService.sendMessageAsync(
+                        new SendMessageContext(PriorityJob.Priority.MEDIUM)
                                 .chatId(friendship.getUserTwo().getChatId())
                                 .text(localisationService.getMessage(MessagesProperties.MESSAGE_NEW_FRIEND_REQUEST, new Object[]{UserUtils.userLink(friendship.getUserOne())}))
                                 .replyKeyboard(inlineKeyboardService.getFriendRequestKeyboard(friendship.getUserOne().getUserId()))

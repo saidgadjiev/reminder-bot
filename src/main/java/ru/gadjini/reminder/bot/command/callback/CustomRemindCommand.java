@@ -72,7 +72,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
 
         String prevHistoryName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
 
-        messageService.editMessage(
+        messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(prevHistoryName, true, requestParams))

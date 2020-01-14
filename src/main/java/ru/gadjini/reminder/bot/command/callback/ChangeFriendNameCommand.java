@@ -9,6 +9,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
@@ -66,7 +67,7 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
-        messageService.editMessage(
+        messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_NAME))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.FRIEND_DETAILS_COMMAND_NAME, false, requestParams))
@@ -82,8 +83,8 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
         TgUser friend = friendshipService.changeFriendName(message.getFrom().getId(), requestParams.getInt(Arg.FRIEND_ID.getKey()), text);
 
         commandNavigator.silentPop(message.getChatId());
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .messageId(callbackRequest.getMessageId())
                         .text(friendshipMessageBuilder.getFriendDetails(friend))

@@ -8,6 +8,7 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
@@ -50,7 +51,7 @@ public class DeleteFriendCommand implements CallbackBotCommand {
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         FriendshipService.DeleteFriendResult deleteFriendResult = friendshipService.deleteFriend(TgMessage.from(callbackQuery), requestParams.getInt(Arg.FRIEND_ID.getKey()));
 
-        messageService.editMessage(
+        messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_DELETED))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_FRIENDS_COMMAND_HISTORY_NAME))
@@ -77,8 +78,8 @@ public class DeleteFriendCommand implements CallbackBotCommand {
         Friendship friendship = deleteFriendResult.getFriendship();
         TgUser friend = friendship.getFriend(userId);
 
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(friend.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIENDSHIP_INTERRUPTED, new Object[]{
                                 UserUtils.userLink(friendship.getUser(userId))

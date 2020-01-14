@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.InviteService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -34,7 +35,7 @@ public class CreateInviteCommand implements KeyboardBotCommand {
         if (message.getFrom().getId() == 171271164) {
             String token = inviteService.createInvite();
 
-            messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(token));
+            messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(token));
         }
 
         return false;

@@ -45,7 +45,7 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         ReminderNotification reminderNotification = reminderNotificationService.getReminderTime(requestParams.getInt(Arg.REMINDER_NOTIFICATION_ID.getKey()));
 
-        messageService.editMessage(
+        messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(messageBuilder.getReminderTimeMessage(reminderNotification))
                         .replyKeyboard(inlineKeyboardService.getReminderTimeKeyboard(requestParams.getInt(Arg.REMINDER_NOTIFICATION_ID.getKey()), reminderNotification.getReminderId()))

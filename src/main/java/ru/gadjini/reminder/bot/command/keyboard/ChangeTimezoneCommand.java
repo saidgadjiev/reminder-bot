@@ -9,6 +9,7 @@ import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.TimezoneService;
@@ -67,8 +68,8 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
     public boolean processMessage(Message message, String text) {
         ZoneId zoneId = tgUserService.getTimeZone(message.getFrom().getId());
 
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.CURRENT_TIMEZONE, new Object[]{
                                 zoneId.getDisplayName(TextStyle.FULL, Locale.getDefault()),
@@ -101,8 +102,8 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
             tgUserService.saveZoneId(message.getFrom().getId(), zoneId);
             ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(message.getChatId())
                             .text(localisationService.getMessage(MessagesProperties.TIMEZONE_CHANGED, new Object[]{
                                     zoneId.getDisplayName(TextStyle.FULL, Locale.getDefault()),

@@ -9,6 +9,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
@@ -68,16 +69,16 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         Reminder reminder = reminderService.getReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
                         .text(messageBuilder.getReminderMessage(reminder))
                         .replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(reminder))
         );
         if (replyKeyboard != null) {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(tgMessage.getChatId())
                             .text(localisationService.getMessage(MessagesProperties.MESSAGE_HOW_HELP))
                             .replyKeyboard(replyKeyboard)

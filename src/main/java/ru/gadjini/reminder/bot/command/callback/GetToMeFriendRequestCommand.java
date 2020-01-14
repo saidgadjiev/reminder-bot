@@ -40,7 +40,7 @@ public class GetToMeFriendRequestCommand implements CallbackBotCommand {
         int friendId = requestParams.getInt(Arg.FRIEND_ID.getKey());
         TgUser mayBeFriend = friendshipService.getFriend(callbackQuery.getFrom().getId(), friendId);
 
-        messageService.editMessage(
+        messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(UserUtils.userLink(mayBeFriend))
                         .replyKeyboard(inlineKeyboardService.getFriendRequestKeyboard(friendId))

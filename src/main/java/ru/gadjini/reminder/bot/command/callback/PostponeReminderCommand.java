@@ -14,6 +14,7 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.time.Time;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
@@ -83,8 +84,8 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
                 callbackQuery.getMessage().getMessageId(),
                 inlineKeyboardService.goBackCallbackButton(prevHistoryName, true, requestParams)
         );
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(callbackQuery.getMessage().getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_TIME))
                         .replyKeyboard(replyKeyboardService.postponeTimeKeyboard(callbackQuery.getMessage().getChatId()))
@@ -131,8 +132,8 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         stateService.setState(message.getChatId(), postponeCommandState);
         stateService.getState(message.getChatId());
         if (reminder.getReceiverId() != reminder.getCreatorId()) {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(message.getChatId())
                             .text(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_MESSAGE))
                             .replyKeyboard(replyKeyboardService.getPostponeMessagesKeyboard(message.getChatId()))

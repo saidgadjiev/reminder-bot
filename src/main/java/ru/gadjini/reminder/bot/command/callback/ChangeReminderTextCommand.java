@@ -68,7 +68,7 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableB
         CallbackRequest callbackRequest = new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams);
         stateService.setState(callbackQuery.getMessage().getChatId(), callbackRequest);
 
-        messageService.editMessage(
+        messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TEXT))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, true, requestParams))

@@ -9,6 +9,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
@@ -54,8 +55,8 @@ public class ToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableC
     public boolean processMessage(Message message, String text) {
         List<TgUser> friendRequests = friendshipService.getToMeFriendRequests(message.getFrom().getId());
 
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .text(friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null))
                         .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(friendRequests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.GET_FRIEND_REQUEST_COMMAND_NAME))
@@ -72,8 +73,8 @@ public class ToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableC
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         List<TgUser> friendRequests = friendshipService.getToMeFriendRequests(tgMessage.getUser().getId());
 
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
                         .text(friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null))

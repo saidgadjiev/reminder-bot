@@ -8,6 +8,7 @@ import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
@@ -40,8 +41,8 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
 
     @Override
     public boolean processMessage(Message message, String text) {
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_SETTINGS))
                         .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(message.getChatId()))
@@ -61,8 +62,8 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
 
     @Override
     public void restore(long chatId) {
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_SETTINGS))
                         .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(chatId))

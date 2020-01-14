@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -28,6 +29,6 @@ public class HelpCommand extends BotCommand {
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings) {
-        messageService.sendMessage(new SendMessageContext().chatId(chat.getId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_HELP)));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(chat.getId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_HELP)));
     }
 }

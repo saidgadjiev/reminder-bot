@@ -51,7 +51,7 @@ public class DeleteUserReminderNotificationCommand implements CallbackBotCommand
         UserReminderNotification.NotificationType notificationType = UserReminderNotification.NotificationType.fromCode(requestParams.getInt(Arg.USER_REMINDER_NOTIFICATION_TYPE.getKey()));
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getNonCachedList(callbackQuery.getFrom().getId(), notificationType);
 
-        messageService.editMessage(
+        messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                 .text(reminderNotificationMessageBuilder.getUserReminderNotifications(userReminderNotifications))
                 .replyKeyboard(inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType))

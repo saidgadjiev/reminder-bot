@@ -40,17 +40,27 @@ public class DummyMessageService implements MessageService {
     }
 
     @Override
-    public void sendMessage(SendMessageContext messageContext, Consumer<Message> callback) {
+    public void sendMessageAsync(SendMessageContext messageContext, Consumer<Message> callback) {
         callback.accept(dummyMessage);
     }
 
     @Override
-    public void sendMessage(SendMessageContext messageContext) {
+    public void sendMessageAsync(SendMessageContext messageContext) {
+
+    }
+
+    @Override
+    public void sendMessage(SendMessageContext messageContext, Consumer<Message> callback) {
 
     }
 
     @Override
     public void sendAnswerCallbackQuery(AnswerCallbackContext callbackContext) {
+
+    }
+
+    @Override
+    public void editMessageAsync(EditMessageContext messageContext) {
 
     }
 

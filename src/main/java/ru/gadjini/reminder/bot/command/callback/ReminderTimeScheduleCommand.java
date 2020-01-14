@@ -8,6 +8,7 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.ReminderNotification;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
@@ -48,7 +49,7 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         List<ReminderNotification> reminderNotifications = reminderNotificationService.getCustomRemindersList(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
-        messageService.editMessage(
+        messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(reminderNotificationMessageBuilder.getReminderNotifications(reminderNotifications))
                         .replyKeyboard(inlineKeyboardService.getReminderTimesListKeyboard(reminderNotifications.stream().map(ReminderNotification::getId).collect(Collectors.toList()), requestParams.getInt(Arg.REMINDER_ID.getKey())))
@@ -65,8 +66,8 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         List<ReminderNotification> reminderNotifications = reminderNotificationService.getCustomRemindersList(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
                         .text(reminderNotificationMessageBuilder.getReminderNotifications(reminderNotifications))

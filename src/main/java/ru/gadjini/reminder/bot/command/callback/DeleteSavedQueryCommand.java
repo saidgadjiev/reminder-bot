@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.SavedQuery;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -47,8 +48,8 @@ public class DeleteSavedQueryCommand implements CallbackBotCommand {
         savedQueryService.delete(queryId);
 
         List<SavedQuery> queries = savedQueryService.getQueries(callbackQuery.getFrom().getId());
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(callbackQuery.getMessage().getChatId())
                         .messageId(callbackQuery.getMessage().getMessageId())
                         .text(messageBuilder.getMessage(queries))

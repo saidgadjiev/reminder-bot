@@ -14,6 +14,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.exception.UserException;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.command.CommandNavigator;
@@ -94,8 +95,8 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
         if (StringUtils.isBlank(extractReceiverResult.getText())) {
             TgUser receiver = extractReceiverResult.getReceiver();
             stateService.setState(message.getChatId(), receiver);
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(message.getChatId())
                             .text(friendshipMessageBuilder.getFriendDetailsWithFooterCode(receiver, MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT))
                             .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
@@ -119,8 +120,8 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
             } catch (UserException ex) {
                 LOGGER.error(ex.getMessage());
                 stateService.setState(message.getChatId(), receiver);
-                messageService.sendMessage(
-                        new SendMessageContext()
+                messageService.sendMessageAsync(
+                        new SendMessageContext(PriorityJob.Priority.MEDIUM)
                                 .chatId(message.getChatId())
                                 .text(friendshipMessageBuilder.getFriendDetails(receiver, ex.getMessage()))
                                 .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))

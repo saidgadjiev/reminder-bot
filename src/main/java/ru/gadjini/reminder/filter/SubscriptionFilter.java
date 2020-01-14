@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Plan;
 import ru.gadjini.reminder.domain.Subscription;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.properties.SubscriptionProperties;
@@ -94,8 +95,8 @@ public class SubscriptionFilter extends BaseBotFilter {
     private void sendTrialSubscriptionStarted(long chatId, int userId) {
         TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
 
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_TRIAL_PERIOD_STARTED, new Object[]{declensionService.day(subscriptionProperties.getTrialPeriod())}))
                         .replyKeyboard(replyKeyboardService.getMainMenu(chatId, userId))
@@ -103,8 +104,8 @@ public class SubscriptionFilter extends BaseBotFilter {
     }
 
     private void sendSubscriptionExpired(long chatId, int userId) {
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_EXPIRED))
                         .replyKeyboard(replyKeyboardService.removeKeyboard(chatId))
@@ -116,8 +117,8 @@ public class SubscriptionFilter extends BaseBotFilter {
         }
 
         Plan plan = planService.getActivePlan();
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .text(getNeedPayMessage(plan.getDescription()))
                         .replyKeyboard(inlineKeyboardService.getPaymentKeyboard(userId, plan.getId())),

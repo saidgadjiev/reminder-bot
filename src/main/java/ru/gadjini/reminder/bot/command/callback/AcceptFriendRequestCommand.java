@@ -7,6 +7,7 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.request.Arg;
@@ -54,15 +55,15 @@ public class AcceptFriendRequestCommand implements CallbackBotCommand {
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Friendship friendship = friendshipService.acceptFriendRequest(callbackQuery.getFrom(), requestParams.getInt(Arg.FRIEND_ID.getKey()));
 
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(friendship.getUserOne().getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ACCEPTED_INITIATOR, new Object[]{
                                 UserUtils.userLink(friendship.getUserTwo())
                         }))
         );
 
-        messageService.editMessage(
+        messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(friendshipMessageBuilder.getFriendDetails(friendship.getUserOne()))
                         .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendship.getUserOneId()))

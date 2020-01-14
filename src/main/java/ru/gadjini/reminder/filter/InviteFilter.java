@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.service.InviteService;
@@ -43,8 +44,8 @@ public class InviteFilter extends BaseBotFilter {
 
         if (!exists) {
             if (isStartCommand(update)) {
-                messageService.sendMessage(
-                        new SendMessageContext().chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_BOT_CLOSE_TESTING))
+                messageService.sendMessageAsync(
+                        new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_BOT_CLOSE_TESTING))
                 );
             } else {
                 String token = inviteService.delete(message.getText());
@@ -52,8 +53,8 @@ public class InviteFilter extends BaseBotFilter {
                 if (token != null) {
                     super.doFilter(update);
                 } else {
-                    messageService.sendMessage(
-                            new SendMessageContext().chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_INVITE_TOKEN_NOT_FOUND))
+                    messageService.sendMessageAsync(
+                            new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_INVITE_TOKEN_NOT_FOUND))
                     );
                 }
             }

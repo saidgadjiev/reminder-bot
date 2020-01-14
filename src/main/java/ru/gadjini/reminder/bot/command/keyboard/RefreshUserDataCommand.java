@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -39,7 +40,7 @@ public class RefreshUserDataCommand implements KeyboardBotCommand {
     @Override
     public boolean processMessage(Message message, String text) {
         TgUser user = tgUserService.createOrUpdateUser(message.getChatId(), message.getFrom());
-        messageService.sendMessage(new SendMessageContext().chatId(message.getChatId()).text(message(user)));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(message(user)));
 
         return false;
     }

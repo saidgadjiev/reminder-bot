@@ -13,6 +13,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.WebMoneyConstants;
 import ru.gadjini.reminder.domain.PaymentType;
 import ru.gadjini.reminder.exception.UserException;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.WebMoneyPayment;
 import ru.gadjini.reminder.properties.BotProperties;
@@ -98,7 +99,7 @@ public class WebMoneyController {
     @Path("/fail")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response fail(@FormParam("user_id") int userId) {
-        messageService.sendMessage(new SendMessageContext().chatId(userService.getChatId(userId)).text(localisationService.getMessage(MessagesProperties.MESSAGE_PAYMENT_FAIL)));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(userService.getChatId(userId)).text(localisationService.getMessage(MessagesProperties.MESSAGE_PAYMENT_FAIL)));
 
         return Response.seeOther(URI.create(redirectUrl(true))).build();
     }
@@ -191,8 +192,8 @@ public class WebMoneyController {
 
     private void sendSubscriptionRenewed(long chatId, LocalDate subscriptionEnd) {
         try {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(chatId)
                             .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}))
                             .replyKeyboard(replyKeyboardService.getMainMenu(chatId, (int) chatId))

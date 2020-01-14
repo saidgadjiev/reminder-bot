@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
@@ -51,21 +52,21 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getMySelfRepeatReminderSkipped(reminder))
                             .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
             );
         } else {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getCreator().getChatId())
                             .text(reminderMessageBuilder.getRepeatReminderSkippedForCreator(reminder))
             );
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getRepeatReminderSkippedForReceiver(reminder))
@@ -75,8 +76,8 @@ public class ReminderMessageSender {
     }
 
     public void sendRepeatReminderCantBeReturned(long chatId, int messageId, int userId, Reminder reminder) {
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_RETURNED))
@@ -90,14 +91,14 @@ public class ReminderMessageSender {
             remindMessageService.delete(reminder.getId());
         }
         if (reminder.isNotMySelf()) {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .text(reminderMessageBuilder.getRepeatReminderReturnedForReceiver(reminder))
             );
         }
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderMessage(reminder))
@@ -112,19 +113,19 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .text(reminderMessageBuilder.getMySelfRepeatReminderSkipped(reminder))
             );
         } else {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getCreator().getChatId())
                             .text(reminderMessageBuilder.getRepeatReminderSkippedForCreator(reminder))
             );
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .text(reminderMessageBuilder.getRepeatReminderSkippedForReceiver(reminder))
             );
@@ -138,19 +139,19 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .text(reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminder))
             );
         } else {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getCreator().getChatId())
                             .text(reminderMessageBuilder.getRepeatReminderCompletedForCreator(reminder))
             );
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .text(reminderMessageBuilder.getRepeatReminderCompletedForReceiver(reminder))
             );
@@ -162,13 +163,13 @@ public class ReminderMessageSender {
         Reminder newReminder = updateReminderResult.getNewReminder();
         String receiverMessage;
         if (oldReminder.isNotMySelf()) {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(oldReminder.getCreator().getChatId())
                             .text(reminderMessageBuilder.getReminderEdited())
             );
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(oldReminder.getReceiver().getChatId())
                             .text(reminderMessageBuilder.getFullyUpdateMessageForReceiver(oldReminder, newReminder))
             );
@@ -176,8 +177,8 @@ public class ReminderMessageSender {
         } else {
             receiverMessage = reminderMessageBuilder.getReminderMessage(newReminder);
         }
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(oldReminder.getReceiver().getChatId())
                         .messageId(oldReminder.getRemindMessage().getMessageId())
                         .text(receiverMessage)
@@ -199,21 +200,21 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminder))
                             .replyKeyboard(keyboardMarkup)
             );
         } else {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getCreator().getChatId())
                             .text(reminderMessageBuilder.getRepeatReminderCompletedForCreator(reminder))
             );
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getRepeatReminderCompletedForReceiver(reminder))
@@ -229,17 +230,17 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId()).text(reminderMessageBuilder.getMySelfReminderCompleted(reminder))
             );
         } else {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getCreator().getChatId()).text(reminderMessageBuilder.getReminderCompletedForCreator(reminder))
             );
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId()).text(reminderMessageBuilder.getReminderCompletedForReceiver(reminder))
             );
         }
@@ -252,19 +253,19 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminder))
                             .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME))
             );
         } else {
-            messageService.sendMessage(
-                    new SendMessageContext().chatId(reminder.getCreator().getChatId()).text(reminderMessageBuilder.getRepeatReminderCompletedForCreator(reminder))
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getCreator().getChatId()).text(reminderMessageBuilder.getRepeatReminderCompletedForCreator(reminder))
             );
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getRepeatReminderCompletedForReceiver(reminder))
@@ -280,16 +281,16 @@ public class ReminderMessageSender {
             messageForReceiver = reminderMessageBuilder.getNewReminder(reminder, reminder.getCreatorId());
         } else {
             messageForReceiver = reminderMessageBuilder.getNewReminder(reminder, reminder.getReceiverId());
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getCreator().getChatId())
                             .text(reminderMessageBuilder.getNewReminder(reminder, reminder.getCreatorId()))
                             .replyKeyboard(replyKeyboardMarkup)
             );
         }
         InlineKeyboardMarkup keyboard = inlineKeyboardService.getReceiverReminderKeyboard(reminder);
-        messageService.sendMessage(
-                new SendMessageContext().chatId(reminder.getReceiver().getChatId()).text(messageForReceiver).replyKeyboard(keyboard),
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getReceiver().getChatId()).text(messageForReceiver).replyKeyboard(keyboard),
                 message -> remindMessageService.create(reminder.getId(), message.getMessageId())
         );
     }
@@ -303,16 +304,16 @@ public class ReminderMessageSender {
 
         Reminder newReminder = updateReminderResult.getNewReminder();
         if (oldReminder.isNotMySelf()) {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(oldReminder.getReceiver().getChatId())
                             .text(reminderMessageBuilder.getReminderTimeChanged(oldReminder, newReminder))
             );
         }
         String newReminderText = reminderMessageBuilder.getReminderMessage(updateReminderResult.getNewReminder(), updateReminderResult.getNewReminder().getCreatorId());
         InlineKeyboardMarkup keyboard = inlineKeyboardService.getEditReminderKeyboard(oldReminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME);
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(oldReminder.getCreator().getChatId()).messageId(messageId).text(newReminderText).replyKeyboard(keyboard)
         );
     }
@@ -321,8 +322,8 @@ public class ReminderMessageSender {
         Reminder reminder = updateReminderResult.getOldReminder();
 
         if (reminder.hasRemindMessage()) {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .messageId(reminder.getRemindMessage().getMessageId())
                             .text(reminderMessageBuilder.getReminderPostponedForReceiver(
@@ -334,10 +335,10 @@ public class ReminderMessageSender {
         }
         if (reminder.isNotMySelf()) {
             String message = reminderMessageBuilder.getReminderPostponedForCreator(reminder.getText(), reminder.getReceiver(), updateReminderResult.getNewReminder().getRemindAtInReceiverZone(), reason);
-            messageService.sendMessage(new SendMessageContext().chatId(reminder.getCreator().getChatId()).text(message));
+            messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getCreator().getChatId()).text(message));
         }
-        messageService.sendMessage(
-                new SendMessageContext()
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(reminder.getReceiver().getChatId())
                         .text(reminderMessageBuilder.getReminderPostponedForReceiver(reminder.getText(), updateReminderResult.getNewReminder().getRemindAtInReceiverZone(), reason))
                         .replyKeyboard(replyKeyboard)
@@ -358,29 +359,29 @@ public class ReminderMessageSender {
                     updateReminderResult.getNewReminder().getText(),
                     oldReminder.getCreator()
             );
-            messageService.sendMessage(new SendMessageContext().chatId(oldReminder.getReceiver().getChatId()).text(message));
+            messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(oldReminder.getReceiver().getChatId()).text(message));
         }
         String newReminderText = reminderMessageBuilder.getReminderMessage(updateReminderResult.getNewReminder());
         InlineKeyboardMarkup keyboard = inlineKeyboardService.getEditReminderKeyboard(oldReminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME);
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(oldReminder.getCreator().getChatId()).messageId(messageId).text(newReminderText).replyKeyboard(keyboard)
         );
     }
 
     public void sendReminderNotFound(long chatId, int messageId) {
-        messageService.sendMessage(new SendMessageContext().chatId(chatId).text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOT_FOUND)));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(chatId).text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOT_FOUND)));
         messageService.deleteMessage(chatId, messageId);
     }
 
     public void sendReminderCantBeCompleted(long chatId, int messageId) {
-        messageService.sendMessage(new SendMessageContext().chatId(chatId).text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED)));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(chatId).text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED)));
         messageService.deleteMessage(chatId, messageId);
     }
 
     public void sendReminderCantBeCompletedFromList(long chatId, int messageId) {
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED))
@@ -395,20 +396,20 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getMySelfRepeatReminderStopped(reminder))
             );
         } else {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getCreator().getChatId())
                             .text(reminderMessageBuilder.getRepeatReminderStoppedForReceiver(reminder))
             );
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getRepeatReminderStoppedForCreator(reminder)));
@@ -422,19 +423,19 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .text(reminderMessageBuilder.getMySelfRepeatReminderStopped(reminder))
             );
         } else {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .text(reminderMessageBuilder.getRepeatReminderStoppedForReceiver(reminder))
             );
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getCreator().getChatId())
                             .text(reminderMessageBuilder.getRepeatReminderStoppedForCreator(reminder))
             );
@@ -448,13 +449,13 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isNotMySelf()) {
-            messageService.sendMessage(
-                    new SendMessageContext().chatId(reminder.getReceiver().getChatId())
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getReceiver().getChatId())
                             .text(reminderMessageBuilder.getReminderDeletedForReceiver(reminder))
             );
         }
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(reminder.getCreator().getChatId())
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderDeletedForCreator(reminder))
@@ -469,15 +470,15 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.sendMessage(
-                    new SendMessageContext().chatId(reminder.getReceiver().getChatId()).text(reminderMessageBuilder.getMySelfReminderCanceled(reminder))
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getReceiver().getChatId()).text(reminderMessageBuilder.getMySelfReminderCanceled(reminder))
             );
         } else {
-            messageService.sendMessage(
-                    new SendMessageContext().chatId(reminder.getReceiver().getChatId()).text(reminderMessageBuilder.getReminderCanceledForReceiver(reminder))
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getReceiver().getChatId()).text(reminderMessageBuilder.getReminderCanceledForReceiver(reminder))
             );
-            messageService.sendMessage(
-                    new SendMessageContext().chatId(reminder.getCreator().getChatId()).text(reminderMessageBuilder.getReminderCanceledForCreator(reminder))
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getCreator().getChatId()).text(reminderMessageBuilder.getReminderCanceledForCreator(reminder))
             );
         }
     }
@@ -489,39 +490,39 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getMySelfReminderCanceled(reminder))
                             .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME))
             );
         } else {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getReminderCanceledForReceiver(reminder))
                             .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME))
             );
-            messageService.sendMessage(
-                    new SendMessageContext().chatId(reminder.getCreator().getChatId()).text(reminderMessageBuilder.getReminderCanceledForCreator(reminder))
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getCreator().getChatId()).text(reminderMessageBuilder.getReminderCanceledForCreator(reminder))
             );
         }
     }
 
     public void sendCompletedReminders(int userId, long chatId, int messageId, List<Reminder> reminders) {
         if (reminders.isEmpty()) {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(chatId)
                             .messageId(messageId)
                             .text(localisationService.getMessage(MessagesProperties.MESSAGE_COMPLETED_REMINDERS_EMPTY))
                             .replyKeyboard(inlineKeyboardService.getEmptyRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME))
             );
         } else {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(chatId)
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getCompletedRemindersList(userId, reminders))
@@ -532,16 +533,16 @@ public class ReminderMessageSender {
 
     public void sendActiveReminders(int userId, long chatId, int messageId, List<Reminder> reminders) {
         if (reminders.isEmpty()) {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(chatId)
                             .messageId(messageId)
                             .text(localisationService.getMessage(MessagesProperties.MESSAGE_ACTIVE_REMINDERS_EMPTY))
                             .replyKeyboard(inlineKeyboardService.getEmptyRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME))
             );
         } else {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(chatId)
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getActiveRemindersList(userId, reminders))
@@ -561,8 +562,8 @@ public class ReminderMessageSender {
     public void sendReminderDetails(int userId, Long chatId, Integer messageId, Reminder reminder) {
         String text = reminderMessageBuilder.getReminderMessage(reminder);
 
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(text)
@@ -571,8 +572,8 @@ public class ReminderMessageSender {
     }
 
     public void sendCompletedRemindersDeleted(long chatId, int messageId) {
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_COMPLETED_REMINDERS_EMPTY))
@@ -583,11 +584,11 @@ public class ReminderMessageSender {
     public void sendReminderNoteChanged(Reminder reminder, int messageId) {
         if (reminder.isNotMySelf()) {
             String text = reminderMessageBuilder.getReminderNoteChangedForReceiver(reminder.getText(), reminder.getNote(), reminder.getCreator());
-            messageService.sendMessage(new SendMessageContext().chatId(reminder.getReceiver().getChatId()).text(text));
+            messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getReceiver().getChatId()).text(text));
         }
 
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(reminder.getCreator().getChatId())
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderMessage(reminder))
@@ -598,11 +599,11 @@ public class ReminderMessageSender {
     public void sendReminderNoteDeleted(int messageId, Reminder reminder) {
         if (reminder.isNotMySelf()) {
             String text = reminderMessageBuilder.getReminderNoteDeletedReceiver(reminder.getCreator(), reminder.getText());
-            messageService.sendMessage(new SendMessageContext().chatId(reminder.getReceiver().getChatId()).text(text));
+            messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getReceiver().getChatId()).text(text));
         }
 
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(reminder.getCreator().getChatId())
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderMessage(reminder))
@@ -617,23 +618,23 @@ public class ReminderMessageSender {
         }
 
         if (reminder.isMySelf()) {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(chatId)
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getReminderMessage(reminder))
                             .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
             );
         } else {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(chatId)
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getReminderMessage(reminder, reminder.getCreatorId()))
                             .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
             );
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .text(reminderMessageBuilder.getReminderDeactivatedReceiver(reminder))
             );
@@ -642,22 +643,22 @@ public class ReminderMessageSender {
 
     public void sendReminderActivated(long chatId, int messageId, int userId, Reminder reminder) {
         if (reminder.isMySelf()) {
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(chatId)
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getReminderMessage(reminder))
                             .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
             );
         } else {
-            messageService.editMessage(new EditMessageContext()
+            messageService.editMessageAsync(new EditMessageContext(PriorityJob.Priority.MEDIUM)
                     .chatId(chatId)
                     .messageId(messageId)
                     .text(reminderMessageBuilder.getReminderMessage(reminder, reminder.getCreatorId()))
                     .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
             );
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getReceiver().getChatId())
                             .text(reminderMessageBuilder.getReminderActivatedReceiver(reminder))
             );
@@ -665,8 +666,8 @@ public class ReminderMessageSender {
     }
 
     public void sendCountSeriesEnabledOrDisabled(long chatId, int messageId, int userId, Reminder reminder) {
-        messageService.editMessage(
-                new EditMessageContext()
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderMessage(reminder))
@@ -676,13 +677,13 @@ public class ReminderMessageSender {
 
     public void sendReminderRead(long chatId, int messageId, Reminder reminder) {
         if (reminder.isNotMySelf()) {
-            messageService.sendMessage(
-                    new SendMessageContext()
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getCreator().getChatId())
                             .text(reminderMessageBuilder.getReadReminderCreator(reminder))
             );
-            messageService.editMessage(
-                    new EditMessageContext()
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(chatId)
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getReminderMessage(reminder))

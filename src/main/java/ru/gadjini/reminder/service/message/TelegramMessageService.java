@@ -18,6 +18,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.configuration.BotConfiguration;
+import ru.gadjini.reminder.job.MessageSenderJob;
+import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.AnswerCallbackContext;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
@@ -35,10 +37,13 @@ public class TelegramMessageService implements MessageService {
 
     private TelegramService telegramService;
 
+    private MessageSenderJob senderJob;
+
     @Autowired
-    public TelegramMessageService(LocalisationService localisationService, TelegramService telegramService) {
+    public TelegramMessageService(LocalisationService localisationService, TelegramService telegramService, MessageSenderJob senderJob) {
         this.localisationService = localisationService;
         this.telegramService = telegramService;
+        this.senderJob = senderJob;
     }
 
     @Override
@@ -70,6 +75,21 @@ public class TelegramMessageService implements MessageService {
     }
 
     @Override
+    public void sendMessageAsync(SendMessageContext messageContext, Consumer<Message> callback) {
+        senderJob.push(new PriorityJob(messageContext.priority()) {
+            @Override
+            public void run() {
+                sendMessage(messageContext, callback);
+            }
+        });
+    }
+
+    @Override
+    public void sendMessageAsync(SendMessageContext messageContext) {
+        sendMessageAsync(messageContext, null);
+    }
+
+    @Override
     public void sendMessage(SendMessageContext messageContext, Consumer<Message> callback) {
         SendMessage sendMessage = new SendMessage();
 
@@ -93,11 +113,6 @@ public class TelegramMessageService implements MessageService {
     }
 
     @Override
-    public void sendMessage(SendMessageContext messageContext) {
-        sendMessage(messageContext, null);
-    }
-
-    @Override
     public void sendAnswerCallbackQuery(AnswerCallbackContext callbackContext) {
         AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
 
@@ -109,6 +124,16 @@ public class TelegramMessageService implements MessageService {
         } catch (TelegramApiException e) {
             LOGGER.error("Error answer callback {} with text {}", callbackContext.queryId(), callbackContext.text());
         }
+    }
+
+    @Override
+    public void editMessageAsync(EditMessageContext messageContext) {
+        senderJob.push(new PriorityJob(messageContext.priority()) {
+            @Override
+            public void run() {
+                editMessage(messageContext);
+            }
+        });
     }
 
     @Override
@@ -147,8 +172,8 @@ public class TelegramMessageService implements MessageService {
 
     @Override
     public void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard) {
-        sendMessage(
-                new SendMessageContext()
+        sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_ERROR))
                         .replyKeyboard(replyKeyboard)
@@ -162,8 +187,8 @@ public class TelegramMessageService implements MessageService {
 
     @Override
     public void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard) {
-        sendMessage(
-                new SendMessageContext()
+        sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_BOT_RESTARTED))
                         .replyKeyboard(replyKeyboard)
