@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.bot.command.callback;
 
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -45,10 +44,10 @@ public class GoBackCallbackCommand implements CallbackBotCommand {
 
         switch (restoreKeyboard) {
             case RESTORE_KEYBOARD:
-                replyKeyboard = commandNavigator.silentPop(callbackQuery.getMessage().getChatId());
+                replyKeyboard = commandNavigator.silentPop(callbackQuery.getMessage().getChatId(), true);
                 break;
             case RESTORE_HISTORY:
-                commandNavigator.silentPop(callbackQuery.getMessage().getChatId());
+                commandNavigator.silentPop(callbackQuery.getMessage().getChatId(), false);
                 break;
             case NONE:
                 break;

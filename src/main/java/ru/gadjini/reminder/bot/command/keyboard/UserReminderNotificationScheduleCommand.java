@@ -3,7 +3,6 @@ package ru.gadjini.reminder.bot.command.keyboard;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
-import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.job.PriorityJob;
@@ -113,8 +112,4 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
         return historyName;
     }
 
-    @Override
-    public String getParentHistoryName() {
-        return CommandNames.USER_REMINDER_NOTIFICATION_HISTORY_NAME;
-    }
 }

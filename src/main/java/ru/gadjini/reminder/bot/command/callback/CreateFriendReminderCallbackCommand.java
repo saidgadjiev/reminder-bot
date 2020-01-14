@@ -99,7 +99,7 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
                         .setMessageId(message.getMessageId()));
         reminder.getCreator().setChatId(message.getChatId());
 
-        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
+        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId(), true);
         reminderMessageSender.sendReminderCreated(reminder, replyKeyboardMarkup);
     }
 

@@ -56,11 +56,6 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
     }
 
     @Override
-    public String getParentHistoryName() {
-        return CommandNames.USER_SETTINGS_COMMAND_HISTORY_NAME;
-    }
-
-    @Override
     public void restore(long chatId) {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)

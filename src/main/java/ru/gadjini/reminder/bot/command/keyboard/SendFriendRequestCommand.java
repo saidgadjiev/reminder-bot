@@ -96,7 +96,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
             createFriendRequestResult = friendshipService.createFriendRequest(TgMessage.from(message), null, receiverName);
         }
 
-        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
+        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId(), true);
 
         switch (createFriendRequestResult.getState()) {
             case ALREADY_REQUESTED:

@@ -145,7 +145,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     private void postpone(long chatId, String reason, PostponeCommandState postponeCommandState) {
         UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(postponeCommandState.reminder, postponeCommandState.postponeTime);
-        ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(chatId);
+        ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(chatId, true);
         reminderMessageSender.sendReminderPostponed(updateReminderResult, reason, replyKeyboard);
     }
 

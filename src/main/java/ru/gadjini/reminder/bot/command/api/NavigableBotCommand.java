@@ -7,10 +7,6 @@ public interface NavigableBotCommand extends MyBotCommand {
 
     String getHistoryName();
 
-    default String getParentHistoryName() {
-        return CommandNames.START_COMMAND_NAME;
-    }
-
     default void restore(long chatId) {
 
     }

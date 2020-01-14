@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.dao.command.navigator.CommandNavigatorDao;
 import ru.gadjini.reminder.util.ReflectionUtils;
 
@@ -48,6 +49,7 @@ public class CommandNavigator {
 
         if (currCommand != null) {
             currCommand.leave(chatId);
+            navigatorDao.setParent(chatId, currCommand.getHistoryName());
         }
 
         setCurrentCommand(chatId, navigableBotCommand);
@@ -59,7 +61,7 @@ public class CommandNavigator {
 
     public void pop(long chatId) {
         NavigableBotCommand currentCommand = getCurrentCommand(chatId);
-        String parentHistoryName = currentCommand.getParentHistoryName();
+        String parentHistoryName = navigatorDao.getParent(chatId, CommandNames.START_COMMAND_NAME);
 
         if (StringUtils.isNotBlank(parentHistoryName)) {
             currentCommand.leave(chatId);
@@ -73,19 +75,19 @@ public class CommandNavigator {
         }
     }
 
-    public ReplyKeyboardMarkup silentPop(long chatId) {
+    public ReplyKeyboardMarkup silentPop(long chatId, boolean getKeybord) {
         NavigableBotCommand navigableBotCommand = getCurrentCommand(chatId);
         if (navigableBotCommand == null) {
             return null;
         }
         navigableBotCommand.leave(chatId);
 
-        String parentHistoryName = navigableBotCommand.getParentHistoryName();
+        String parentHistoryName = navigatorDao.getParent(chatId, CommandNames.START_COMMAND_NAME);
         NavigableBotCommand parentCommand = navigableBotCommands.get(parentHistoryName);
 
         setCurrentCommand(chatId, parentCommand);
 
-        return parentCommand.getKeyboard(chatId);
+        return getKeybord ? parentCommand.getKeyboard(chatId) : null;
     }
 
     public void zeroRestore(long chatId, NavigableBotCommand botCommand) {

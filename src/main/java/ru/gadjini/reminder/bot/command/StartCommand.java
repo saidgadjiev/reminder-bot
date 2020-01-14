@@ -75,11 +75,6 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
     }
 
     @Override
-    public String getParentHistoryName() {
-        return null;
-    }
-
-    @Override
     public void processNonCommandUpdate(Message message, String reminderText) {
         Reminder reminder = reminderRequestService.createReminder(
                 new ReminderRequestContext()

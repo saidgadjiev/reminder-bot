@@ -12,6 +12,8 @@ public class InMemoryNavigatorDao implements CommandNavigatorDao {
 
     private Map<Long, String> commands = new ConcurrentHashMap<>();
 
+    private Map<Long, String> parentCommands = new ConcurrentHashMap<>();
+
     @Override
     public void set(long chatId, String command) {
         commands.put(chatId, command);
@@ -20,5 +22,15 @@ public class InMemoryNavigatorDao implements CommandNavigatorDao {
     @Override
     public String get(long chatId) {
         return commands.get(chatId);
+    }
+
+    @Override
+    public void setParent(long chatId, String command) {
+        parentCommands.put(chatId, command);
+    }
+
+    @Override
+    public String getParent(long chatId, String defaultCommand) {
+        return parentCommands.get(chatId);
     }
 }

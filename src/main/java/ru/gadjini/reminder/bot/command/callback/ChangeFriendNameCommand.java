@@ -82,7 +82,7 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
         RequestParams requestParams = callbackRequest.getRequestParams();
         TgUser friend = friendshipService.changeFriendName(message.getFrom().getId(), requestParams.getInt(Arg.FRIEND_ID.getKey()), text);
 
-        commandNavigator.silentPop(message.getChatId());
+        commandNavigator.silentPop(message.getChatId(), true);
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())

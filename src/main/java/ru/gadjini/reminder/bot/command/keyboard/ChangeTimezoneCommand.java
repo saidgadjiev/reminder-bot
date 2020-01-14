@@ -86,11 +86,6 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
     }
 
     @Override
-    public String getParentHistoryName() {
-        return CommandNames.USER_SETTINGS_COMMAND_HISTORY_NAME;
-    }
-
-    @Override
     public boolean accept(Message message) {
         return message.hasLocation();
     }
@@ -100,7 +95,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
         Location location = message.getLocation();
         timezoneService.getZoneId(location.getLatitude(), location.getLongitude(), zoneId -> {
             tgUserService.saveZoneId(message.getFrom().getId(), zoneId);
-            ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
+            ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId(), true);
 
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)

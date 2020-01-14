@@ -57,4 +57,5 @@ public class CommandNames {
     public static final String SAVED_QUERY_COMMAND_HISTORY_NAME = "av";
     public static final String DELETE_SAVED_QUERY_COMMAND_NAME = "aw";
     public static final String CREATOR_REMINDER_COMMAND_NAME = "ax";
+    public static final String CREATE_REMINDER_COMMAND_NAME = "ay";
 }

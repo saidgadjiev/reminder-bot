@@ -56,11 +56,6 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
     }
 
     @Override
-    public String getParentHistoryName() {
-        return CommandNames.START_COMMAND_NAME;
-    }
-
-    @Override
     public void restore(long chatId) {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
