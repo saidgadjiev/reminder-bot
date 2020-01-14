@@ -18,10 +18,3 @@
         </div>
     </div>
 </div>
-<script type="application/javascript">
-    setTimeout(
-        function () {
-            window.location.href = 'tg://resolve?domain=${botName}';
-        }, 2000
-    );
-</script>

@@ -686,7 +686,7 @@ public class ReminderMessageSender {
                     new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(chatId)
                             .messageId(messageId)
-                            .text(reminderMessageBuilder.getReminderMessage(reminder))
+                            .text(reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId()))
                             .replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(reminder)));
         }
     }
