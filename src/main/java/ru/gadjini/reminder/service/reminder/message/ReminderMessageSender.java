@@ -340,6 +340,9 @@ public class ReminderMessageSender {
                         .text(postponeMessage)
                         .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
         );
+        if (reminder.isNotMySelf()) {
+            messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getReceiver().getChatId()).text(postponeMessage));
+        }
     }
 
     public void sendReminderTextChanged(int messageId, UpdateReminderResult updateReminderResult) {

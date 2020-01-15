@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
@@ -114,7 +113,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                         .setUser(message.getFrom())
                         .setMessageId(message.getMessageId()));
                 reminder.getCreator().setChatId(message.getChatId());
-                reminderMessageSender.sendReminderCreated(reminder, null);
+                reminderMessageSender.sendReminderCreated(reminder);
 
                 return false;
             } catch (UserException ex) {
@@ -156,8 +155,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                 .setMessageId(message.getMessageId()));
         reminder.getCreator().setChatId(message.getChatId());
 
-        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
-        reminderMessageSender.sendReminderCreated(reminder, replyKeyboardMarkup);
+        reminderMessageSender.sendReminderCreated(reminder);
     }
 
     @Override

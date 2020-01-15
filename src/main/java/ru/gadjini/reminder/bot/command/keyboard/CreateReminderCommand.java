@@ -83,7 +83,7 @@ public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCo
                         .setMessageId(message.getMessageId()));
         reminder.getCreator().setChatId(message.getChatId());
 
-        reminderMessageSender.sendReminderCreated(reminder, null);
+        reminderMessageSender.sendReminderCreated(reminder);
     }
 
     @Override

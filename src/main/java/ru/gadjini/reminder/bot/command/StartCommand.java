@@ -84,7 +84,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
                         .setMessageId(message.getMessageId()));
         reminder.getCreator().setChatId(message.getChatId());
 
-        reminderMessageSender.sendReminderCreated(reminder, null);
+        reminderMessageSender.sendReminderCreated(reminder);
     }
 
     @Override
