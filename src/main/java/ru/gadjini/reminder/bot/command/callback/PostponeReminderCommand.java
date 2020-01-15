@@ -148,8 +148,8 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     private void postpone(int userId, long chatId, String reason, PostponeCommandState postponeCommandState) {
         UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(postponeCommandState.reminder, postponeCommandState.postponeTime);
-        ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(chatId, CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD);
-        reminderMessageSender.sendReminderPostponed(userId, postponeCommandState.messageId, updateReminderResult, reason, replyKeyboard);
+        commandNavigator.silentPop(chatId);
+        reminderMessageSender.sendReminderPostponed(userId, postponeCommandState.messageId, updateReminderResult, reason);
     }
 
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)

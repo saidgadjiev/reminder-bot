@@ -3,8 +3,6 @@ package ru.gadjini.reminder.service.reminder.message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
@@ -276,7 +274,7 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendReminderCreated(Reminder reminder, ReplyKeyboardMarkup replyKeyboardMarkup) {
+    public void sendReminderCreated(Reminder reminder) {
         String messageForReceiver;
 
         if (reminder.isMySelf()) {
@@ -318,7 +316,7 @@ public class ReminderMessageSender {
         );
     }
 
-    public void sendReminderPostponed(int userId, int messageId, UpdateReminderResult updateReminderResult, String reason, ReplyKeyboard replyKeyboard) {
+    public void sendReminderPostponed(int userId, int messageId, UpdateReminderResult updateReminderResult, String reason) {
         Reminder reminder = updateReminderResult.getOldReminder();
 
         String postponeMessage = reminderMessageBuilder.getReminderPostponedForReceiver(
@@ -342,14 +340,6 @@ public class ReminderMessageSender {
                         .text(postponeMessage)
                         .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
         );
-        if (reminder.isNotMySelf()) {
-            messageService.sendMessageAsync(
-                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
-                            .chatId(reminder.getReceiver().getChatId())
-                            .text(postponeMessage)
-                            .replyKeyboard(replyKeyboard)
-            );
-        }
     }
 
     public void sendReminderTextChanged(int messageId, UpdateReminderResult updateReminderResult) {

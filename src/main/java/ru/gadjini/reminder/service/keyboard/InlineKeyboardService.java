@@ -58,7 +58,6 @@ public class InlineKeyboardService {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
-        requestParams.add(Arg.RESTORE_KEYBOARD.getKey(), CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD.getCode());
         keyboard.add(List.of(
                 buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN))),
                 buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN)))
