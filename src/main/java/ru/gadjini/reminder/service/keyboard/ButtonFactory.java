@@ -125,6 +125,18 @@ public class ButtonFactory {
         return postponeButton;
     }
 
+    public InlineKeyboardButton postponeReminderButton(int reminderId, String prevCommand, String postponeTime) {
+        InlineKeyboardButton postponeButton = new InlineKeyboardButton(postponeTime);
+        postponeButton.setCallbackData(CommandNames.POSTPONE_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams()
+                        .add(Arg.REMINDER_ID.getKey(), reminderId)
+                        .add(Arg.PREV_HISTORY_NAME.getKey(), prevCommand)
+                        .add(Arg.POSTPONE_TIME.getKey(), postponeTime)
+                        .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return postponeButton;
+    }
+
     public InlineKeyboardButton getCompletedRemindersButton() {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.GET_COMPLETED_REMINDERS_COMMAND_DESCRIPTION));
         button.setCallbackData(CommandNames.GET_COMPLETED_REMINDERS_COMMAND_NAME);

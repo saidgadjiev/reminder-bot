@@ -21,7 +21,6 @@ import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
-import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
@@ -79,21 +78,27 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        PostponeCommandState state = new PostponeCommandState(new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams), State.TIME);
-        stateService.setState(callbackQuery.getMessage().getChatId(), state);
+        PostponeCommandState state = new PostponeCommandState(new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams), State.TIME, callbackQuery.getMessage().getMessageId());
 
-        String prevHistoryName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
-        messageService.editReplyKeyboard(
-                callbackQuery.getMessage().getChatId(),
-                callbackQuery.getMessage().getMessageId(),
-                inlineKeyboardService.goBackCallbackButton(prevHistoryName, CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD, requestParams)
-        );
-        messageService.sendMessageAsync(
-                new SendMessageContext(PriorityJob.Priority.MEDIUM)
-                        .chatId(callbackQuery.getMessage().getChatId())
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_TIME))
-                        .replyKeyboard(replyKeyboardService.postponeTimeKeyboard(callbackQuery.getMessage().getChatId()))
-        );
+        if (requestParams.contains(Arg.POSTPONE_TIME.getKey())) {
+            String postponeTime = requestParams.getString(Arg.POSTPONE_TIME.getKey());
+            postponeTime(callbackQuery.getMessage(), postponeTime, state);
+        } else {
+            stateService.setState(callbackQuery.getMessage().getChatId(), state);
+
+            String prevHistoryName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
+            messageService.editReplyKeyboard(
+                    callbackQuery.getMessage().getChatId(),
+                    callbackQuery.getMessage().getMessageId(),
+                    inlineKeyboardService.getPostponeKeyboard(requestParams.getInt(Arg.REMINDER_ID.getKey()), prevHistoryName, requestParams)
+            );
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
+                            .chatId(callbackQuery.getMessage().getChatId())
+                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_TIME))
+                            .replyKeyboard(replyKeyboardService.postponeTimeKeyboard(callbackQuery.getMessage().getChatId()))
+            );
+        }
 
         return MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION;
     }
@@ -108,12 +113,12 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         PostponeCommandState postponeCommandState = stateService.getState(message.getChatId());
 
         if (postponeCommandState.state == State.TIME) {
-            postponeTime(message, postponeCommandState);
+            postponeTime(message, message.getText().trim(), postponeCommandState);
         } else {
             if (text.equals(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON))) {
-                postpone(message.getChatId(), null, postponeCommandState);
+                postpone(message.getFrom().getId(), message.getChatId(), null, postponeCommandState);
             } else {
-                postpone(message.getChatId(), text, postponeCommandState);
+                postpone(message.getFrom().getId(), message.getChatId(), text, postponeCommandState);
             }
         }
     }
@@ -123,13 +128,13 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         stateService.deleteState(chatId);
     }
 
-    private void postponeTime(Message message, PostponeCommandState postponeCommandState) {
+    private void postponeTime(Message message, String text, PostponeCommandState postponeCommandState) {
         Reminder reminder = reminderRequestService.getReminderForPostpone(
                 message.getFrom(),
                 postponeCommandState.callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey())
         );
         reminder.getReceiver().setChatId(message.getChatId());
-        postponeCommandState.postponeTime = reminderRequestService.parseTime(message.getText().trim(), reminder.getReceiver().getZone());
+        postponeCommandState.postponeTime = reminderRequestService.parseTime(text, reminder.getReceiver().getZone());
         postponeCommandState.reminder = reminder;
         postponeCommandState.state = State.REASON;
 
@@ -143,14 +148,14 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
                             .replyKeyboard(replyKeyboardService.getPostponeMessagesKeyboard(message.getChatId()))
             );
         } else {
-            postpone(message.getChatId(), null, postponeCommandState);
+            postpone(message.getFrom().getId(), message.getChatId(), null, postponeCommandState);
         }
     }
 
-    private void postpone(long chatId, String reason, PostponeCommandState postponeCommandState) {
+    private void postpone(int userId, long chatId, String reason, PostponeCommandState postponeCommandState) {
         UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(postponeCommandState.reminder, postponeCommandState.postponeTime);
         ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(chatId, CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD);
-        reminderMessageSender.sendReminderPostponed(updateReminderResult, reason, replyKeyboard);
+        reminderMessageSender.sendReminderPostponed(userId, postponeCommandState.messageId, updateReminderResult, reason, replyKeyboard);
     }
 
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
@@ -164,10 +169,13 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
         private Time postponeTime;
 
+        private int messageId;
+
         @JsonCreator
-        public PostponeCommandState(@JsonProperty("callbackRequest") CallbackRequest callbackRequest, @JsonProperty("state") State state) {
+        public PostponeCommandState(@JsonProperty("callbackRequest") CallbackRequest callbackRequest, @JsonProperty("state") State state, @JsonProperty("messageId") int messageId) {
             this.callbackRequest = callbackRequest;
             this.state = state;
+            this.messageId = messageId;
         }
     }
 

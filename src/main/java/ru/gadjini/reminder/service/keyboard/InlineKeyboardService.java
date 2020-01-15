@@ -39,6 +39,20 @@ public class InlineKeyboardService {
         this.webHookProperties = webHookProperties;
     }
 
+    public InlineKeyboardMarkup getPostponeKeyboard(int reminderId, String prevCommand, RequestParams requestParams) {
+        InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
+
+        List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
+        requestParams.add(Arg.RESTORE_KEYBOARD.getKey(), CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD.getCode());
+        keyboard.add(List.of(
+                buttonFactory.postponeReminderButton(reminderId, prevCommand, localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN)),
+                buttonFactory.postponeReminderButton(reminderId, prevCommand, localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN))
+        ));
+        keyboard.add(List.of(buttonFactory.goBackCallbackButton(prevCommand, requestParams)));
+
+        return keyboardMarkup;
+    }
+
     public InlineKeyboardMarkup getSavedQueriesKeyboard(List<Integer> queries) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
@@ -249,7 +263,7 @@ public class InlineKeyboardService {
     }
 
     private InlineKeyboardMarkup getReceiverReminderDetailsKeyboard(Reminder reminder) {
-        InlineKeyboardMarkup inlineKeyboardMarkup = getInitialReminderDetailsKeyboard(reminder.getId(), reminder.isRepeatable());
+        InlineKeyboardMarkup inlineKeyboardMarkup = getInitialReceiverReminderDetailsKeyboard(reminder.getId(), reminder.isRepeatable());
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderTimesScheduleButton(reminder.getId())));
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME)));
@@ -327,8 +341,7 @@ public class InlineKeyboardService {
     }
 
     private InlineKeyboardMarkup getMySelfReminderDetailsKeyboard(Reminder reminder) {
-        InlineKeyboardMarkup keyboardMarkup = getInitialReminderDetailsKeyboard(reminder.getId(), reminder.isRepeatable());
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderTimesScheduleButton(reminder.getId())));
+        InlineKeyboardMarkup keyboardMarkup = getInitialReceiverReminderDetailsKeyboard(reminder.getId(), reminder.isRepeatable());
 
         addControlReminderButtons(keyboardMarkup, reminder);
 
@@ -371,16 +384,17 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    private InlineKeyboardMarkup getInitialReminderDetailsKeyboard(int reminderId, boolean repeatable) {
+    private InlineKeyboardMarkup getInitialReceiverReminderDetailsKeyboard(int reminderId, boolean repeatable) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
         String currHistoryName = CommandNames.REMINDER_DETAILS_COMMAND_NAME;
         if (repeatable) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminderId, currHistoryName), buttonFactory.cancelReminderButton(reminderId, currHistoryName)));
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.skipRepeatReminderButton(reminderId, currHistoryName), buttonFactory.stopRepeatReminderButton(reminderId, currHistoryName)));
-            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.returnReminderButton(reminderId)));
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.returnReminderButton(reminderId), buttonFactory.reminderTimesScheduleButton(reminderId)));
         } else {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId, currHistoryName), buttonFactory.cancelReminderButton(reminderId, currHistoryName)));
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.postponeReminderButton(reminderId, currHistoryName), buttonFactory.reminderTimesScheduleButton(reminderId)));
         }
 
         return keyboardMarkup;
