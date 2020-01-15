@@ -50,11 +50,6 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
     }
 
     @Override
-    public String getHistoryName() {
-        return CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME;
-    }
-
-    @Override
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         List<Reminder> reminders = reminderService.getActiveReminders(tgMessage.getUser().getId());
 

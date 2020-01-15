@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.CallbackRequest;
@@ -23,7 +23,7 @@ import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageSender;
 
 @Component
-public class CustomRemindCommand implements CallbackBotCommand, NavigableBotCommand {
+public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
     private CommandStateService stateService;
 
@@ -62,8 +62,8 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
     }
 
     @Override
-    public String getHistoryName() {
-        return getName();
+    public boolean isAcquireKeyboard() {
+        return true;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND))
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(prevHistoryName, GoBackCallbackCommand.RestoreKeyboard.RESTORE_HISTORY, requestParams))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(prevHistoryName, requestParams))
         );
 
         return MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION;
@@ -85,7 +85,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableBotComm
     public void processNonCommandUpdate(Message message, String text) {
         CallbackRequest callbackRequest = stateService.getState(message.getChatId());
         CustomRemindResult customRemindResult = reminderService.customRemind(callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), message.getText().trim());
-        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId(), true);
+        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
         String prevHistoryName = callbackRequest.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
         if (prevHistoryName.equals(CommandNames.SCHEDULE_COMMAND_NAME)) {

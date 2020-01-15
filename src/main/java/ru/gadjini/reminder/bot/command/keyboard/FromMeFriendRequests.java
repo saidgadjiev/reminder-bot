@@ -61,7 +61,7 @@ public class FromMeFriendRequests implements KeyboardBotCommand, NavigableCallba
     }
 
     @Override
-    public String getHistoryName() {
+    public String getName() {
         return CommandNames.FROM_ME_FRIEND_REQUESTS_HISTORY_NAME;
     }
 }

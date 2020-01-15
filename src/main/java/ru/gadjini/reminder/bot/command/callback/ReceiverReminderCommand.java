@@ -55,11 +55,6 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
     }
 
     @Override
-    public String getHistoryName() {
-        return getName();
-    }
-
-    @Override
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         Reminder reminder = reminderService.getReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 

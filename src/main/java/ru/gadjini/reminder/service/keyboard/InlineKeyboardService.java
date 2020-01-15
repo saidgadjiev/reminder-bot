@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import ru.gadjini.reminder.bot.command.callback.GoBackCallbackCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.PaymentType;
@@ -15,6 +14,7 @@ import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.properties.WebHookProperties;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandParser;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
@@ -101,7 +101,7 @@ public class InlineKeyboardService {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderTimeButton(reminderTimeId)));
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.SCHEDULE_COMMAND_NAME, GoBackCallbackCommand.RestoreKeyboard.NONE, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.SCHEDULE_COMMAND_NAME, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
 
         return keyboardMarkup;
     }
@@ -127,7 +127,7 @@ public class InlineKeyboardService {
             inlineKeyboardMarkup.getKeyboard().add(row);
         }
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CREATE_REMIND_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.SCHEDULE_COMMAND_NAME)));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.REMINDER_DETAILS_COMMAND_NAME, GoBackCallbackCommand.RestoreKeyboard.NONE, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.REMINDER_DETAILS_COMMAND_NAME, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
 
         return inlineKeyboardMarkup;
     }
@@ -303,10 +303,18 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup goBackCallbackButton(String prevHistoryName, GoBackCallbackCommand.RestoreKeyboard restoreKeyboard, RequestParams requestParams) {
+    public InlineKeyboardMarkup goBackCallbackButton(String prevHistoryName, CallbackCommandNavigator.RestoreKeyboard restoreKeyboard, RequestParams requestParams) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, restoreKeyboard, requestParams)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, requestParams.add(Arg.RESTORE_KEYBOARD.getKey(), restoreKeyboard.getCode()))));
+
+        return inlineKeyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup goBackCallbackButton(String prevHistoryName, RequestParams requestParams) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
+
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, requestParams)));
 
         return inlineKeyboardMarkup;
     }
@@ -351,7 +359,7 @@ public class InlineKeyboardService {
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderNote(reminderId, CommandNames.EDIT_REMINDER_COMMAND_NAME)));
 
         if (prevHistoryName != null) {
-            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, GoBackCallbackCommand.RestoreKeyboard.NONE, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
         }
 
         return keyboardMarkup;

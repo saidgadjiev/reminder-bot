@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
@@ -20,6 +20,7 @@ import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -31,7 +32,7 @@ import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 
 @Component
-public class PostponeReminderCommand implements CallbackBotCommand, NavigableBotCommand {
+public class PostponeReminderCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
     private CommandStateService stateService;
 
@@ -82,7 +83,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
         messageService.editReplyKeyboard(
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
-                inlineKeyboardService.goBackCallbackButton(prevHistoryName, GoBackCallbackCommand.RestoreKeyboard.RESTORE_KEYBOARD, requestParams)
+                inlineKeyboardService.goBackCallbackButton(prevHistoryName, CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD, requestParams)
         );
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
@@ -95,8 +96,8 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
     }
 
     @Override
-    public String getHistoryName() {
-        return getName();
+    public boolean isAcquireKeyboard() {
+        return true;
     }
 
     @Override
@@ -145,7 +146,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableBot
 
     private void postpone(long chatId, String reason, PostponeCommandState postponeCommandState) {
         UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(postponeCommandState.reminder, postponeCommandState.postponeTime);
-        ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(chatId, true);
+        ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(chatId);
         reminderMessageSender.sendReminderPostponed(updateReminderResult, reason, replyKeyboard);
     }
 

@@ -66,7 +66,7 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
     }
 
     @Override
-    public String getHistoryName() {
+    public String getName() {
         return CommandNames.GET_FRIENDS_COMMAND_HISTORY_NAME;
     }
 

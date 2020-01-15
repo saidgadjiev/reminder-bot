@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
@@ -22,7 +22,7 @@ import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 
 @Component
-public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableBotCommand {
+public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
     private CommandStateService stateService;
 
@@ -64,6 +64,11 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
     }
 
     @Override
+    public boolean isAcquireKeyboard() {
+        return true;
+    }
+
+    @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
@@ -71,7 +76,7 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_EDIT_NOTE))
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(prevHistory, GoBackCallbackCommand.RestoreKeyboard.RESTORE_HISTORY, requestParams))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(prevHistory, requestParams))
         );
 
         return MessagesProperties.MESSAGE_REMINDER_NOTE_ANSWER;
@@ -85,7 +90,7 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
         reminder.getCreator().setChatId(message.getChatId());
 
         String prevHistory = request.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
-        commandNavigator.silentPop(message.getChatId(), true);
+        commandNavigator.silentPop(message.getChatId());
         if (prevHistory.equals(CommandNames.EDIT_REMINDER_COMMAND_NAME)) {
             reminderMessageSender.sendReminderNoteChangedFromList(reminder, request.getMessageId());
         } else {
@@ -96,10 +101,5 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableB
     @Override
     public void leave(long chatId) {
         stateService.deleteState(chatId);
-    }
-
-    @Override
-    public String getHistoryName() {
-        return getName();
     }
 }

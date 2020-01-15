@@ -156,7 +156,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                 .setMessageId(message.getMessageId()));
         reminder.getCreator().setChatId(message.getChatId());
 
-        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId(), true);
+        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
         reminderMessageSender.sendReminderCreated(reminder, replyKeyboardMarkup);
     }
 

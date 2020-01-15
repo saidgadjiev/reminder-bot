@@ -95,7 +95,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
         Location location = message.getLocation();
         timezoneService.getZoneId(location.getLatitude(), location.getLongitude(), zoneId -> {
             tgUserService.saveZoneId(message.getFrom().getId(), zoneId);
-            ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId(), true);
+            ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)

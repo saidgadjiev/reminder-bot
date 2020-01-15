@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
@@ -26,7 +26,7 @@ import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 
 @Component
-public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, NavigableBotCommand {
+public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
     private CommandStateService stateService;
 
@@ -64,6 +64,11 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
     }
 
     @Override
+    public boolean isAcquireKeyboard() {
+        return true;
+    }
+
+    @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
         messageService.sendMessageAsync(
@@ -74,11 +79,6 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
         );
 
         return MessagesProperties.MESSAGE_CREATE_REMINDER_CALLBACK_ANSWER;
-    }
-
-    @Override
-    public String getHistoryName() {
-        return getName();
     }
 
     @Override
@@ -99,7 +99,7 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
                         .setMessageId(message.getMessageId()));
         reminder.getCreator().setChatId(message.getChatId());
 
-        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId(), true);
+        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
         reminderMessageSender.sendReminderCreated(reminder, replyKeyboardMarkup);
     }
 

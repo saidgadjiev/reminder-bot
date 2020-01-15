@@ -16,6 +16,7 @@ import ru.gadjini.reminder.util.ReflectionUtils;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class CommandNavigator {
@@ -48,6 +49,9 @@ public class CommandNavigator {
         NavigableBotCommand currCommand = getCurrentCommand(chatId);
 
         if (currCommand != null) {
+            if (Objects.equals(currCommand.getHistoryName(), navigableBotCommand.getHistoryName())) {
+                return;
+            }
             currCommand.leave(chatId);
             navigatorDao.setParent(chatId, currCommand.getHistoryName());
         }
@@ -75,7 +79,7 @@ public class CommandNavigator {
         }
     }
 
-    public ReplyKeyboardMarkup silentPop(long chatId, boolean getKeybord) {
+    public ReplyKeyboardMarkup silentPop(long chatId) {
         NavigableBotCommand navigableBotCommand = getCurrentCommand(chatId);
         if (navigableBotCommand == null) {
             return null;
@@ -87,7 +91,7 @@ public class CommandNavigator {
 
         setCurrentCommand(chatId, parentCommand);
 
-        return getKeybord ? parentCommand.getKeyboard(chatId) : null;
+        return parentCommand.getKeyboard(chatId);
     }
 
     public void zeroRestore(long chatId, NavigableBotCommand botCommand) {

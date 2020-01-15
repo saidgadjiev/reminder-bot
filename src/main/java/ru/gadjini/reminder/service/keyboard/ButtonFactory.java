@@ -3,11 +3,11 @@ package ru.gadjini.reminder.service.keyboard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import ru.gadjini.reminder.bot.command.callback.GoBackCallbackCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandParser;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
@@ -39,9 +39,8 @@ public class ButtonFactory {
         return button;
     }
 
-    public InlineKeyboardButton goBackCallbackButton(String prevHistoryName, GoBackCallbackCommand.RestoreKeyboard restoreKeyboard, RequestParams requestParams) {
+    public InlineKeyboardButton goBackCallbackButton(String prevHistoryName, RequestParams requestParams) {
         Objects.requireNonNull(prevHistoryName);
-        requestParams.add(Arg.RESTORE_KEYBOARD.getKey(), restoreKeyboard.getCode());
         requestParams.add(Arg.PREV_HISTORY_NAME.getKey(), prevHistoryName);
 
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_CALLBACK_COMMAND_DESCRIPTION));

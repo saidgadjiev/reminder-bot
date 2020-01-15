@@ -58,11 +58,6 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
     }
 
     @Override
-    public String getHistoryName() {
-        return CommandNames.SCHEDULE_COMMAND_NAME;
-    }
-
-    @Override
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         List<ReminderNotification> reminderNotifications = reminderNotificationService.getCustomRemindersList(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 

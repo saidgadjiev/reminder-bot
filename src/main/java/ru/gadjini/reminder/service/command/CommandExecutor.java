@@ -7,10 +7,7 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.methods.ActionType;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
-import ru.gadjini.reminder.bot.command.api.MyBotCommand;
-import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.bot.command.api.*;
 import ru.gadjini.reminder.model.AnswerCallbackContext;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -30,6 +27,8 @@ public class CommandExecutor {
 
     private CommandNavigator commandNavigator;
 
+    private CallbackCommandNavigator callbackCommandNavigator;
+
     private CommandParser commandParser;
 
     private MessageService messageService;
@@ -37,9 +36,10 @@ public class CommandExecutor {
     private LocalisationService localisationService;
 
     @Autowired
-    public CommandExecutor(CommandNavigator commandNavigator, CommandParser commandParser,
+    public CommandExecutor(CommandNavigator commandNavigator, CallbackCommandNavigator callbackCommandNavigator, CommandParser commandParser,
                            MessageService messageService, LocalisationService localisationService) {
         this.commandNavigator = commandNavigator;
+        this.callbackCommandNavigator = callbackCommandNavigator;
         this.commandParser = commandParser;
         this.messageService = messageService;
         this.localisationService = localisationService;
@@ -81,6 +81,17 @@ public class CommandExecutor {
     }
 
     public void processNonCommandUpdate(Message message, String text) {
+        NavigableCallbackBotCommand navigableCallbackBotCommand = callbackCommandNavigator.getCurrentCommand(message.getChatId());
+
+        if (navigableCallbackBotCommand != null) {
+            if (navigableCallbackBotCommand.accept(message)) {
+                navigableCallbackBotCommand.processNonCommandUpdate(message, text);
+                navigableCallbackBotCommand.processNonCommandEditedMessage(message, text);
+            } else {
+                return;
+            }
+        }
+
         NavigableBotCommand navigableBotCommand = commandNavigator.getCurrentCommand(message.getChatId());
 
         if (navigableBotCommand != null && navigableBotCommand.accept(message)) {
@@ -108,8 +119,8 @@ public class CommandExecutor {
             messageService.sendAnswerCallbackQuery(new AnswerCallbackContext().queryId(callbackQuery.getId()).text(localisationService.getMessage(callbackAnswer)));
         }
 
-        if (botCommand instanceof NavigableBotCommand) {
-            commandNavigator.push(callbackQuery.getMessage().getChatId(), (NavigableBotCommand) botCommand);
+        if (botCommand instanceof NavigableCallbackBotCommand) {
+            callbackCommandNavigator.push(callbackQuery.getMessage().getChatId(), (NavigableCallbackBotCommand) botCommand);
         }
     }
 

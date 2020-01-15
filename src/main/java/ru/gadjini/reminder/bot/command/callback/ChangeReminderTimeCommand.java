@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.model.CallbackRequest;
@@ -22,7 +22,7 @@ import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 
 @Component
-public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableBotCommand {
+public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
     private CommandStateService stateService;
 
@@ -61,21 +61,21 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
     }
 
     @Override
+    public boolean isAcquireKeyboard() {
+        return true;
+    }
+
+    @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME))
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, GoBackCallbackCommand.RestoreKeyboard.RESTORE_HISTORY, requestParams))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, requestParams))
         );
 
         return MessagesProperties.MESSAGE_REMINDER_TIME_ANSWER;
-    }
-
-    @Override
-    public String getHistoryName() {
-        return getName();
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableB
         UpdateReminderResult updateReminderResult = reminderService.changeReminderTime(request.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), text);
         updateReminderResult.getOldReminder().getCreator().setChatId(message.getChatId());
 
-        commandNavigator.silentPop(message.getChatId(), true);
+        commandNavigator.silentPop(message.getChatId());
         reminderMessageSender.sendReminderTimeChanged(request.getMessageId(), updateReminderResult);
     }
 

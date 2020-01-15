@@ -54,7 +54,7 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
     }
 
     @Override
-    public String getHistoryName() {
+    public String getName() {
         return CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME;
     }
 

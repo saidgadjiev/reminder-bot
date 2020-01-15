@@ -56,11 +56,6 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
     }
 
     @Override
-    public String getHistoryName() {
-        return CommandNames.FRIEND_DETAILS_COMMAND_NAME;
-    }
-
-    @Override
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         int friendUserId = requestParams.getInt(Arg.FRIEND_ID.getKey());
         TgUser friend = friendshipService.getFriend(tgMessage.getUser().getId(), friendUserId);

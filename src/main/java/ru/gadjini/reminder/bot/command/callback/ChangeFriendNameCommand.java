@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
-import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
@@ -23,7 +23,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
 @Component
-public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBotCommand {
+public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
     private CommandStateService stateService;
 
@@ -64,13 +64,18 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
     }
 
     @Override
+    public boolean isAcquireKeyboard() {
+        return true;
+    }
+
+    @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_NAME))
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.FRIEND_DETAILS_COMMAND_NAME, GoBackCallbackCommand.RestoreKeyboard.NONE, requestParams))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.FRIEND_DETAILS_COMMAND_NAME, requestParams))
         );
 
         return null;
@@ -82,7 +87,7 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
         RequestParams requestParams = callbackRequest.getRequestParams();
         TgUser friend = friendshipService.changeFriendName(message.getFrom().getId(), requestParams.getInt(Arg.FRIEND_ID.getKey()), text);
 
-        commandNavigator.silentPop(message.getChatId(), true);
+        commandNavigator.silentPop(message.getChatId());
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
@@ -95,10 +100,5 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableBot
     @Override
     public void leave(long chatId) {
         stateService.deleteState(chatId);
-    }
-
-    @Override
-    public String getHistoryName() {
-        return CommandNames.CHANGE_FRIEND_NAME_COMMAND_NAME;
     }
 }
