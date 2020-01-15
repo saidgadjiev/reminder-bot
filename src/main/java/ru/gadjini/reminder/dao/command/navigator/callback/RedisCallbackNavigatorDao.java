@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.dao.command.navigator;
+package ru.gadjini.reminder.dao.command.navigator.callback;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -7,16 +7,14 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @Qualifier("redis")
-public class RedisCommandNavigatorDao implements CommandNavigatorDao {
+public class RedisCallbackNavigatorDao implements CallbackCommandNavigatorDao {
 
-    private static final String CURRENT_KEY = "command:navigator:current";
-
-    private static final String HISTORY_KEY = "command:navigator:history";
+    private static final String CURRENT_KEY = "callback:command:navigator:current";
 
     private StringRedisTemplate redisTemplate;
 
     @Autowired
-    public RedisCommandNavigatorDao(StringRedisTemplate redisTemplate) {
+    public RedisCallbackNavigatorDao(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
@@ -31,14 +29,7 @@ public class RedisCommandNavigatorDao implements CommandNavigatorDao {
     }
 
     @Override
-    public void setParent(long chatId, String command) {
-        redisTemplate.opsForList().rightPush(HISTORY_KEY + ":" + chatId, command);
-    }
-
-    @Override
-    public String getParent(long chatId, String defaultCommand) {
-        String result = redisTemplate.opsForList().rightPop(HISTORY_KEY + ":" + chatId);
-
-        return result == null ? defaultCommand : result;
+    public void delete(long chatId) {
+        redisTemplate.opsForHash().delete(CURRENT_KEY, String.valueOf(chatId));
     }
 }

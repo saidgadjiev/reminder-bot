@@ -1,12 +1,15 @@
 package ru.gadjini.reminder.service.command;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
+import ru.gadjini.reminder.dao.command.navigator.callback.CallbackCommandNavigatorDao;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
@@ -21,9 +24,14 @@ public class CallbackCommandNavigator {
 
     private Map<String, NavigableCallbackBotCommand> navigableBotCommands = new HashMap<>();
 
-    private Map<Long, NavigableCallbackBotCommand> currCommands = new HashMap<>();
+    private CallbackCommandNavigatorDao navigatorDao;
 
     private CommandNavigator commandNavigator;
+
+    @Autowired
+    public CallbackCommandNavigator(@Qualifier("redis") CallbackCommandNavigatorDao navigatorDao) {
+        this.navigatorDao = navigatorDao;
+    }
 
     @Autowired
     public void setKeyboardCommands(Collection<KeyboardBotCommand> keyboardCommands) {
@@ -47,7 +55,7 @@ public class CallbackCommandNavigator {
 
     public void push(long chatId, NavigableCallbackBotCommand callbackBotCommand) {
         if (callbackBotCommand.isAcquireKeyboard()) {
-            currCommands.put(chatId, callbackBotCommand);
+            navigatorDao.set(chatId, callbackBotCommand.getName());
         }
     }
 
@@ -61,17 +69,24 @@ public class CallbackCommandNavigator {
             }
         }
 
-        NavigableCallbackBotCommand currCommand = currCommands.remove(message.getChatId());
+        NavigableCallbackBotCommand currCommand = getCurrentCommand(message.getChatId());
         if (currCommand != null) {
             currCommand.leave(message.getChatId());
         }
+        navigatorDao.delete(message.getChatId());
 
         NavigableCallbackBotCommand callbackBotCommand = navigableBotCommands.get(commandName);
         callbackBotCommand.restore(message, replyKeyboard, requestParams);
     }
 
     public NavigableCallbackBotCommand getCurrentCommand(long chatId) {
-        return currCommands.get(chatId);
+        String currentCommand = navigatorDao.get(chatId);
+
+        if (StringUtils.isBlank(currentCommand)) {
+            return null;
+        }
+
+        return navigableBotCommands.get(currentCommand);
     }
 
     public enum RestoreKeyboard {

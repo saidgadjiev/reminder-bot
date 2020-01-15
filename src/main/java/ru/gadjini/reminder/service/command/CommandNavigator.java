@@ -10,7 +10,7 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
-import ru.gadjini.reminder.dao.command.navigator.CommandNavigatorDao;
+import ru.gadjini.reminder.dao.command.navigator.keyboard.CommandNavigatorDao;
 import ru.gadjini.reminder.util.ReflectionUtils;
 
 import java.util.Collection;
@@ -53,7 +53,7 @@ public class CommandNavigator {
                 return;
             }
             currCommand.leave(chatId);
-            navigatorDao.setParent(chatId, currCommand.getHistoryName());
+            navigatorDao.pushParent(chatId, currCommand.getHistoryName());
         }
 
         setCurrentCommand(chatId, navigableBotCommand);
@@ -65,7 +65,7 @@ public class CommandNavigator {
 
     public void pop(long chatId) {
         NavigableBotCommand currentCommand = getCurrentCommand(chatId);
-        String parentHistoryName = navigatorDao.getParent(chatId, CommandNames.START_COMMAND_NAME);
+        String parentHistoryName = navigatorDao.popParent(chatId, CommandNames.START_COMMAND_NAME);
 
         if (StringUtils.isNotBlank(parentHistoryName)) {
             currentCommand.leave(chatId);
@@ -86,7 +86,7 @@ public class CommandNavigator {
         }
         navigableBotCommand.leave(chatId);
 
-        String parentHistoryName = navigatorDao.getParent(chatId, CommandNames.START_COMMAND_NAME);
+        String parentHistoryName = navigatorDao.popParent(chatId, CommandNames.START_COMMAND_NAME);
         NavigableBotCommand parentCommand = navigableBotCommands.get(parentHistoryName);
 
         setCurrentCommand(chatId, parentCommand);
