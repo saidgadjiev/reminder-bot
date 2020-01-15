@@ -209,23 +209,21 @@ public class ButtonFactory {
         return button;
     }
 
-    public InlineKeyboardButton changeReminderNote(int reminderId, String prevHistory) {
+    public InlineKeyboardButton changeReminderNote(int reminderId) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_NOTE_COMMAND_DESCRIPTION));
         button.setCallbackData(CommandNames.EDIT_REMINDER_NOTE_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
-                        .add(Arg.PREV_HISTORY_NAME.getKey(), prevHistory)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;
     }
 
-    public InlineKeyboardButton deleteReminderNote(int reminderId, String currHistory) {
+    public InlineKeyboardButton deleteReminderNote(int reminderId) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.DELETE_REMINDER_NOTE_COMMAND_DESCRIPTION));
         button.setCallbackData(CommandNames.DELETE_REMINDER_NOTE_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
-                        .add(Arg.CURR_HISTORY_NAME.getKey(), currHistory)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;
@@ -234,6 +232,16 @@ public class ButtonFactory {
     public InlineKeyboardButton editReminder(int reminderId) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_COMMAND_DESCRIPTION));
         button.setCallbackData(CommandNames.EDIT_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams()
+                        .add(Arg.REMINDER_ID.getKey(), reminderId)
+                        .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
+
+    public InlineKeyboardButton reminderDetails(int reminderId) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.REMINDER_DETAILS_COMMAND_DESCRIPTION));
+        button.setCallbackData(CommandNames.REMINDER_DETAILS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));

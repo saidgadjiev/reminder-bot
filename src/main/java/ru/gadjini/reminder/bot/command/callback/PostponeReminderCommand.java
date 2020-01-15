@@ -46,7 +46,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     private ReminderMessageSender reminderMessageSender;
 
-    private CommandNavigator commandNavigator;
+    private CallbackCommandNavigator commandNavigator;
 
     private LocalisationService localisationService;
 
@@ -57,7 +57,6 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
                                    CurrReplyKeyboard replyKeyboardService,
                                    ReminderRequestService reminderRequestService,
                                    ReminderMessageSender reminderMessageSender,
-                                   CommandNavigator commandNavigator,
                                    LocalisationService localisationService) {
         this.stateService = stateService;
         this.replyKeyboardService = replyKeyboardService;
@@ -66,6 +65,10 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         this.inlineKeyboardService = inlineKeyboardService;
         this.reminderRequestService = reminderRequestService;
         this.reminderMessageSender = reminderMessageSender;
+    }
+
+    @Autowired
+    public void setCommandNavigator(CallbackCommandNavigator commandNavigator) {
         this.commandNavigator = commandNavigator;
     }
 
@@ -146,7 +149,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     private void postpone(long chatId, String reason, PostponeCommandState postponeCommandState) {
         UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(postponeCommandState.reminder, postponeCommandState.postponeTime);
-        ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(chatId);
+        ReplyKeyboardMarkup replyKeyboard = commandNavigator.silentPop(chatId, CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD);
         reminderMessageSender.sendReminderPostponed(updateReminderResult, reason, replyKeyboard);
     }
 

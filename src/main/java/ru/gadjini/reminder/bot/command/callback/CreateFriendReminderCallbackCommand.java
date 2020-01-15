@@ -15,6 +15,7 @@ import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
@@ -36,7 +37,7 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
 
     private ReplyKeyboardService replyKeyboardService;
 
-    private CommandNavigator commandNavigator;
+    private CallbackCommandNavigator commandNavigator;
 
     private ReminderMessageSender reminderMessageSender;
 
@@ -47,15 +48,18 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
                                                ReminderRequestService reminderService,
                                                MessageService messageService,
                                                CurrReplyKeyboard replyKeyboardService,
-                                               CommandNavigator commandNavigator,
                                                ReminderMessageSender reminderMessageSender, LocalisationService localisationService) {
         this.stateService = stateService;
         this.reminderService = reminderService;
         this.messageService = messageService;
         this.replyKeyboardService = replyKeyboardService;
-        this.commandNavigator = commandNavigator;
         this.reminderMessageSender = reminderMessageSender;
         this.localisationService = localisationService;
+    }
+
+    @Autowired
+    public void setCommandNavigator(CallbackCommandNavigator commandNavigator) {
+        this.commandNavigator = commandNavigator;
     }
 
     @Override
@@ -99,7 +103,7 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
                         .setMessageId(message.getMessageId()));
         reminder.getCreator().setChatId(message.getChatId());
 
-        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
+        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId(), CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD);
         reminderMessageSender.sendReminderCreated(reminder, replyKeyboardMarkup);
     }
 

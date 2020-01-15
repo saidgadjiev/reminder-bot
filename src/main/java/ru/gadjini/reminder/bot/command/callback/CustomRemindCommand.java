@@ -14,6 +14,7 @@ import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -35,7 +36,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
 
     private ReminderNotificationMessageSender reminderMessageSender;
 
-    private CommandNavigator commandNavigator;
+    private CallbackCommandNavigator commandNavigator;
 
     private LocalisationService localisationService;
 
@@ -45,15 +46,18 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
                                InlineKeyboardService inlineKeyboardService,
                                ReminderRequestService reminderService,
                                ReminderNotificationMessageSender reminderMessageSender,
-                               CommandNavigator commandNavigator,
                                LocalisationService localisationService) {
         this.stateService = stateService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
-        this.commandNavigator = commandNavigator;
         this.localisationService = localisationService;
+    }
+
+    @Autowired
+    public void setCommandNavigator(CallbackCommandNavigator commandNavigator) {
+        this.commandNavigator = commandNavigator;
     }
 
     @Override
@@ -85,7 +89,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
     public void processNonCommandUpdate(Message message, String text) {
         CallbackRequest callbackRequest = stateService.getState(message.getChatId());
         CustomRemindResult customRemindResult = reminderService.customRemind(callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), message.getText().trim());
-        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
+        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId(), CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD);
 
         String prevHistoryName = callbackRequest.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
         if (prevHistoryName.equals(CommandNames.SCHEDULE_COMMAND_NAME)) {

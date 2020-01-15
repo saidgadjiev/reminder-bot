@@ -13,6 +13,7 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -32,7 +33,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableC
 
     private ReminderRequestService reminderService;
 
-    private CommandNavigator commandNavigator;
+    private CallbackCommandNavigator commandNavigator;
 
     private InlineKeyboardService inlineKeyboardService;
 
@@ -43,7 +44,6 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableC
                                      ReminderMessageSender reminderMessageSender,
                                      MessageService messageService,
                                      ReminderRequestService reminderService,
-                                     CommandNavigator commandNavigator,
                                      InlineKeyboardService inlineKeyboardService,
                                      LocalisationService localisationService) {
         this.stateService = stateService;
@@ -51,8 +51,12 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableC
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.reminderService = reminderService;
-        this.commandNavigator = commandNavigator;
         this.inlineKeyboardService = inlineKeyboardService;
+    }
+
+    @Autowired
+    public void setCommandNavigator(CallbackCommandNavigator commandNavigator) {
+        this.commandNavigator = commandNavigator;
     }
 
     @Override
@@ -84,7 +88,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableC
         UpdateReminderResult updateReminderResult = reminderService.changeReminderTime(request.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), text);
         updateReminderResult.getOldReminder().getCreator().setChatId(message.getChatId());
 
-        commandNavigator.silentPop(message.getChatId());
+        commandNavigator.silentPop(message.getChatId(), CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD);
         reminderMessageSender.sendReminderTimeChanged(request.getMessageId(), updateReminderResult);
     }
 

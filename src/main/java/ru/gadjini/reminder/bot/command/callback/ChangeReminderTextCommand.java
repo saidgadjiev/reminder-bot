@@ -13,6 +13,7 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -34,7 +35,7 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableC
 
     private ReminderService reminderService;
 
-    private CommandNavigator commandNavigator;
+    private CallbackCommandNavigator commandNavigator;
 
     private InlineKeyboardService inlineKeyboardService;
 
@@ -45,7 +46,6 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableC
                                      ReminderMessageSender reminderMessageSender,
                                      MessageService messageService,
                                      ReminderService reminderService,
-                                     CommandNavigator commandNavigator,
                                      InlineKeyboardService inlineKeyboardService,
                                      LocalisationService localisationService) {
         this.stateService = stateService;
@@ -55,6 +55,10 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableC
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.reminderService = reminderService;
+    }
+
+    @Autowired
+    public void setCommandNavigator(CallbackCommandNavigator commandNavigator) {
         this.commandNavigator = commandNavigator;
     }
 

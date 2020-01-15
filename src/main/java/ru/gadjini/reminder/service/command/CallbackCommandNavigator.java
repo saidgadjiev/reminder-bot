@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
@@ -79,6 +80,26 @@ public class CallbackCommandNavigator {
         callbackBotCommand.restore(message, replyKeyboard, requestParams);
     }
 
+    public ReplyKeyboardMarkup silentPop(long chatId) {
+        return silentPop(chatId, RestoreKeyboard.NONE);
+    }
+
+    public ReplyKeyboardMarkup silentPop(long chatId, RestoreKeyboard restoreKeyboard) {
+        ReplyKeyboardMarkup replyKeyboard = null;
+
+        if (restoreKeyboard == RestoreKeyboard.RESTORE_KEYBOARD) {
+            replyKeyboard = commandNavigator.getCurrentCommand(chatId).getKeyboard(chatId);
+        }
+
+        NavigableCallbackBotCommand currCommand = getCurrentCommand(chatId);
+        if (currCommand != null) {
+            currCommand.leave(chatId);
+        }
+        navigatorDao.delete(chatId);
+
+        return replyKeyboard;
+    }
+
     public NavigableCallbackBotCommand getCurrentCommand(long chatId) {
         String currentCommand = navigatorDao.get(chatId);
 
@@ -91,7 +112,8 @@ public class CallbackCommandNavigator {
 
     public enum RestoreKeyboard {
 
-        RESTORE_KEYBOARD(0);
+        RESTORE_KEYBOARD(0),
+        NONE(1);
 
         private final int code;
 

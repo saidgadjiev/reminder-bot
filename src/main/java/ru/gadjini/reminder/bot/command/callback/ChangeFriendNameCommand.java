@@ -14,7 +14,7 @@ import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
@@ -35,7 +35,7 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableCal
 
     private InlineKeyboardService inlineKeyboardService;
 
-    private CommandNavigator commandNavigator;
+    private CallbackCommandNavigator commandNavigator;
 
     private LocalisationService localisationService;
 
@@ -54,7 +54,7 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableCal
     }
 
     @Autowired
-    public void setCommandNavigator(CommandNavigator commandNavigator) {
+    public void setCommandNavigator(CallbackCommandNavigator commandNavigator) {
         this.commandNavigator = commandNavigator;
     }
 

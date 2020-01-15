@@ -86,10 +86,9 @@ public class CommandExecutor {
         if (navigableCallbackBotCommand != null) {
             if (navigableCallbackBotCommand.accept(message)) {
                 navigableCallbackBotCommand.processNonCommandUpdate(message, text);
-                navigableCallbackBotCommand.processNonCommandEditedMessage(message, text);
-            } else {
-                return;
             }
+
+            return;
         }
 
         NavigableBotCommand navigableBotCommand = commandNavigator.getCurrentCommand(message.getChatId());
@@ -101,6 +100,15 @@ public class CommandExecutor {
     }
 
     public void processNonCommandEditedMessage(Message editedMessage, String text) {
+        NavigableCallbackBotCommand navigableCallbackBotCommand = callbackCommandNavigator.getCurrentCommand(editedMessage.getChatId());
+
+        if (navigableCallbackBotCommand != null) {
+            if (navigableCallbackBotCommand.accept(editedMessage)) {
+                navigableCallbackBotCommand.processNonCommandEditedMessage(editedMessage, text);
+            }
+
+            return;
+        }
         NavigableBotCommand navigableBotCommand = commandNavigator.getCurrentCommand(editedMessage.getChatId());
 
         if (navigableBotCommand != null && navigableBotCommand.accept(editedMessage)) {

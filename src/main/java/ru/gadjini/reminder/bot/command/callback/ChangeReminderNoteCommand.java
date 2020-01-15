@@ -13,6 +13,7 @@ import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -32,7 +33,7 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableC
 
     private ReminderService reminderService;
 
-    private CommandNavigator commandNavigator;
+    private CallbackCommandNavigator commandNavigator;
 
     private InlineKeyboardService inlineKeyboardService;
 
@@ -54,7 +55,7 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableC
     }
 
     @Autowired
-    public void setCommandNavigator(CommandNavigator commandNavigator) {
+    public void setCommandNavigator(CallbackCommandNavigator commandNavigator) {
         this.commandNavigator = commandNavigator;
     }
 
@@ -72,11 +73,10 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableC
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
 
-        String prevHistory = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_EDIT_NOTE))
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(prevHistory, requestParams))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, requestParams))
         );
 
         return MessagesProperties.MESSAGE_REMINDER_NOTE_ANSWER;
@@ -89,13 +89,8 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableC
         Reminder reminder = reminderService.changeReminderNote(reminderId, text);
         reminder.getCreator().setChatId(message.getChatId());
 
-        String prevHistory = request.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
         commandNavigator.silentPop(message.getChatId());
-        if (prevHistory.equals(CommandNames.EDIT_REMINDER_COMMAND_NAME)) {
-            reminderMessageSender.sendReminderNoteChangedFromList(reminder, request.getMessageId());
-        } else {
-            reminderMessageSender.sendReminderNoteChanged(reminder, request.getMessageId());
-        }
+        reminderMessageSender.sendReminderNoteChanged(reminder, request.getMessageId());
     }
 
     @Override

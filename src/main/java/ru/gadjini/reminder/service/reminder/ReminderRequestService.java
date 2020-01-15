@@ -182,6 +182,8 @@ public class ReminderRequestService {
             changed = reminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), newReminderTimeInReceiverZone.getFixedDateTime().withZoneSameInstant(ZoneOffset.UTC));
         }
 
+        changed.setReceiverId(oldReminder.getReceiverId());
+        changed.setCreatorId(oldReminder.getCreatorId());
         changed.setCreator(oldReminder.getCreator());
         changed.setReceiver(oldReminder.getReceiver());
         changed.setText(oldReminder.getText());
