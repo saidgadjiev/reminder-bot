@@ -342,12 +342,14 @@ public class ReminderMessageSender {
                         .text(postponeMessage)
                         .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
         );
-        messageService.sendMessageAsync(
-                new SendMessageContext(PriorityJob.Priority.MEDIUM)
-                        .chatId(reminder.getReceiver().getChatId())
-                        .text(postponeMessage)
-                        .replyKeyboard(replyKeyboard)
-        );
+        if (reminder.isNotMySelf()) {
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.MEDIUM)
+                            .chatId(reminder.getReceiver().getChatId())
+                            .text(postponeMessage)
+                            .replyKeyboard(replyKeyboard)
+            );
+        }
     }
 
     public void sendReminderTextChanged(int messageId, UpdateReminderResult updateReminderResult) {

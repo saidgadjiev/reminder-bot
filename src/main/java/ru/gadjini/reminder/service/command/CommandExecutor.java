@@ -36,13 +36,20 @@ public class CommandExecutor {
     private LocalisationService localisationService;
 
     @Autowired
-    public CommandExecutor(CommandNavigator commandNavigator, CallbackCommandNavigator callbackCommandNavigator, CommandParser commandParser,
-                           MessageService messageService, LocalisationService localisationService) {
-        this.commandNavigator = commandNavigator;
-        this.callbackCommandNavigator = callbackCommandNavigator;
+    public CommandExecutor(CommandParser commandParser, MessageService messageService, LocalisationService localisationService) {
         this.commandParser = commandParser;
         this.messageService = messageService;
         this.localisationService = localisationService;
+    }
+
+    @Autowired
+    public void setCommandNavigator(CommandNavigator commandNavigator) {
+        this.commandNavigator = commandNavigator;
+    }
+
+    @Autowired
+    public void setCallbackCommandNavigator(CallbackCommandNavigator callbackCommandNavigator) {
+        this.callbackCommandNavigator = callbackCommandNavigator;
     }
 
     @Autowired
@@ -68,6 +75,10 @@ public class CommandExecutor {
 
     public BotCommand getBotCommand(String startCommandName) {
         return botCommandMap.get(startCommandName);
+    }
+
+    public CallbackBotCommand getCallbackCommand(String commandName) {
+        return callbackBotCommandMap.get(commandName);
     }
 
     public boolean isKeyboardCommand(long chatId, String text) {

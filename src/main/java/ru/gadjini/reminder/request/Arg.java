@@ -12,7 +12,9 @@ public enum Arg {
     USER_REMINDER_NOTIFICATION_TYPE("h"),
     PLAN_ID("i"),
     SAVED_QUERY_ID("j"),
-    POSTPONE_TIME("k");
+    POSTPONE_TIME("k"),
+    CALLBACK_DELEGATE("l"),
+    POSTPONE_REASON("m");
 
     private final String key;
 

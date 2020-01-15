@@ -51,11 +51,6 @@ public class CurrReplyKeyboard implements ReplyKeyboardService {
     }
 
     @Override
-    public ReplyKeyboardMarkup getPostponeMessagesKeyboard(long chatId) {
-        return setCurrentKeyboard(chatId, keyboardService.getPostponeMessagesKeyboard(chatId));
-    }
-
-    @Override
     public ReplyKeyboardMarkup getMainMenu(long chatId, int userId) {
         return setCurrentKeyboard(chatId, keyboardService.getMainMenu(chatId, userId));
     }
@@ -63,11 +58,6 @@ public class CurrReplyKeyboard implements ReplyKeyboardService {
     @Override
     public ReplyKeyboardMarkup goBackCommand(long chatId) {
         return setCurrentKeyboard(chatId, keyboardService.goBackCommand(chatId));
-    }
-
-    @Override
-    public ReplyKeyboardMarkup postponeTimeKeyboard(long chatId) {
-        return setCurrentKeyboard(chatId, keyboardService.postponeTimeKeyboard(chatId));
     }
 
     public ReplyKeyboardMarkup getCurrentReplyKeyboard(long chatId) {

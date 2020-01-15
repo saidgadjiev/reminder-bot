@@ -47,14 +47,12 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                                  MessageService messageService,
                                  TgUserService tgUserService,
                                  TimezoneService timezoneService,
-                                 CommandNavigator commandNavigator,
                                  CurrReplyKeyboard replyKeyboardService,
                                  LocalisationService localisationService1) {
         name = localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME);
         this.messageService = messageService;
         this.tgUserService = tgUserService;
         this.timezoneService = timezoneService;
-        this.commandNavigator = commandNavigator;
         this.replyKeyboardService = replyKeyboardService;
         this.localisationService = localisationService1;
     }
@@ -62,6 +60,11 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
     @Override
     public boolean canHandle(long chatId, String command) {
         return name.equals(command);
+    }
+
+    @Autowired
+    public void setCommandNavigator(CommandNavigator commandNavigator) {
+        this.commandNavigator = commandNavigator;
     }
 
     @Override

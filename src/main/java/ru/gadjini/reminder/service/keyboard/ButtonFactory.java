@@ -113,24 +113,11 @@ public class ButtonFactory {
         return customRemindButton;
     }
 
-    public InlineKeyboardButton postponeReminderButton(int reminderId, String prevHistoryName) {
+    public InlineKeyboardButton postponeReminderButton(int reminderId) {
         InlineKeyboardButton postponeButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION));
         postponeButton.setCallbackData(CommandNames.POSTPONE_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
-                        .add(Arg.PREV_HISTORY_NAME.getKey(), prevHistoryName)
-                        .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
-
-        return postponeButton;
-    }
-
-    public InlineKeyboardButton postponeReminderButton(int reminderId, String prevCommand, String postponeTime) {
-        InlineKeyboardButton postponeButton = new InlineKeyboardButton(postponeTime);
-        postponeButton.setCallbackData(CommandNames.POSTPONE_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
-                new RequestParams()
-                        .add(Arg.REMINDER_ID.getKey(), reminderId)
-                        .add(Arg.PREV_HISTORY_NAME.getKey(), prevCommand)
-                        .add(Arg.POSTPONE_TIME.getKey(), postponeTime)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return postponeButton;
@@ -363,6 +350,16 @@ public class ButtonFactory {
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
+
+    public InlineKeyboardButton delegateButton(String name, String delegate, RequestParams requestParams) {
+        requestParams.add(Arg.CALLBACK_DELEGATE.getKey(), delegate);
+
+        InlineKeyboardButton button = new InlineKeyboardButton(name);
+        button.setCallbackData(CommandNames.CALLBACK_DELEGATE_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                requestParams.serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;
     }

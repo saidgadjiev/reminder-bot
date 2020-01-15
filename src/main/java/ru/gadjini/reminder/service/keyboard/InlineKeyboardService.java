@@ -39,14 +39,29 @@ public class InlineKeyboardService {
         this.webHookProperties = webHookProperties;
     }
 
-    public InlineKeyboardMarkup getPostponeKeyboard(int reminderId, String prevCommand, RequestParams requestParams) {
+    public InlineKeyboardMarkup getPostponeMessagesKeyboard(String prevCommand) {
+        InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
+
+        List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
+
+        keyboard.add(List.of(
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_REASON.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING))),
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_REASON.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON)))
+        ));
+
+        keyboard.add(List.of(buttonFactory.goBackCallbackButton(prevCommand)));
+
+        return keyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup getPostponeKeyboard(String prevCommand, RequestParams requestParams) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
         requestParams.add(Arg.RESTORE_KEYBOARD.getKey(), CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD.getCode());
         keyboard.add(List.of(
-                buttonFactory.postponeReminderButton(reminderId, prevCommand, localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN)),
-                buttonFactory.postponeReminderButton(reminderId, prevCommand, localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN))
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN))),
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN)))
         ));
         keyboard.add(List.of(buttonFactory.goBackCallbackButton(prevCommand, requestParams)));
 
@@ -248,7 +263,7 @@ public class InlineKeyboardService {
             List<InlineKeyboardButton> keyboardButtons = new ArrayList<>();
             keyboardButtons.add(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME));
             if (reminder.getRemindAt().hasTime()) {
-                keyboardButtons.add(buttonFactory.postponeReminderButton(reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME));
+                keyboardButtons.add(buttonFactory.postponeReminderButton(reminder.getId()));
             }
             inlineKeyboardMarkup.getKeyboard().add(keyboardButtons);
         }
@@ -394,7 +409,7 @@ public class InlineKeyboardService {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.returnReminderButton(reminderId), buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.REMINDER_DETAILS_COMMAND_NAME)));
         } else {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId, currHistoryName), buttonFactory.cancelReminderButton(reminderId, currHistoryName)));
-            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.REMINDER_DETAILS_COMMAND_NAME), buttonFactory.postponeReminderButton(reminderId, currHistoryName)));
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.REMINDER_DETAILS_COMMAND_NAME), buttonFactory.postponeReminderButton(reminderId)));
         }
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderTimesScheduleButton(reminderId)));
 

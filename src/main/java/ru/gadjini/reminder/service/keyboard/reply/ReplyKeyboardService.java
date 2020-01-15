@@ -16,11 +16,8 @@ public interface ReplyKeyboardService {
 
     ReplyKeyboardMarkup getUserReminderNotificationSettingsKeyboard(long chatId);
 
-    ReplyKeyboardMarkup getPostponeMessagesKeyboard(long chatId);
-
     ReplyKeyboardMarkup getMainMenu(long chatId, int userId);
 
     ReplyKeyboardMarkup goBackCommand(long chatId);
 
-    ReplyKeyboardMarkup postponeTimeKeyboard(long chatId);
 }

@@ -83,17 +83,6 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
     }
 
     @Override
-    public ReplyKeyboardMarkup getPostponeMessagesKeyboard(long chatId) {
-        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
-
-        List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
-        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING)));
-        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON)));
-
-        return replyKeyboardMarkup;
-    }
-
-    @Override
     public ReplyKeyboardMarkup getMainMenu(long chatId, int userId) {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
@@ -119,17 +108,6 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
-
-        return replyKeyboardMarkup;
-    }
-
-    @Override
-    public ReplyKeyboardMarkup postponeTimeKeyboard(long chatId) {
-        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
-
-        List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
-        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN)));
-        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN)));
 
         return replyKeyboardMarkup;
     }
