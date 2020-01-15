@@ -7,7 +7,6 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandParser;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
