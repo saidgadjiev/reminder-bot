@@ -253,6 +253,8 @@ public class RepeatReminderService {
         reminderNotificationService.create(reminderNotifications);
 
         Reminder reminder = new Reminder();
+        reminder.setId(reminderId);
+        reminder.setReceiverId(receiverId);
         reminder.setRepeatRemindAt(repeatTime);
         reminder.setInitialRemindAt(nextRemindAt);
         reminder.setRemindAt(nextRemindAt);
