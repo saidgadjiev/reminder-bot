@@ -234,11 +234,6 @@ public class ReminderMessageSender {
     }
 
     public void sendReminderCompletedFromList(int messageId, Reminder reminder) {
-        if (reminder.hasRemindMessage()) {
-            messageService.deleteMessage(reminder.getReceiverId(), reminder.getRemindMessage().getMessageId());
-            remindMessageService.delete(reminder.getId());
-        }
-
         if (reminder.isMySelf()) {
             messageService.editMessageAsync(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
@@ -261,6 +256,7 @@ public class ReminderMessageSender {
                             .text(reminderMessageBuilder.getReminderCompletedForCreator(reminder))
             );
         }
+        tryDeleteRemindMessage(messageId, reminder);
     }
 
     public void sendReminderCreated(Reminder reminder) {
@@ -450,10 +446,7 @@ public class ReminderMessageSender {
                             .text(reminderMessageBuilder.getReminderDeletedForReceiver(reminder))
             );
         }
-        if (reminder.hasRemindMessage()) {
-            messageService.deleteMessage(reminder.getReceiverId(), reminder.getRemindMessage().getMessageId());
-            remindMessageService.delete(reminder.getId());
-        }
+        tryDeleteRemindMessage(messageId, reminder);
     }
 
     public void sendReminderCanceled(Reminder reminder) {

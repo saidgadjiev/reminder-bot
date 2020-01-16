@@ -83,7 +83,7 @@ public class ReminderService {
 
     public Reminder activate(int reminderId) {
         return reminderDao.update(
-                Map.of(ReminderTable.TABLE.STATUS, Reminder.Status.ACTIVE),
+                Map.of(ReminderTable.TABLE.STATUS, Reminder.Status.ACTIVE.getCode()),
                 ReminderTable.TABLE.ID.eq(reminderId),
                 new ReminderMapping()
                         .setCreatorMapping(new Mapping())

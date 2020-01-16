@@ -73,8 +73,7 @@ public class ReminderDao {
                         "         LEFT JOIN friendship f ON CASE\n" +
                         "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
                         "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
-                        "WHERE r.status = 0\n" +
-                        "  AND (r.creator_id = :user_id OR (r.receiver_id = :user_id AND r.status = 0))\n" +
+                        "WHERE (r.creator_id = :user_id AND r.status IN(0, 2)) OR (r.receiver_id = :user_id AND r.status = 0)\n" +
                         "ORDER BY r.remind_at",
                 new MapSqlParameterSource().addValue("user_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
