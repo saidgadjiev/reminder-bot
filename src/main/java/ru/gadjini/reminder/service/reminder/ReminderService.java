@@ -174,7 +174,9 @@ public class ReminderService {
     public Reminder getReminder(int reminderId) {
         return reminderDao.getReminder(
                 ReminderTable.TABLE.as("r").ID.eq(reminderId),
-                new ReminderMapping().setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
+                new ReminderMapping()
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
+                        .setCreatorMapping(new Mapping())
         );
     }
 
