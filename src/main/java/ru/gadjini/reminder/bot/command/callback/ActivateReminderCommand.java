@@ -33,8 +33,8 @@ public class ActivateReminderCommand implements CallbackBotCommand {
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Reminder reminder = reminderService.activate(requestParams.getInt(Arg.REMINDER_ID.getKey()));
-
-        messageSender.sendReminderActivated(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), callbackQuery.getFrom().getId(), reminder);
+        reminder.getCreator().setChatId(callbackQuery.getMessage().getChatId());
+        messageSender.sendReminderActivated(callbackQuery.getMessage().getMessageId(), callbackQuery.getFrom().getId(), reminder);
 
         return MessagesProperties.MESSAGE_REMINDER_ACTIVATED_ANSWER;
     }

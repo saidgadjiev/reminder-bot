@@ -39,6 +39,15 @@ public class InlineKeyboardService {
         this.webHookProperties = webHookProperties;
     }
 
+    public InlineKeyboardMarkup getOpenDetailsKeyboard(int reminderId) {
+        InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
+
+        List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
+        keyboard.add(List.of(buttonFactory.reminderDetails(reminderId)));
+
+        return keyboardMarkup;
+    }
+
     public InlineKeyboardMarkup getPostponeMessagesKeyboard(String prevCommand) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 

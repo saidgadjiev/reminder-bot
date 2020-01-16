@@ -14,7 +14,6 @@ import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
@@ -35,8 +34,6 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
 
     private ReplyKeyboardService replyKeyboardService;
 
-    private CallbackCommandNavigator commandNavigator;
-
     private ReminderMessageSender reminderMessageSender;
 
     private LocalisationService localisationService;
@@ -53,11 +50,6 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
         this.replyKeyboardService = replyKeyboardService;
         this.reminderMessageSender = reminderMessageSender;
         this.localisationService = localisationService;
-    }
-
-    @Autowired
-    public void setCommandNavigator(CallbackCommandNavigator commandNavigator) {
-        this.commandNavigator = commandNavigator;
     }
 
     @Override

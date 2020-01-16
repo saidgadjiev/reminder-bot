@@ -3,7 +3,6 @@ package ru.gadjini.reminder.service.reminder.message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.domain.RemindMessage;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.job.PriorityJob;
@@ -61,7 +60,7 @@ public class ReminderNotificationMessageSender {
 
         InlineKeyboardMarkup keyboard = inlineKeyboardService.getRemindKeyboard(reminder);
         messageService.sendMessageAsync(
-                new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(reminder.getReceiver().getChatId()).text(message).replyKeyboard(keyboard),
+                new SendMessageContext(PriorityJob.Priority.HIGH).chatId(reminder.getReceiver().getChatId()).text(message).replyKeyboard(keyboard),
                 msg -> remindMessageService.create(reminder.getId(), msg.getMessageId())
         );
     }
@@ -70,7 +69,7 @@ public class ReminderNotificationMessageSender {
         String text = reminderNotificationMessageBuilder.getReminderTimeMessage(customRemindResult.getReminderNotification());
 
         messageService.editMessageAsync(
-                new EditMessageContext(PriorityJob.Priority.MEDIUM)
+                new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(text)
@@ -82,7 +81,7 @@ public class ReminderNotificationMessageSender {
         String text = reminderMessageBuilder.getReminderMessage(customRemindResult.getReminderNotification().getReminder());
 
         messageService.editMessageAsync(
-                new EditMessageContext(PriorityJob.Priority.MEDIUM)
+                new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(text + "\n\n" + reminderMessageBuilder.getCustomRemindText(customRemindResult))

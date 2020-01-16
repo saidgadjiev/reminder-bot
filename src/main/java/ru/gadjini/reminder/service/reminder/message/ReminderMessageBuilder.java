@@ -207,7 +207,7 @@ public class ReminderMessageBuilder {
         return message.toString();
     }
 
-    public String getRepeatReminderReturnedForReceiver(Reminder reminder) {
+    public String getRepeatReminderReturnedForCreator(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
         message.append(messageBuilder.getReminderReturned(reminder.getText())).append("\n");
@@ -311,16 +311,22 @@ public class ReminderMessageBuilder {
         return message.toString();
     }
 
-    public String getReminderPostponedForReceiver(String text, DateTime remindAt, String reason) {
+    public String getReminderPostponedForReceiver(String text, TgUser receiver, DateTime remindAt, String reason) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderPostponed(text, remindAt));
+        message.append(messageBuilder.getReminderPostponed(text, remindAt))
+                .append("\n").append(messageBuilder.getReminderReceiver(receiver));
 
         if (StringUtils.isNotBlank(reason)) {
             message.append("\n\n").append(reason);
         }
 
         return message.toString();
+    }
+
+
+    public String getMySelfReminderPostponed(String text, DateTime remindAt) {
+        return messageBuilder.getReminderPostponed(text, remindAt);
     }
 
     public String getReminderNoteChangedReceiver(TgUser creator, String text, String note) {

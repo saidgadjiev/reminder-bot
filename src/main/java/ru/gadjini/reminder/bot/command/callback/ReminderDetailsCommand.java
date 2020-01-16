@@ -52,7 +52,7 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Reminder reminder = reminderService.getReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
-        reminderMessageSender.sendReminderDetails(callbackQuery.getFrom().getId(), callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), reminder);
+        reminderMessageSender.sendReminderDetails(callbackQuery.getMessage().getChatId(), callbackQuery.getFrom().getId(), callbackQuery.getMessage().getMessageId(), reminder);
 
         return null;
     }

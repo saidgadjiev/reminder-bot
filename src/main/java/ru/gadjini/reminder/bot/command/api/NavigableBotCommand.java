@@ -1,7 +1,6 @@
 package ru.gadjini.reminder.bot.command.api;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import ru.gadjini.reminder.common.CommandNames;
 
 public interface NavigableBotCommand extends MyBotCommand {
 

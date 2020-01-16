@@ -38,8 +38,7 @@ public class GetCompletedRemindersCommand implements CallbackBotCommand {
         List<Reminder> reminders = reminderService.getCompletedReminders(callbackQuery.getFrom().getId());
 
         reminderMessageSender.sendCompletedReminders(
-                callbackQuery.getFrom().getId(),
-                callbackQuery.getMessage().getChatId(),
+                callbackQuery.getMessage().getChatId(), callbackQuery.getFrom().getId(),
                 callbackQuery.getMessage().getMessageId(),
                 reminders
         );

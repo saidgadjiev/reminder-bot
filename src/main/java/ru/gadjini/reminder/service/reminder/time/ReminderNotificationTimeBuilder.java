@@ -3,15 +3,12 @@ package ru.gadjini.reminder.service.reminder.time;
 import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.RepeatTime;
-import ru.gadjini.reminder.service.declension.TimeDeclensionService;
 
 import java.time.ZonedDateTime;
-import java.util.Locale;
 
 @Service
 public class ReminderNotificationTimeBuilder {

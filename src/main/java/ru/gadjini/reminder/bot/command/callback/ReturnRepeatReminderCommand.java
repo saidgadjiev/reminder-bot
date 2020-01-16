@@ -34,11 +34,11 @@ public class ReturnRepeatReminderCommand implements CallbackBotCommand {
         RepeatReminderService.ReturnReminderResult returnReminderResult = repeatReminderService.returnReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         if (!returnReminderResult.isReturned()) {
-            messageSender.sendRepeatReminderCantBeReturned(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), callbackQuery.getFrom().getId(), returnReminderResult.getReminder());
+            messageSender.sendRepeatReminderCantBeReturnedFromList(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), callbackQuery.getFrom().getId(), returnReminderResult.getReminder());
 
             return MessagesProperties.MESSAGE_REMINDER_CANT_BE_RETURNED_ANSWER;
         } else {
-            messageSender.sendRepeatReminderReturned(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), callbackQuery.getFrom().getId(), returnReminderResult.getReminder());
+            messageSender.sendRepeatReminderReturnedFromList(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), callbackQuery.getFrom().getId(), returnReminderResult.getReminder());
 
             return MessagesProperties.MESSAGE_REMINDER_RETURNED_ANSWER;
         }
