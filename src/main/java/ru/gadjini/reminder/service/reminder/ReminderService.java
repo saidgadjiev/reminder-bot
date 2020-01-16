@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.reminder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 import org.jooq.Field;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,7 +161,7 @@ public class ReminderService {
     }
 
     public UpdateReminderResult changeReminderText(int reminderId, String newText) {
-        return reminderDao.updateReminderText(reminderId, newText);
+        return reminderDao.updateReminderText(reminderId, StringUtils.capitalize(newText.toLowerCase()));
     }
 
     public List<Reminder> getCompletedReminders(int userId) {

@@ -276,7 +276,7 @@ public class InlineKeyboardService {
             inlineKeyboardMarkup.getKeyboard().add(keyboardButtons);
         }
         if (reminder.isNotMySelf() && reminder.isUnread()) {
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.readButton(reminder.getId(), CommandNames.RECEIVER_REMINDER_COMMAND_NAME)));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.readButton(reminder.getId())));
         }
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderDetails(reminder.getId())));
 
@@ -427,7 +427,7 @@ public class InlineKeyboardService {
         }
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderTimesScheduleButton(reminderId)));
         if (reminder.isNotMySelf() && reminder.isUnread()) {
-            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.readButton(reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME)));
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.readButton(reminder.getId())));
         }
 
         return keyboardMarkup;

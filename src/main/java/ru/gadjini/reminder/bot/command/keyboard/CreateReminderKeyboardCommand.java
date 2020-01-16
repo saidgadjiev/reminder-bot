@@ -70,7 +70,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     @Override
     public boolean canHandle(long chatId, String command) {
-        if (!commandNavigator.isCurrentCommandThat(chatId, command)) {
+        if (!commandNavigator.isCurrentCommandThat(chatId, CommandNames.START_COMMAND_NAME)) {
             return false;
         }
 

@@ -158,8 +158,7 @@ public class ReminderMessageBuilder {
 
         message
                 .append(messageBuilder.getReminderDeleted(reminder.getText())).append("\n")
-                .append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n")
-                .append(messageBuilder.getReminderReceiver(reminder.getCreator()));
+                .append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
         return message.toString();
     }
@@ -284,10 +283,10 @@ public class ReminderMessageBuilder {
             return messageBuilder.getReminderTimeEditedReceiver(oldReminder.getCreator(), oldReminder.getText(), oldReminder.getRepeatRemindAtInReceiverZone(), newReminder.getRepeatRemindAtInReceiverZone());
         }
         if (newReminder.isRepeatable() && !oldReminder.isRepeatable()) {
-            return messageBuilder.getReminderTimeEditedReceiver(oldReminder.getCreator(), oldReminder.getText(), oldReminder.getRepeatRemindAtInReceiverZone(), newReminder.getRemindAtInReceiverZone());
+            return messageBuilder.getReminderTimeEditedReceiver(oldReminder.getCreator(), oldReminder.getText(), oldReminder.getRemindAtInReceiverZone(), newReminder.getRepeatRemindAtInReceiverZone());
         }
         if (!newReminder.isRepeatable() && oldReminder.isRepeatable()) {
-            return messageBuilder.getReminderTimeEditedReceiver(oldReminder.getCreator(), oldReminder.getText(), oldReminder.getRemindAtInReceiverZone(), newReminder.getRepeatRemindAtInReceiverZone());
+            return messageBuilder.getReminderTimeEditedReceiver(oldReminder.getCreator(), oldReminder.getText(), oldReminder.getRepeatRemindAtInReceiverZone(), newReminder.getRemindAtInReceiverZone());
         }
 
         return messageBuilder.getReminderTimeEditedReceiver(oldReminder.getCreator(), oldReminder.getText(), oldReminder.getRemindAtInReceiverZone(), newReminder.getRemindAtInReceiverZone());
@@ -311,11 +310,11 @@ public class ReminderMessageBuilder {
         return message.toString();
     }
 
-    public String getReminderPostponedForReceiver(String text, TgUser receiver, DateTime remindAt, String reason) {
+    public String getReminderPostponedForReceiver(String text, TgUser creator, DateTime remindAt, String reason) {
         StringBuilder message = new StringBuilder();
 
         message.append(messageBuilder.getReminderPostponed(text, remindAt))
-                .append("\n").append(messageBuilder.getReminderReceiver(receiver));
+                .append("\n").append(messageBuilder.getReminderCreator(creator));
 
         if (StringUtils.isNotBlank(reason)) {
             message.append("\n\n").append(reason);
@@ -447,10 +446,10 @@ public class ReminderMessageBuilder {
             return messageBuilder.getReminderTimeEdited(oldReminder.getRepeatRemindAtInReceiverZone(), newReminder.getRepeatRemindAtInReceiverZone());
         }
         if (newReminder.isRepeatable() && !oldReminder.isRepeatable()) {
-            return messageBuilder.getReminderTimeEdited(oldReminder.getRepeatRemindAtInReceiverZone(), newReminder.getRemindAtInReceiverZone());
+            return messageBuilder.getReminderTimeEdited(oldReminder.getRemindAtInReceiverZone(), newReminder.getRepeatRemindAtInReceiverZone());
         }
         if (!newReminder.isRepeatable() && oldReminder.isRepeatable()) {
-            return messageBuilder.getReminderTimeEdited(oldReminder.getRemindAtInReceiverZone(), newReminder.getRepeatRemindAtInReceiverZone());
+            return messageBuilder.getReminderTimeEdited(oldReminder.getRepeatRemindAtInReceiverZone(), newReminder.getRemindAtInReceiverZone());
         }
 
         return messageBuilder.getReminderTimeEdited(oldReminder.getRemindAtInReceiverZone(), newReminder.getRemindAtInReceiverZone());

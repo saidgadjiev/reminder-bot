@@ -284,6 +284,7 @@ public class Reminder {
         this.maxSeries = maxSeries;
     }
 
+    @JsonIgnore
     public boolean isInactive() {
         return status == Status.INACTIVE;
     }

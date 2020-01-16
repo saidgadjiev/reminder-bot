@@ -78,7 +78,8 @@ public class ReminderNotificationMessageSender {
     }
 
     public void sendCustomRemindCreated(int userId, long chatId, int messageId, CustomRemindResult customRemindResult) {
-        String text = reminderMessageBuilder.getReminderMessage(customRemindResult.getReminderNotification().getReminder());
+        Reminder reminder = customRemindResult.getReminderNotification().getReminder();
+        String text = reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId());
 
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)

@@ -35,12 +35,10 @@ public class ReadReminderCommand implements CallbackBotCommand {
         int reminderId = requestParams.getInt(Arg.REMINDER_ID.getKey());
         Reminder reminder = reminderService.read(reminderId);
 
-        String prevCommand = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
         messageSender.sendReminderRead(
                 callbackQuery.getMessage().getChatId(),
-                callbackQuery.getFrom().getId(),
                 callbackQuery.getMessage().getMessageId(),
-                prevCommand,
+                callbackQuery.getMessage().getReplyMarkup(),
                 reminder
         );
 

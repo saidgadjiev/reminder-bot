@@ -25,7 +25,6 @@ import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestExtractor;
-import ru.gadjini.reminder.service.validation.CreateReminderValidator;
 import ru.gadjini.reminder.service.validation.ValidationContext;
 import ru.gadjini.reminder.service.validation.ValidationEvent;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
@@ -35,6 +34,7 @@ import ru.gadjini.reminder.util.JodaTimeUtils;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -98,9 +98,6 @@ public class ReminderRequestService {
                 .setUser(user)
                 .setReceiverZone(oldReminder.getReceiverZoneId())
                 .setText(text);
-        if (oldReminder.isNotMySelf()) {
-            context.setReceiverId(oldReminder.getReceiverId());
-        }
 
         ReminderRequest reminderRequest = requestExtractor.extract(context);
 
@@ -135,7 +132,10 @@ public class ReminderRequestService {
     }
 
     public CustomRemindResult customRemind(int reminderId, String text) {
-        Reminder reminder = reminderService.getReminder(reminderId, new ReminderMapping().setReceiverMapping(new Mapping()));
+        Reminder reminder = reminderService.getReminder(reminderId, new ReminderMapping()
+                .setCreatorMapping(new Mapping())
+                .setReceiverMapping(new Mapping())
+        );
 
         Time customRemind = parseTime(text, reminder.getReceiver().getZone());
         validatorFactory.getValidator(ValidationEvent.CUSTOM_REMIND).validate(new ValidationContext().time(customRemind).reminder(reminder));
@@ -167,10 +167,10 @@ public class ReminderRequestService {
         Reminder oldReminder = reminderService.getReminder(reminderId, new ReminderMapping()
                 .setRemindMessageMapping(new Mapping())
                 .setCreatorMapping(new Mapping())
-                .setReceiverMapping(new Mapping()));
+                .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME))));
 
         Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone());
-        validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER).validate(new ValidationContext().time(newReminderTimeInReceiverZone));
+        validatorFactory.getValidator(ValidationEvent.CHANGE_REMINDER_TIME).validate(new ValidationContext().time(newReminderTimeInReceiverZone));
 
         Reminder changed;
         if (newReminderTimeInReceiverZone.isRepeatTime()) {
@@ -192,17 +192,14 @@ public class ReminderRequestService {
         return new UpdateReminderResult(oldReminder, changed);
     }
 
-    public Reminder getReminderForPostpone(User user, int reminderId) {
-        Reminder oldReminder = reminderService.getReminder(
+    public Reminder getReminderForPostpone(int reminderId) {
+        return reminderService.getReminder(
                 reminderId,
                 new ReminderMapping()
                         .setRemindMessageMapping(new Mapping())
                         .setCreatorMapping(new Mapping())
-                        .setReceiverMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
         );
-        oldReminder.getReceiver().setFrom(user);
-
-        return oldReminder;
     }
 
     public Time parseTime(String text, ZoneId zoneId) {

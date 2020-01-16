@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
@@ -96,10 +97,10 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         PostponeCommandState state = stateService.getState(callbackQuery.getMessage().getChatId());
         if (state.state == State.TIME) {
             String postponeTime = requestParams.getString(Arg.POSTPONE_TIME.getKey());
-            processNonCommandUpdate(callbackQuery.getMessage(), postponeTime, state);
+            processNonCommandUpdate(callbackQuery.getFrom(), postponeTime, state);
         } else {
             String postponeReason = requestParams.getString(Arg.POSTPONE_REASON.getKey());
-            processNonCommandUpdate(callbackQuery.getMessage(), postponeReason, state);
+            processNonCommandUpdate(callbackQuery.getFrom(), postponeReason, state);
         }
     }
 
@@ -107,7 +108,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
     public void processNonCommandUpdate(Message message, String text) {
         PostponeCommandState postponeCommandState = stateService.getState(message.getChatId());
 
-        processNonCommandUpdate(message, message.getText().trim(), postponeCommandState);
+        processNonCommandUpdate(message.getFrom(), message.getText().trim(), postponeCommandState);
     }
 
     @Override
@@ -115,38 +116,35 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         stateService.deleteState(chatId);
     }
 
-    private void processNonCommandUpdate(Message message, String text, PostponeCommandState postponeCommandState) {
+    private void processNonCommandUpdate(User from, String text, PostponeCommandState postponeCommandState) {
         if (postponeCommandState.state == State.TIME) {
-            postponeTime(message, text, postponeCommandState);
+            postponeTime(from.getId(), text, postponeCommandState);
         } else {
             if (text.equals(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON))) {
-                postpone(message.getFrom().getId(), message.getChatId(), null, postponeCommandState);
+                postpone(from.getId(),null, postponeCommandState);
             } else {
-                postpone(message.getFrom().getId(), message.getChatId(), text, postponeCommandState);
+                postpone(from.getId(), text, postponeCommandState);
             }
         }
     }
 
-    private void postponeTime(Message message, String text, PostponeCommandState postponeCommandState) {
-        Reminder reminder = reminderRequestService.getReminderForPostpone(
-                message.getFrom(),
-                postponeCommandState.callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey())
-        );
+    private void postponeTime(int userId, String text, PostponeCommandState postponeCommandState) {
+        Reminder reminder = reminderRequestService.getReminderForPostpone(postponeCommandState.callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()));
         postponeCommandState.postponeTime = reminderRequestService.parseTime(text, reminder.getReceiver().getZone());
         postponeCommandState.reminder = reminder;
         postponeCommandState.state = State.REASON;
 
-        stateService.setState(message.getChatId(), postponeCommandState);
+        stateService.setState(userId, postponeCommandState);
         if (reminder.getReceiverId() != reminder.getCreatorId()) {
-            messageService.editReplyKeyboard(message.getChatId(), postponeCommandState.messageId, inlineKeyboardService.getPostponeMessagesKeyboard(CommandNames.REMINDER_DETAILS_COMMAND_NAME));
+            messageService.editReplyKeyboard(userId, postponeCommandState.messageId, inlineKeyboardService.getPostponeMessagesKeyboard(CommandNames.REMINDER_DETAILS_COMMAND_NAME));
         } else {
-            postpone(message.getFrom().getId(), message.getChatId(), null, postponeCommandState);
+            postpone(userId, null, postponeCommandState);
         }
     }
 
-    private void postpone(int userId, long chatId, String reason, PostponeCommandState postponeCommandState) {
+    private void postpone(int userId, String reason, PostponeCommandState postponeCommandState) {
         UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(postponeCommandState.reminder, postponeCommandState.postponeTime);
-        commandNavigator.silentPop(chatId);
+        commandNavigator.silentPop(userId);
         reminderMessageSender.sendReminderPostponed(userId, postponeCommandState.messageId, updateReminderResult, reason);
     }
 

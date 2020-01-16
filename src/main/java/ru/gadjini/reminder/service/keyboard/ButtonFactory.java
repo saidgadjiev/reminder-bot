@@ -344,12 +344,11 @@ public class ButtonFactory {
         return button;
     }
 
-    public InlineKeyboardButton readButton(int reminderId, String prevCommand) {
+    public InlineKeyboardButton readButton(int reminderId) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.READ_REMINDER_COMMAND_DESCRIPTION));
         button.setCallbackData(CommandNames.READ_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
-                        .add(Arg.PREV_HISTORY_NAME.getKey(), prevCommand)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;
