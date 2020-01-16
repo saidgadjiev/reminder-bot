@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.parser.reminder.parser;
 
+import org.apache.commons.lang3.StringUtils;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
@@ -40,7 +41,12 @@ public class ReminderRequestParser {
     }
 
     private void consumeText(List<BaseLexem> lexems) {
-        reminderRequest.setText(lexemsConsumer.consume(lexems, ReminderToken.TEXT).getValue());
+        String text = lexemsConsumer.consume(lexems, ReminderToken.TEXT).getValue();
+
+        if (StringUtils.isBlank(text)) {
+            throw new ParseException();
+        }
+        reminderRequest.setText(text);
 
         reminderRequest.setTime(timeParser.parse(lexems));
         if (lexemsConsumer.check(lexems, ReminderToken.NOTE)) {
