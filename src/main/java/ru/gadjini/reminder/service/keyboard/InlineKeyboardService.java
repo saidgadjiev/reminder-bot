@@ -289,7 +289,7 @@ public class InlineKeyboardService {
         if (reminder.isInactive()) {
             return null;
         }
-        InlineKeyboardMarkup inlineKeyboardMarkup = getInitialReceiverReminderDetailsKeyboard(reminder.getId(), reminder.isRepeatable());
+        InlineKeyboardMarkup inlineKeyboardMarkup = getInitialReceiverReminderDetailsKeyboard(reminder);
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderTimesScheduleButton(reminder.getId())));
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME)));
@@ -367,7 +367,7 @@ public class InlineKeyboardService {
     }
 
     private InlineKeyboardMarkup getMySelfReminderDetailsKeyboard(Reminder reminder) {
-        InlineKeyboardMarkup keyboardMarkup = getInitialReceiverReminderDetailsKeyboard(reminder.getId(), reminder.isRepeatable());
+        InlineKeyboardMarkup keyboardMarkup = getInitialReceiverReminderDetailsKeyboard(reminder);
 
         addControlReminderButtons(keyboardMarkup, reminder);
 
@@ -410,10 +410,16 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    private InlineKeyboardMarkup getInitialReceiverReminderDetailsKeyboard(int reminderId, boolean repeatable) {
+    private InlineKeyboardMarkup getInitialReceiverReminderDetailsKeyboard(Reminder reminder) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
+        if (reminder.isInactive()) {
+            return keyboardMarkup;
+        }
+
         String currHistoryName = CommandNames.REMINDER_DETAILS_COMMAND_NAME;
+        boolean repeatable = reminder.isRepeatable();
+        int reminderId = reminder.getId();
         if (repeatable) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminderId, currHistoryName), buttonFactory.cancelReminderButton(reminderId, currHistoryName)));
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.skipRepeatReminderButton(reminderId, currHistoryName), buttonFactory.stopRepeatReminderButton(reminderId, currHistoryName)));
@@ -428,10 +434,10 @@ public class InlineKeyboardService {
     }
 
     private void addControlReminderButtons(InlineKeyboardMarkup keyboardMarkup, Reminder reminder) {
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminder(reminder.getId())));
         if (reminder.isInactive()) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.activateReminderButton(reminder.getId())));
         } else {
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminder(reminder.getId())));
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deactivateReminderButton(reminder.getId())));
             if (reminder.isRepeatable()) {
                 if (reminder.isCountSeries()) {
