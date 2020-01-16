@@ -73,6 +73,7 @@ public class ResultSetMapper {
     }
 
     public Reminder mapReminder(ResultSet rs) throws SQLException {
+        Set<String> columnNames = JdbcUtils.getColumnNames(rs.getMetaData());
         Reminder reminder = new Reminder();
 
         reminder.setReminderNotifications(new ArrayList<>());
@@ -81,12 +82,16 @@ public class ResultSetMapper {
         reminder.setReceiverId(rs.getInt(Reminder.RECEIVER_ID));
         reminder.setCreatorId(rs.getInt(Reminder.CREATOR_ID));
         reminder.setNote(rs.getString(Reminder.NOTE));
-        reminder.setMessageId(rs.getInt(Reminder.MESSAGE_ID));
+        if (columnNames.contains(Reminder.MESSAGE_ID)) {
+            reminder.setMessageId(rs.getInt(Reminder.MESSAGE_ID));
+        }
         reminder.setCurrentSeries(rs.getInt(Reminder.CURRENT_SERIES));
         reminder.setMaxSeries(rs.getInt(Reminder.MAX_SERIES));
         reminder.setStatus(Reminder.Status.fromCode(rs.getInt(Reminder.STATUS)));
         reminder.setCountSeries(rs.getBoolean(Reminder.COUNT_SERIES));
-        reminder.setRead(rs.getBoolean(Reminder.READ));
+        if (columnNames.contains(Reminder.READ)) {
+            reminder.setRead(rs.getBoolean(Reminder.READ));
+        }
         Timestamp completedAt = rs.getTimestamp(Reminder.COMPLETED_AT);
         if (completedAt != null) {
             reminder.setCompletedAt(ZonedDateTime.of(completedAt.toLocalDateTime(), ZoneOffset.UTC));
@@ -98,7 +103,6 @@ public class ResultSetMapper {
         }
         reminder.setRemindAt(mapDateTime(rs));
 
-        Set<String> columnNames = JdbcUtils.getColumnNames(rs.getMetaData());
         if (columnNames.contains("rc_zone_id")) {
             String zoneId = rs.getString("rc_zone_id");
             TgUser rc = new TgUser();

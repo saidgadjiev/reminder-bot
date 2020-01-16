@@ -95,37 +95,10 @@ public class ReminderDao {
 
     public List<Reminder> getCompletedReminders(int userId) {
         return namedParameterJdbcTemplate.query(
-                "SELECT r.id,\n" +
-                        "       r.reminder_text,\n" +
-                        "       r.creator_id,\n" +
-                        "       r.receiver_id,\n" +
-                        "       r.remind_at,\n" +
-                        "       r.repeat_remind_at,\n" +
+                        "SELECT r.*," +
                         "       (r.remind_at).*,\n" +
                         "       (r.repeat_remind_at).*,\n" +
-                        "       r.completed_at,\n" +
-                        "       r.note,\n" +
-                        "       rc.zone_id                                                                            AS rc_zone_id,\n" +
-                        "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
-                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
-                        "FROM reminder r\n" +
-                        "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
-                        "         LEFT JOIN friendship f ON CASE\n" +
-                        "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
-                        "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
-                        "WHERE r.creator_id = :creator_id\n" +
-                        "  AND r.status = 1\n" +
-                        "UNION ALL\n" +
-                        "SELECT r.id,\n" +
-                        "       r.reminder_text,\n" +
-                        "       r.creator_id,\n" +
-                        "       r.receiver_id,\n" +
-                        "       r.remind_at,\n" +
-                        "       r.repeat_remind_at,\n" +
-                        "       (r.remind_at).*,\n" +
-                        "       (r.repeat_remind_at).*,\n" +
-                        "       r.completed_at,\n" +
-                        "       r.note,\n" +
+                        "       1 AS status,\n" +
                         "       rc.zone_id                                                                            AS rc_zone_id,\n" +
                         "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
                         "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
@@ -142,21 +115,13 @@ public class ReminderDao {
     }
 
     public void deleteCompletedReminders(int creatorId) {
-        jdbcTemplate.batchUpdate(
-                "DELETE FROM reminder WHERE creator_id = " + creatorId + " AND status = 1",
-                "DELETE FROM completed_reminder WHERE receiver_id = " + creatorId
-        );
+        jdbcTemplate.update("DELETE FROM completed_reminder WHERE receiver_id = " + creatorId);
     }
 
     public int deleteCompletedReminders(LocalDateTime dateTime) {
         String formatted = dateTimeFormatter.format(dateTime);
 
-        int[] updated = jdbcTemplate.batchUpdate(
-                "DELETE FROM reminder WHERE status = 1 AND completed_at <= '" + formatted + "'",
-                "DELETE FROM completed_reminder WHERE completed_at <= '" + formatted + "'"
-        );
-
-        return IntStream.of(updated).sum();
+        return jdbcTemplate.update("DELETE FROM completed_reminder WHERE completed_at <= '" + formatted + "'");
     }
 
     public List<Reminder> getRemindersWithReminderTimes(LocalDateTime localDateTime, int limit) {

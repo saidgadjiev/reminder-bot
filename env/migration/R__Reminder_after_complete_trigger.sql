@@ -3,12 +3,15 @@ CREATE OR REPLACE FUNCTION after_reminder_completed()
 AS
 $BODY$
 BEGIN
-    if (NEW.receiver_id != NEW.creator_id) THEN
-        INSERT INTO completed_reminder(reminder_id, reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at,
-                                       initial_remind_at, completed_at, note, current_series, max_series)
-        VALUES (NEW.id, NEW.reminder_text, NEW.creator_id, NEW.receiver_id, NEW.remind_at, NEW.repeat_remind_at,
-                NEW.initial_remind_at, now(), NEW.note, NEW.current_series, NEW.max_series);
-    END IF;
+    WITH r AS (
+        DELETE FROM reminder WHERE id = NEW.id RETURNING id, reminder_text, creator_id, receiver_id, remind_at,
+            repeat_remind_at, initial_remind_at, NOW(), note, count_series, max_series, current_series
+    )
+    INSERT
+    INTO completed_reminder(reminder_id, reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at,
+                            initial_remind_at, completed_at, note, count_series, current_series, max_series)
+    SELECT *
+    FROM r;
 
     RETURN NEW;
 END;
