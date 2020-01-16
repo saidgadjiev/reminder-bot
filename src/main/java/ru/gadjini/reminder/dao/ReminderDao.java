@@ -74,7 +74,7 @@ public class ReminderDao {
                         "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
                         "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
                         "WHERE r.status = 0\n" +
-                        "  AND (r.creator_id = :user_id OR r.receiver_id = :user_id)\n" +
+                        "  AND (r.creator_id = :user_id OR (r.receiver_id = :user_id AND r.status = 0))\n" +
                         "ORDER BY r.remind_at",
                 new MapSqlParameterSource().addValue("user_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
@@ -87,7 +87,7 @@ public class ReminderDao {
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
                         "         INNER JOIN remind_message rm on r.id = rm.reminder_id\n" +
-                        "WHERE r.inactive = FALSE\n" +
+                        "WHERE r.status = 0\n" +
                         "  AND r.repeat_remind_at::varchar IS NOT NULL\n" +
                         "  AND (r.remind_at).dt_date < (now()::timestamp AT TIME ZONE 'UTC' AT TIME ZONE rc.zone_id)::date",
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
@@ -188,7 +188,7 @@ public class ReminderDao {
                         "         LEFT JOIN friendship f ON CASE\n" +
                         "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
                         "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
-                        "WHERE sb.end_date >= current_date AND r.inactive = FALSE AND r.status = 0 AND CASE\n" +
+                        "WHERE sb.end_date >= current_date AND r.status = 0 AND CASE\n" +
                         "          WHEN rt.time_type = 0 THEN :curr_date >= rt.fixed_time\n" +
                         "          ELSE date_diff_in_minute(:curr_date, rt.last_reminder_at) >= minute(rt.delay_time)\n" +
                         "          END\n" +

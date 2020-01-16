@@ -40,8 +40,6 @@ public class Reminder {
 
     public static final String MAX_SERIES = "max_series";
 
-    public static final String INACTIVE = "inactive";
-
     public static final String COUNT_SERIES = "count_series";
 
     public static final String READ = "read";
@@ -80,8 +78,6 @@ public class Reminder {
 
     private int maxSeries;
 
-    private boolean inactive;
-
     private boolean countSeries;
 
     private boolean read;
@@ -108,7 +104,6 @@ public class Reminder {
         this.currentSeries = reminder.currentSeries;
         this.maxSeries = reminder.maxSeries;
         this.countSeries = reminder.countSeries;
-        this.inactive = reminder.inactive;
         this.read = reminder.read;
     }
 
@@ -290,11 +285,7 @@ public class Reminder {
     }
 
     public boolean isInactive() {
-        return inactive;
-    }
-
-    public void setInactive(boolean inactive) {
-        this.inactive = inactive;
+        return status == Status.INACTIVE;
     }
 
     public boolean isCountSeries() {
@@ -339,6 +330,7 @@ public class Reminder {
     public enum Status {
 
         ACTIVE(0),
+        INACTIVE(2),
         COMPLETED(1);
 
         private final int code;

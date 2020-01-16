@@ -61,7 +61,7 @@ public class ReminderService {
 
     public Reminder deactivate(int reminderId) {
         return reminderDao.update(
-                Map.of(ReminderTable.TABLE.INACTIVE, true),
+                Map.of(ReminderTable.TABLE.STATUS, Reminder.Status.INACTIVE),
                 ReminderTable.TABLE.ID.eq(reminderId),
                 new ReminderMapping()
                         .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
@@ -83,7 +83,7 @@ public class ReminderService {
 
     public Reminder activate(int reminderId) {
         return reminderDao.update(
-                Map.of(ReminderTable.TABLE.INACTIVE, false),
+                Map.of(ReminderTable.TABLE.STATUS, Reminder.Status.ACTIVE),
                 ReminderTable.TABLE.ID.eq(reminderId),
                 new ReminderMapping()
                         .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))

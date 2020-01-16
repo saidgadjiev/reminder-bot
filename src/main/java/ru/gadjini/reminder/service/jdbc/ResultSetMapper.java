@@ -85,7 +85,7 @@ public class ResultSetMapper {
         reminder.setMessageId(rs.getInt(Reminder.MESSAGE_ID));
         reminder.setCurrentSeries(rs.getInt(Reminder.CURRENT_SERIES));
         reminder.setMaxSeries(rs.getInt(Reminder.MAX_SERIES));
-        reminder.setInactive(rs.getBoolean(Reminder.INACTIVE));
+        reminder.setStatus(Reminder.Status.fromCode(rs.getInt(Reminder.STATUS)));
         reminder.setCountSeries(rs.getBoolean(Reminder.COUNT_SERIES));
         reminder.setRead(rs.getBoolean(Reminder.READ));
         Timestamp completedAt = rs.getTimestamp(Reminder.COMPLETED_AT);

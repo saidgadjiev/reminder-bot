@@ -286,6 +286,9 @@ public class InlineKeyboardService {
     }
 
     private InlineKeyboardMarkup getReceiverReminderDetailsKeyboard(Reminder reminder) {
+        if (reminder.isInactive()) {
+            return null;
+        }
         InlineKeyboardMarkup inlineKeyboardMarkup = getInitialReceiverReminderDetailsKeyboard(reminder.getId(), reminder.isRepeatable());
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderTimesScheduleButton(reminder.getId())));
 
