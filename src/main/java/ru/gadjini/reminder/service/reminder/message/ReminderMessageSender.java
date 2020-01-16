@@ -304,42 +304,40 @@ public class ReminderMessageSender {
     }
 
     public void sendReminderPostponed(int userId, int messageId, UpdateReminderResult updateReminderResult, String reason) {
-        Reminder reminder = updateReminderResult.getOldReminder();
+        Reminder oldReminder = updateReminderResult.getOldReminder();
+        Reminder newReminder = updateReminderResult.getNewReminder();
 
-        if (reminder.isMySelf()) {
+        if (oldReminder.isMySelf()) {
             messageService.editMessage(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
-                            .chatId(reminder.getReceiverId())
+                            .chatId(oldReminder.getReceiverId())
                             .messageId(messageId)
-                            .text(reminderMessageBuilder.getMySelfReminderPostponed(reminder.getText(), reminder.getRemindAt()))
-                            .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
+                            .text(reminderMessageBuilder.getMySelfReminderPostponed(oldReminder.getText(), newReminder.getRemindAtInReceiverZone()))
+                            .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, oldReminder))
             );
-            tryEditRemindMessage(messageId, updateReminderResult.getOldReminder(), reminderMessageBuilder.getMySelfReminderPostponed(reminder.getText(), reminder.getRemindAt()));
+            tryEditRemindMessage(messageId, updateReminderResult.getOldReminder(), reminderMessageBuilder.getMySelfReminderPostponed(oldReminder.getText(), newReminder.getRemindAtInReceiverZone()));
         } else {
             messageService.editMessage(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
-                            .chatId(reminder.getReceiverId())
+                            .chatId(oldReminder.getReceiverId())
                             .messageId(messageId)
-                            .text(reminderMessageBuilder.getReminderPostponedForReceiver(reminder.getText(), reminder.getReceiver(),
-                                    updateReminderResult.getNewReminder().getRemindAtInReceiverZone(), reason))
-                            .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
+                            .text(reminderMessageBuilder.getReminderPostponedForReceiver(oldReminder.getText(), oldReminder.getReceiver(), newReminder.getRemindAtInReceiverZone(), reason))
+                            .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, oldReminder))
             );
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.HIGH)
-                            .chatId(reminder.getReceiverId())
-                            .text(reminderMessageBuilder.getReminderPostponedForReceiver(reminder.getText(), reminder.getReceiver(),
-                                    updateReminderResult.getNewReminder().getRemindAtInReceiverZone(), reason))
+                            .chatId(oldReminder.getReceiverId())
+                            .text(reminderMessageBuilder.getReminderPostponedForReceiver(oldReminder.getText(), oldReminder.getReceiver(), newReminder.getRemindAtInReceiverZone(), reason))
             );
-            tryEditRemindMessage(messageId, updateReminderResult.getOldReminder(), reminderMessageBuilder.getReminderPostponedForReceiver(reminder.getText(), reminder.getReceiver(),
-                    updateReminderResult.getNewReminder().getRemindAtInReceiverZone(), reason));
+            tryEditRemindMessage(messageId, updateReminderResult.getOldReminder(), reminderMessageBuilder.getReminderPostponedForReceiver(oldReminder.getText(), oldReminder.getReceiver(),
+                    newReminder.getRemindAtInReceiverZone(), reason));
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
-                            .chatId(reminder.getCreatorId())
-                            .text(reminderMessageBuilder.getReminderPostponedForCreator(reminder.getText(), reminder.getReceiver(),
-                                    updateReminderResult.getNewReminder().getRemindAtInReceiverZone(), reason))
-                            .replyKeyboard(inlineKeyboardService.getOpenDetailsKeyboard(reminder.getId()))
+                            .chatId(oldReminder.getCreatorId())
+                            .text(reminderMessageBuilder.getReminderPostponedForCreator(oldReminder.getText(), oldReminder.getReceiver(),
+                                    newReminder.getRemindAtInReceiverZone(), reason))
+                            .replyKeyboard(inlineKeyboardService.getOpenDetailsKeyboard(oldReminder.getId()))
             );
-
         }
     }
 
@@ -382,7 +380,7 @@ public class ReminderMessageSender {
     }
 
     public void sendRepeatReminderStoppedFromList(int messageId, Reminder reminder) {
-       if (reminder.isMySelf()) {
+        if (reminder.isMySelf()) {
             messageService.editMessageAsync(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(reminder.getReceiverId())
@@ -403,7 +401,7 @@ public class ReminderMessageSender {
                             .text(reminderMessageBuilder.getRepeatReminderStoppedForReceiver(reminder))
             );
         }
-       tryDeleteRemindMessage(messageId, reminder);
+        tryDeleteRemindMessage(messageId, reminder);
     }
 
     public void sendRepeatReminderStopped(Reminder reminder) {
