@@ -36,7 +36,6 @@ public class DeleteReminderNoteCommand implements CallbackBotCommand {
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Reminder reminder = reminderService.deleteReminderNote(requestParams.getInt(Arg.REMINDER_ID.getKey()));
-        reminder.getCreator().setChatId(callbackQuery.getMessage().getChatId());
 
         reminderMessageSender.sendReminderNoteDeleted(callbackQuery.getMessage().getMessageId(), reminder);
 

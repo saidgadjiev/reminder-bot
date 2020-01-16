@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.postgresql.util.PGInterval;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.*;
-import ru.gadjini.reminder.domain.mapping.FriendshipMapping;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JdbcUtils;
@@ -110,9 +109,6 @@ public class ResultSetMapper {
             if (columnNames.contains("rc_name")) {
                 rc.setName(rs.getString("rc_name"));
             }
-            if (columnNames.contains("rc_chat_id")) {
-                rc.setChatId(rs.getLong("rc_chat_id"));
-            }
 
             reminder.setReceiver(rc);
         }
@@ -131,10 +127,6 @@ public class ResultSetMapper {
 
             cr.setUserId(reminder.getCreatorId());
             cr.setName(rs.getString("cr_name"));
-
-            if (columnNames.contains("cr_chat_id")) {
-                cr.setChatId(rs.getLong("cr_chat_id"));
-            }
 
             reminder.setCreator(cr);
         }
@@ -173,7 +165,7 @@ public class ResultSetMapper {
         return reminderNotification;
     }
 
-    public Friendship mapFriendship(ResultSet rs, FriendshipMapping friendshipMapping) throws SQLException {
+    public Friendship mapFriendship(ResultSet rs) throws SQLException {
         Friendship friendship = new Friendship();
 
         friendship.setUserOneId(rs.getInt(Friendship.USER_ONE_ID));
@@ -184,19 +176,11 @@ public class ResultSetMapper {
 
         TgUser userOne = new TgUser();
         userOne.setUserId(friendship.getUserOneId());
-        if (friendshipMapping.getUserOneMapping() != null) {
-            if (friendshipMapping.getUserOneMapping().fields().contains(FriendshipMapping.UO_NAME)) {
-                userOne.setName(rs.getString("uo_name"));
-            }
-            userOne.setChatId(rs.getLong("uo_chat_id"));
-        }
+
         friendship.setUserOne(userOne);
 
         TgUser userTwo = new TgUser();
         userTwo.setUserId(friendship.getUserTwoId());
-        if (friendshipMapping.getUserTwoMapping() != null) {
-            userTwo.setName(rs.getString("ut_name"));
-        }
         friendship.setUserTwo(userTwo);
 
         return friendship;

@@ -33,7 +33,6 @@ public class EnableCountSeriesCommand implements CallbackBotCommand {
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Reminder reminder = reminderService.enableCountSeries(requestParams.getInt(Arg.REMINDER_ID.getKey()));
-        reminder.getCreator().setChatId(callbackQuery.getMessage().getChatId());
         messageSender.sendCountSeriesEnabledOrDisabled(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), callbackQuery.getFrom().getId(), reminder);
 
         return MessagesProperties.MESSAGE_COUNT_SERIES_ENABLED_ANSWER;

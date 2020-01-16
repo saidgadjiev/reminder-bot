@@ -132,7 +132,6 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
                 message.getFrom(),
                 postponeCommandState.callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey())
         );
-        reminder.getReceiver().setChatId(message.getChatId());
         postponeCommandState.postponeTime = reminderRequestService.parseTime(text, reminder.getReceiver().getZone());
         postponeCommandState.reminder = reminder;
         postponeCommandState.state = State.REASON;

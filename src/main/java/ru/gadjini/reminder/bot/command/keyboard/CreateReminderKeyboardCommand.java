@@ -112,7 +112,6 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                         .setVoice(message.hasVoice())
                         .setUser(message.getFrom())
                         .setMessageId(message.getMessageId()));
-                reminder.getCreator().setChatId(message.getChatId());
                 reminderMessageSender.sendReminderCreated(reminder);
 
                 return false;
@@ -137,7 +136,6 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
         if (StringUtils.isNotBlank(extractReceiverResult.getText())) {
             UpdateReminderResult updateReminderResult = reminderRequestService.updateReminder(editedMessage.getMessageId(), editedMessage.getFrom(), extractReceiverResult.getText());
-            updateReminderResult.getOldReminder().getCreator().setChatId(editedMessage.getChatId());
             reminderMessageSender.sendReminderFullyUpdate(updateReminderResult);
         }
     }
@@ -153,8 +151,6 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                 .setUser(message.getFrom())
                 .setReceiverName(receiver.getName())
                 .setMessageId(message.getMessageId()));
-        reminder.getCreator().setChatId(message.getChatId());
-
         reminderMessageSender.sendReminderCreated(reminder);
     }
 

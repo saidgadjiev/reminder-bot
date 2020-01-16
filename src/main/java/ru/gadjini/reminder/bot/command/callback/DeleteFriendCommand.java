@@ -80,7 +80,7 @@ public class DeleteFriendCommand implements CallbackBotCommand {
 
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
-                        .chatId(friend.getChatId())
+                        .chatId(friend.getUserId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIENDSHIP_INTERRUPTED, new Object[]{
                                 UserUtils.userLink(friendship.getUser(userId))
                         }))
@@ -88,6 +88,6 @@ public class DeleteFriendCommand implements CallbackBotCommand {
 
         deleteFriendResult.getReminders().stream()
                 .filter(reminder -> reminder.getCreatorId() == userId)
-                .forEach(reminder -> messageService.deleteMessage(friend.getChatId(), reminder.getRemindMessage().getMessageId()));
+                .forEach(reminder -> messageService.deleteMessage(friend.getUserId(), reminder.getRemindMessage().getMessageId()));
     }
 }

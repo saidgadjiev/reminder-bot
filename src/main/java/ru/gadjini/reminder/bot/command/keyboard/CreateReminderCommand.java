@@ -81,8 +81,6 @@ public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCo
                         .setVoice(message.hasVoice())
                         .setUser(message.getFrom())
                         .setMessageId(message.getMessageId()));
-        reminder.getCreator().setChatId(message.getChatId());
-
         reminderMessageSender.sendReminderCreated(reminder);
     }
 
@@ -92,8 +90,6 @@ public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCo
         if (updateReminderResult == null) {
             return;
         }
-        updateReminderResult.getOldReminder().getCreator().setChatId(editedMessage.getChatId());
-
         reminderMessageSender.sendReminderFullyUpdate(updateReminderResult);
     }
 

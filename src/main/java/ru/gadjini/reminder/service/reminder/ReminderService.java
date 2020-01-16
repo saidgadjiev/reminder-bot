@@ -61,11 +61,11 @@ public class ReminderService {
 
     public Reminder deactivate(int reminderId) {
         return reminderDao.update(
-                Map.of(ReminderTable.TABLE.STATUS, Reminder.Status.INACTIVE),
+                Map.of(ReminderTable.TABLE.STATUS, Reminder.Status.INACTIVE.getCode()),
                 ReminderTable.TABLE.ID.eq(reminderId),
                 new ReminderMapping()
-                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
+                        .setCreatorMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setRemindMessageMapping(new Mapping())
         );
     }
@@ -75,8 +75,8 @@ public class ReminderService {
                 Map.of(ReminderTable.TABLE.READ, true),
                 ReminderTable.TABLE.ID.eq(reminderId),
                 new ReminderMapping()
-                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
+                        .setCreatorMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setRemindMessageMapping(new Mapping())
         );
     }
@@ -86,8 +86,8 @@ public class ReminderService {
                 Map.of(ReminderTable.TABLE.STATUS, Reminder.Status.ACTIVE),
                 ReminderTable.TABLE.ID.eq(reminderId),
                 new ReminderMapping()
-                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
+                        .setCreatorMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setRemindMessageMapping(new Mapping())
         );
     }
@@ -122,7 +122,7 @@ public class ReminderService {
                 ReminderTable.TABLE.ID.eq(reminderId),
                 new ReminderMapping()
                         .setCreatorMapping(new Mapping())
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
+                        .setReceiverMapping(new Mapping())
                         .setRemindMessageMapping(new Mapping())
         );
 
@@ -140,7 +140,7 @@ public class ReminderService {
                 ReminderTable.TABLE.ID.eq(reminderId),
                 new ReminderMapping()
                         .setCreatorMapping(new Mapping())
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setRemindMessageMapping(new Mapping())
         );
     }
@@ -154,7 +154,7 @@ public class ReminderService {
                 ReminderTable.TABLE.ID.eq(reminderId),
                 new ReminderMapping()
                         .setCreatorMapping(new Mapping())
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setRemindMessageMapping(new Mapping())
         );
     }
@@ -188,7 +188,7 @@ public class ReminderService {
                 Map.of(ReminderTable.TABLE.STATUS, Reminder.Status.COMPLETED.getCode()),
                 ReminderTable.TABLE.STATUS.equal(Reminder.Status.ACTIVE.getCode()).and(ReminderTable.TABLE.ID.equal(id)),
                 new ReminderMapping()
-                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setCreatorMapping(new Mapping())
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setRemindMessageMapping(new Mapping())
         );
@@ -214,7 +214,7 @@ public class ReminderService {
                 ReminderTable.TABLE.ID.equal(reminderId),
                 new ReminderMapping()
                         .setCreatorMapping(new Mapping())
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
+                        .setReceiverMapping(new Mapping())
                         .setRemindMessageMapping(new Mapping())
         );
 
@@ -236,7 +236,7 @@ public class ReminderService {
         Reminder reminder = reminderDao.update(
                 Map.of(ReminderTable.TABLE.REMIND_AT, remindAt.sqlObject()),
                 ReminderTable.TABLE.ID.equal(reminderId),
-                new ReminderMapping().setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID))).setReceiverMapping(new Mapping()).setRemindMessageMapping(new Mapping())
+                new ReminderMapping().setCreatorMapping(new Mapping()).setReceiverMapping(new Mapping()).setRemindMessageMapping(new Mapping())
         );
 
         List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAt, receiverId);
@@ -251,8 +251,8 @@ public class ReminderService {
         List<Reminder> reminders = reminderDao.delete(
                 ReminderTable.TABLE.ID.equal(reminderId),
                 new ReminderMapping()
-                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
+                        .setCreatorMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setRemindMessageMapping(new Mapping())
         );
 

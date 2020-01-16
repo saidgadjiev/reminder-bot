@@ -82,8 +82,6 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
                         .setVoice(message.hasVoice())
                         .setUser(message.getFrom())
                         .setMessageId(message.getMessageId()));
-        reminder.getCreator().setChatId(message.getChatId());
-
         reminderMessageSender.sendReminderCreated(reminder);
     }
 
@@ -93,8 +91,6 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         if (updateReminderResult == null) {
             return;
         }
-        updateReminderResult.getOldReminder().getCreator().setChatId(editedMessage.getChatId());
-
         reminderMessageSender.sendReminderFullyUpdate(updateReminderResult);
     }
 }

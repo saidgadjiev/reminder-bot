@@ -52,7 +52,7 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
 
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
-                        .chatId(friendship.getUserOne().getChatId())
+                        .chatId(friendship.getUserOneId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED_INITIATOR,
                                 new Object[]{UserUtils.userLink(friendship.getUserTwo())}
                         ))

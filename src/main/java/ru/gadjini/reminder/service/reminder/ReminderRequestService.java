@@ -34,7 +34,6 @@ import ru.gadjini.reminder.util.JodaTimeUtils;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -87,7 +86,7 @@ public class ReminderRequestService {
         Reminder oldReminder = reminderService.getReminderByMessageId(
                 messageId,
                 new ReminderMapping()
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID)))
+                        .setReceiverMapping(new Mapping())
                         .setCreatorMapping(new Mapping())
                         .setRemindMessageMapping(new Mapping())
         );
@@ -167,7 +166,7 @@ public class ReminderRequestService {
         Reminder oldReminder = reminderService.getReminder(reminderId, new ReminderMapping()
                 .setRemindMessageMapping(new Mapping())
                 .setCreatorMapping(new Mapping())
-                .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID))));
+                .setReceiverMapping(new Mapping()));
 
         Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone());
         validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER).validate(newReminderTimeInReceiverZone);
@@ -197,7 +196,7 @@ public class ReminderRequestService {
                 reminderId,
                 new ReminderMapping()
                         .setRemindMessageMapping(new Mapping())
-                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setCreatorMapping(new Mapping())
                         .setReceiverMapping(new Mapping())
         );
         oldReminder.getReceiver().setFrom(user);

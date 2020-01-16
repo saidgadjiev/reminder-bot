@@ -91,7 +91,6 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
                         .setText(text)
                         .setUser(message.getFrom())
                         .setMessageId(message.getMessageId()));
-        reminder.getCreator().setChatId(message.getChatId());
 
         reminderMessageSender.sendReminderCreated(reminder);
     }

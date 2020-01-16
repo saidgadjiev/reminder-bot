@@ -120,7 +120,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
                 );
                 messageService.sendMessageAsync(
                         new SendMessageContext(PriorityJob.Priority.MEDIUM)
-                                .chatId(friendship.getUserTwo().getChatId())
+                                .chatId(friendship.getUserTwoId())
                                 .text(localisationService.getMessage(MessagesProperties.MESSAGE_NEW_FRIEND_REQUEST, new Object[]{UserUtils.userLink(friendship.getUserOne())}))
                                 .replyKeyboard(inlineKeyboardService.getFriendRequestKeyboard(friendship.getUserOne().getUserId()))
                 );

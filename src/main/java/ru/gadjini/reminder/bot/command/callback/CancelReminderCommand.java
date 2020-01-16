@@ -48,7 +48,6 @@ public class CancelReminderCommand implements CallbackBotCommand {
 
                 return MessagesProperties.MESSAGE_REMINDER_NOT_FOUND;
             } else {
-                reminder.getReceiver().setChatId(callbackQuery.getMessage().getChatId());
                 reminderMessageSender.sendReminderCanceledFromList(callbackQuery.getMessage().getMessageId(), reminder);
 
                 return MessagesProperties.MESSAGE_REMINDER_CANCELED_ANSWER;
@@ -59,7 +58,6 @@ public class CancelReminderCommand implements CallbackBotCommand {
 
                 return MessagesProperties.MESSAGE_REMINDER_NOT_FOUND;
             } else {
-                reminder.getReceiver().setChatId(callbackQuery.getMessage().getChatId());
                 reminderMessageSender.sendReminderCanceled(reminder);
 
                 return MessagesProperties.MESSAGE_REMINDER_CANCELED_ANSWER;

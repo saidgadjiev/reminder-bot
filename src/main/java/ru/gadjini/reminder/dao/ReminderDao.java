@@ -83,7 +83,7 @@ public class ReminderDao {
 
     public List<Reminder> getOverdueRepeatReminders() {
         return jdbcTemplate.query(
-                "SELECT r.*, (r.remind_at).*, (r.repeat_remind_at).*, rc.zone_id as rc_zone_id, rc.chat_id as rc_chat_id, rm.message_id as rm_message_id\n" +
+                "SELECT r.*, (r.remind_at).*, (r.repeat_remind_at).*, rc.zone_id as rc_zone_id, rm.message_id as rm_message_id\n" +
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
                         "         INNER JOIN remind_message rm on r.id = rm.reminder_id\n" +
@@ -169,7 +169,6 @@ public class ReminderDao {
                         "       (r.remind_at).*,\n" +
                         "       rm.message_id                                    as rm_message_id,\n" +
                         "       rt.id as rt_id,\n" +
-                        "       rc.chat_id                                       as rc_chat_id,\n" +
                         "       rc.zone_id                                       as rc_zone_id,\n" +
                         "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name,\n" +
                         "       rt.last_reminder_at as rt_last_reminder_at,\n" +
@@ -251,7 +250,6 @@ public class ReminderDao {
                         "       (r.repeat_remind_at).*,\n" +
                         "       (r.remind_at).*,\n" +
                         "       rc.zone_id                                       AS rc_zone_id,\n" +
-                        "       rc.chat_id                                       AS rc_chat_id,\n" +
                         "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
                         "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
                         "FROM r\n" +
@@ -326,8 +324,7 @@ public class ReminderDao {
                         ")\n" +
                         "SELECT r.id,\n" +
                         "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
-                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name,\n" +
-                        "       rc.chat_id                                                                            as rc_chat_id\n" +
+                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
                         "FROM r\n" +
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
                         "         LEFT JOIN friendship f ON CASE\n" +
@@ -348,7 +345,6 @@ public class ReminderDao {
                     reminder.setId(rs.getInt(Reminder.ID));
                     reminder.getReceiver().setName(rs.getString("rc_name"));
                     reminder.getCreator().setName(rs.getString("cr_name"));
-                    reminder.getReceiver().setChatId(rs.getLong("rc_chat_id"));
                 }
         );
 
@@ -364,8 +360,7 @@ public class ReminderDao {
                         "SELECT r.id,\n" +
                         "       r.receiver_id,\n" +
                         "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
-                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name,\n" +
-                        "       rc.chat_id                                                                            as rc_chat_id\n" +
+                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
                         "FROM r\n" +
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
                         "         LEFT JOIN friendship f ON CASE\n" +
@@ -386,7 +381,6 @@ public class ReminderDao {
                     reminder.setReceiverId(rs.getInt("receiver_id"));
                     reminder.getReceiver().setUserId(reminder.getReceiverId());
                     reminder.getReceiver().setName(rs.getString("rc_name"));
-                    reminder.getReceiver().setChatId(rs.getLong("rc_chat_id"));
                     reminder.getCreator().setName(rs.getString("cr_name"));
                 }
         );
@@ -427,9 +421,6 @@ public class ReminderDao {
                     .on(r.RECEIVER_ID.eq(rcTable.USER_ID));
 
             select.select(rcTable.ZONE_ID.as("rc_zone_id"));
-            if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_CHAT_ID)) {
-                select.select(rcTable.CHAT_ID.as("rc_chat_id"));
-            }
             if (reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_NAME)) {
                 select.select(DSL.field("CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name"));
             }
@@ -440,9 +431,6 @@ public class ReminderDao {
             from
                     .innerJoin(creator)
                     .on(r.CREATOR_ID.eq(creator.USER_ID));
-            if (reminderMapping.getCreatorMapping().fields().contains(ReminderMapping.CR_CHAT_ID)) {
-                select.select(creator.CHAT_ID.as("cr_chat_id"));
-            }
             select.select(DSL.field("CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name"));
         }
 

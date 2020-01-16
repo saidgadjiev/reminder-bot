@@ -55,7 +55,6 @@ public class CompleteCommand implements CallbackBotCommand {
 
             return MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED;
         } else {
-            reminder.getReceiver().setChatId(chatId);
             reminderMessageSender.sendReminderCompletedFromList(messageId, reminder);
 
             return MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER;
@@ -68,7 +67,6 @@ public class CompleteCommand implements CallbackBotCommand {
 
             return MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED;
         } else {
-            reminder.getReceiver().setChatId(chatId);
             reminderMessageSender.sendReminderCompleted(reminder);
 
             return MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER;

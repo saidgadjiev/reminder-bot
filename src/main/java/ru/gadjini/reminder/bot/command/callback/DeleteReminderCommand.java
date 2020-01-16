@@ -43,7 +43,6 @@ public class DeleteReminderCommand implements CallbackBotCommand {
 
             return MessagesProperties.MESSAGE_REMINDER_NOT_FOUND;
         } else {
-            reminder.getCreator().setChatId(callbackQuery.getMessage().getChatId());
             reminderMessageSender.sendReminderDeleted(callbackQuery.getMessage().getMessageId(), reminder);
 
             return MessagesProperties.MESSAGE_REMINDER_DELETED_ANSWER;

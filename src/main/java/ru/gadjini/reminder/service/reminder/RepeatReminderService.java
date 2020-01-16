@@ -70,8 +70,8 @@ public class RepeatReminderService {
         Reminder toComplete = reminderDao.getReminder(
                 ReminderTable.TABLE.as("r").ID.eq(id),
                 new ReminderMapping()
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME)))
-                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
+                        .setCreatorMapping(new Mapping())
                         .setRemindMessageMapping(new Mapping())
         );
         toComplete.setCurrentSeries(toComplete.getCurrentSeries() + 1);
@@ -125,8 +125,8 @@ public class RepeatReminderService {
         Reminder toSkip = reminderDao.getReminder(
                 ReminderTable.TABLE.as("r").ID.eq(id),
                 new ReminderMapping()
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME)))
-                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
+                        .setCreatorMapping(new Mapping())
                         .setRemindMessageMapping(new Mapping())
         );
         toSkip.setCurrentSeries(0);
@@ -145,8 +145,8 @@ public class RepeatReminderService {
                 Map.of(ReminderTable.TABLE.COUNT_SERIES, true, ReminderTable.TABLE.CURRENT_SERIES, 0, ReminderTable.TABLE.MAX_SERIES, 0),
                 ReminderTable.TABLE.ID.eq(reminderId),
                 new ReminderMapping()
-                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
+                        .setCreatorMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setRemindMessageMapping(new Mapping())
         );
     }
@@ -156,8 +156,8 @@ public class RepeatReminderService {
                 Map.of(ReminderTable.TABLE.COUNT_SERIES, false),
                 ReminderTable.TABLE.ID.eq(reminderId),
                 new ReminderMapping()
-                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME, ReminderMapping.RC_CHAT_ID)))
+                        .setCreatorMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setRemindMessageMapping(new Mapping())
         );
     }
@@ -167,8 +167,8 @@ public class RepeatReminderService {
         Reminder toReturn = reminderDao.getReminder(
                 ReminderTable.TABLE.as("r").ID.eq(id),
                 new ReminderMapping()
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_CHAT_ID, ReminderMapping.RC_NAME)))
-                        .setCreatorMapping(new Mapping().setFields(List.of(ReminderMapping.CR_CHAT_ID)))
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
+                        .setCreatorMapping(new Mapping())
                         .setRemindMessageMapping(new Mapping())
         );
         boolean returned = moveReminderNotificationToPrevPeriod(toReturn);

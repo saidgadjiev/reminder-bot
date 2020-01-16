@@ -48,7 +48,7 @@ public class ReminderNotificationMessageSender {
         RemindMessage remindMessage = reminder.getRemindMessage();
 
         if (remindMessage != null) {
-            messageService.deleteMessage(reminder.getReceiver().getChatId(), remindMessage.getMessageId());
+            messageService.deleteMessage(reminder.getReceiverId(), remindMessage.getMessageId());
         }
 
         String message;
@@ -60,7 +60,7 @@ public class ReminderNotificationMessageSender {
 
         InlineKeyboardMarkup keyboard = inlineKeyboardService.getRemindKeyboard(reminder);
         messageService.sendMessageAsync(
-                new SendMessageContext(PriorityJob.Priority.HIGH).chatId(reminder.getReceiver().getChatId()).text(message).replyKeyboard(keyboard),
+                new SendMessageContext(PriorityJob.Priority.HIGH).chatId(reminder.getReceiverId()).text(message).replyKeyboard(keyboard),
                 msg -> remindMessageService.create(reminder.getId(), msg.getMessageId())
         );
     }
