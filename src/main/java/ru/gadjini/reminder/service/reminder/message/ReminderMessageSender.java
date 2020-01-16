@@ -133,11 +133,15 @@ public class ReminderMessageSender {
                     new SendMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(oldReminder.getCreatorId())
                             .text(reminderMessageBuilder.getReminderEdited())
-                            .replyKeyboard(inlineKeyboardService.getOpenDetailsKeyboard(oldReminder.getId()))
             );
             if (oldReminder.hasRemindMessage()) {
-                messageService.deleteMessage(oldReminder.getCreatorId(), oldReminder.getRemindMessage().getMessageId());
-                remindMessageService.delete(oldReminder.getId());
+                messageService.editMessage(
+                        new EditMessageContext(PriorityJob.Priority.MEDIUM)
+                                .chatId(oldReminder.getReceiverId())
+                                .messageId(oldReminder.getRemindMessage().getMessageId())
+                                .text(reminderMessageBuilder.getReminderMessage(newReminder))
+                                .replyKeyboard(inlineKeyboardService.getReceiverReminderKeyboard(newReminder))
+                );
             }
         } else {
             messageService.sendMessageAsync(

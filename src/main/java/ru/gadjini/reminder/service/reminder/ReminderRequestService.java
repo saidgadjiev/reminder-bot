@@ -104,6 +104,9 @@ public class ReminderRequestService {
         ReminderRequest reminderRequest = requestExtractor.extract(context);
 
         Reminder newReminder = new Reminder();
+        newReminder.setId(oldReminder.getId());
+        newReminder.setReceiverId(oldReminder.getReceiverId());
+        newReminder.setCreatorId(oldReminder.getCreatorId());
         newReminder.setText(reminderRequest.getText());
         newReminder.setNote(reminderRequest.getNote());
         newReminder.setReceiver(oldReminder.getReceiver());
