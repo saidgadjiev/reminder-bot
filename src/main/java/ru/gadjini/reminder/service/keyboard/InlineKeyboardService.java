@@ -275,12 +275,10 @@ public class InlineKeyboardService {
             }
             inlineKeyboardMarkup.getKeyboard().add(keyboardButtons);
         }
-        if (reminder.isMySelf()) {
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderDetails(reminder.getId())));
-        }
         if (reminder.isNotMySelf() && reminder.isUnread()) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.readButton(reminder.getId())));
         }
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderDetails(reminder.getId())));
 
         return inlineKeyboardMarkup;
     }
