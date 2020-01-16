@@ -243,7 +243,8 @@ public class ReminderDao {
         return jdbcTemplate.query(
                 "WITH r AS (\n" +
                         "    UPDATE reminder r SET reminder_text = ? FROM reminder old WHERE r.id = old.id AND r.id = ? " +
-                        "RETURNING r.id, r.receiver_id, r.remind_at, r.completed_at, r.repeat_remind_at, r.creator_id, r.reminder_text, r.note, old.reminder_text AS old_text\n" +
+                        "RETURNING r.id, r.receiver_id, r.remind_at, r.completed_at, r.repeat_remind_at, r.creator_id, r.reminder_text, " +
+                        "r.note, r.message_id, r.count_series, r.current_series, r.max_series, r.status, r.read, old.reminder_text AS old_text\n" +
                         ")\n" +
                         "SELECT r.*,\n" +
                         "       (r.repeat_remind_at).*,\n" +
