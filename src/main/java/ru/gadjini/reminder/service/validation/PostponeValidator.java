@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.time.FixedTime;
 import ru.gadjini.reminder.domain.time.OffsetTime;
-import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
@@ -29,11 +28,11 @@ public class PostponeValidator implements Validator {
     }
 
     @Override
-    public void validate(Time time) {
-        if (time.isFixedTime()) {
-            validate(time.getFixedTime());
-        } else if (time.isOffsetTime()) {
-            validate(time.getOffsetTime());
+    public void validate(ValidationContext validationContext) {
+        if (validationContext.time().isFixedTime()) {
+            validate(validationContext.time().getFixedTime());
+        } else if (validationContext.time().isOffsetTime()) {
+            validate(validationContext.time().getOffsetTime());
         } else {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
         }

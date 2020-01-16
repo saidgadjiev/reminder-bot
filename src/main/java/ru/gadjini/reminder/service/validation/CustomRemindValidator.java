@@ -3,9 +3,9 @@ package ru.gadjini.reminder.service.validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.time.FixedTime;
 import ru.gadjini.reminder.domain.time.OffsetTime;
-import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
@@ -28,16 +28,19 @@ public class CustomRemindValidator implements Validator {
     }
 
     @Override
-    public void validate(Time time) {
-        if (time.isOffsetTime()) {
-            validate(time.getOffsetTime());
-        } else if (time.isFixedTime()) {
-            validate(time.getFixedTime());
+    public void validate(ValidationContext validationContext) {
+        if (validationContext.time().isOffsetTime()) {
+            validate(validationContext.reminder(), validationContext.time().getOffsetTime());
+        } else if (validationContext.time().isFixedTime()) {
+            validate(validationContext.time().getFixedTime());
         }
     }
 
-    private void validate(OffsetTime offsetTime) {
+    private void validate(Reminder reminder, OffsetTime offsetTime) {
         if (offsetTime.getType() == OffsetTime.Type.FOR) {
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+        }
+        if (offsetTime.getType() == OffsetTime.Type.BEFORE && !reminder.getRemindAt().hasTime()) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
         }
     }

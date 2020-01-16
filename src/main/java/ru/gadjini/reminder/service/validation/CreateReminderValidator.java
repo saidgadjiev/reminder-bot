@@ -36,16 +36,17 @@ public class CreateReminderValidator implements Validator {
         return ValidationEvent.CREATE_REMINDER;
     }
 
-    public void validate(User user, ReminderRequest reminderRequest) {
-        if (reminderRequest.getReceiverName() != null) {
-            checkFriendShip(user.getId(), reminderRequest.getReceiverName());
-        } else if (reminderRequest.getReceiverId() != null) {
-            checkFriendShip(user.getId(), reminderRequest.getReceiverId());
+    @Override
+    public void validate(ValidationContext validationContext) {
+        if (validationContext.reminderRequest().getReceiverName() != null) {
+            checkFriendShip(validationContext.currentUser().getId(), validationContext.reminderRequest().getReceiverName());
+        } else if (validationContext.reminderRequest().getReceiverId() != null) {
+            checkFriendShip(validationContext.currentUser().getId(), validationContext.reminderRequest().getReceiverId());
         }
-        validate(reminderRequest.getTime());
+        validate(validationContext.reminderRequest().getTime());
     }
 
-    public void validate(Time time) {
+    private void validate(Time time) {
         if (time.isFixedTime()) {
             validate(time.getFixedTime());
         } else if (time.isOffsetTime()) {

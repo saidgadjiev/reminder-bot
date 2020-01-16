@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.time.OffsetTime;
-import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
@@ -24,9 +23,9 @@ public class UserReminderNotificationValidator implements Validator {
     }
 
     @Override
-    public void validate(Time time) {
-        if (time.isOffsetTime()) {
-            if (time.getOffsetTime().getType() != OffsetTime.Type.BEFORE) {
+    public void validate(ValidationContext validationContext) {
+        if (validationContext.time().isOffsetTime()) {
+            if (validationContext.time().getOffsetTime().getType() != OffsetTime.Type.BEFORE) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMIND));
             }
         } else {

@@ -26,6 +26,7 @@ import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestExtractor;
 import ru.gadjini.reminder.service.validation.CreateReminderValidator;
+import ru.gadjini.reminder.service.validation.ValidationContext;
 import ru.gadjini.reminder.service.validation.ValidationEvent;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
 import ru.gadjini.reminder.time.DateTime;
@@ -76,7 +77,7 @@ public class ReminderRequestService {
         ReminderRequest reminderRequest = requestExtractor.extract(context);
         reminderRequest.setMessageId(context.getMessageId());
 
-        ((CreateReminderValidator) validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER)).validate(context.getUser(), reminderRequest);
+        validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER).validate(new ValidationContext().currentUser(context.getUser()).reminderRequest(reminderRequest));
 
         return createReminder(context.getUser(), reminderRequest);
     }
@@ -137,16 +138,13 @@ public class ReminderRequestService {
         Reminder reminder = reminderService.getReminder(reminderId, new ReminderMapping().setReceiverMapping(new Mapping()));
 
         Time customRemind = parseTime(text, reminder.getReceiver().getZone());
-        validatorFactory.getValidator(ValidationEvent.CUSTOM_REMIND).validate(customRemind);
+        validatorFactory.getValidator(ValidationEvent.CUSTOM_REMIND).validate(new ValidationContext().time(customRemind).reminder(reminder));
 
         CustomRemindResult customRemindResult = new CustomRemindResult();
         ReminderNotification reminderNotification;
 
         if (customRemind.isOffsetTime()) {
-            ZonedDateTime remindTime = buildRemindTime(
-                    customRemind.getOffsetTime(),
-                    reminder.isRepeatable() ? null : reminder.getRemindAtInReceiverZone().toZonedDateTime()
-            ).withZoneSameInstant(ZoneOffset.UTC);
+            ZonedDateTime remindTime = buildRemindTime(customRemind.getOffsetTime(), reminder.getRemindAtInReceiverZone().toZonedDateTime()).withZoneSameInstant(ZoneOffset.UTC);
             reminderNotification = reminderService.customRemind(reminderId, remindTime);
             customRemindResult.setZonedDateTime(remindTime);
         } else if (customRemind.isRepeatTime()) {
@@ -172,7 +170,7 @@ public class ReminderRequestService {
                 .setReceiverMapping(new Mapping()));
 
         Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone());
-        validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER).validate(newReminderTimeInReceiverZone);
+        validatorFactory.getValidator(ValidationEvent.CREATE_REMINDER).validate(new ValidationContext().time(newReminderTimeInReceiverZone));
 
         Reminder changed;
         if (newReminderTimeInReceiverZone.isRepeatTime()) {
@@ -216,7 +214,7 @@ public class ReminderRequestService {
     }
 
     public UpdateReminderResult postponeReminder(Reminder reminder, Time postponeTime) {
-        validatorFactory.getValidator(ValidationEvent.POSTPONE).validate(postponeTime);
+        validatorFactory.getValidator(ValidationEvent.POSTPONE).validate(new ValidationContext().time(postponeTime));
 
         DateTime remindAtInReceiverZone = buildPostponedRemindAt(postponeTime, reminder.getRemindAtInReceiverZone().copy());
         if (!reminder.getRemindAt().hasTime()) {
