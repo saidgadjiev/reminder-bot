@@ -70,7 +70,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
+        stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams, callbackQuery.getMessage().getReplyMarkup()));
 
         String prevHistoryName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
 
@@ -93,7 +93,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
         if (prevHistoryName.equals(CommandNames.SCHEDULE_COMMAND_NAME)) {
             reminderMessageSender.sendCustomRemindCreatedFromReminderTimeDetails(message.getChatId(), callbackRequest.getMessageId(), customRemindResult);
         } else {
-            reminderMessageSender.sendCustomRemindCreated(message.getFrom().getId(), message.getChatId(), callbackRequest.getMessageId(), customRemindResult);
+            reminderMessageSender.sendCustomRemindCreated(message.getChatId(), callbackRequest.getMessageId(), callbackRequest.getReplyKeyboard(), customRemindResult);
         }
     }
 

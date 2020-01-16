@@ -77,7 +77,7 @@ public class ReminderNotificationMessageSender {
         );
     }
 
-    public void sendCustomRemindCreated(int userId, long chatId, int messageId, CustomRemindResult customRemindResult) {
+    public void sendCustomRemindCreated(long chatId, int messageId, InlineKeyboardMarkup replyKeyboard, CustomRemindResult customRemindResult) {
         Reminder reminder = customRemindResult.getReminderNotification().getReminder();
         String text = reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId());
 
@@ -86,7 +86,7 @@ public class ReminderNotificationMessageSender {
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(text + "\n\n" + reminderMessageBuilder.getCustomRemindText(customRemindResult))
-                        .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, customRemindResult.getReminderNotification().getReminder()))
+                        .replyKeyboard(replyKeyboard)
         );
     }
 }

@@ -73,7 +73,7 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableC
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        CallbackRequest callbackRequest = new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams);
+        CallbackRequest callbackRequest = new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams, null);
         stateService.setState(callbackQuery.getMessage().getChatId(), callbackRequest);
 
         messageService.editMessageAsync(

@@ -64,7 +64,7 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams));
+        stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams, null));
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(callbackQuery.getMessage().getChatId())

@@ -422,4 +422,6 @@ public class MessagesProperties {
     public static final String MESSAGE_TRIAL_PERIOD_STARTED = "message.trial.period.started";
 
     public static final String REMINDER_DETAILS_COMMAND_DESCRIPTION = "reminder.details.command.description";
+
+    public static final String MESSAGE_POSTPONE_REASON = "message.postpone.reason";
 }

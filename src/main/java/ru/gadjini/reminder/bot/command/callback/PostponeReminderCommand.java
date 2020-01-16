@@ -72,7 +72,8 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        PostponeCommandState state = new PostponeCommandState(new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams), State.TIME, callbackQuery.getMessage().getMessageId());
+        CallbackRequest request = new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams, callbackQuery.getMessage().getReplyMarkup());
+        StateData state = new StateData(request, State.TIME);
 
         stateService.setState(callbackQuery.getMessage().getChatId(), state);
 
@@ -94,7 +95,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     @Override
     public void processNonCommandCallback(CallbackQuery callbackQuery, RequestParams requestParams) {
-        PostponeCommandState state = stateService.getState(callbackQuery.getMessage().getChatId());
+        StateData state = stateService.getState(callbackQuery.getMessage().getChatId());
         if (state.state == State.TIME) {
             String postponeTime = requestParams.getString(Arg.POSTPONE_TIME.getKey());
             processNonCommandUpdate(callbackQuery.getFrom(), postponeTime, state);
@@ -106,9 +107,9 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        PostponeCommandState postponeCommandState = stateService.getState(message.getChatId());
+        StateData stateData = stateService.getState(message.getChatId());
 
-        processNonCommandUpdate(message.getFrom(), message.getText().trim(), postponeCommandState);
+        processNonCommandUpdate(message.getFrom(), message.getText().trim(), stateData);
     }
 
     @Override
@@ -116,40 +117,45 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         stateService.deleteState(chatId);
     }
 
-    private void processNonCommandUpdate(User from, String text, PostponeCommandState postponeCommandState) {
-        if (postponeCommandState.state == State.TIME) {
-            postponeTime(from.getId(), text, postponeCommandState);
+    private void processNonCommandUpdate(User from, String text, StateData stateData) {
+        if (stateData.state == State.TIME) {
+            postponeTime(from.getId(), text, stateData);
         } else {
             if (text.equals(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON))) {
-                postpone(from.getId(),null, postponeCommandState);
+                postpone(from.getId(), null, stateData);
             } else {
-                postpone(from.getId(), text, postponeCommandState);
+                postpone(from.getId(), text, stateData);
             }
         }
     }
 
-    private void postponeTime(int userId, String text, PostponeCommandState postponeCommandState) {
-        Reminder reminder = reminderRequestService.getReminderForPostpone(postponeCommandState.callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()));
-        postponeCommandState.postponeTime = reminderRequestService.parseTime(text, reminder.getReceiver().getZone());
-        postponeCommandState.reminder = reminder;
-        postponeCommandState.state = State.REASON;
+    private void postponeTime(int userId, String text, StateData stateData) {
+        Reminder reminder = reminderRequestService.getReminderForPostpone(stateData.callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()));
+        stateData.postponeTime = reminderRequestService.parseTime(text, reminder.getReceiver().getZone());
+        stateData.reminder = reminder;
+        stateData.state = State.REASON;
 
-        stateService.setState(userId, postponeCommandState);
+        stateService.setState(userId, stateData);
         if (reminder.getReceiverId() != reminder.getCreatorId()) {
-            messageService.editReplyKeyboard(userId, postponeCommandState.messageId, inlineKeyboardService.getPostponeMessagesKeyboard(CommandNames.REMINDER_DETAILS_COMMAND_NAME));
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.HIGH)
+                            .chatId(userId)
+                            .messageId(stateData.callbackRequest.getMessageId())
+                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON))
+                            .replyKeyboard(inlineKeyboardService.getPostponeMessagesKeyboard(CommandNames.REMINDER_DETAILS_COMMAND_NAME)));
         } else {
-            postpone(userId, null, postponeCommandState);
+            postpone(userId, null, stateData);
         }
     }
 
-    private void postpone(int userId, String reason, PostponeCommandState postponeCommandState) {
-        UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(postponeCommandState.reminder, postponeCommandState.postponeTime);
+    private void postpone(int userId, String reason, StateData stateData) {
+        UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(stateData.reminder, stateData.postponeTime);
         commandNavigator.silentPop(userId);
-        reminderMessageSender.sendReminderPostponed(userId, postponeCommandState.messageId, updateReminderResult, reason);
+        reminderMessageSender.sendReminderPostponed(stateData.callbackRequest.getMessageId(), stateData.callbackRequest.getReplyKeyboard(), updateReminderResult, reason);
     }
 
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-    public static class PostponeCommandState {
+    public static class StateData {
 
         private CallbackRequest callbackRequest;
 
@@ -159,13 +165,10 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
         private Time postponeTime;
 
-        private int messageId;
-
         @JsonCreator
-        public PostponeCommandState(@JsonProperty("callbackRequest") CallbackRequest callbackRequest, @JsonProperty("state") State state, @JsonProperty("messageId") int messageId) {
+        public StateData(@JsonProperty("callbackRequest") CallbackRequest callbackRequest, @JsonProperty("state") State state) {
             this.callbackRequest = callbackRequest;
             this.state = state;
-            this.messageId = messageId;
         }
     }
 

@@ -310,7 +310,7 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendReminderPostponed(int userId, int messageId, UpdateReminderResult updateReminderResult, String reason) {
+    public void sendReminderPostponed(int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, UpdateReminderResult updateReminderResult, String reason) {
         Reminder oldReminder = updateReminderResult.getOldReminder();
         Reminder newReminder = updateReminderResult.getNewReminder();
 
@@ -320,7 +320,7 @@ public class ReminderMessageSender {
                             .chatId(oldReminder.getReceiverId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getMySelfReminderPostponed(oldReminder.getText(), newReminder.getRemindAtInReceiverZone()))
-                            .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, oldReminder))
+                            .replyKeyboard(inlineKeyboardMarkup)
             );
             tryEditRemindMessage(messageId, updateReminderResult.getOldReminder(), reminderMessageBuilder.getMySelfReminderPostponed(oldReminder.getText(), newReminder.getRemindAtInReceiverZone()));
         } else {
@@ -329,7 +329,7 @@ public class ReminderMessageSender {
                             .chatId(oldReminder.getReceiverId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getReminderPostponedForReceiver(oldReminder.getText(), oldReminder.getCreator(), newReminder.getRemindAtInReceiverZone(), reason))
-                            .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, oldReminder))
+                            .replyKeyboard(inlineKeyboardMarkup)
             );
             tryEditRemindMessage(messageId, updateReminderResult.getOldReminder(), reminderMessageBuilder.getReminderPostponedForReceiver(oldReminder.getText(), oldReminder.getReceiver(),
                     newReminder.getRemindAtInReceiverZone(), reason));
