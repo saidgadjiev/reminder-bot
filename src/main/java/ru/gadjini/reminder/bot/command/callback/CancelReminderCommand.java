@@ -11,8 +11,7 @@ import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
-
-import java.util.Objects;
+import ru.gadjini.reminder.util.KeyboardUtils;
 
 @Component
 public class CancelReminderCommand implements CallbackBotCommand {
@@ -40,9 +39,9 @@ public class CancelReminderCommand implements CallbackBotCommand {
         int reminderId = requestParams.getInt(Arg.REMINDER_ID.getKey());
 
         Reminder reminder = reminderService.cancel(reminderId);
-        String currHistoryName = requestParams.getString(Arg.CURR_HISTORY_NAME.getKey());
 
-        if (Objects.equals(currHistoryName, CommandNames.REMINDER_DETAILS_COMMAND_NAME)) {
+        boolean isCalledFromReminderDetails = KeyboardUtils.hasButton(callbackQuery.getMessage().getReplyMarkup(), CommandNames.GO_BACK_CALLBACK_COMMAND_NAME);
+        if (isCalledFromReminderDetails) {
             if (reminder == null) {
                 reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
 

@@ -47,56 +47,51 @@ public class ButtonFactory {
         return button;
     }
 
-    public InlineKeyboardButton completeReminderButton(int reminderId, String currHistoryName) {
+    public InlineKeyboardButton completeReminderButton(int reminderId) {
         InlineKeyboardButton completeReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.COMPLETE_REMINDER_COMMAND_DESCRIPTION));
         completeReminderButton.setCallbackData(CommandNames.COMPLETE_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
-                        .add(Arg.CURR_HISTORY_NAME.getKey(), currHistoryName)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return completeReminderButton;
     }
 
-    public InlineKeyboardButton completeRepeatReminderButton(int reminderId, String currHistoryName) {
+    public InlineKeyboardButton completeRepeatReminderButton(int reminderId) {
         InlineKeyboardButton completeReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.COMPLETE_REPEAT_REMINDER_COMMAND_DESCRIPTION));
         completeReminderButton.setCallbackData(CommandNames.COMPLETE_REPEAT_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
-                        .add(Arg.CURR_HISTORY_NAME.getKey(), currHistoryName)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return completeReminderButton;
     }
 
-    public InlineKeyboardButton skipRepeatReminderButton(int reminderId, String currHistoryName) {
+    public InlineKeyboardButton skipRepeatReminderButton(int reminderId) {
         InlineKeyboardButton completeReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.SKIP_REPEAT_REMINDER_COMMAND_DESCRIPTION));
         completeReminderButton.setCallbackData(CommandNames.SKIP_REPEAT_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
-                        .add(Arg.CURR_HISTORY_NAME.getKey(), currHistoryName)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return completeReminderButton;
     }
 
-    public InlineKeyboardButton stopRepeatReminderButton(int reminderId, String currHistoryName) {
+    public InlineKeyboardButton stopRepeatReminderButton(int reminderId) {
         InlineKeyboardButton completeReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.STOP_REPEAT_REMINDER_COMMAND_DESCRIPTION));
         completeReminderButton.setCallbackData(CommandNames.STOP_REPEAT_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
-                        .add(Arg.CURR_HISTORY_NAME.getKey(), currHistoryName)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return completeReminderButton;
     }
 
-    public InlineKeyboardButton cancelReminderButton(int reminderId, String currHistoryName) {
+    public InlineKeyboardButton cancelReminderButton(int reminderId) {
         InlineKeyboardButton cancelReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CANCEL_REMINDER_COMMAND_DESCRIPTION));
         cancelReminderButton.setCallbackData(CommandNames.CANCEL_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
-                        .add(Arg.CURR_HISTORY_NAME.getKey(), currHistoryName)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return cancelReminderButton;

@@ -66,25 +66,25 @@ public class SubscriptionFilter extends BaseBotFilter {
 
     @Override
     public void doFilter(Update update) {
-        TgMessage tgMessage = TgMessage.from(update);
-        boolean checkSubscriptionResult = checkSubscription(tgMessage.getChatId(), tgMessage.getUser().getId());
+        int userId = TgMessage.getUserId(update);
+        boolean checkSubscriptionResult = checkSubscription(userId);
 
         if (checkSubscriptionResult) {
             super.doFilter(update);
         }
     }
 
-    private boolean checkSubscription(long chatId, int userId) {
+    private boolean checkSubscription(int userId) {
         Subscription subscription = subscriptionService.getSubscription(userId);
 
         if (subscription == null) {
             subscriptionService.createTrialSubscription(userId);
-            sendTrialSubscriptionStarted(chatId, userId);
+            sendTrialSubscriptionStarted(userId);
 
             return false;
         }
         if (subscription.getEndDate().isBefore(LocalDate.now())) {
-            sendSubscriptionExpired(chatId, userId);
+            sendSubscriptionExpired(userId);
 
             return false;
         }
@@ -92,37 +92,37 @@ public class SubscriptionFilter extends BaseBotFilter {
         return true;
     }
 
-    private void sendTrialSubscriptionStarted(long chatId, int userId) {
+    private void sendTrialSubscriptionStarted(int userId) {
         TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
 
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
-                        .chatId(chatId)
+                        .chatId(userId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_TRIAL_PERIOD_STARTED, new Object[]{declensionService.day(subscriptionProperties.getTrialPeriod())}))
-                        .replyKeyboard(replyKeyboardService.getMainMenu(chatId, userId))
+                        .replyKeyboard(replyKeyboardService.getMainMenu(userId, userId))
         );
     }
 
-    private void sendSubscriptionExpired(long chatId, int userId) {
+    private void sendSubscriptionExpired(int userId) {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
-                        .chatId(chatId)
+                        .chatId(userId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_EXPIRED))
-                        .replyKeyboard(replyKeyboardService.removeKeyboard(chatId))
+                        .replyKeyboard(replyKeyboardService.removeKeyboard(userId))
         );
 
-        Integer messageId = paymentMessageService.getMessageId(chatId);
+        Integer messageId = paymentMessageService.getMessageId(userId);
         if (messageId != null) {
-            messageService.deleteMessage(chatId, messageId);
+            messageService.deleteMessage(userId, messageId);
         }
 
         Plan plan = planService.getActivePlan();
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
-                        .chatId(chatId)
+                        .chatId(userId)
                         .text(getNeedPayMessage(plan.getDescription()))
                         .replyKeyboard(inlineKeyboardService.getPaymentKeyboard(userId, plan.getId())),
-                message -> paymentMessageService.create(chatId, message.getMessageId())
+                message -> paymentMessageService.create(userId, message.getMessageId())
         );
     }
 
