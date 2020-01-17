@@ -123,6 +123,7 @@ public class FriendshipDao {
                 userOne.setName(rs.getString("uo_name"));
                 userOne.setZoneId(rs.getString("uo_zone_id"));
                 friendship.setUserOne(userOne);
+                friendship.setUserOneId(userOne.getUserId());
 
                 return friendship;
             }
@@ -326,8 +327,8 @@ public class FriendshipDao {
                         "    INSERT INTO friendship (user_one_id, user_two_id, user_one_name, user_two_name, status) SELECT :uo_id, :ut_id, uo.name, ut.name, :status\n" +
                         "                                                                                            FROM tg_user uo,\n" +
                         "                                                                                                 tg_user ut\n" +
-                        "                                                                                            WHERE uo = :uo_id\n" +
-                        "                                                                                              AND ut = :ut_id RETURNING id, user_one_id, user_two_id, status\n" +
+                        "                                                                                            WHERE uo.user_id = :uo_id\n" +
+                        "                                                                                              AND ut.user_id = :ut_id RETURNING id, user_one_id, user_two_id, status\n" +
                         ")\n" +
                         "SELECT ut.name AS ut_name\n" +
                         "FROM f\n" +

@@ -2,7 +2,7 @@ package ru.gadjini.reminder.service.validation;
 
 public interface Validator {
 
-    ValidationEvent event();
+    ValidatorType event();
 
     void validate(ValidationContext validationContext);
 }

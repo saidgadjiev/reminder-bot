@@ -428,4 +428,6 @@ public class MessagesProperties {
     public static final String SUPPRESS_NOTIFICATIONS_EMOJI = "suppress.notifications.emoji";
 
     public static final String SUPPRESS_NOTIFICATIONS_COMMAND_DESCRIPTION = "suppress.notifications.command.description";
+
+    public static final String MESSAGE_PAST_TIME = "message.past.time";
 }

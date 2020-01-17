@@ -43,7 +43,7 @@ public class FriendshipService {
     @Transactional
     public DeleteFriendResult deleteFriend(TgMessage tgMessage, int friendId) {
         Friendship friendship = friendshipDao.deleteFriendship(tgMessage.getUser().getId(), friendId);
-        List<Reminder> reminders = reminderService.deleteFriendReminders(friendId, tgMessage.getMessageId());
+        List<Reminder> reminders = reminderService.deleteFriendReminders(tgMessage.getUser().getId(), friendId);
 
         return new DeleteFriendResult(friendship, reminders);
     }

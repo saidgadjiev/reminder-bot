@@ -86,7 +86,11 @@ public class RestoreReminderService {
         }
         ReminderNotification reminderNotification = reminder.getReminderNotifications().get(0);
 
-        return TimeUtils.now(reminderNotification.getLastReminderAt().getZone()).isAfter(JodaTimeUtils.plus(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime()));
+        if (reminderNotification.getType() == ReminderNotification.Type.ONCE) {
+            return reminderNotification.getFixedTime().isBefore(TimeUtils.nowZoned());
+        } else {
+            return TimeUtils.now(reminderNotification.getLastReminderAt().getZone()).isAfter(JodaTimeUtils.plus(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime()));
+        }
     }
 
     private boolean isNeedRestoreStandardReminder(Reminder reminder) {

@@ -19,12 +19,16 @@ public class TimeLexer {
     private int end;
 
     public TimeLexer(TimeLexerConfig timeLexerConfig, String str) {
+        this(timeLexerConfig, str, false);
+    }
+
+    public TimeLexer(TimeLexerConfig timeLexerConfig, String str, boolean fullMatch) {
         this.str = str;
 
         str = str.toLowerCase();
-        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, str);
-        this.fixedTimeLexer = new FixedTimeLexer(timeLexerConfig, str);
-        this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, str);
+        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, str, fullMatch);
+        this.fixedTimeLexer = new FixedTimeLexer(timeLexerConfig, str, fullMatch);
+        this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, str, fullMatch);
     }
 
     public List<BaseLexem> tokenizeThrowParseException() {

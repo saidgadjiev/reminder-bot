@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.service.parser.time.lexer;
 
+import org.apache.commons.lang3.StringUtils;
 import ru.gadjini.reminder.regex.GroupMatcher;
-import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 
@@ -14,16 +14,18 @@ public class OffsetTimeLexer {
 
     private final String str;
 
+    private final boolean fullMatch;
+
     private int end;
 
-    public OffsetTimeLexer(TimeLexerConfig lexerConfig, String str) {
+    public OffsetTimeLexer(TimeLexerConfig lexerConfig, String str, boolean fullMatch) {
         this.lexerConfig = lexerConfig;
         this.str = str;
+        this.fullMatch = fullMatch;
     }
 
     public LinkedList<BaseLexem> tokenize() {
-        GroupPattern pattern = lexerConfig.getOffsetTimePattern();
-        GroupMatcher matcher = pattern.maxMatcher(str);
+        GroupMatcher matcher = matcher();
 
         if (matcher != null) {
             Map<String, String> values = matcher.values();
@@ -70,5 +72,19 @@ public class OffsetTimeLexer {
 
     public int end() {
         return end;
+    }
+
+    private GroupMatcher matcher() {
+        if (fullMatch) {
+            GroupMatcher matcher = lexerConfig.getOffsetTimePattern().matcher(StringUtils.reverseDelimited(str, ' '));
+
+            if (matcher.matches()) {
+                return matcher;
+            }
+
+            return null;
+        }
+
+        return lexerConfig.getOffsetTimePattern().maxMatcher(str);
     }
 }

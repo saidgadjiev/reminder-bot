@@ -23,8 +23,8 @@ public class CustomRemindValidator implements Validator {
     }
 
     @Override
-    public ValidationEvent event() {
-        return ValidationEvent.CUSTOM_REMIND;
+    public ValidatorType event() {
+        return ValidatorType.CUSTOM_REMIND;
     }
 
     @Override

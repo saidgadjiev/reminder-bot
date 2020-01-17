@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.parser.time.lexer;
 
+import org.apache.commons.lang3.StringUtils;
 import ru.gadjini.reminder.regex.GroupMatcher;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
@@ -13,17 +14,20 @@ public class RepeatTimeLexer {
 
     private String str;
 
+    private boolean fullMatch;
+
     private int matchEnd;
 
-    public RepeatTimeLexer(TimeLexerConfig lexerConfig, String str) {
+    public RepeatTimeLexer(TimeLexerConfig lexerConfig, String str, boolean fullMatch) {
         this.lexerConfig = lexerConfig;
         this.str = str;
+        this.fullMatch = fullMatch;
     }
 
     public LinkedList<BaseLexem> tokenize() {
         LinkedList<BaseLexem> lexems = new LinkedList<>();
 
-        GroupMatcher repeatTimeMatcher = lexerConfig.getRepeatTimePattern().maxMatcher(str);
+        GroupMatcher repeatTimeMatcher = matcher();
 
         if (repeatTimeMatcher != null) {
             Map<String, String> values = repeatTimeMatcher.values();
@@ -92,5 +96,19 @@ public class RepeatTimeLexer {
 
     public int end() {
         return matchEnd;
+    }
+
+    private GroupMatcher matcher() {
+        if (fullMatch) {
+            GroupMatcher matcher = lexerConfig.getRepeatTimePattern().matcher(StringUtils.reverseDelimited(str, ' '));
+
+            if (matcher.matches()) {
+                return matcher;
+            }
+
+            return null;
+        }
+
+        return lexerConfig.getRepeatTimePattern().maxMatcher(str);
     }
 }

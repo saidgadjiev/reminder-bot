@@ -12,6 +12,7 @@ import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.util.UserUtils;
 
 @Component
 public class RefreshUserDataCommand implements KeyboardBotCommand {
@@ -52,7 +53,7 @@ public class RefreshUserDataCommand implements KeyboardBotCommand {
         message.append(localisationService.getMessage(MessagesProperties.MESSAGE_USER_DATA, new Object[]{
                 user.getName(),
                 StringUtils.isNotBlank(user.getUsername()) ? TgUser.USERNAME_START + user.getUsername() : localisationService.getMessage(MessagesProperties.MESSAGE_USERNAME_NOT_EXISTS),
-                user.getUserId()
+                UserUtils.userLink(user.getUserId())
         }));
 
         return message.toString();

@@ -5,6 +5,8 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 
+import java.time.ZonedDateTime;
+
 public class ValidationContext {
 
     private Reminder reminder;
@@ -14,6 +16,8 @@ public class ValidationContext {
     private User currentUser;
 
     private ReminderRequest reminderRequest;
+
+    private ZonedDateTime dateTime;
 
     public Reminder reminder() {
         return this.reminder;
@@ -48,6 +52,15 @@ public class ValidationContext {
 
     public ValidationContext reminderRequest(final ReminderRequest reminderRequest) {
         this.reminderRequest = reminderRequest;
+        return this;
+    }
+
+    public ZonedDateTime dateTime() {
+        return this.dateTime;
+    }
+
+    public ValidationContext dateTime(final ZonedDateTime dateTime) {
+        this.dateTime = dateTime;
         return this;
     }
 }

@@ -27,4 +27,12 @@ public class UserUtils {
 
         return link.toString();
     }
+
+    public static String userLink(int id) {
+        StringBuilder link = new StringBuilder();
+
+        link.append("<a href=\"tg://user?id=").append(id).append("\">").append(id).append("</a>");
+
+        return link.toString();
+    }
 }

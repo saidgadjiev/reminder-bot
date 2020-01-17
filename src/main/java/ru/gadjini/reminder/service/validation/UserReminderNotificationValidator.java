@@ -18,8 +18,8 @@ public class UserReminderNotificationValidator implements Validator {
     }
 
     @Override
-    public ValidationEvent event() {
-        return ValidationEvent.USER_REMINDER_NOTIFICATION;
+    public ValidatorType event() {
+        return ValidatorType.USER_REMINDER_NOTIFICATION;
     }
 
     @Override

@@ -96,23 +96,22 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
             createFriendRequestResult = friendshipService.createFriendRequest(TgMessage.from(message), null, receiverName);
         }
 
-        ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
-
         switch (createFriendRequestResult.getState()) {
             case ALREADY_REQUESTED:
-                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT)));
+                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT)));
                 break;
             case ALREADY_REQUESTED_TO_ME:
-                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT_ME)));
+                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT_ME)));
                 break;
             case ALREADY_FRIEND:
-                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_ALREADY_FRIEND)));
+                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_ALREADY_FRIEND)));
                 break;
             case NONE:
                 Friendship friendship = createFriendRequestResult.getFriendship();
 
+                ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
                 messageService.sendMessageAsync(
-                        new SendMessageContext(PriorityJob.Priority.MEDIUM)
+                        new SendMessageContext(PriorityJob.Priority.HIGH)
                                 .chatId(message.getChatId())
                                 .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_SENT,
                                         new Object[]{UserUtils.userLink(friendship.getUserTwo())}))

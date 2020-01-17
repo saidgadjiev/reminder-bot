@@ -24,8 +24,8 @@ public class ChangeReminderTimeValidator implements Validator {
     }
 
     @Override
-    public ValidationEvent event() {
-        return ValidationEvent.CHANGE_REMINDER_TIME;
+    public ValidatorType event() {
+        return ValidatorType.CHANGE_REMINDER_TIME;
     }
 
     @Override

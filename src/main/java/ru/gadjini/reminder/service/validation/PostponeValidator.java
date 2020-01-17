@@ -23,8 +23,8 @@ public class PostponeValidator implements Validator {
     }
 
     @Override
-    public ValidationEvent event() {
-        return ValidationEvent.POSTPONE;
+    public ValidatorType event() {
+        return ValidatorType.POSTPONE;
     }
 
     @Override

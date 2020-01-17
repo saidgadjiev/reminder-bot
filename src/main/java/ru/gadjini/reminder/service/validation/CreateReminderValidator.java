@@ -2,7 +2,6 @@ package ru.gadjini.reminder.service.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.time.FixedTime;
@@ -11,7 +10,6 @@ import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeUtils;
 
@@ -32,8 +30,8 @@ public class CreateReminderValidator implements Validator {
     }
 
     @Override
-    public ValidationEvent event() {
-        return ValidationEvent.CREATE_REMINDER;
+    public ValidatorType event() {
+        return ValidatorType.CREATE_REMINDER;
     }
 
     @Override

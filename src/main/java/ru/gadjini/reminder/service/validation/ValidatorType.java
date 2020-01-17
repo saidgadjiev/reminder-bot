@@ -1,6 +1,8 @@
 package ru.gadjini.reminder.service.validation;
 
-public enum ValidationEvent {
+public enum ValidatorType {
+
+    PAST_TIME_VALIDATOR,
 
     CHANGE_REMINDER_TIME,
 

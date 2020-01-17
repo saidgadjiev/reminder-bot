@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.service.parser.time.lexer;
 
+import org.apache.commons.lang3.StringUtils;
 import ru.gadjini.reminder.regex.GroupMatcher;
-import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 
@@ -16,14 +16,16 @@ public class FixedTimeLexer {
 
     private int matchEnd;
 
-    public FixedTimeLexer(TimeLexerConfig lexerConfig, String str) {
+    private boolean fullMatch;
+
+    public FixedTimeLexer(TimeLexerConfig lexerConfig, String str, boolean fullMatch) {
         this.lexerConfig = lexerConfig;
         this.str = str;
+        this.fullMatch = fullMatch;
     }
 
     public LinkedList<BaseLexem> tokenize() {
-        GroupPattern pattern = lexerConfig.getTimePattern();
-        GroupMatcher timeMatcher = pattern.maxMatcher(str);
+        GroupMatcher timeMatcher = matcher();
 
         if (timeMatcher != null) {
             Map<String, String> values = timeMatcher.values();
@@ -73,5 +75,19 @@ public class FixedTimeLexer {
         }
 
         return lexems;
+    }
+
+    private GroupMatcher matcher() {
+        if (fullMatch) {
+            GroupMatcher matcher = lexerConfig.getTimePattern().matcher(StringUtils.reverseDelimited(str, ' '));
+
+            if (matcher.matches()) {
+                return matcher;
+            }
+
+            return null;
+        }
+
+        return lexerConfig.getTimePattern().maxMatcher(str);
     }
 }
