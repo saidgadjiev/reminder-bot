@@ -4,10 +4,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.jooq.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.model.CustomRemindResult;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.time.ReminderTimeBuilder;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
@@ -25,11 +27,14 @@ public class ReminderMessageBuilder {
 
     private ReminderTimeBuilder reminderTimeBuilder;
 
+    private LocalisationService localisationService;
+
     @Autowired
-    public ReminderMessageBuilder(MessageBuilder messageBuilder, TimeBuilder timeBuilder, ReminderTimeBuilder reminderTimeBuilder) {
+    public ReminderMessageBuilder(MessageBuilder messageBuilder, TimeBuilder timeBuilder, ReminderTimeBuilder reminderTimeBuilder, LocalisationService localisationService) {
         this.messageBuilder = messageBuilder;
         this.timeBuilder = timeBuilder;
         this.reminderTimeBuilder = reminderTimeBuilder;
+        this.localisationService = localisationService;
     }
 
     public String getReminderMessage(Reminder reminder) {
@@ -49,6 +54,9 @@ public class ReminderMessageBuilder {
         String text = reminder.getText();
         String note = reminder.getNote();
 
+        if (reminder.isSuppressNotifications()) {
+            result.append(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI)).append(" ");
+        }
         result.append(text).append(" ");
 
         if (reminder.isInactive()) {
@@ -259,7 +267,12 @@ public class ReminderMessageBuilder {
         int i = 1;
         for (Reminder reminder : reminders) {
             String number = i++ + ") ";
-            text.append(number).append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder)).append(")\n");
+            text.append(number);
+
+            if (reminder.isSuppressNotifications()) {
+                text.append(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI)).append(" ");
+            }
+            text.append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder)).append(")\n");
 
             if (!reminder.isInactive() && reminder.isRepeatable()) {
                 text.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone())).append("\n");

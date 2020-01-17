@@ -1,8 +1,6 @@
 package ru.gadjini.reminder.dao;
 
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Query;
+import org.jooq.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -124,11 +122,11 @@ public class ReminderNotificationDao {
                 .executeBatch(sqlParameterSources(reminderNotifications));
     }
 
-    public void deleteByReminderId(int reminderId) {
-        jdbcTemplate.update(
-                "DELETE FROM reminder_time WHERE reminder_id = ?",
-                ps -> ps.setInt(1, reminderId)
-        );
+    public void delete(Condition condition) {
+        DeleteConditionStep<Record> delete = dslContext.delete(ReminderNotificationTable.TABLE)
+                .where(condition);
+
+        jdbcTemplate.update(delete.getSQL(), new JooqPreparedSetter(delete.getParams()));
     }
 
     private SqlParameterSource sqlParameterSource(ReminderNotification reminderNotification) {

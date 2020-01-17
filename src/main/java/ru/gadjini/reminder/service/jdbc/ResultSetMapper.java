@@ -92,6 +92,9 @@ public class ResultSetMapper {
         if (columnNames.contains(Reminder.READ)) {
             reminder.setRead(rs.getBoolean(Reminder.READ));
         }
+        if (columnNames.contains(Reminder.SUPPRESS_NOTIFICATIONS)) {
+            reminder.setSuppressNotifications(rs.getBoolean(Reminder.SUPPRESS_NOTIFICATIONS));
+        }
         Timestamp completedAt = rs.getTimestamp(Reminder.COMPLETED_AT);
         if (completedAt != null) {
             reminder.setCompletedAt(ZonedDateTime.of(completedAt.toLocalDateTime(), ZoneOffset.UTC));

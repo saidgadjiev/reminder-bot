@@ -44,6 +44,8 @@ public class Reminder {
 
     public static final String READ = "read";
 
+    public static final String SUPPRESS_NOTIFICATIONS = "suppress_notifications";
+
     private int id;
 
     private String text;
@@ -82,6 +84,8 @@ public class Reminder {
 
     private boolean read;
 
+    private boolean suppressNotifications;
+
     public Reminder() {
     }
 
@@ -105,6 +109,7 @@ public class Reminder {
         this.maxSeries = reminder.maxSeries;
         this.countSeries = reminder.countSeries;
         this.read = reminder.read;
+        this.suppressNotifications = reminder.suppressNotifications;
     }
 
     public int getId() {
@@ -326,6 +331,14 @@ public class Reminder {
         }
 
         return values;
+    }
+
+    public boolean isSuppressNotifications() {
+        return suppressNotifications;
+    }
+
+    public void setSuppressNotifications(boolean suppressNotifications) {
+        this.suppressNotifications = suppressNotifications;
     }
 
     public enum Status {

@@ -30,7 +30,11 @@ public class ReminderNotificationService {
     }
 
     public void deleteReminderNotifications(int reminderId) {
-        reminderNotificationDao.deleteByReminderId(reminderId);
+        reminderNotificationDao.delete(ReminderNotificationTable.TABLE.REMINDER_ID.eq(reminderId));
+    }
+
+    public void deleteCustomReminderNotifications(int reminderId) {
+        reminderNotificationDao.delete(ReminderNotificationTable.TABLE.REMINDER_ID.eq(reminderId).and(ReminderNotificationTable.TABLE.CUSTOM.eq(true)));
     }
 
     public int deleteReminderNotification(int id) {

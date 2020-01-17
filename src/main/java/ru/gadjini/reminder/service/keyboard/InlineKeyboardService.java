@@ -163,6 +163,9 @@ public class InlineKeyboardService {
 
             inlineKeyboardMarkup.getKeyboard().add(row);
         }
+        if (reminderTimesIds.size() > 0) {
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.suppressNotifications(reminderId)));
+        }
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CREATE_REMIND_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.SCHEDULE_COMMAND_NAME)));
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.REMINDER_DETAILS_COMMAND_NAME, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId))));
 
@@ -265,15 +268,18 @@ public class InlineKeyboardService {
         if (reminder.isRepeatable()) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminder.getId()), buttonFactory.cancelReminderButton(reminder.getId())));
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.skipRepeatReminderButton(reminder.getId()), buttonFactory.stopRepeatReminderButton(reminder.getId())));
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME)));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME)));
         } else {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminder.getId()), buttonFactory.cancelReminderButton(reminder.getId())));
             List<InlineKeyboardButton> keyboardButtons = new ArrayList<>();
-            keyboardButtons.add(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME));
+            keyboardButtons.add(buttonFactory.customReminderTimeButton(reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME));
             if (reminder.getRemindAt().hasTime()) {
                 keyboardButtons.add(buttonFactory.postponeReminderButton(reminder.getId()));
             }
             inlineKeyboardMarkup.getKeyboard().add(keyboardButtons);
+        }
+        if (!reminder.isSuppressNotifications()) {
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.suppressNotifications(reminder.getId())));
         }
         if (reminder.isNotMySelf() && reminder.isUnread()) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.readButton(reminder.getId())));
@@ -418,10 +424,13 @@ public class InlineKeyboardService {
         if (reminder.isRepeatable()) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminderId), buttonFactory.cancelReminderButton(reminderId)));
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.skipRepeatReminderButton(reminderId), buttonFactory.stopRepeatReminderButton(reminderId)));
-            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.returnReminderButton(reminderId), buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.REMINDER_DETAILS_COMMAND_NAME)));
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.returnReminderButton(reminderId), buttonFactory.customReminderTimeButton(reminderId, CommandNames.REMINDER_DETAILS_COMMAND_NAME)));
         } else {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId), buttonFactory.cancelReminderButton(reminderId)));
-            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(localisationService.getMessage(MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION), reminderId, CommandNames.REMINDER_DETAILS_COMMAND_NAME), buttonFactory.postponeReminderButton(reminderId)));
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminderId, CommandNames.REMINDER_DETAILS_COMMAND_NAME), buttonFactory.postponeReminderButton(reminderId)));
+        }
+        if (!reminder.isSuppressNotifications()) {
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.suppressNotifications(reminderId)));
         }
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderTimesScheduleButton(reminderId)));
         if (reminder.isNotMySelf() && reminder.isUnread()) {

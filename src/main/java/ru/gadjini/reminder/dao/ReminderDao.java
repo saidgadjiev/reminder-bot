@@ -67,13 +67,22 @@ public class ReminderDao {
                         "       (r.remind_at).*,\n" +
                         "       rc.zone_id                                                                            AS rc_zone_id,\n" +
                         "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
-                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
+                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name,\n" +
+                        "       CASE  WHEN rt.exists_notifications IS NULL THEN TRUE ELSE FALSE END suppress_notifications\n" +
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
                         "         LEFT JOIN friendship f ON CASE\n" +
                         "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
                         "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
-                        "WHERE (r.creator_id = :user_id AND r.status IN(0, 2)) OR (r.receiver_id = :user_id AND r.status = 0)\n" +
+                        "         " +
+                        "LEFT JOIN (SELECT reminder_id, TRUE as exists_notifications\n" +
+                        "                    FROM reminder_time\n" +
+                        "                    WHERE custom = TRUE\n" +
+                        "                    GROUP BY reminder_id\n" +
+                        "                    HAVING COUNT(reminder_id) > 0) rt\n" +
+                        "                   ON rt.reminder_id = r.id\n" +
+                        "WHERE (r.creator_id = :user_id AND r.status IN (0, 2))\n" +
+                        "   OR (r.receiver_id = :user_id AND r.status = 0)\n" +
                         "ORDER BY r.remind_at",
                 new MapSqlParameterSource().addValue("user_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
@@ -214,16 +223,25 @@ public class ReminderDao {
                         "SELECT r.*,\n" +
                         "       (r.repeat_remind_at).*,\n" +
                         "       (r.remind_at).*,\n" +
-                        "       rm.message_id as rm_message_id,\n" +
-                        "       rc.zone_id                                       AS rc_zone_id,\n" +
+                        "       rm.message_id                                                                         as rm_message_id,\n" +
+                        "       rc.zone_id                                                                            AS rc_zone_id,\n" +
                         "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
-                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
+                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name,\n" +
+                        "       CASE WHEN rt.exists_notifications IS NULL THEN TRUE ELSE FALSE END                       suppress_notifications\n" +
                         "FROM r\n" +
                         "         LEFT JOIN remind_message rm ON r.id = rm.reminder_id\n" +
-                        "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id" +
+                        "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
                         "         LEFT JOIN friendship f ON CASE\n" +
                         "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
-                        "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END",
+                        "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
+                        "         " +
+                        "LEFT JOIN (SELECT reminder_id, TRUE as exists_notifications\n" +
+                        "                    FROM reminder_time\n" +
+                        "                    WHERE custom = TRUE\n" +
+                        "                    GROUP BY reminder_id\n" +
+                        "                    HAVING COUNT(reminder_id) > 0) rt\n" +
+                        "                   ON rt.reminder_id = r.id\n"
+                ,
                 ps -> {
                     ps.setString(1, newText);
                     ps.setInt(2, reminderId);
@@ -356,9 +374,11 @@ public class ReminderDao {
 
     private SelectSelectStep<Record> buildSelect(ReminderMapping reminderMapping) {
         ReminderTable r = ReminderTable.TABLE.as("r");
-        SelectSelectStep<Record> select = dslContext.select(r.asterisk(), DSL.field("(r.repeat_remind_at).*"), DSL.field("(r.remind_at).*"));
+        SelectSelectStep<Record> select = dslContext.select(r.asterisk(), DSL.field("(r.repeat_remind_at).*"), DSL.field("(r.remind_at).*"), DSL.field("CASE WHEN rt.exists_notifications IS NULL THEN TRUE ELSE FALSE END suppress_notifications"));
 
         SelectJoinStep<Record> from = select.from(r);
+        from.leftJoin("(SELECT reminder_id, TRUE as exists_notifications FROM reminder_time WHERE custom = TRUE GROUP BY reminder_id HAVING COUNT(reminder_id) > 0) rt")
+        .on("rt.reminder_id = r.id");
         if (reminderMapping.getRemindMessageMapping() != null) {
             RemindMessageTable remindMessage = RemindMessageTable.TABLE.as("rm");
 
