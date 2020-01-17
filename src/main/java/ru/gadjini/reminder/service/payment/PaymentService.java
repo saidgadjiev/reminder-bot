@@ -10,7 +10,6 @@ import ru.gadjini.reminder.domain.Plan;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.WebMoneyPayment;
 import ru.gadjini.reminder.properties.WebMoneyProperties;
-import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.subscription.PaymentMessageService;
 import ru.gadjini.reminder.service.subscription.PlanService;
@@ -34,19 +33,16 @@ public class PaymentService {
 
     private WebMoneyProperties webMoneyProperties;
 
-    private TgUserService userService;
-
     private PaymentMessageService paymentMessageService;
 
     @Autowired
     public PaymentService(PlanService planService, SubscriptionService subscriptionService,
                           LocalisationService localisationService, WebMoneyProperties webMoneyProperties,
-                          TgUserService userService, PaymentMessageService paymentMessageService) {
+                          PaymentMessageService paymentMessageService) {
         this.planService = planService;
         this.subscriptionService = subscriptionService;
         this.localisationService = localisationService;
         this.webMoneyProperties = webMoneyProperties;
-        this.userService = userService;
         this.paymentMessageService = paymentMessageService;
     }
 
@@ -56,15 +52,14 @@ public class PaymentService {
         validate(plan, webMoneyPayment);
 
         LocalDate localDate = subscriptionService.renewSubscription(plan, webMoneyPayment.userId());
-        long chatId = userService.getChatId(webMoneyPayment.userId());
         Integer paymentMessageId = null;
         try {
-            paymentMessageId = paymentMessageService.delete(chatId);
+            paymentMessageId = paymentMessageService.delete(webMoneyPayment.userId());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
 
-        return new PaymentProcessResult(localDate, chatId, paymentMessageId);
+        return new PaymentProcessResult(localDate, paymentMessageId);
     }
 
     public Map<String, Object> processPaymentRequest(int planId, int userId, PaymentType paymentType) {
@@ -106,22 +101,15 @@ public class PaymentService {
 
         private LocalDate subscriptionEnd;
 
-        private long chatId;
-
         private Integer paymentMessageId;
 
-        private PaymentProcessResult(LocalDate subscriptionEnd, long chatId, Integer paymentMessageId) {
+        private PaymentProcessResult(LocalDate subscriptionEnd, Integer paymentMessageId) {
             this.subscriptionEnd = subscriptionEnd;
-            this.chatId = chatId;
             this.paymentMessageId = paymentMessageId;
         }
 
         public LocalDate getSubscriptionEnd() {
             return subscriptionEnd;
-        }
-
-        public long getChatId() {
-            return chatId;
         }
 
         public Integer getPaymentMessageId() {

@@ -23,4 +23,14 @@ public class KeyboardUtils {
 
         return keyboardMarkup;
     }
+
+    public static boolean hasButton(InlineKeyboardMarkup keyboardMarkup, String buttonName) {
+        for (List<InlineKeyboardButton> keyboardButtons : keyboardMarkup.getKeyboard()) {
+            if (keyboardButtons.stream().anyMatch(inlineKeyboardButton -> inlineKeyboardButton.getCallbackData().startsWith(buttonName))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

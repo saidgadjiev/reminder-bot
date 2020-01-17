@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS subscription
 
 CREATE TABLE IF NOT EXISTS payment_message
 (
-    chat_id    INTEGER UNIQUE NOT NULL REFERENCES tg_user (chat_id),
+    user_id    INTEGER UNIQUE NOT NULL REFERENCES tg_user (user_id),
     message_id INT            NOT NULL,
-    PRIMARY KEY (chat_id)
+    PRIMARY KEY (user_id)
 );

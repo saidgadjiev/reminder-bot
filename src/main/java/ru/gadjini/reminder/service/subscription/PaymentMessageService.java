@@ -14,15 +14,15 @@ public class PaymentMessageService {
         this.paymentMessageDao = paymentMessageDao;
     }
 
-    public Integer getMessageId(long chatId) {
-        return paymentMessageDao.getMessageId(chatId);
+    public Integer getMessageId(int userId) {
+        return paymentMessageDao.getMessageId(userId);
     }
 
-    public void create(long chatId, int messageId) {
-        paymentMessageDao.create(chatId, messageId);
+    public void create(int userId, int messageId) {
+        paymentMessageDao.create(userId, messageId);
     }
 
-    public Integer delete(long chatId) {
-        return paymentMessageDao.delete(chatId);
+    public Integer delete(int userId) {
+        return paymentMessageDao.delete(userId);
     }
 }

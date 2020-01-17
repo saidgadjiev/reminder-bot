@@ -18,7 +18,6 @@ import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.WebMoneyPayment;
 import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.properties.WebHookProperties;
-import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -51,8 +50,6 @@ public class WebMoneyController {
 
     private MessageService messageService;
 
-    private TgUserService userService;
-
     private LocalisationService localisationService;
 
     private BotProperties botProperties;
@@ -61,12 +58,11 @@ public class WebMoneyController {
 
     @Autowired
     public WebMoneyController(CurrReplyKeyboard replyKeyboardService, PaymentService paymentService,
-                              MessageService messageService, TgUserService userService,
-                              LocalisationService localisationService, BotProperties botProperties, WebHookProperties webHookProperties) {
+                              MessageService messageService, LocalisationService localisationService,
+                              BotProperties botProperties, WebHookProperties webHookProperties) {
         this.replyKeyboardService = replyKeyboardService;
         this.paymentService = paymentService;
         this.messageService = messageService;
-        this.userService = userService;
         this.localisationService = localisationService;
         this.botProperties = botProperties;
         this.webHookProperties = webHookProperties;
@@ -99,7 +95,7 @@ public class WebMoneyController {
     @Path("/fail")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response fail(@FormParam("user_id") int userId) {
-        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(userService.getChatId(userId)).text(localisationService.getMessage(MessagesProperties.MESSAGE_PAYMENT_FAIL)));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(userId).text(localisationService.getMessage(MessagesProperties.MESSAGE_PAYMENT_FAIL)));
 
         return Response.seeOther(URI.create(redirectUrl(true))).build();
     }
@@ -166,9 +162,9 @@ public class WebMoneyController {
         PaymentService.PaymentProcessResult paymentProcessResult = paymentService.processPayment(webMoneyPayment);
 
         if (paymentProcessResult.getPaymentMessageId() != null) {
-            deletePaymentMessage(paymentProcessResult.getChatId(), paymentProcessResult.getPaymentMessageId());
+            deletePaymentMessage(webMoneyPayment.userId(), paymentProcessResult.getPaymentMessageId());
         }
-        sendSubscriptionRenewed(paymentProcessResult.getChatId(), paymentProcessResult.getSubscriptionEnd());
+        sendSubscriptionRenewed(webMoneyPayment.userId(), paymentProcessResult.getSubscriptionEnd());
 
         return Response.ok().build();
     }
@@ -190,13 +186,13 @@ public class WebMoneyController {
         }
     }
 
-    private void sendSubscriptionRenewed(long chatId, LocalDate subscriptionEnd) {
+    private void sendSubscriptionRenewed(int userId, LocalDate subscriptionEnd) {
         try {
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
-                            .chatId(chatId)
+                            .chatId(userId)
                             .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}))
-                            .replyKeyboard(replyKeyboardService.getMainMenu(chatId, (int) chatId))
+                            .replyKeyboard(replyKeyboardService.getMainMenu(userId, userId))
             );
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);

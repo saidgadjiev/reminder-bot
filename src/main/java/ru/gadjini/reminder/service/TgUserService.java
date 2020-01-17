@@ -70,10 +70,6 @@ public class TgUserService {
         return ZoneId.of(zone);
     }
 
-    public long getChatId(int userId) {
-        return tgUserDao.getChatId(userId);
-    }
-
     public void saveZoneId(int userId, ZoneId zoneId) {
         tgUserDao.updateTimezone(userId, zoneId.getId());
     }

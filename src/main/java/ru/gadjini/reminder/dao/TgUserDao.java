@@ -75,7 +75,7 @@ public class TgUserDao {
                 "SELECT zone_id FROM tg_user WHERE user_id =" + userId,
                 rs -> {
                     if (rs.next()) {
-                        return rs.getString("zone_id");
+                        return rs.getString(TgUser.ZONE_ID);
                     }
 
                     return null;
@@ -88,21 +88,7 @@ public class TgUserDao {
                 "SELECT zone_id FROM tg_user WHERE username =" + username,
                 rs -> {
                     if (rs.next()) {
-                        return rs.getString("zone_id");
-                    }
-
-                    return null;
-                }
-        );
-    }
-
-    public Long getChatId(int userId) {
-        return jdbcTemplate.query(
-                "SELECT chat_id FROM tg_user WHERE user_id = ?",
-                ps -> ps.setInt(1, userId),
-                rs -> {
-                    if (rs.next()) {
-                        return rs.getLong("chat_id");
+                        return rs.getString(TgUser.ZONE_ID);
                     }
 
                     return null;
