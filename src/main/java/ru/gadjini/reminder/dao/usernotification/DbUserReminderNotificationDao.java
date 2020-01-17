@@ -11,6 +11,7 @@ import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Time;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class DbUserReminderNotificationDao implements UserReminderNotificationDa
 
         jdbcTemplate.update(
                 con -> {
-                    PreparedStatement preparedStatement = con.prepareStatement("DELETE FROM user_reminder_notification WHERE id = ? RETURNING *");
+                    PreparedStatement preparedStatement = con.prepareStatement("DELETE FROM user_reminder_notification WHERE id = ? RETURNING *", Statement.RETURN_GENERATED_KEYS);
                     preparedStatement.setInt(1, id);
                     return preparedStatement;
                 },
@@ -44,7 +45,7 @@ public class DbUserReminderNotificationDao implements UserReminderNotificationDa
         UserReminderNotification deleted = new UserReminderNotification(null);
         Map<String, Object> keys = generatedKeyHolder.getKeys();
         deleted.setUserId((Integer) keys.get(UserReminderNotification.USER_ID));
-        deleted.setType((UserReminderNotification.NotificationType) keys.get(UserReminderNotification.TYPE));
+        deleted.setType((UserReminderNotification.NotificationType.fromCode((Integer) keys.get(UserReminderNotification.TYPE))));
 
         return deleted;
     }

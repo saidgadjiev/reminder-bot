@@ -144,7 +144,10 @@ public class ReminderRequestService {
         ReminderNotification reminderNotification;
 
         if (customRemind.isOffsetTime()) {
-            ZonedDateTime remindTime = buildRemindTime(customRemind.getOffsetTime(), reminder.getRemindAtInReceiverZone().toZonedDateTime()).withZoneSameInstant(ZoneOffset.UTC);
+            ZonedDateTime remindTime = buildRemindTime(
+                    customRemind.getOffsetTime(),
+                    reminder.getRemindAtInReceiverZone().hasTime() ? reminder.getRemindAtInReceiverZone().toZonedDateTime() : null
+            ).withZoneSameInstant(ZoneOffset.UTC);
             reminderNotification = reminderService.customRemind(reminderId, remindTime);
             customRemindResult.setZonedDateTime(remindTime);
         } else if (customRemind.isRepeatTime()) {

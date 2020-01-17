@@ -131,6 +131,8 @@ public class MessagesProperties {
 
     public static final String REGEX_MINUTE_PREFIX = "regex.minute.prefix";
 
+    public static final String REGEX_ONE_HOURS_SUFFIX = "regex.one.hours.suffix";
+
     public static final String DELETE_COMPLETED_REMINDERS_COMMAND_DESCRIPTION = "delete.completed.reminders.command.description";
 
     public static final String CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION = "custom.reminder.time.command.description";
