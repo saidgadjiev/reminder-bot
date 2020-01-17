@@ -166,7 +166,7 @@ public class PatternBuilder {
                 .append(">\\d+)(").append(dayPrefix).append(")))?) (?<").append(TYPE).append(">\\b(").append(typeAfter).append("|")
                 .append(typeBefore).append("|").append(typeOn).append("|").append(eve).append(")\\b)");
 
-        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, SUFFIX_DAYS, PREFIX_DAYS, SUFFIX_HOURS, PREFIX_HOURS, SUFFIX_MINUTES, PREFIX_MINUTES, HOUR, MINUTE));
+        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, SUFFIX_DAYS, PREFIX_DAYS, ONE_DAY, SUFFIX_HOURS, PREFIX_HOURS, ONE_HOUR, SUFFIX_MINUTES, PREFIX_MINUTES, HOUR, MINUTE));
     }
 
     private String getDayOfWeekPattern(Locale locale) {

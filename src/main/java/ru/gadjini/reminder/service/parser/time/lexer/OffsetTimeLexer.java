@@ -38,11 +38,17 @@ public class OffsetTimeLexer {
             if (values.containsKey(PatternBuilder.PREFIX_DAYS)) {
                 lexems.add(new TimeLexem(TimeToken.DAYS, values.get(PatternBuilder.PREFIX_DAYS)));
             }
+            if (values.containsKey(PatternBuilder.ONE_DAY)) {
+                lexems.add(new TimeLexem(TimeToken.DAYS, "1"));
+            }
             if (values.containsKey(PatternBuilder.SUFFIX_HOURS)) {
                 lexems.add(new TimeLexem(TimeToken.HOURS, values.get(PatternBuilder.SUFFIX_HOURS)));
             }
             if (values.containsKey(PatternBuilder.PREFIX_HOURS)) {
                 lexems.add(new TimeLexem(TimeToken.HOURS, values.get(PatternBuilder.PREFIX_HOURS)));
+            }
+            if (values.containsKey(PatternBuilder.ONE_HOUR)) {
+                lexems.add(new TimeLexem(TimeToken.HOURS, "1"));
             }
             if (values.containsKey(PatternBuilder.SUFFIX_MINUTES)) {
                 lexems.add(new TimeLexem(TimeToken.MINUTES, values.get(PatternBuilder.SUFFIX_MINUTES)));
