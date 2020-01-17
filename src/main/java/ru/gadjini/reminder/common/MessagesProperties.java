@@ -430,4 +430,8 @@ public class MessagesProperties {
     public static final String SUPPRESS_NOTIFICATIONS_COMMAND_DESCRIPTION = "suppress.notifications.command.description";
 
     public static final String MESSAGE_PAST_TIME = "message.past.time";
+
+    public static final String FRIENDS_COMMAND_NAME = "friends.command.name";
+
+    public static final String MESSAGE_FRIENDS = "message.friends";
 }

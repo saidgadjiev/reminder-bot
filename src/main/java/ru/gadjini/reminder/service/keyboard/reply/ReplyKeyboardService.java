@@ -16,6 +16,8 @@ public interface ReplyKeyboardService {
 
     ReplyKeyboardMarkup getUserReminderNotificationSettingsKeyboard(long chatId);
 
+    ReplyKeyboardMarkup getFriendsMenu(long chatId);
+
     ReplyKeyboardMarkup getMainMenu(long chatId, int userId);
 
     ReplyKeyboardMarkup goBackCommand(long chatId);
