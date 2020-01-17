@@ -25,9 +25,16 @@ public class CommandNavigator {
 
     private CommandNavigatorDao navigatorDao;
 
+    private CallbackCommandNavigator callbackCommandNavigator;
+
     @Autowired
     public CommandNavigator(@Qualifier("redis") CommandNavigatorDao navigatorDao) {
         this.navigatorDao = navigatorDao;
+    }
+
+    @Autowired
+    public void setCallbackCommandNavigator(CallbackCommandNavigator callbackCommandNavigator) {
+        this.callbackCommandNavigator = callbackCommandNavigator;
     }
 
     @Autowired
@@ -57,6 +64,7 @@ public class CommandNavigator {
         }
 
         setCurrentCommand(chatId, navigableBotCommand);
+        callbackCommandNavigator.silentPop(chatId);
     }
 
     public boolean isEmpty(long chatId) {
@@ -121,4 +129,5 @@ public class CommandNavigator {
     private void setCurrentCommand(long chatId, NavigableBotCommand navigableBotCommand) {
         navigatorDao.set(chatId, navigableBotCommand.getHistoryName());
     }
+
 }

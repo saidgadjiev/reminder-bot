@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
@@ -16,6 +17,7 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
 @Component
@@ -29,13 +31,16 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
 
     private FriendshipMessageBuilder friendshipMessageBuilder;
 
+    private LocalisationService localisationService;
+
     @Autowired
     public FriendDetailsCommand(FriendshipService friendshipService, MessageService messageService,
-                                InlineKeyboardService inlineKeyboardService, FriendshipMessageBuilder friendshipMessageBuilder) {
+                                InlineKeyboardService inlineKeyboardService, FriendshipMessageBuilder friendshipMessageBuilder, LocalisationService localisationService) {
         this.friendshipService = friendshipService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
+        this.localisationService = localisationService;
     }
 
     @Override
@@ -59,12 +64,23 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         int friendUserId = requestParams.getInt(Arg.FRIEND_ID.getKey());
         TgUser friend = friendshipService.getFriend(tgMessage.getUser().getId(), friendUserId);
-        messageService.editMessageAsync(
-                new EditMessageContext(PriorityJob.Priority.MEDIUM)
-                        .chatId(tgMessage.getChatId())
-                        .messageId(tgMessage.getMessageId())
-                        .text(friendshipMessageBuilder.getFriendDetails(friend))
-                        .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendUserId))
-        );
+
+        if (friend == null) {
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
+                            .chatId(tgMessage.getChatId())
+                            .messageId(tgMessage.getMessageId())
+                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_NOT_FOUND))
+                            .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendUserId))
+            );
+        } else {
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
+                            .chatId(tgMessage.getChatId())
+                            .messageId(tgMessage.getMessageId())
+                            .text(friendshipMessageBuilder.getFriendDetails(friend))
+                            .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendUserId))
+            );
+        }
     }
 }

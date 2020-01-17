@@ -434,4 +434,6 @@ public class MessagesProperties {
     public static final String FRIENDS_COMMAND_NAME = "friends.command.name";
 
     public static final String MESSAGE_FRIENDS = "message.friends";
+
+    public static final String MESSAGE_FRIEND_NOT_FOUND = "message.friend.not.found";
 }
