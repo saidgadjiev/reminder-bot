@@ -32,14 +32,23 @@ public class OffsetTimeLexer {
             if (values.containsKey(PatternBuilder.TYPE)) {
                 lexems.add(new TimeLexem(TimeToken.TYPE, values.get(PatternBuilder.TYPE)));
             }
-            if (values.containsKey(PatternBuilder.DAYS)) {
-                lexems.add(new TimeLexem(TimeToken.DAYS, values.get(PatternBuilder.DAYS)));
+            if (values.containsKey(PatternBuilder.SUFFIX_DAYS)) {
+                lexems.add(new TimeLexem(TimeToken.DAYS, values.get(PatternBuilder.SUFFIX_DAYS)));
             }
-            if (values.containsKey(PatternBuilder.HOURS)) {
-                lexems.add(new TimeLexem(TimeToken.HOURS, values.get(PatternBuilder.HOURS)));
+            if (values.containsKey(PatternBuilder.PREFIX_DAYS)) {
+                lexems.add(new TimeLexem(TimeToken.DAYS, values.get(PatternBuilder.PREFIX_DAYS)));
             }
-            if (values.containsKey(PatternBuilder.MINUTES)) {
-                lexems.add(new TimeLexem(TimeToken.MINUTES, values.get(PatternBuilder.MINUTES)));
+            if (values.containsKey(PatternBuilder.SUFFIX_HOURS)) {
+                lexems.add(new TimeLexem(TimeToken.HOURS, values.get(PatternBuilder.SUFFIX_HOURS)));
+            }
+            if (values.containsKey(PatternBuilder.PREFIX_HOURS)) {
+                lexems.add(new TimeLexem(TimeToken.HOURS, values.get(PatternBuilder.PREFIX_HOURS)));
+            }
+            if (values.containsKey(PatternBuilder.SUFFIX_MINUTES)) {
+                lexems.add(new TimeLexem(TimeToken.MINUTES, values.get(PatternBuilder.SUFFIX_MINUTES)));
+            }
+            if (values.containsKey(PatternBuilder.PREFIX_MINUTES)) {
+                lexems.add(new TimeLexem(TimeToken.MINUTES, values.get(PatternBuilder.PREFIX_MINUTES)));
             }
             if (values.containsKey(PatternBuilder.HOUR)) {
                 lexems.add(new TimeLexem(TimeToken.HOUR, values.get(PatternBuilder.HOUR)));

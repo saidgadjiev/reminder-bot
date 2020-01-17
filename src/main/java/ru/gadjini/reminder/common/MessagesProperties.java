@@ -131,8 +131,6 @@ public class MessagesProperties {
 
     public static final String REGEX_MINUTE_PREFIX = "regex.minute.prefix";
 
-    public static final String REGEX_ONE_HOURS_SUFFIX = "regex.one.hours.suffix";
-
     public static final String DELETE_COMPLETED_REMINDERS_COMMAND_DESCRIPTION = "delete.completed.reminders.command.description";
 
     public static final String CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION = "custom.reminder.time.command.description";
@@ -209,13 +207,13 @@ public class MessagesProperties {
 
     public static final String REGEXP_DAY = "regexp.day";
 
-    public static final String REGEXP_EVERY_MINUTE = "regexp.every.minute";
+    public static final String REGEXP_MINUTE = "regexp.minute";
 
-    public static final String REGEXP_EVERY_HOUR = "regexp.every.hour";
+    public static final String REGEXP_HOUR = "regexp.hour";
 
-    public static final String REGEXP_EVERY_MONTH = "regexp.every.month";
+    public static final String REGEXP_MONTH = "regexp.month";
 
-    public static final String REGEXP_EVERY_YEAR = "regexp.every.year";
+    public static final String REGEXP_YEAR = "regexp.year";
 
     public static final String MESSAGE_NEXT_REMINDER_NOTIFICATION_AT = "message.next.reminder.notification.at";
 

@@ -26,52 +26,61 @@ public class RepeatTimeLexer {
         GroupMatcher repeatTimeMatcher = lexerConfig.getRepeatTimePattern().maxMatcher(str);
 
         if (repeatTimeMatcher != null) {
-            Map<String, String> repeatTimeValues = repeatTimeMatcher.values();
+            Map<String, String> values = repeatTimeMatcher.values();
 
-            if (repeatTimeValues.containsKey(PatternBuilder.HOURS)) {
-                lexems.add(new TimeLexem(TimeToken.HOURS, repeatTimeValues.get(PatternBuilder.HOURS)));
+            if (values.containsKey(PatternBuilder.SUFFIX_HOURS)) {
+                lexems.add(new TimeLexem(TimeToken.HOURS, values.get(PatternBuilder.SUFFIX_HOURS)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_HOUR)) {
-                lexems.add(new TimeLexem(TimeToken.EVERY_HOUR, repeatTimeValues.get(PatternBuilder.EVERY_HOUR)));
+            if (values.containsKey(PatternBuilder.PREFIX_HOURS)) {
+                lexems.add(new TimeLexem(TimeToken.HOURS, values.get(PatternBuilder.PREFIX_HOURS)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.MINUTES)) {
-                lexems.add(new TimeLexem(TimeToken.MINUTES, repeatTimeValues.get(PatternBuilder.MINUTES)));
+            if (values.containsKey(PatternBuilder.EVERY_HOUR)) {
+                lexems.add(new TimeLexem(TimeToken.EVERY_HOUR, values.get(PatternBuilder.EVERY_HOUR)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.DAY_OF_WEEK_WORD)) {
-                lexems.add(new TimeLexem(TimeToken.DAY_OF_WEEK, repeatTimeValues.get(PatternBuilder.DAY_OF_WEEK_WORD)));
+            if (values.containsKey(PatternBuilder.SUFFIX_MINUTES)) {
+                lexems.add(new TimeLexem(TimeToken.MINUTES, values.get(PatternBuilder.SUFFIX_MINUTES)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_DAY)) {
-                lexems.add(new TimeLexem(TimeToken.EVERY_DAY, repeatTimeValues.get(PatternBuilder.EVERY_DAY)));
+            if (values.containsKey(PatternBuilder.PREFIX_MINUTES)) {
+                lexems.add(new TimeLexem(TimeToken.MINUTES, values.get(PatternBuilder.PREFIX_MINUTES)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_MINUTE)) {
-                lexems.add(new TimeLexem(TimeToken.EVERY_MINUTE, repeatTimeValues.get(PatternBuilder.EVERY_MINUTE)));
+            if (values.containsKey(PatternBuilder.DAY_OF_WEEK_WORD)) {
+                lexems.add(new TimeLexem(TimeToken.DAY_OF_WEEK, values.get(PatternBuilder.DAY_OF_WEEK_WORD)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_YEAR)) {
-                lexems.add(new TimeLexem(TimeToken.EVERY_YEAR, repeatTimeValues.get(PatternBuilder.EVERY_YEAR)));
+            if (values.containsKey(PatternBuilder.EVERY_DAY)) {
+                lexems.add(new TimeLexem(TimeToken.EVERY_DAY, values.get(PatternBuilder.EVERY_DAY)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.DAY)) {
-                lexems.add(new TimeLexem(TimeToken.DAY, repeatTimeValues.get(PatternBuilder.DAY)));
+            if (values.containsKey(PatternBuilder.EVERY_MINUTE)) {
+                lexems.add(new TimeLexem(TimeToken.EVERY_MINUTE, values.get(PatternBuilder.EVERY_MINUTE)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.MONTH_WORD)) {
-                lexems.add(new TimeLexem(TimeToken.MONTH_WORD, repeatTimeValues.get(PatternBuilder.MONTH_WORD)));
+            if (values.containsKey(PatternBuilder.EVERY_YEAR)) {
+                lexems.add(new TimeLexem(TimeToken.EVERY_YEAR, values.get(PatternBuilder.EVERY_YEAR)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.MONTHS)) {
-                lexems.add(new TimeLexem(TimeToken.MONTHS, repeatTimeValues.get(PatternBuilder.MONTHS)));
+            if (values.containsKey(PatternBuilder.DAY)) {
+                lexems.add(new TimeLexem(TimeToken.DAY, values.get(PatternBuilder.DAY)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_MONTH)) {
-                lexems.add(new TimeLexem(TimeToken.EVERY_MONTH, repeatTimeValues.get(PatternBuilder.EVERY_MONTH)));
+            if (values.containsKey(PatternBuilder.MONTH_WORD)) {
+                lexems.add(new TimeLexem(TimeToken.MONTH_WORD, values.get(PatternBuilder.MONTH_WORD)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.EVERY_MONTH_DAY)) {
-                lexems.add(new TimeLexem(TimeToken.DAY, repeatTimeValues.get(PatternBuilder.EVERY_MONTH_DAY)));
+            if (values.containsKey(PatternBuilder.MONTHS)) {
+                lexems.add(new TimeLexem(TimeToken.MONTHS, values.get(PatternBuilder.MONTHS)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.DAYS)) {
-                lexems.add(new TimeLexem(TimeToken.DAYS, repeatTimeValues.get(PatternBuilder.DAYS)));
+            if (values.containsKey(PatternBuilder.EVERY_MONTH)) {
+                lexems.add(new TimeLexem(TimeToken.EVERY_MONTH, values.get(PatternBuilder.EVERY_MONTH)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.HOUR)) {
-                lexems.add(new TimeLexem(TimeToken.HOUR, repeatTimeValues.get(PatternBuilder.HOUR)));
+            if (values.containsKey(PatternBuilder.EVERY_MONTH_DAY)) {
+                lexems.add(new TimeLexem(TimeToken.DAY, values.get(PatternBuilder.EVERY_MONTH_DAY)));
             }
-            if (repeatTimeValues.containsKey(PatternBuilder.MINUTE)) {
-                lexems.add(new TimeLexem(TimeToken.MINUTE, repeatTimeValues.get(PatternBuilder.MINUTE)));
+            if (values.containsKey(PatternBuilder.SUFFIX_DAYS)) {
+                lexems.add(new TimeLexem(TimeToken.DAYS, values.get(PatternBuilder.SUFFIX_DAYS)));
+            }
+            if (values.containsKey(PatternBuilder.PREFIX_DAYS)) {
+                lexems.add(new TimeLexem(TimeToken.DAYS, values.get(PatternBuilder.PREFIX_DAYS)));
+            }
+            if (values.containsKey(PatternBuilder.HOUR)) {
+                lexems.add(new TimeLexem(TimeToken.HOUR, values.get(PatternBuilder.HOUR)));
+            }
+            if (values.containsKey(PatternBuilder.MINUTE)) {
+                lexems.add(new TimeLexem(TimeToken.MINUTE, values.get(PatternBuilder.MINUTE)));
             }
             matchEnd = repeatTimeMatcher.end();
 
