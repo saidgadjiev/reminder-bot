@@ -6,6 +6,7 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ru.gadjini.reminder.bot.command.api.MyBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.job.PriorityJob;
@@ -14,7 +15,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
 @Component
-public class HelpCommand extends BotCommand {
+public class HelpCommand extends BotCommand implements MyBotCommand {
 
     private final MessageService messageService;
 
