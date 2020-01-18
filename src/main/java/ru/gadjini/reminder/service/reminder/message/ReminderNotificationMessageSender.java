@@ -3,7 +3,6 @@ package ru.gadjini.reminder.service.reminder.message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import ru.gadjini.reminder.domain.RemindMessage;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.CustomRemindResult;
@@ -11,7 +10,7 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.RemindMessageService;
+import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.time.DateTime;
 
 @Service
@@ -25,19 +24,19 @@ public class ReminderNotificationMessageSender {
 
     private InlineKeyboardService inlineKeyboardService;
 
-    private RemindMessageService remindMessageService;
+    private ReminderService reminderService;
 
     @Autowired
     public ReminderNotificationMessageSender(MessageService messageService,
                                              ReminderNotificationMessageBuilder reminderNotificationMessageBuilder,
                                              ReminderMessageBuilder reminderMessageBuilder,
                                              InlineKeyboardService inlineKeyboardService,
-                                             RemindMessageService remindMessageService) {
+                                             ReminderService reminderService) {
         this.messageService = messageService;
         this.reminderNotificationMessageBuilder = reminderNotificationMessageBuilder;
         this.reminderMessageBuilder = reminderMessageBuilder;
         this.inlineKeyboardService = inlineKeyboardService;
-        this.remindMessageService = remindMessageService;
+        this.reminderService = reminderService;
     }
 
     public void sendRemindMessage(Reminder reminder, boolean itsTime) {
@@ -45,10 +44,8 @@ public class ReminderNotificationMessageSender {
     }
 
     public void sendRemindMessage(Reminder reminder, boolean itsTime, DateTime nextRemindAt) {
-        RemindMessage remindMessage = reminder.getRemindMessage();
-
-        if (remindMessage != null) {
-            messageService.deleteMessage(reminder.getReceiverId(), remindMessage.getMessageId());
+        if (reminder.hasReceiverMessage()) {
+            messageService.deleteMessage(reminder.getReceiverId(), reminder.getReceiverMessageId());
         }
 
         String message;
@@ -61,7 +58,7 @@ public class ReminderNotificationMessageSender {
         InlineKeyboardMarkup keyboard = inlineKeyboardService.getRemindKeyboard(reminder);
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH).chatId(reminder.getReceiverId()).text(message).replyKeyboard(keyboard),
-                msg -> remindMessageService.create(reminder.getId(), msg.getMessageId())
+                msg -> reminderService.setReceiverMessage(reminder.getId(), msg.getMessageId())
         );
     }
 

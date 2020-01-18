@@ -46,6 +46,10 @@ public class Reminder {
 
     public static final String SUPPRESS_NOTIFICATIONS = "suppress_notifications";
 
+    public static final String CREATOR_MESSAGE_ID = "creator_message_id";
+
+    public static final String RECEIVER_MESSAGE_ID = "receiver_message_id";
+
     private int id;
 
     private String text;
@@ -63,8 +67,6 @@ public class Reminder {
     private DateTime initialRemindAt;
 
     private List<ReminderNotification> reminderNotifications = new ArrayList<>();
-
-    private RemindMessage remindMessage;
 
     private Status status;
 
@@ -86,6 +88,10 @@ public class Reminder {
 
     private boolean suppressNotifications;
 
+    private Integer creatorMessageId;
+
+    private Integer receiverMessageId;
+
     public Reminder() {
     }
 
@@ -103,13 +109,14 @@ public class Reminder {
         this.repeatRemindAt = reminder.repeatRemindAt;
         this.completedAt = reminder.completedAt;
         this.messageId = reminder.messageId;
-        this.remindMessage = reminder.remindMessage;
         this.reminderNotifications = reminder.reminderNotifications;
         this.currentSeries = reminder.currentSeries;
         this.maxSeries = reminder.maxSeries;
         this.countSeries = reminder.countSeries;
         this.read = reminder.read;
         this.suppressNotifications = reminder.suppressNotifications;
+        this.creatorMessageId = reminder.creatorMessageId;
+        this.receiverMessageId = reminder.receiverMessageId;
     }
 
     public int getId() {
@@ -187,17 +194,9 @@ public class Reminder {
         return creator;
     }
 
-    public RemindMessage getRemindMessage() {
-        return remindMessage;
-    }
-
-    public void setRemindMessage(RemindMessage remindMessage) {
-        this.remindMessage = remindMessage;
-    }
-
     @JsonIgnore
-    public boolean hasRemindMessage() {
-        return remindMessage != null;
+    public boolean hasReceiverMessage() {
+        return receiverMessageId != null;
     }
 
     public DateTime getInitialRemindAt() {
@@ -313,6 +312,22 @@ public class Reminder {
 
     public void setRead(boolean read) {
         this.read = read;
+    }
+
+    public Integer getCreatorMessageId() {
+        return creatorMessageId;
+    }
+
+    public void setCreatorMessageId(Integer creatorMessageId) {
+        this.creatorMessageId = creatorMessageId;
+    }
+
+    public Integer getReceiverMessageId() {
+        return receiverMessageId;
+    }
+
+    public void setReceiverMessageId(Integer receiverMessageId) {
+        this.receiverMessageId = receiverMessageId;
     }
 
     public Map<Field<?>, Object> getDiff(Reminder newReminder) {

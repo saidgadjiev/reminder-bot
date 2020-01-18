@@ -45,7 +45,7 @@ public class DbUserReminderNotificationDao implements UserReminderNotificationDa
         UserReminderNotification deleted = new UserReminderNotification(null);
         Map<String, Object> keys = generatedKeyHolder.getKeys();
         deleted.setUserId((Integer) keys.get(UserReminderNotification.USER_ID));
-        deleted.setType((UserReminderNotification.NotificationType.fromCode((Integer) keys.get(UserReminderNotification.TYPE))));
+        deleted.setType(UserReminderNotification.NotificationType.fromCode((Integer) keys.get(UserReminderNotification.TYPE)));
 
         return deleted;
     }

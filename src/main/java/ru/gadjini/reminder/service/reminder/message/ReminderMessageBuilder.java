@@ -41,8 +41,18 @@ public class ReminderMessageBuilder {
         return getReminderMessage(reminder, reminder.getCreatorId());
     }
 
-    public String getReminderEdited() {
-        return messageBuilder.getReminderEdited();
+    public String getMySelfReminderEdited(Reminder reminder) {
+        return messageBuilder.getReminderEdited(reminder.getText());
+    }
+
+    public String getReminderEditedCreator(Reminder reminder) {
+        StringBuilder message = new StringBuilder();
+
+        message.append(messageBuilder.getReminderEdited(reminder.getText()))
+                .append("\n")
+                .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
+
+        return message.toString();
     }
 
     public String getReminderMessage(Reminder reminder, int messageReceiverId) {

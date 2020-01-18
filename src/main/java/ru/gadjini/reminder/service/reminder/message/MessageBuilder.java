@@ -57,8 +57,8 @@ public class MessageBuilder {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_EDITED_RECEIVER, new Object[]{UserUtils.userLink(creator)});
     }
 
-    public String getReminderEdited() {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_EDITED);
+    public String getReminderEdited(String text) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_EDITED, new Object[] {text});
     }
 
     public String getReminderTimeEditedReceiver(TgUser creator, String reminderText, RepeatTime from, RepeatTime to) {

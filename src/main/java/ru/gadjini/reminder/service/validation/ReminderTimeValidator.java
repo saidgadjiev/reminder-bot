@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.time.FixedTime;
 import ru.gadjini.reminder.domain.time.OffsetTime;
+import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
@@ -14,26 +15,30 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 @Service
-public class ChangeReminderTimeValidator implements Validator {
+public class ReminderTimeValidator implements Validator {
 
     private LocalisationService localisationService;
 
     @Autowired
-    public ChangeReminderTimeValidator(LocalisationService localisationService) {
+    public ReminderTimeValidator(LocalisationService localisationService) {
         this.localisationService = localisationService;
     }
 
     @Override
     public ValidatorType event() {
-        return ValidatorType.CHANGE_REMINDER_TIME;
+        return ValidatorType.REMINDER_TIME_VALIDATOR;
     }
 
     @Override
     public void validate(ValidationContext validationContext) {
-        if (validationContext.time().isFixedTime()) {
-            validate(validationContext.time().getFixedTime());
-        } else if (validationContext.time().isOffsetTime()) {
-            validate(validationContext.time().getOffsetTime());
+        validate(validationContext.time());
+    }
+
+    private void validate(Time time) {
+        if (time.isFixedTime()) {
+            validate(time.getFixedTime());
+        } else if (time.isOffsetTime()) {
+            validate(time.getOffsetTime());
         }
     }
 

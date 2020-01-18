@@ -8,19 +8,19 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.RemindMessageService;
+import ru.gadjini.reminder.service.reminder.ReminderService;
 
 @Component
 public class OkCommand implements CallbackBotCommand {
 
     private MessageService messageService;
 
-    private RemindMessageService remindMessageService;
+    private ReminderService reminderService;
 
     @Autowired
-    public OkCommand(MessageService messageService, RemindMessageService remindMessageService) {
+    public OkCommand(MessageService messageService, ReminderService reminderService) {
         this.messageService = messageService;
-        this.remindMessageService = remindMessageService;
+        this.reminderService = reminderService;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class OkCommand implements CallbackBotCommand {
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         int reminderId = requestParams.getInt(Arg.REMINDER_ID.getKey());
-        remindMessageService.delete(reminderId);
+        reminderService.deleteReceiverMessage(reminderId);
         messageService.deleteMessage(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
 
         return null;

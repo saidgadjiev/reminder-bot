@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.jooq.FriendshipTable;
-import ru.gadjini.reminder.domain.jooq.RemindMessageTable;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.jooq.TgUserTable;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
@@ -28,7 +27,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 @Repository
 public class ReminderDao {
@@ -91,10 +89,9 @@ public class ReminderDao {
 
     public List<Reminder> getOverdueRepeatReminders() {
         return jdbcTemplate.query(
-                "SELECT r.*, (r.remind_at).*, (r.repeat_remind_at).*, rc.zone_id as rc_zone_id, rm.message_id as rm_message_id\n" +
+                "SELECT r.*, (r.remind_at).*, (r.repeat_remind_at).*, rc.zone_id as rc_zone_id\n" +
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
-                        "         INNER JOIN remind_message rm on r.id = rm.reminder_id\n" +
                         "WHERE r.status = 0\n" +
                         "  AND r.repeat_remind_at::varchar IS NOT NULL\n" +
                         "  AND (r.remind_at).dt_date < (now()::timestamp AT TIME ZONE 'UTC' AT TIME ZONE rc.zone_id)::date",
@@ -140,7 +137,6 @@ public class ReminderDao {
                 "SELECT r.*,\n" +
                         "       (r.repeat_remind_at).*,\n" +
                         "       (r.remind_at).*,\n" +
-                        "       rm.message_id                                    as rm_message_id,\n" +
                         "       rt.id as rt_id,\n" +
                         "       rc.zone_id                                       as rc_zone_id,\n" +
                         "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name,\n" +
@@ -153,7 +149,6 @@ public class ReminderDao {
                         "       rt.time_type as rt_time_type\n" +
                         "FROM reminder_time rt\n" +
                         "         INNER JOIN reminder r ON rt.reminder_id = r.id\n" +
-                        "         LEFT JOIN remind_message rm ON r.id = rm.reminder_id\n" +
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
                         "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
                         "         INNER JOIN subscription sb ON r.receiver_id = sb.user_id\n" +
@@ -223,13 +218,11 @@ public class ReminderDao {
                         "SELECT r.*,\n" +
                         "       (r.repeat_remind_at).*,\n" +
                         "       (r.remind_at).*,\n" +
-                        "       rm.message_id                                                                         as rm_message_id,\n" +
                         "       rc.zone_id                                                                            AS rc_zone_id,\n" +
                         "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
                         "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name,\n" +
                         "       CASE WHEN rt.exists_notifications IS NULL THEN TRUE ELSE FALSE END                       suppress_notifications\n" +
                         "FROM r\n" +
-                        "         LEFT JOIN remind_message rm ON r.id = rm.reminder_id\n" +
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
                         "         LEFT JOIN friendship f ON CASE\n" +
                         "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
@@ -379,15 +372,6 @@ public class ReminderDao {
         SelectJoinStep<Record> from = select.from(r);
         from.leftJoin("(SELECT reminder_id, TRUE as exists_notifications FROM reminder_time WHERE custom = TRUE GROUP BY reminder_id HAVING COUNT(reminder_id) > 0) rt")
         .on("rt.reminder_id = r.id");
-        if (reminderMapping.getRemindMessageMapping() != null) {
-            RemindMessageTable remindMessage = RemindMessageTable.TABLE.as("rm");
-
-            from
-                    .leftJoin(remindMessage)
-                    .on(r.ID.eq(remindMessage.REMINDER_ID));
-
-            select.select(remindMessage.MESSAGE_ID.as("rm_message_id"));
-        }
         if (reminderMapping.getReceiverMapping() != null
                 && reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_NAME)
                 || reminderMapping.getCreatorMapping() != null) {

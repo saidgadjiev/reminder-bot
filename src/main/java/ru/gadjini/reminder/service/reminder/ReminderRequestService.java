@@ -87,9 +87,8 @@ public class ReminderRequestService {
         Reminder oldReminder = reminderService.getReminderByMessageId(
                 messageId,
                 new ReminderMapping()
-                        .setReceiverMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setCreatorMapping(new Mapping())
-                        .setRemindMessageMapping(new Mapping())
         );
         if (oldReminder == null) {
             return null;
@@ -105,6 +104,8 @@ public class ReminderRequestService {
         newReminder.setId(oldReminder.getId());
         newReminder.setReceiverId(oldReminder.getReceiverId());
         newReminder.setCreatorId(oldReminder.getCreatorId());
+        newReminder.setCreatorMessageId(oldReminder.getCreatorMessageId());
+        newReminder.setReceiverMessageId(oldReminder.getReceiverMessageId());
         newReminder.setText(reminderRequest.getText());
         newReminder.setNote(reminderRequest.getNote());
         newReminder.setReceiver(oldReminder.getReceiver());
@@ -174,12 +175,11 @@ public class ReminderRequestService {
 
     public UpdateReminderResult changeReminderTime(int reminderId, String timeText) {
         Reminder oldReminder = reminderService.getReminder(reminderId, new ReminderMapping()
-                .setRemindMessageMapping(new Mapping())
                 .setCreatorMapping(new Mapping())
                 .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME))));
 
         Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone());
-        validatorFactory.getValidator(ValidatorType.CHANGE_REMINDER_TIME).validate(new ValidationContext().time(newReminderTimeInReceiverZone));
+        validatorFactory.getValidator(ValidatorType.REMINDER_TIME_VALIDATOR).validate(new ValidationContext().time(newReminderTimeInReceiverZone));
 
         Reminder changed;
         if (newReminderTimeInReceiverZone.isRepeatTime()) {
@@ -205,7 +205,6 @@ public class ReminderRequestService {
         return reminderService.getReminder(
                 reminderId,
                 new ReminderMapping()
-                        .setRemindMessageMapping(new Mapping())
                         .setCreatorMapping(new Mapping())
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
         );

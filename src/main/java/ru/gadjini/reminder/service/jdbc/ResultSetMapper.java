@@ -89,6 +89,18 @@ public class ResultSetMapper {
         reminder.setMaxSeries(rs.getInt(Reminder.MAX_SERIES));
         reminder.setStatus(Reminder.Status.fromCode(rs.getInt(Reminder.STATUS)));
         reminder.setCountSeries(rs.getBoolean(Reminder.COUNT_SERIES));
+        if (columnNames.contains(Reminder.RECEIVER_MESSAGE_ID)) {
+            int receiverMessageId = rs.getInt(Reminder.RECEIVER_MESSAGE_ID);
+            if (!rs.wasNull()) {
+                reminder.setReceiverMessageId(receiverMessageId);
+            }
+        }
+        if (columnNames.contains(Reminder.CREATOR_MESSAGE_ID)) {
+            int creatorMessageId = rs.getInt(Reminder.CREATOR_MESSAGE_ID);
+            if (!rs.wasNull()) {
+                reminder.setCreatorMessageId(creatorMessageId);
+            }
+        }
         if (columnNames.contains(Reminder.READ)) {
             reminder.setRead(rs.getBoolean(Reminder.READ));
         }
@@ -118,16 +130,6 @@ public class ResultSetMapper {
             }
 
             reminder.setReceiver(rc);
-        }
-
-        if (columnNames.contains("rm_message_id")) {
-            int remindMessageId = rs.getInt("rm_message_id");
-
-            if (!rs.wasNull()) {
-                RemindMessage remindMessage = new RemindMessage();
-                remindMessage.setMessageId(remindMessageId);
-                reminder.setRemindMessage(remindMessage);
-            }
         }
         if (columnNames.contains("cr_name")) {
             TgUser cr = new TgUser();

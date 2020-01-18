@@ -72,7 +72,6 @@ public class RepeatReminderService {
                 new ReminderMapping()
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setCreatorMapping(new Mapping())
-                        .setRemindMessageMapping(new Mapping())
         );
         toComplete.setCurrentSeries(toComplete.getCurrentSeries() + 1);
         toComplete.setMaxSeries(Math.max(toComplete.getMaxSeries(), toComplete.getCurrentSeries()));
@@ -127,7 +126,6 @@ public class RepeatReminderService {
                 new ReminderMapping()
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setCreatorMapping(new Mapping())
-                        .setRemindMessageMapping(new Mapping())
         );
         toSkip.setCurrentSeries(0);
         moveReminderNotificationToNextPeriod(toSkip, UpdateSeries.RESET);
@@ -147,7 +145,6 @@ public class RepeatReminderService {
                 new ReminderMapping()
                         .setCreatorMapping(new Mapping())
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
-                        .setRemindMessageMapping(new Mapping())
         );
     }
 
@@ -158,7 +155,6 @@ public class RepeatReminderService {
                 new ReminderMapping()
                         .setCreatorMapping(new Mapping())
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
-                        .setRemindMessageMapping(new Mapping())
         );
     }
 
@@ -169,7 +165,6 @@ public class RepeatReminderService {
                 new ReminderMapping()
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setCreatorMapping(new Mapping())
-                        .setRemindMessageMapping(new Mapping())
         );
         boolean returned = moveReminderNotificationToPrevPeriod(toReturn);
 

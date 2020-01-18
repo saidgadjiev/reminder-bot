@@ -11,20 +11,23 @@ CREATE TABLE IF NOT EXISTS tg_user
 
 CREATE TABLE IF NOT EXISTS reminder
 (
-    id                SERIAL PRIMARY KEY,
-    reminder_text     TEXT         NOT NULL,
-    creator_id        INTEGER      NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
-    receiver_id       INTEGER      NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
-    remind_at         TIMESTAMP(0) NOT NULL,
-    repeat_remind_at  repeat_time,
-    initial_remind_at TIMESTAMP(0) NOT NULL,
-    status            INT          NOT NULL DEFAULT 0,
-    note              TEXT,
-    completed_at      TIMESTAMP(0),
-    current_series    INT                   DEFAULT 0,
-    max_series        INT                   DEFAULT 0,
-    count_series      BOOLEAN      NOT NULL DEFAULT FALSE,
-    read              BOOLEAN      NOT NULL DEFAULT FALSE
+    id                  SERIAL PRIMARY KEY,
+    reminder_text       TEXT         NOT NULL,
+    creator_id          INTEGER      NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
+    receiver_id         INTEGER      NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
+    remind_at           TIMESTAMP(0) NOT NULL,
+    repeat_remind_at    repeat_time,
+    initial_remind_at   TIMESTAMP(0) NOT NULL,
+    status              INT          NOT NULL DEFAULT 0,
+    note                TEXT,
+    completed_at        TIMESTAMP(0),
+    current_series      INT                   DEFAULT 0,
+    max_series          INT                   DEFAULT 0,
+    count_series        BOOLEAN      NOT NULL DEFAULT FALSE,
+    read                BOOLEAN      NOT NULL DEFAULT FALSE,
+    message_id          INT          NOT NULL,
+    receiver_message_id INT,
+    create_message_id   INT
 );
 
 CREATE TABLE IF NOT EXISTS reminder_time

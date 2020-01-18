@@ -9,8 +9,6 @@ public class ReminderMapping {
 
     private Mapping creatorMapping;
 
-    private Mapping remindMessageMapping;
-
     public Mapping getReceiverMapping() {
         return receiverMapping;
     }
@@ -27,16 +25,6 @@ public class ReminderMapping {
 
     public ReminderMapping setCreatorMapping(Mapping creatorMapping) {
         this.creatorMapping = creatorMapping;
-
-        return this;
-    }
-
-    public Mapping getRemindMessageMapping() {
-        return remindMessageMapping;
-    }
-
-    public ReminderMapping setRemindMessageMapping(Mapping remindMessageMapping) {
-        this.remindMessageMapping = remindMessageMapping;
 
         return this;
     }
