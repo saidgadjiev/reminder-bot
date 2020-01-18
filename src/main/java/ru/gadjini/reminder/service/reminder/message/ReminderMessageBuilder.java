@@ -64,7 +64,7 @@ public class ReminderMessageBuilder {
         String text = reminder.getText();
         String note = reminder.getNote();
 
-        if (reminder.isSuppressNotifications()) {
+        if (reminder.isSuppressNotifications() && messageReceiverId == reminder.getReceiverId()) {
             result.append(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI)).append(" ");
         }
         result.append(text).append(" ");
@@ -279,7 +279,7 @@ public class ReminderMessageBuilder {
             String number = i++ + ") ";
             text.append(number);
 
-            if (reminder.isSuppressNotifications()) {
+            if (reminder.isSuppressNotifications() && requesterId == reminder.getReceiverId()) {
                 text.append(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI)).append(" ");
             }
             text.append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder)).append(")\n");

@@ -56,9 +56,13 @@ public class SuppressNotificationsCommand implements CallbackBotCommand {
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         int reminderId = requestParams.getInt(Arg.REMINDER_ID.getKey());
         reminderNotificationService.deleteCustomReminderNotifications(reminderId);
+        if (!callbackQuery.getMessage().hasReplyMarkup()) {
+            return null;
+        }
         Reminder reminder = reminderService.getReminder(reminderId);
 
-        if (KeyboardUtils.hasButton(callbackQuery.getMessage().getReplyMarkup(), CommandNames.SCHEDULE_COMMAND_NAME)) {
+        if (KeyboardUtils.hasButton(callbackQuery.getMessage().getReplyMarkup(), CommandNames.SCHEDULE_COMMAND_NAME)
+        || KeyboardUtils.hasButton(callbackQuery.getMessage().getReplyMarkup(), CommandNames.REMINDER_DETAILS_COMMAND_NAME)) {
             messageService.editMessage(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(callbackQuery.getMessage().getChatId())
