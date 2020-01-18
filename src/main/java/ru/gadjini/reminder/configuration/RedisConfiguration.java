@@ -19,10 +19,12 @@ public class RedisConfiguration {
 
     @Bean
     @Qualifier("json")
-    public RedisTemplate<String, Object> jsonRedisTemplate(RedisConnectionFactory connectionFactory, @Qualifier("redis") ObjectMapper objectMapper) {
+    public RedisTemplate<String, Object> jsonRedisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(connectionFactory);
         redisTemplate.setKeySerializer(new StringRedisSerializer());
+
+        ObjectMapper objectMapper = objectMapper();
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
@@ -30,9 +32,7 @@ public class RedisConfiguration {
         return redisTemplate;
     }
 
-    @Bean
-    @Qualifier("redis")
-    public ObjectMapper objectMapper() {
+    private ObjectMapper objectMapper() {
         return new ObjectMapper()
                 .registerModules(new JavaTimeModule(), new JodaModule())
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.util.UriComponentsBuilder;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.WebMoneyConstants;
 import ru.gadjini.reminder.domain.PaymentType;
@@ -18,6 +19,7 @@ import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.WebMoneyPayment;
 import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.properties.WebHookProperties;
+import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -56,16 +58,19 @@ public class WebMoneyController {
 
     private WebHookProperties webHookProperties;
 
+    private CommandNavigator commandNavigator;
+
     @Autowired
     public WebMoneyController(CurrReplyKeyboard replyKeyboardService, PaymentService paymentService,
                               MessageService messageService, LocalisationService localisationService,
-                              BotProperties botProperties, WebHookProperties webHookProperties) {
+                              BotProperties botProperties, WebHookProperties webHookProperties, CommandNavigator commandNavigator) {
         this.replyKeyboardService = replyKeyboardService;
         this.paymentService = paymentService;
         this.messageService = messageService;
         this.localisationService = localisationService;
         this.botProperties = botProperties;
         this.webHookProperties = webHookProperties;
+        this.commandNavigator = commandNavigator;
 
         LOGGER.debug("WebMoneyController initialized");
     }
@@ -194,6 +199,7 @@ public class WebMoneyController {
                             .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}))
                             .replyKeyboard(replyKeyboardService.getMainMenu(userId, userId))
             );
+            commandNavigator.setCurrentCommand(userId, CommandNames.START_COMMAND_NAME);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
         }

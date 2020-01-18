@@ -3,6 +3,7 @@ package ru.gadjini.reminder.filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Plan;
 import ru.gadjini.reminder.domain.Subscription;
@@ -10,6 +11,7 @@ import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.properties.SubscriptionProperties;
+import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.declension.TimeDeclensionService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
@@ -47,12 +49,15 @@ public class SubscriptionFilter extends BaseBotFilter {
 
     private Map<String, TimeDeclensionService> declensionServiceMap = new HashMap<>();
 
+    private CommandNavigator commandNavigator;
+
     @Autowired
     public SubscriptionFilter(MessageService messageService,
                               LocalisationService localisationService, SubscriptionService subscriptionService,
                               PlanService planService, CurrReplyKeyboard replyKeyboardService,
                               InlineKeyboardService inlineKeyboardService, PaymentMessageService paymentMessageService,
-                              SubscriptionProperties subscriptionProperties, Collection<TimeDeclensionService> declensionServices) {
+                              SubscriptionProperties subscriptionProperties, Collection<TimeDeclensionService> declensionServices,
+                              CommandNavigator commandNavigator) {
         this.messageService = messageService;
         this.localisationService = localisationService;
         this.subscriptionService = subscriptionService;
@@ -61,6 +66,7 @@ public class SubscriptionFilter extends BaseBotFilter {
         this.inlineKeyboardService = inlineKeyboardService;
         this.paymentMessageService = paymentMessageService;
         this.subscriptionProperties = subscriptionProperties;
+        this.commandNavigator = commandNavigator;
         declensionServices.forEach(timeDeclensionService -> declensionServiceMap.put(timeDeclensionService.getLanguage(), timeDeclensionService));
     }
 
@@ -80,6 +86,7 @@ public class SubscriptionFilter extends BaseBotFilter {
         if (subscription == null) {
             subscriptionService.createTrialSubscription(userId);
             sendTrialSubscriptionStarted(userId);
+            commandNavigator.setCurrentCommand(userId, CommandNames.START_COMMAND_NAME);
 
             return false;
         }

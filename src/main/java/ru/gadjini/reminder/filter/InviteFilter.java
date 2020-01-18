@@ -1,10 +1,17 @@
 package ru.gadjini.reminder.filter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
@@ -19,6 +26,8 @@ import ru.gadjini.reminder.service.message.MessageService;
 @Component
 public class InviteFilter extends BaseBotFilter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(InviteFilter.class);
+
     private CommandParser commandParser;
 
     private TgUserService userService;
@@ -29,21 +38,21 @@ public class InviteFilter extends BaseBotFilter {
 
     private InviteService inviteService;
 
-    private StartCommandFilter startCommandFilter;
-
     private ReplyKeyboardService replyKeyboardService;
+
+    private ObjectMapper objectMapper;
 
     @Autowired
     public InviteFilter(CommandParser commandParser, TgUserService userService, MessageService messageService,
                         LocalisationService localisationService, InviteService inviteService,
-                        StartCommandFilter startCommandFilter, ReplyKeyboardServiceImpl replyKeyboardService) {
+                        ReplyKeyboardServiceImpl replyKeyboardService, ObjectMapper objectMapper) {
         this.commandParser = commandParser;
         this.userService = userService;
         this.messageService = messageService;
         this.localisationService = localisationService;
         this.inviteService = inviteService;
-        this.startCommandFilter = startCommandFilter;
         this.replyKeyboardService = replyKeyboardService;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -63,9 +72,7 @@ public class InviteFilter extends BaseBotFilter {
                 String token = inviteService.delete(message.getText());
 
                 if (token != null) {
-                    startCommandFilter.doStart(update);
-
-                    super.doFilter(update);
+                    super.doFilter(getStartCommandUpdate(update));
                 } else {
                     messageService.sendMessageAsync(
                             new SendMessageContext(PriorityJob.Priority.MEDIUM)
@@ -88,5 +95,34 @@ public class InviteFilter extends BaseBotFilter {
         }
 
         return false;
+    }
+
+    private Update getStartCommandUpdate(Update update) {
+        try {
+            String json = objectMapper.writeValueAsString(update);
+            ObjectNode objectNode = objectMapper.readValue(json, ObjectNode.class);
+
+            ObjectNode message = (ObjectNode) objectNode.get("message");
+            message.put("text", "/" + CommandNames.START_COMMAND_NAME);
+            message.set("entities", getBotCommandEntities());
+
+            return objectMapper.treeToValue(objectNode, Update.class);
+        } catch (JsonProcessingException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_ERROR));
+        }
+    }
+
+    private ArrayNode getBotCommandEntities() {
+        ArrayNode entities = objectMapper.createArrayNode();
+
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("type", "bot_command");
+        objectNode.put("offset", 0);
+        objectNode.put("length", 6);
+
+        entities.add(objectNode);
+
+        return entities;
     }
 }

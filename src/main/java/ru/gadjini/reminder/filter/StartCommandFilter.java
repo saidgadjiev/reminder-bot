@@ -36,7 +36,7 @@ public class StartCommandFilter extends BaseBotFilter {
         super.doFilter(update);
     }
 
-    void doStart(Update update) {
+    private void doStart(Update update) {
         tgUserService.createOrUpdateUser(update.getMessage().getChatId(), update.getMessage().getFrom());
         createUserNotifications(update.getMessage().getFrom().getId());
     }
