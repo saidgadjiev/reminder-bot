@@ -157,7 +157,7 @@ class RepeatTimePatternTest {
 
     @Test
     void matchMonthsDay() {
-        String str = "каждые 20 месяца 20 числа";
+        String str = "каждые 20 месяцев 20 числа";
         match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(MONTHS, "20"), Map.entry(EVERY_MONTH_DAY, "20")));
 
         str = "каждые 2месяца 20 числа";

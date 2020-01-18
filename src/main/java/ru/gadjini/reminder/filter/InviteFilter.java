@@ -11,6 +11,8 @@ import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.service.InviteService;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.command.CommandParser;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
+import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardServiceImpl;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
@@ -27,14 +29,21 @@ public class InviteFilter extends BaseBotFilter {
 
     private InviteService inviteService;
 
+    private StartCommandFilter startCommandFilter;
+
+    private ReplyKeyboardService replyKeyboardService;
+
     @Autowired
     public InviteFilter(CommandParser commandParser, TgUserService userService, MessageService messageService,
-                        LocalisationService localisationService, InviteService inviteService) {
+                        LocalisationService localisationService, InviteService inviteService,
+                        StartCommandFilter startCommandFilter, ReplyKeyboardServiceImpl replyKeyboardService) {
         this.commandParser = commandParser;
         this.userService = userService;
         this.messageService = messageService;
         this.localisationService = localisationService;
         this.inviteService = inviteService;
+        this.startCommandFilter = startCommandFilter;
+        this.replyKeyboardService = replyKeyboardService;
     }
 
     @Override
@@ -45,16 +54,24 @@ public class InviteFilter extends BaseBotFilter {
         if (!exists) {
             if (isStartCommand(update)) {
                 messageService.sendMessageAsync(
-                        new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_BOT_CLOSE_TESTING))
+                        new SendMessageContext(PriorityJob.Priority.MEDIUM)
+                                .chatId(message.getChatId())
+                                .text(localisationService.getMessage(MessagesProperties.MESSAGE_BOT_CLOSE_TESTING))
+                                .replyKeyboard(replyKeyboardService.removeKeyboard(message.getChatId()))
                 );
             } else {
                 String token = inviteService.delete(message.getText());
 
                 if (token != null) {
+                    startCommandFilter.doStart(update);
+
                     super.doFilter(update);
                 } else {
                     messageService.sendMessageAsync(
-                            new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_INVITE_TOKEN_NOT_FOUND))
+                            new SendMessageContext(PriorityJob.Priority.MEDIUM)
+                                    .chatId(message.getChatId())
+                                    .text(localisationService.getMessage(MessagesProperties.MESSAGE_INVITE_TOKEN_NOT_FOUND))
+                                    .replyKeyboard(replyKeyboardService.removeKeyboard(message.getChatId()))
                     );
                 }
             }

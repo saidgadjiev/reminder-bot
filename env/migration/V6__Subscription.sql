@@ -13,7 +13,7 @@ VALUES ('Чтобы продлить подписку вам нужно опта
 
 CREATE TABLE IF NOT EXISTS subscription
 (
-    user_id  INTEGER UNIQUE NOT NULL REFERENCES tg_user (user_id),
+    user_id  INTEGER UNIQUE NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
     end_date date           NOT NULL,
     plan_id  INT REFERENCES plan (id),
     PRIMARY KEY (user_id)
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS subscription
 
 CREATE TABLE IF NOT EXISTS payment_message
 (
-    user_id    INTEGER UNIQUE NOT NULL REFERENCES tg_user (user_id),
+    user_id    INTEGER UNIQUE NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
     message_id INT            NOT NULL,
     PRIMARY KEY (user_id)
 );

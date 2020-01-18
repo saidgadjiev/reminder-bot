@@ -30,11 +30,15 @@ public class StartCommandFilter extends BaseBotFilter {
     @Override
     public void doFilter(Update update) {
         if (isStartCommand(update)) {
-            tgUserService.createOrUpdateUser(update.getMessage().getChatId(), update.getMessage().getFrom());
-            createUserNotifications(update.getMessage().getFrom().getId());
+            doStart(update);
         }
 
         super.doFilter(update);
+    }
+
+    void doStart(Update update) {
+        tgUserService.createOrUpdateUser(update.getMessage().getChatId(), update.getMessage().getFrom());
+        createUserNotifications(update.getMessage().getFrom().getId());
     }
 
     private boolean isStartCommand(Update update) {
