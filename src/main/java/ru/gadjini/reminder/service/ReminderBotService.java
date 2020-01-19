@@ -121,7 +121,11 @@ public class ReminderBotService {
             if (commandExecutor.executeBotCommand(message)) {
                 return;
             } else {
-                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_UNKNOWN_COMMAND)));
+                messageService.sendMessageAsync(
+                        new SendMessageContext(PriorityJob.Priority.MEDIUM)
+                                .chatId(message.getChatId())
+                                .text(localisationService.getMessage(MessagesProperties.MESSAGE_UNKNOWN_COMMAND)));
+                return;
             }
         } else if (commandExecutor.isTextCommand(message.getChatId(), text)) {
             commandExecutor.executeKeyBoardCommand(message, text);

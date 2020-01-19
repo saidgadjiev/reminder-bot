@@ -101,6 +101,8 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
             keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.CREATE_INVITE_COMMAND_NAME)));
         }
 
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.HELP_COMMAND_NAME)));
+
         return replyKeyboardMarkup;
     }
 
