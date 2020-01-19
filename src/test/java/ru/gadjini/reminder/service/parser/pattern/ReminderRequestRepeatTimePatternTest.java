@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static ru.gadjini.reminder.service.parser.pattern.PatternBuilder.*;
-import static ru.gadjini.reminder.service.parser.pattern.PatternBuilder.PREFIX_HOURS;
-import static ru.gadjini.reminder.service.parser.pattern.PatternBuilder.SUFFIX_DAYS;
 import static ru.gadjini.reminder.service.parser.pattern.Patterns.REPEAT_TIME_PATTERN;
 import static ru.gadjini.reminder.service.parser.pattern.Patterns.match;
 
@@ -218,6 +216,10 @@ class ReminderRequestRepeatTimePatternTest {
     void matchMonthsDayTime() {
         String str = "Идти на работу каждые 2 месяца 20 числа в 19:00";
         int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("months", "2"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+        Assert.assertEquals("Идти на работу", str.substring(0, end).trim());
+
+        str = "Идти на работу каждые 2 месяца 20 числа в 19";
+        end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("months", "2"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19")));
         Assert.assertEquals("Идти на работу", str.substring(0, end).trim());
     }
 }

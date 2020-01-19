@@ -82,9 +82,7 @@ public class RepeatTimeLexer {
             }
             if (values.containsKey(PatternBuilder.HOUR)) {
                 lexems.add(new TimeLexem(TimeToken.HOUR, values.get(PatternBuilder.HOUR)));
-            }
-            if (values.containsKey(PatternBuilder.MINUTE)) {
-                lexems.add(new TimeLexem(TimeToken.MINUTE, values.get(PatternBuilder.MINUTE)));
+                lexems.add(new TimeLexem(TimeToken.MINUTE, values.getOrDefault(PatternBuilder.MINUTE, "00")));
             }
             matchEnd = repeatTimeMatcher.end();
 

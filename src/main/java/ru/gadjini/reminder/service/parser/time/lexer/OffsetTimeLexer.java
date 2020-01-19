@@ -60,7 +60,7 @@ public class OffsetTimeLexer {
             }
             if (values.containsKey(PatternBuilder.HOUR)) {
                 lexems.add(new TimeLexem(TimeToken.HOUR, values.get(PatternBuilder.HOUR)));
-                lexems.add(new TimeLexem(TimeToken.MINUTE, values.get(PatternBuilder.MINUTE)));
+                lexems.add(new TimeLexem(TimeToken.MINUTE, values.getOrDefault(PatternBuilder.MINUTE, "00")));
             }
             end = matcher.end();
 

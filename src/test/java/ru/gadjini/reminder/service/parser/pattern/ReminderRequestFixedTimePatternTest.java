@@ -15,8 +15,11 @@ class ReminderRequestFixedTimePatternTest {
     @Test
     void matchTimeOnly() {
         String str = "Сходить на почту в 19:00";
-
         int end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+        Assert.assertEquals("Сходить на почту", str.substring(0, end).trim());
+
+        str = "Сходить на почту в 19";
+        end = match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(HOUR, "19")));
         Assert.assertEquals("Сходить на почту", str.substring(0, end).trim());
     }
 

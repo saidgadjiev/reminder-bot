@@ -26,8 +26,8 @@ import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestExtractor;
 import ru.gadjini.reminder.service.validation.ValidationContext;
-import ru.gadjini.reminder.service.validation.ValidatorType;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
+import ru.gadjini.reminder.service.validation.ValidatorType;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 
@@ -285,7 +285,13 @@ public class ReminderRequestService {
     }
 
     private DateTime buildRemindAt(OffsetTime offsetTime) {
-        return DateTime.of(JodaTimeUtils.plus(ZonedDateTime.now(offsetTime.getZoneId()), offsetTime.getPeriod()));
+        ZonedDateTime dateTime = ZonedDateTime.now(offsetTime.getZoneId());
+
+        if (offsetTime.getTime() != null) {
+            dateTime = dateTime.with(offsetTime.getTime());
+        }
+
+        return DateTime.of(JodaTimeUtils.plus(dateTime, offsetTime.getPeriod()));
     }
 
     private DateTime buildPostponedRemindAt(Time postponeTime, DateTime remindAt) {

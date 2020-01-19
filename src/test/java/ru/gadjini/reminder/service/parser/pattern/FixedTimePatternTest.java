@@ -15,6 +15,12 @@ class FixedTimePatternTest {
         String str = "в 19:00";
 
         match(Patterns.FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.HOUR, "19"), Map.entry(PatternBuilder.MINUTE, "00")));
+
+        str = "в 19";
+        match(Patterns.FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.HOUR, "19")));
+
+        str = "19";
+        match(Patterns.FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.HOUR, "19")));
     }
 
     @Test
@@ -48,8 +54,10 @@ class FixedTimePatternTest {
     @Test
     void matchDayMonthWordTime() {
         String str = "5 сентября в 19:00";
-
         match(Patterns.FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.DAY, "5"), Map.entry(PatternBuilder.MONTH_WORD, "сентября"), Map.entry(PatternBuilder.HOUR, "19"), Map.entry(PatternBuilder.MINUTE, "00")));
+
+        str = "5 сентября в 19";
+        match(Patterns.FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.DAY, "5"), Map.entry(PatternBuilder.MONTH_WORD, "сентября"), Map.entry(PatternBuilder.HOUR, "19")));
     }
 
     @Test
@@ -64,6 +72,9 @@ class FixedTimePatternTest {
         String str = "12.5 в 19:00";
 
         match(Patterns.FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.DAY, "5"), Map.entry(PatternBuilder.MONTH, "12"), Map.entry(PatternBuilder.HOUR, "19"), Map.entry(PatternBuilder.MINUTE, "00")));
+
+        str = "12.05 в 19";
+        match(Patterns.FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.DAY, "05"), Map.entry(PatternBuilder.MONTH, "12"), Map.entry(PatternBuilder.HOUR, "19")));
     }
 
     @Test
@@ -76,8 +87,10 @@ class FixedTimePatternTest {
     @Test
     void matchDayMonthYearTime() {
         String str = "2030.12.5 в 19:00";
-
         match(Patterns.FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.YEAR, "2030"), Map.entry(PatternBuilder.DAY, "5"), Map.entry(PatternBuilder.MONTH, "12"), Map.entry(PatternBuilder.HOUR, "19"), Map.entry(PatternBuilder.MINUTE, "00")));
+
+        str = "2030.12.5 19";
+        match(Patterns.FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.YEAR, "2030"), Map.entry(PatternBuilder.DAY, "5"), Map.entry(PatternBuilder.MONTH, "12"), Map.entry(PatternBuilder.HOUR, "19")));
     }
 
     @Test
@@ -97,6 +110,9 @@ class FixedTimePatternTest {
     void matchTodayTime() {
         String str = "сегодня в 19:00";
         match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.DAY_WORD, "сегодня"), Map.entry(PatternBuilder.HOUR, "19"), Map.entry(PatternBuilder.MINUTE, "00")));
+
+        str = "сегодня в 19";
+        match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.DAY_WORD, "сегодня"), Map.entry(PatternBuilder.HOUR, "19")));
     }
 
     @Test
@@ -109,5 +125,8 @@ class FixedTimePatternTest {
     void matchDayAfterTomorrow() {
         String str = "послезавтра в 19:00";
         match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.DAY_WORD, "послезавтра"), Map.entry(PatternBuilder.HOUR, "19"), Map.entry(PatternBuilder.MINUTE, "00")));
+
+        str = "послезавтра в 19";
+        match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.DAY_WORD, "послезавтра"), Map.entry(PatternBuilder.HOUR, "19")));
     }
 }

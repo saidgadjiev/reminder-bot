@@ -57,14 +57,19 @@ class OffsetTimePatternTest {
     @Test
     void matchDaysTime() {
         String str = "через 20д в 13:00";
-
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(SUFFIX_DAYS, "20"), Map.entry(HOUR, "13"), Map.entry(MINUTE, "00")));
+
+        str = "через 20д в 13";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(SUFFIX_DAYS, "20"), Map.entry(HOUR, "13")));
     }
 
     @Test
     void matchEveTime() {
         String str = "накануне в 19:00";
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "накануне"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+
+        str = "накануне в 19";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "накануне"), Map.entry(HOUR, "19")));
     }
 
     @Test
@@ -99,6 +104,9 @@ class OffsetTimePatternTest {
     void matchAfterDayTime() {
         String str = "через день в 19:00";
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(ONE_DAY, "день"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+
+        str = "через день в 19";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(ONE_DAY, "день"), Map.entry(HOUR, "19")));
     }
 
     @Test

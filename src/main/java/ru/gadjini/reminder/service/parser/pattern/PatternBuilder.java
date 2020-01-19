@@ -98,7 +98,7 @@ public class PatternBuilder {
         String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX);
         String monthPrefix = localisationService.getMessage(MessagesProperties.REGEXP_MONTH_PREFIX);
 
-        pattern.append("(((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]) ?)(")
+        pattern.append("((\\b(?<").append(HOUR).append(">2[0-3]|[01]?[0-9])(:(?<").append(MINUTE).append(">[0-5]?[0-9]))?\\b ?)(")
                 .append(regexpTimeArticle).append(" ?)?)?(((((").append(minutePrefix).append(") )(?<").append(PREFIX_MINUTES).append(">\\d+)|(?<")
                 .append(SUFFIX_MINUTES).append(">\\d+)(").append(minutePrefix).append(")( )?)?(( )?(((").append(hourPrefix).append(") )(?<")
                 .append(PREFIX_HOURS).append(">\\d+)|(?<").append(SUFFIX_HOURS).append(">\\d+)(").append(hourPrefix).append(")( )?))?(( )?(((")
@@ -129,7 +129,7 @@ public class PatternBuilder {
         String until = localisationService.getMessage(MessagesProperties.FIXED_TIME_TYPE_UNTIL);
         StringBuilder patternBuilder = new StringBuilder();
 
-        patternBuilder.append("(((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]) ?)(")
+        patternBuilder.append("((\\b(?<").append(HOUR).append(">2[0-3]|[01]?[0-9])(:(?<").append(MINUTE).append(">[0-5]?[0-9]))?\\b ?)(")
                 .append(regexpTimeArticle).append(" ?)?)?(((((?<").append(DAY_OF_WEEK_WORD).append(">")
                 .append(getDayOfWeekPattern(locale)).append(") ?)((?<").append(NEXT_WEEK).append(">")
                 .append(regexpNextWeek).append(") ?)?)(").append(regexpDayOfWeekArticle).append(" ?)?)|((((?<")
@@ -157,7 +157,7 @@ public class PatternBuilder {
         String hour = localisationService.getMessage(MessagesProperties.REGEXP_HOUR);
         String day = localisationService.getMessage(MessagesProperties.REGEXP_DAY);
 
-        patternBuilder.append("(((?<").append(HOUR).append(">2[0-3]|[01]?[0-9]):(?<").append(MINUTE).append(">[0-5]?[0-9]) ?)(")
+        patternBuilder.append("((\\b(?<").append(HOUR).append(">2[0-3]|[01]?[0-9])(:(?<").append(MINUTE).append(">[0-5]?[0-9]))?\\b ?)(")
                 .append(timeArticle).append(" ?)?)?((((").append(minutePrefix).append(") )(?<").append(PREFIX_MINUTES).append(">\\d+)|(?<")
                 .append(SUFFIX_MINUTES).append(">\\d+)(").append(minutePrefix).append(")( )?)?(( )?((?<").append(ONE_HOUR)
                 .append(">").append(hour).append(")|((").append(hourPrefix).append(") )(?<").append(PREFIX_HOURS).append(">\\d+)|(?<")

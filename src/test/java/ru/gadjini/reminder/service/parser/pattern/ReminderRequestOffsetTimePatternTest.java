@@ -61,8 +61,11 @@ class ReminderRequestOffsetTimePatternTest {
     @Test
     void matchDaysTime() {
         String str = "Сходить на почту через 2д в 13:00";
-
         int end = match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PatternBuilder.SUFFIX_DAYS, "2"), Map.entry(PatternBuilder.HOUR, "13"), Map.entry(PatternBuilder.MINUTE, "00")));
+        Assert.assertEquals("Сходить на почту", str.substring(0, end).trim());
+
+        str = "Сходить на почту через 2д в 13";
+        end = match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PatternBuilder.SUFFIX_DAYS, "2"), Map.entry(PatternBuilder.HOUR, "13")));
         Assert.assertEquals("Сходить на почту", str.substring(0, end).trim());
     }
 }

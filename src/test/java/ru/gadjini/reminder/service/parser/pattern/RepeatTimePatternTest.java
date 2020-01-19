@@ -78,12 +78,18 @@ class RepeatTimePatternTest {
     void matchEveryDayTime() {
         String str = "каждый день в 19:00";
         match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_DAY, "день"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+
+        str = "каждый день в 19";
+        match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_DAY, "день"), Map.entry(HOUR, "19")));
     }
 
     @Test
     void matchDaysTime() {
         String str = "каждые 2 д в 19:00";
         match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(PREFIX_DAYS, "2"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+
+        str = "каждые 2 д 19";
+        match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(PREFIX_DAYS, "2"), Map.entry(HOUR, "19")));
     }
 
     @Test
@@ -129,6 +135,9 @@ class RepeatTimePatternTest {
     void matchEveryMonthDayTime() {
         String str = "каждый месяц 20 числа в 19:00";
         match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_MONTH, "месяц"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+
+        str = "каждый месяц 20 числа в 19";
+        match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_MONTH, "месяц"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19")));
     }
 
     @Test
@@ -141,6 +150,9 @@ class RepeatTimePatternTest {
     void matchEveryMonthWordDayTime() {
         String str = "каждое 20 сентября в 19:00";
         match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(MONTH_WORD, "сентября"), Map.entry(PatternBuilder.DAY, "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+
+        str = "каждое 20 сентября в 19";
+        match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(MONTH_WORD, "сентября"), Map.entry(PatternBuilder.DAY, "20"), Map.entry(HOUR, "19")));
     }
 
     @Test
@@ -153,6 +165,9 @@ class RepeatTimePatternTest {
     void matchEveryYearMonthDayTime() {
         String str = "каждый год 20 сентября в 19:00";
         match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_YEAR, "год"), Map.entry(MONTH_WORD, "сентября"), Map.entry(PatternBuilder.DAY, "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+
+        str = "каждый год 20 сентября в 19";
+        match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_YEAR, "год"), Map.entry(MONTH_WORD, "сентября"), Map.entry(PatternBuilder.DAY, "20"), Map.entry(HOUR, "19")));
     }
 
     @Test
@@ -171,5 +186,8 @@ class RepeatTimePatternTest {
     void matchMonthsDayTime() {
         String str = "каждые 2 месяца 20 числа в 19:00";
         match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(MONTHS, "2"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+
+        str = "каждые 2 месяца 20 числа 19";
+        match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(MONTHS, "2"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19")));
     }
 }
