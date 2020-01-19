@@ -72,7 +72,7 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
     public boolean processMessage(Message message, String text) {
         List<SavedQuery> queries = savedQueryService.getQueries(message.getFrom().getId());
         messageService.sendMessageAsync(
-                new SendMessageContext(PriorityJob.Priority.MEDIUM)
+                new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(message.getChatId())
                         .text(messageBuilder.getMessage(queries))
                         .replyKeyboard(inlineKeyboardService.getSavedQueriesKeyboard(queries.stream().map(SavedQuery::getId).collect(Collectors.toList()))),
@@ -80,9 +80,9 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
         );
 
         messageService.sendMessageAsync(
-                new SendMessageContext(PriorityJob.Priority.MEDIUM)
+                new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(message.getChatId())
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_SAVED_QUERY))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_SAVED_QUERY_INPUT))
                         .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
         );
 

@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -24,7 +25,7 @@ import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 
 @Component
-public class StartCommand extends BotCommand implements NavigableBotCommand {
+public class StartCommand extends BotCommand implements NavigableBotCommand, KeyboardBotCommand {
 
     private MessageService messageService;
 
@@ -35,6 +36,8 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
     private ReminderMessageSender reminderMessageSender;
 
     private LocalisationService localisationService;
+
+    private String name;
 
     @Autowired
     public StartCommand(MessageService messageService,
@@ -47,11 +50,12 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
         this.replyKeyboardService = replyKeyboardService;
         this.reminderMessageSender = reminderMessageSender;
         this.localisationService = localisationService;
+        this.name = localisationService.getMessage(MessagesProperties.MAIN_MENU_COMMAND_NAME);
     }
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] args) {
-        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(chat.getId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_START)).replyKeyboard(replyKeyboardService.getMainMenu(chat.getId(), user.getId())));
+        sendMainMenu(user.getId());
     }
 
     @Override
@@ -71,7 +75,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
 
     @Override
     public void restore(long chatId) {
-        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(chatId).text(localisationService.getMessage(MessagesProperties.MESSAGE_START)).replyKeyboard(replyKeyboardService.getMainMenu(chatId, (int) chatId)));
+        sendMainMenu((int) chatId);
     }
 
     @Override
@@ -92,5 +96,25 @@ public class StartCommand extends BotCommand implements NavigableBotCommand {
             return;
         }
         reminderMessageSender.sendReminderFullyUpdate(updateReminderResult);
+    }
+
+    @Override
+    public boolean canHandle(long chatId, String command) {
+        return name.equals(command);
+    }
+
+    @Override
+    public boolean processMessage(Message message, String text) {
+        sendMainMenu(message.getFrom().getId());
+
+        return true;
+    }
+
+    private void sendMainMenu(int userId) {
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
+                        .chatId(userId)
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_START))
+                        .replyKeyboard(replyKeyboardService.getMainMenu(userId, userId)));
     }
 }

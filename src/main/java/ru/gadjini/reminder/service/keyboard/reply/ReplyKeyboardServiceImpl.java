@@ -78,6 +78,7 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.MAIN_MENU_COMMAND_NAME)));
 
         return replyKeyboardMarkup;
     }

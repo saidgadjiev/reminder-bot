@@ -415,7 +415,7 @@ public class MessagesProperties {
 
     public static final String SAVED_QUERY_COMMAND_NAME = "saved.query.command.name";
 
-    public static final String MESSAGE_SAVED_QUERY = "message.saved.query";
+    public static final String MESSAGE_SAVED_QUERY_INPUT = "message.saved.query.input";
 
     public static final String MESSAGE_SAVED_QUERY_EMPTY = "message.saved.query.empty";
 
@@ -432,4 +432,6 @@ public class MessagesProperties {
     public static final String MESSAGE_PAST_TIME = "message.past.time";
 
     public static final String MESSAGE_FRIEND_NOT_FOUND = "message.friend.not.found";
+
+    public static final String MAIN_MENU_COMMAND_NAME = "main.menu.command.name";
 }
