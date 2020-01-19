@@ -106,7 +106,7 @@ public class PatternBuilder {
                 .append(dayPrefix).append(")))?)|(?<").append(EVERY_HOUR).append(">").append(regexpEveryHour)
                 .append(")|(?<").append(EVERY_DAY).append(">").append(regexpEveryDay).append(")|(((").append(regexpEveryMonthDayPrefix)
                 .append(" )?(?<").append(EVERY_MONTH_DAY).append(">\\d+)(").append(regexpEveryMonthDayPrefix).append(")?) ((?<")
-                .append(EVERY_MONTH).append(">").append(regexpEveryMonth).append(")|((").append(monthPrefix).append(" )?(?<")
+                .append(EVERY_MONTH).append(">").append(regexpEveryMonth).append(")|(((").append(monthPrefix).append(") )?(?<")
                 .append(MONTHS).append(">\\d+)(").append(monthPrefix).append(")?)))|((?<").append(MONTH_WORD).append(">")
                 .append(Stream.of(Month.values()).map(month -> month.getDisplayName(TextStyle.FULL, locale)).collect(Collectors.joining("|")))
                 .append(") (?<").append(DAY).append(">\\d+)( (?<").append(EVERY_YEAR).append(">").append(regexpEveryYear).append("))?)|(?<")
@@ -132,7 +132,7 @@ public class PatternBuilder {
         patternBuilder.append("((\\b(?<").append(HOUR).append(">2[0-3]|[01]?[0-9])(:(?<").append(MINUTE).append(">[0-5]?[0-9]))?\\b ?)(")
                 .append(regexpTimeArticle).append(" ?)?)?(((((?<").append(DAY_OF_WEEK_WORD).append(">")
                 .append(getDayOfWeekPattern(locale)).append(") ?)((?<").append(NEXT_WEEK).append(">")
-                .append(regexpNextWeek).append(") ?)?)(").append(regexpDayOfWeekArticle).append(" ?)?)|((((?<")
+                .append(regexpNextWeek).append(") ?)?)((").append(regexpDayOfWeekArticle).append(") ?)?)|((((?<")
                 .append(MONTH_WORD).append(">").append(Stream.of(Month.values()).map(month -> month.getDisplayName(TextStyle.FULL, locale)).collect(Collectors.joining("|")))
                 .append(") )|(((?<").append(YEAR).append(">\\d{4})\\.)?(?<").append(MONTH).append(">1[0-2]|[1-9])\\.))((?<")
                 .append(DAY).append(">0[1-9]|[12]\\d|3[01]|0?[1-9]) ?))|(?<").append(DAY_WORD).append(">\\b(").append(today).append("|")
@@ -163,8 +163,8 @@ public class PatternBuilder {
                 .append(">").append(hour).append(")|((").append(hourPrefix).append(") )(?<").append(PREFIX_HOURS).append(">\\d+)|(?<")
                 .append(SUFFIX_HOURS).append(">\\d+)(").append(hourPrefix).append(")( )?))?(( )?((?<").append(ONE_DAY).append(">")
                 .append(day).append(")|((").append(dayPrefix).append(") )(?<").append(PREFIX_DAYS).append(">\\d+)|(?<").append(SUFFIX_DAYS)
-                .append(">\\d+)(").append(dayPrefix).append(")))?) (?<").append(TYPE).append(">\\b(").append(typeAfter).append("|")
-                .append(typeBefore).append("|").append(typeOn).append("|").append(eve).append(")\\b)");
+                .append(">\\d+)(").append(dayPrefix).append(")))?) (?<").append(TYPE).append(">\\b(").append(eve).append("|").append(typeAfter).append("|")
+                .append(typeBefore).append("|").append(typeOn).append(")\\b)");
 
         return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, SUFFIX_DAYS, PREFIX_DAYS, ONE_DAY, SUFFIX_HOURS, PREFIX_HOURS, ONE_HOUR, SUFFIX_MINUTES, PREFIX_MINUTES, HOUR, MINUTE));
     }

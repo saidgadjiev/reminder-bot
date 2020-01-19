@@ -129,4 +129,11 @@ class FixedTimePatternTest {
         str = "послезавтра в 19";
         match(FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.DAY_WORD, "послезавтра"), Map.entry(PatternBuilder.HOUR, "19")));
     }
+
+    @Test
+    void matchForTime() {
+        String str = "до 19:00";
+
+        match(Patterns.FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.TYPE, "до"), Map.entry(PatternBuilder.HOUR, "19"), Map.entry(PatternBuilder.MINUTE, "00")));
+    }
 }

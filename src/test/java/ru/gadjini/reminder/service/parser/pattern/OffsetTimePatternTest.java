@@ -43,8 +43,10 @@ class OffsetTimePatternTest {
     @Test
     void matchMinutes() {
         String str = "через 20мин";
-
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry("type", "через"), Map.entry(SUFFIX_MINUTES, "20")));
+
+        str = "через 20 минут";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry("type", "через"), Map.entry(PREFIX_MINUTES, "20")));
     }
 
     @Test
@@ -111,7 +113,10 @@ class OffsetTimePatternTest {
 
     @Test
     void matchPrefixDaysHours() {
-        String str = "через 20 д 20 ч";
+        String str = "через 20 дней 20 часов";
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PREFIX_DAYS, "20"), Map.entry(PREFIX_HOURS, "20")));
+
+        str = "через 20 дней 20часов";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PREFIX_DAYS, "20"), Map.entry(SUFFIX_HOURS, "20")));
     }
 }
