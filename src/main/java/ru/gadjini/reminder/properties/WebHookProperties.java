@@ -2,7 +2,7 @@ package ru.gadjini.reminder.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("web-hook")
+@ConfigurationProperties("webhook")
 public class WebHookProperties {
 
     private String externalUrl;

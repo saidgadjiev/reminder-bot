@@ -32,8 +32,6 @@ import ru.gadjini.reminder.service.reminder.request.*;
 @Configuration
 public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
 
-    public static final String PROFILE_PROD = "prod";
-
     public static final String PROFILE_TEST = "test";
 
     @Bean

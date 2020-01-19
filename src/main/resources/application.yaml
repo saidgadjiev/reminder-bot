@@ -1,10 +1,5 @@
-bot:
-  name: mega_reminder_bot
 spring:
   profiles:
     active: @spring.profiles.active@
   datasource:
-    url: jdbc:postgresql://localhost:5432/reminder
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: postgres

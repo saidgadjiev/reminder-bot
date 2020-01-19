@@ -2,11 +2,7 @@ package ru.gadjini.reminder.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-
-@ConfigurationProperties("webmoney")
+@ConfigurationProperties("web-money")
 public class WebMoneyProperties {
 
     private String purse;
@@ -27,9 +23,5 @@ public class WebMoneyProperties {
 
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
-    }
-
-    public static void main(String[] args) throws NoSuchAlgorithmException {
-        System.out.println(Base64.getEncoder().encodeToString("Тест".getBytes(StandardCharsets.UTF_8)));
     }
 }
