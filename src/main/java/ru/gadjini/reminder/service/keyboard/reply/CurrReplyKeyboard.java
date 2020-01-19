@@ -51,11 +51,6 @@ public class CurrReplyKeyboard implements ReplyKeyboardService {
     }
 
     @Override
-    public ReplyKeyboardMarkup getFriendsMenu(long chatId) {
-        return setCurrentKeyboard(chatId, keyboardService.getFriendsMenu(chatId));
-    }
-
-    @Override
     public ReplyKeyboardMarkup getMainMenu(long chatId, int userId) {
         return setCurrentKeyboard(chatId, keyboardService.getMainMenu(chatId, userId));
     }

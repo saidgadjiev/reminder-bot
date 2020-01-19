@@ -60,5 +60,4 @@ public class CommandNames {
     public static final String CREATE_REMINDER_COMMAND_NAME = "ay";
     public static final String CALLBACK_DELEGATE_COMMAND_NAME = "ba";
     public static final String SUPPRESS_NOTIFICATIONS_COMMAND_NAME = "bb";
-    public static final String FRIENDS_COMMAND_NAME = "bc";
 }

@@ -83,26 +83,15 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
     }
 
     @Override
-    public ReplyKeyboardMarkup getFriendsMenu(long chatId) {
-        ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
-
-        List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
-        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME)));
-        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME)));
-        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME)));
-        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME)));
-
-        return replyKeyboardMarkup;
-    }
-
-    @Override
     public ReplyKeyboardMarkup getMainMenu(long chatId, int userId) {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME)));
-        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.FRIENDS_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.SAVED_QUERY_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.SUBSCRIPTION_COMMAND_NAME)));
