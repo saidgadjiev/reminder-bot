@@ -96,6 +96,7 @@ public class TelegramMessageService implements MessageService {
         sendMessage.setChatId(messageContext.chatId());
         sendMessage.enableHtml(true);
         sendMessage.setText(messageContext.text());
+        sendMessage.disableWebPagePreview();
 
         if (messageContext.hasKeyboard()) {
             sendMessage.setReplyMarkup(messageContext.replyKeyboard());
