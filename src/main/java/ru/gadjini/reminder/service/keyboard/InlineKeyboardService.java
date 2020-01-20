@@ -48,7 +48,7 @@ public class InlineKeyboardService {
         return keyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getPostponeMessagesKeyboard(String prevCommand) {
+    public InlineKeyboardMarkup getPostponeMessagesKeyboard(String prevCommand, RequestParams requestParams) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
@@ -58,7 +58,7 @@ public class InlineKeyboardService {
                 buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_REASON.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON)))
         ));
 
-        keyboard.add(List.of(buttonFactory.goBackCallbackButton(prevCommand)));
+        keyboard.add(List.of(buttonFactory.goBackCallbackButton(prevCommand, requestParams)));
 
         return keyboardMarkup;
     }

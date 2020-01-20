@@ -152,7 +152,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
                             .chatId(userId)
                             .messageId(stateData.callbackRequest.getMessageId())
                             .text(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON))
-                            .replyKeyboard(inlineKeyboardService.getPostponeMessagesKeyboard(CommandNames.REMINDER_DETAILS_COMMAND_NAME)));
+                            .replyKeyboard(inlineKeyboardService.getPostponeMessagesKeyboard(CommandNames.REMINDER_DETAILS_COMMAND_NAME, stateData.callbackRequest.getRequestParams())));
         } else {
             postpone(userId, null, stateData);
         }
