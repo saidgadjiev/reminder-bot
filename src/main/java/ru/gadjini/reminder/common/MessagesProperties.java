@@ -373,6 +373,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_MAX_SERIES = "message.max.series";
 
+    public static final String MESSAGE_TOTAL_SERIES = "message.total.series";
+
     public static final String DEACTIVATE_REMINDER_COMMAND_DESCRIPTION = "deactivate.reminder.command.description";
 
     public static final String ACTIVATE_REMINDER_COMMAND_DESCRIPTION = "activate.reminder.command.description";

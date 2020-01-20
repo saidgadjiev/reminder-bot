@@ -75,6 +75,7 @@ public class RepeatReminderService {
         );
         toComplete.setCurrentSeries(toComplete.getCurrentSeries() + 1);
         toComplete.setMaxSeries(Math.max(toComplete.getMaxSeries(), toComplete.getCurrentSeries()));
+        toComplete.setTotalSeries(toComplete.getTotalSeries() + 1);
         completedReminderDao.create(toComplete);
         moveReminderNotificationToNextPeriod(toComplete, UpdateSeries.INCREMENT);
 
@@ -135,7 +136,7 @@ public class RepeatReminderService {
 
     public void autoSkip(Reminder reminder) {
         DateTime nextRemindAt = getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtInReceiverZone()).withZoneSameInstant(ZoneOffset.UTC);
-        updateNextRemindAt(reminder.getId(), nextRemindAt, UpdateSeries.RESET);
+        updateNextRemindAt(reminder.getId(), nextRemindAt, reminder.isInactive() ? UpdateSeries.NONE : UpdateSeries.RESET);
     }
 
     public Reminder enableCountSeries(int reminderId) {
@@ -170,6 +171,7 @@ public class RepeatReminderService {
 
         if (returned) {
             toReturn.setCurrentSeries(Math.max(0, toReturn.getCurrentSeries() - 1));
+            toReturn.setTotalSeries(Math.max(0, toReturn.getTotalSeries() - 1));
         }
 
         return new ReturnReminderResult(toReturn, returned);
@@ -187,6 +189,7 @@ public class RepeatReminderService {
             case INCREMENT:
                 updateValues.put(ReminderTable.TABLE.CURRENT_SERIES, ReminderTable.TABLE.CURRENT_SERIES.plus(1));
                 updateValues.put(ReminderTable.TABLE.MAX_SERIES, DSL.greatest(ReminderTable.TABLE.MAX_SERIES, ReminderTable.TABLE.CURRENT_SERIES.plus(1)));
+                updateValues.put(ReminderTable.TABLE.TOTAL_SERIES, ReminderTable.TABLE.TOTAL_SERIES.plus(1));
                 break;
             case DECREMENT:
                 updateValues.put(ReminderTable.TABLE.CURRENT_SERIES, DSL.greatest(0, ReminderTable.TABLE.CURRENT_SERIES.minus(1)));

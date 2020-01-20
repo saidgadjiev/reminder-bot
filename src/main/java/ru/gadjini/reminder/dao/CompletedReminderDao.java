@@ -42,6 +42,7 @@ public class CompletedReminderDao {
                 .addValue("reminder_id", reminder.getId())
                 .addValue(Reminder.CURRENT_SERIES, reminder.getCurrentSeries())
                 .addValue(Reminder.MAX_SERIES, reminder.getMaxSeries())
+                .addValue(Reminder.TOTAL_SERIES, reminder.getTotalSeries())
                 .addValue(Reminder.COUNT_SERIES, reminder.isCountSeries());
 
     }

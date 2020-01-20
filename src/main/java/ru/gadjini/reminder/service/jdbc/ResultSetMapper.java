@@ -87,6 +87,7 @@ public class ResultSetMapper {
         }
         reminder.setCurrentSeries(rs.getInt(Reminder.CURRENT_SERIES));
         reminder.setMaxSeries(rs.getInt(Reminder.MAX_SERIES));
+        reminder.setTotalSeries(rs.getInt(Reminder.TOTAL_SERIES));
         reminder.setStatus(Reminder.Status.fromCode(rs.getInt(Reminder.STATUS)));
         reminder.setCountSeries(rs.getBoolean(Reminder.COUNT_SERIES));
         if (columnNames.contains(Reminder.RECEIVER_MESSAGE_ID)) {

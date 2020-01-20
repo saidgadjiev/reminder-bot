@@ -50,6 +50,8 @@ public class Reminder {
 
     public static final String RECEIVER_MESSAGE_ID = "receiver_message_id";
 
+    public static final String TOTAL_SERIES = "total_series";
+
     private int id;
 
     private String text;
@@ -81,6 +83,8 @@ public class Reminder {
     private int currentSeries;
 
     private int maxSeries;
+
+    private int totalSeries;
 
     private boolean countSeries;
 
@@ -117,6 +121,7 @@ public class Reminder {
         this.suppressNotifications = reminder.suppressNotifications;
         this.creatorMessageId = reminder.creatorMessageId;
         this.receiverMessageId = reminder.receiverMessageId;
+        this.totalSeries = reminder.totalSeries;
     }
 
     public int getId() {
@@ -328,6 +333,14 @@ public class Reminder {
 
     public void setReceiverMessageId(Integer receiverMessageId) {
         this.receiverMessageId = receiverMessageId;
+    }
+
+    public int getTotalSeries() {
+        return totalSeries;
+    }
+
+    public void setTotalSeries(int totalSeries) {
+        this.totalSeries = totalSeries;
     }
 
     public Map<Field<?>, Object> getDiff(Reminder newReminder) {

@@ -9,5 +9,9 @@ CREATE TABLE IF NOT EXISTS completed_reminder
     initial_remind_at datetime     NOT NULL,
     repeat_remind_at  repeat_time,
     completed_at      TIMESTAMP(0) NOT NULL,
-    note              TEXT
+    note              TEXT,
+    current_series    INT          NOT NULL DEFAULT 0,
+    max_series        INT          NOT NULL DEFAULT 0,
+    total_series      INT          NOT NULL DEFAULT 0,
+    count_series      BOOLEAN      NOT NULL DEFAULT FALSE
 );

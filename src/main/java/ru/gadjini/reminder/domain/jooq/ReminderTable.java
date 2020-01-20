@@ -32,6 +32,8 @@ public class ReminderTable extends TableImpl<Record> {
 
     public TableField<Record, Integer> CURRENT_SERIES;
 
+    public TableField<Record, Integer> TOTAL_SERIES;
+
     public TableField<Record, Integer> MAX_SERIES;
 
     public TableField<Record, Boolean> COUNT_SERIES;
@@ -73,6 +75,7 @@ public class ReminderTable extends TableImpl<Record> {
         READ = createField(Reminder.READ, SQLDataType.BOOLEAN);
         CREATOR_MESSAGE_ID = createField(Reminder.CREATOR_MESSAGE_ID, SQLDataType.INTEGER);
         RECEIVER_MESSAGE_ID = createField(Reminder.RECEIVER_MESSAGE_ID, SQLDataType.INTEGER);
+        TOTAL_SERIES = createField(Reminder.TOTAL_SERIES, SQLDataType.INTEGER);
     }
 
     @Override

@@ -81,7 +81,8 @@ public class ReminderMessageBuilder {
                     result
                             .append("\n")
                             .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries())).append("\n")
-                            .append(messageBuilder.getMaxSeries(reminder.getMaxSeries()));
+                            .append(messageBuilder.getMaxSeries(reminder.getMaxSeries())).append("\n")
+                            .append(messageBuilder.getTotalSeries(reminder.getTotalSeries()));
                 }
             } else {
                 result.append(timeBuilder.time(reminder.getRemindAtInReceiverZone()));
@@ -485,7 +486,8 @@ public class ReminderMessageBuilder {
             message
                     .append("\n")
                     .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries())).append("\n")
-                    .append(messageBuilder.getMaxSeries(reminder.getMaxSeries()));
+                    .append(messageBuilder.getMaxSeries(reminder.getMaxSeries())).append("\n")
+                    .append(messageBuilder.getTotalSeries(reminder.getTotalSeries()));
         }
     }
 }

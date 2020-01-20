@@ -205,6 +205,10 @@ public class MessageBuilder {
         return localisationService.getMessage(MessagesProperties.MESSAGE_MAX_SERIES, new Object[]{maxSeries});
     }
 
+    public String getTotalSeries(int totalSeries) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_TOTAL_SERIES, new Object[] {totalSeries});
+    }
+
     public String getReminderDeactivated(String text) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_DEACTIVATED_RECEIVER, new Object[]{text});
     }
