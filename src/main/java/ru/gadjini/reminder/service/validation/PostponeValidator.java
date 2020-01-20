@@ -43,7 +43,7 @@ public class PostponeValidator implements Validator {
         if (offsetTime.getType() != OffsetTime.Type.FOR) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }
-        if (!reminder.getRemindAt().hasTime() && offsetTime.getHours() != 0 || offsetTime.getMinutes() != 0) {
+        if (!reminder.getRemindAt().hasTime() && (offsetTime.getHours() != 0 || offsetTime.getMinutes() != 0)) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITHOUT_TIME));
         }
     }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.ReminderConstants;
 import ru.gadjini.reminder.domain.Plan;
 import ru.gadjini.reminder.domain.Subscription;
 import ru.gadjini.reminder.job.PriorityJob;
@@ -23,6 +24,8 @@ import ru.gadjini.reminder.service.subscription.PlanService;
 import ru.gadjini.reminder.service.subscription.SubscriptionService;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.TextStyle;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
@@ -105,8 +108,13 @@ public class SubscriptionFilter extends BaseBotFilter {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_TRIAL_PERIOD_STARTED, new Object[]{declensionService.day(subscriptionProperties.getTrialPeriod())}))
-                        .replyKeyboard(replyKeyboardService.getMainMenu(userId, userId))
+                        .text(
+                                localisationService.getMessage(MessagesProperties.MESSAGE_TRIAL_PERIOD_STARTED,
+                                        new Object[]{
+                                                declensionService.day(subscriptionProperties.getTrialPeriod()),
+                                                ZoneId.of(ReminderConstants.DEFAULT_TIMEZONE).getDisplayName(TextStyle.FULL, Locale.getDefault())
+                                        })
+                        ).replyKeyboard(replyKeyboardService.getMainMenu(userId, userId))
         );
     }
 
