@@ -12,6 +12,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
 
+@SuppressWarnings("CPD-START")
 public class OffsetTimeParser {
 
     private String typeBefore;
@@ -36,11 +37,7 @@ public class OffsetTimeParser {
     }
 
     public OffsetTime parse(List<BaseLexem> lexems) {
-        if (lexemsConsumer.check(lexems, TimeToken.TYPE)) {
-            consumeType(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
-            consumeDays(lexems);
-        }
+        consumeType(lexems);
 
         return offsetTime;
     }
@@ -49,26 +46,16 @@ public class OffsetTimeParser {
         String type = lexemsConsumer.consume(lexems, TimeToken.TYPE).getValue();
         if (typeAfter.equals(type)) {
             offsetTime.setType(OffsetTime.Type.AFTER);
-            consumeBeforeAfterType(lexems);
+            consumePeriod(lexems);
         } else if (type.equals(typeBefore)) {
             offsetTime.setType(OffsetTime.Type.BEFORE);
-            consumeBeforeAfterType(lexems);
+            consumePeriod(lexems);
         } else if (type.equals(typeOn)) {
             offsetTime.setType(OffsetTime.Type.FOR);
-            consumeOnType(lexems);
+            consumePeriod(lexems);
         } else if (type.equals(eve)) {
             offsetTime.setType(OffsetTime.Type.BEFORE);
             consumeEveType(lexems);
-        } else {
-            throw new ParseException();
-        }
-
-        if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
-            consumeDays(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
-            consumeHours(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
-            consumeMinutes(lexems);
         }
     }
 
@@ -77,18 +64,12 @@ public class OffsetTimeParser {
         offsetTime.setTime(consumeTime(lexems));
     }
 
-    private void consumeOnType(List<BaseLexem> lexems) {
-        if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
-            consumeOnDays(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
-            consumeHours(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
-            consumeMinutes(lexems);
-        }
-    }
-
-    private void consumeBeforeAfterType(List<BaseLexem> lexems) {
-        if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
+    private void consumePeriod(List<BaseLexem> lexems) {
+        if (lexemsConsumer.check(lexems, TimeToken.YEARS)) {
+            consumeYears(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.MONTHS)) {
+            consumeMonths(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
             consumeDays(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
             consumeHours(lexems);
@@ -103,6 +84,38 @@ public class OffsetTimeParser {
 
         if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             offsetTime.setTime(consumeTime(lexems));
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
+            consumeHours(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
+            consumeMinutes(lexems);
+        }
+    }
+
+    private void consumeYears(List<BaseLexem> lexems) {
+        int years = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.YEARS).getValue());
+        offsetTime.setYears(years);
+
+        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            offsetTime.setTime(consumeTime(lexems));
+        } else if (lexemsConsumer.check(lexems, TimeToken.MONTHS)) {
+            consumeMonths(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
+            consumeDays(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
+            consumeHours(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
+            consumeMinutes(lexems);
+        }
+    }
+
+    private void consumeMonths(List<BaseLexem> lexems) {
+        int months = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MONTHS).getValue());
+        offsetTime.setMonths(months);
+
+        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            offsetTime.setTime(consumeTime(lexems));
+        } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
+            consumeDays(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
             consumeHours(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {

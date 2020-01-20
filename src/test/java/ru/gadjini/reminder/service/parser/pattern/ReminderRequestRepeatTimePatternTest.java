@@ -76,7 +76,7 @@ class ReminderRequestRepeatTimePatternTest {
     void matchEveryHour() {
         String str = "Проверить готовность торта каждый час";
 
-        int end = match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_HOUR, "час")));
+        int end = match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(ONE_HOUR, "час")));
         Assert.assertEquals("Проверить готовность торта", str.substring(0, end).trim());
     }
 
@@ -84,7 +84,7 @@ class ReminderRequestRepeatTimePatternTest {
     void matchEveryDay() {
         String str = "Сходить в зал каждый день";
 
-        int end = match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_DAY, "день")));
+        int end = match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(ONE_DAY, "день")));
         Assert.assertEquals("Сходить в зал", str.substring(0, end).trim());
     }
 
@@ -92,7 +92,7 @@ class ReminderRequestRepeatTimePatternTest {
     void matchEveryMinute() {
         String str = "Сходить в зал каждую минуту";
 
-        int end = match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_MINUTE, "минуту")));
+        int end = match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(ONE_MINUTE, "минуту")));
         Assert.assertEquals("Сходить в зал", str.substring(0, end).trim());
     }
 
@@ -100,7 +100,7 @@ class ReminderRequestRepeatTimePatternTest {
     void matchEveryDayTime() {
         String str = "Сходить в зал каждый день в 19:00";
 
-        int end = match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_DAY, "день"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+        int end = match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(ONE_DAY, "день"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
         Assert.assertEquals("Сходить в зал", str.substring(0, end).trim());
     }
 
@@ -158,14 +158,14 @@ class ReminderRequestRepeatTimePatternTest {
     @Test
     void matchEveryMonthDay() {
         String str = "День рожденье каждый месяц 20 числа";
-        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_MONTH, "месяц"), Map.entry("everymonthday", "20")));
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(ONE_MONTH, "месяц"), Map.entry("everymonthday", "20")));
         Assert.assertEquals("День рожденье", str.substring(0, end).trim());
     }
 
     @Test
     void matchEveryMonthDayTime() {
         String str = "День рожденье каждый месяц 20 числа в 19:00";
-        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_MONTH, "месяц"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(ONE_MONTH, "месяц"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
         Assert.assertEquals("День рожденье", str.substring(0, end).trim());
     }
 
@@ -186,40 +186,40 @@ class ReminderRequestRepeatTimePatternTest {
     @Test
     void matchEveryYearMonthDay() {
         String str = "День рожденье каждый год 20 сентября";
-        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_YEAR, "год"), Map.entry(MONTH_WORD, "сентября"), Map.entry("day", "20")));
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(ONE_YEAR, "год"), Map.entry(MONTH_WORD, "сентября"), Map.entry("day", "20")));
         Assert.assertEquals("День рожденье", str.substring(0, end).trim());
     }
 
     @Test
     void matchEveryYearMonthDayTime() {
         String str = "День рожденье каждый год 20 сентября в 19:00";
-        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(EVERY_YEAR, "год"), Map.entry(MONTH_WORD, "сентября"), Map.entry("day", "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(ONE_YEAR, "год"), Map.entry(MONTH_WORD, "сентября"), Map.entry("day", "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
         Assert.assertEquals("День рожденье", str.substring(0, end).trim());
     }
 
     @Test
     void matchMonthsDay() {
         String str = "Идти на работу каждые 2 месяца 20 числа";
-        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("months", "2"), Map.entry(EVERY_MONTH_DAY, "20")));
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(PREFIX_MONTHS, "2"), Map.entry(EVERY_MONTH_DAY, "20")));
         Assert.assertEquals("Идти на работу", str.substring(0, end).trim());
 
         str = "Идти на работу каждые 2месяца 20 числа";
-        end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("months", "2"), Map.entry(EVERY_MONTH_DAY, "20")));
+        end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(SUFFIX_MONTHS, "2"), Map.entry(EVERY_MONTH_DAY, "20")));
         Assert.assertEquals("Идти на работу", str.substring(0, end).trim());
 
         str = "Идти на работу каждые 2месяца 20числа";
-        end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("months", "2"), Map.entry(EVERY_MONTH_DAY, "20")));
+        end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(SUFFIX_MONTHS, "2"), Map.entry(EVERY_MONTH_DAY, "20")));
         Assert.assertEquals("Идти на работу", str.substring(0, end).trim());
     }
 
     @Test
     void matchMonthsDayTime() {
         String str = "Идти на работу каждые 2 месяца 20 числа в 19:00";
-        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("months", "2"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
+        int end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(PREFIX_MONTHS, "2"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00")));
         Assert.assertEquals("Идти на работу", str.substring(0, end).trim());
 
         str = "Идти на работу каждые 2 месяца 20 числа в 19";
-        end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry("months", "2"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19")));
+        end = match(Patterns.REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(PREFIX_MONTHS, "2"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19")));
         Assert.assertEquals("Идти на работу", str.substring(0, end).trim());
     }
 }

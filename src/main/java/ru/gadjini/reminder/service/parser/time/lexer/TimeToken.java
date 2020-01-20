@@ -10,6 +10,8 @@ public enum TimeToken implements Token {
 
     YEAR,
 
+    YEARS,
+
     MONTH_WORD,
 
     DAY_WORD,
@@ -25,16 +27,6 @@ public enum TimeToken implements Token {
     MINUTES,
 
     HOURS,
-
-    EVERY_DAY,
-
-    EVERY_MINUTE,
-
-    EVERY_HOUR,
-
-    EVERY_YEAR,
-
-    EVERY_MONTH,
 
     MONTHS,
 

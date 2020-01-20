@@ -43,21 +43,13 @@ public class RepeatTimeParser {
             consumeHours(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAY_OF_WEEK)) {
             consumeDayOfWeek(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.EVERY_DAY)) {
-            consumeEveryDay(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.EVERY_MINUTE)) {
-            consumeEveryMinute(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.EVERY_HOUR)) {
-            consumeEveryHour(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.EVERY_MONTH)) {
-            consumeEveryMonth(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.MONTHS)) {
             consumeMonths(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAY)) {
             repeatTime.setInterval(repeatTime.getInterval().withYears(1));
             consumeDay(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.EVERY_YEAR)) {
-            consumeEveryYear(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.YEARS)) {
+            consumeYears(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
             consumeDays(lexems);
         }
@@ -71,15 +63,9 @@ public class RepeatTimeParser {
         consumeDay(lexems);
     }
 
-    private void consumeEveryYear(List<BaseLexem> lexems) {
-        lexemsConsumer.consume(lexems, TimeToken.EVERY_YEAR);
-        repeatTime.setInterval(repeatTime.getInterval().withYears(1));
-        consumeDay(lexems);
-    }
-
-    private void consumeEveryMonth(List<BaseLexem> lexems) {
-        lexemsConsumer.consume(lexems, TimeToken.EVERY_MONTH);
-        repeatTime.setInterval(repeatTime.getInterval().withMonths(1));
+    private void consumeYears(List<BaseLexem> lexems) {
+        int years = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.YEARS).getValue());
+        repeatTime.setInterval(repeatTime.getInterval().withYears(years));
         consumeDay(lexems);
     }
 
@@ -98,27 +84,6 @@ public class RepeatTimeParser {
         Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, locale).equals(month)).findFirst().orElseThrow(ParseException::new);
         repeatTime.setMonth(m);
 
-        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
-            repeatTime.setTime(consumeTime(lexems));
-        }
-    }
-
-    private void consumeEveryMinute(List<BaseLexem> lexems) {
-        lexemsConsumer.consume(lexems, TimeToken.EVERY_MINUTE);
-        repeatTime.setInterval(repeatTime.getInterval().withMinutes(1));
-    }
-
-    private void consumeEveryHour(List<BaseLexem> lexems) {
-        lexemsConsumer.consume(lexems, TimeToken.EVERY_HOUR);
-        repeatTime.setInterval(repeatTime.getInterval().withHours(1));
-        if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
-            consumeMinutes(lexems);
-        }
-    }
-
-    private void consumeEveryDay(List<BaseLexem> lexems) {
-        lexemsConsumer.consume(lexems, TimeToken.EVERY_DAY);
-        repeatTime.setInterval(repeatTime.getInterval().withDays(1));
         if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             repeatTime.setTime(consumeTime(lexems));
         }

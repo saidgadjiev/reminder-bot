@@ -31,6 +31,7 @@ import ru.gadjini.reminder.service.validation.ValidatorType;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -296,10 +297,14 @@ public class ReminderRequestService {
         if (postponeTime.isOffsetTime()) {
             OffsetTime postponeOn = postponeTime.getOffsetTime();
 
-            remindAt = remindAt.plusDays(postponeOn.getDays());
+            LocalDate date = JodaTimeUtils.plus(remindAt.date(), postponeOn.getPeriod());
+            remindAt.date(date);
 
             if (remindAt.hasTime()) {
                 remindAt = remindAt.plusHours(postponeOn.getHours()).plusMinutes(postponeOn.getMinutes());
+            }
+            if (postponeOn.hasTime()) {
+                remindAt = remindAt.time(postponeOn.getTime());
             }
 
             return remindAt;

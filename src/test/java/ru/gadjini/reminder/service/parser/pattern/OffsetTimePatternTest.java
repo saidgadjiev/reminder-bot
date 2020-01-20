@@ -119,4 +119,49 @@ class OffsetTimePatternTest {
         str = "через 20 дней 20часов";
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PREFIX_DAYS, "20"), Map.entry(SUFFIX_HOURS, "20")));
     }
+
+    @Test
+    void matchMonths() {
+        String str = "на 2м";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(SUFFIX_MONTHS, "2")));
+
+        str = "на 5 месяцев";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(PREFIX_MONTHS, "5")));
+    }
+
+    @Test
+    void matchMonthsDays() {
+        String str = "на 2м 2 дня";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(SUFFIX_MONTHS, "2"), Map.entry(PREFIX_DAYS, "2")));
+
+        str = "на 2 месяца 2 дня";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(PREFIX_MONTHS, "2"), Map.entry(PREFIX_DAYS, "2")));
+    }
+
+    @Test
+    void matchMonthsDaysHours() {
+        String str = "на 2м 2 дня 2ч";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(SUFFIX_MONTHS, "2"), Map.entry(PREFIX_DAYS, "2"), Map.entry(SUFFIX_HOURS, "2")));
+
+        str = "на 2 месяца 2 дня 5 часов";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(PREFIX_MONTHS, "2"), Map.entry(PREFIX_DAYS, "2"), Map.entry(PREFIX_HOURS, "5")));
+    }
+
+    @Test
+    void matchYears() {
+        String str = "на 2г";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(SUFFIX_YEARS, "2")));
+
+        str = "на 5 лет";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(PREFIX_YEARS, "5")));
+    }
+
+    @Test
+    void matchYearsMonths() {
+        String str = "на 2г 20 месяцев";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(SUFFIX_YEARS, "2"), Map.entry(PREFIX_MONTHS, "20")));
+
+        str = "на 5 лет 10м";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(PREFIX_YEARS, "5"), Map.entry(SUFFIX_MONTHS, "10")));
+    }
 }

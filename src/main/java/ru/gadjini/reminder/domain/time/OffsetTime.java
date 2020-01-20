@@ -41,6 +41,14 @@ public class OffsetTime {
         period = period.withDays(days);
     }
 
+    public void setMonths(int months) {
+        period = period.withMonths(months);
+    }
+
+    public void setYears(int years) {
+        period = period.withYears(years);
+    }
+
     public void setPeriod(Period period) {
         this.period = period;
     }

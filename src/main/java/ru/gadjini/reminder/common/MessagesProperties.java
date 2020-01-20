@@ -127,6 +127,8 @@ public class MessagesProperties {
 
     public static final String REGEXP_MONTH_PREFIX = "regex.month.prefix";
 
+    public static final String REGEXP_YEAR_PREFIX = "regex.year.prefix";
+
     public static final String REGEX_HOUR_PREFIX = "regex.hour.prefix";
 
     public static final String REGEX_MINUTE_PREFIX = "regex.minute.prefix";

@@ -32,15 +32,23 @@ public class PatternBuilder {
 
     public static final String PREFIX_DAYS = "prefixdays";
 
+    public static final String SUFFIX_MONTHS = "suffixmonths";
+
+    public static final String PREFIX_MONTHS = "prefixmonths";
+
+    public static final String PREFIX_YEARS = "prefixyears";
+
+    public static final String SUFFIX_YEARS = "suffixyears";
+
     public static final String ONE_DAY = "oneday";
+
+    public static final String ONE_MINUTE = "oneminute";
 
     public static final String ONE_HOUR = "onehour";
 
-    public static final String EVERY_DAY = "everyday";
+    public static final String ONE_MONTH = "onemonth";
 
-    public static final String EVERY_MINUTE = "everyminute";
-
-    public static final String EVERY_HOUR = "everyhour";
+    public static final String ONE_YEAR = "oneyear";
 
     public static final String DAY = "day";
 
@@ -64,13 +72,7 @@ public class PatternBuilder {
 
     public static final String TYPE = "type";
 
-    public static final String EVERY_MONTH = "everymonth";
-
-    public static final String EVERY_YEAR = "everyyear";
-
     public static final String EVERY_MONTH_DAY = "everymonthday";
-
-    public static final String MONTHS = "months";
 
     private LocalisationService localisationService;
 
@@ -103,19 +105,19 @@ public class PatternBuilder {
                 .append(SUFFIX_MINUTES).append(">\\d+)(").append(minutePrefix).append(")( )?)?(( )?(((").append(hourPrefix).append(") )(?<")
                 .append(PREFIX_HOURS).append(">\\d+)|(?<").append(SUFFIX_HOURS).append(">\\d+)(").append(hourPrefix).append(")( )?))?(( )?(((")
                 .append(dayPrefix).append(") )(?<").append(PREFIX_DAYS).append(">\\d+)|(?<").append(SUFFIX_DAYS).append(">\\d+)(")
-                .append(dayPrefix).append(")))?)|(?<").append(EVERY_HOUR).append(">").append(regexpEveryHour)
-                .append(")|(?<").append(EVERY_DAY).append(">").append(regexpEveryDay).append(")|(((").append(regexpEveryMonthDayPrefix)
+                .append(dayPrefix).append(")))?)|(?<").append(ONE_HOUR).append(">").append(regexpEveryHour)
+                .append(")|(?<").append(ONE_DAY).append(">").append(regexpEveryDay).append(")|(((").append(regexpEveryMonthDayPrefix)
                 .append(" )?(?<").append(EVERY_MONTH_DAY).append(">\\d+)(").append(regexpEveryMonthDayPrefix).append(")?) ((?<")
-                .append(EVERY_MONTH).append(">").append(regexpEveryMonth).append(")|(((").append(monthPrefix).append(") )?(?<")
-                .append(MONTHS).append(">\\d+)(").append(monthPrefix).append(")?)))|((?<").append(MONTH_WORD).append(">")
+                .append(ONE_MONTH).append(">").append(regexpEveryMonth).append(")|(((").append(monthPrefix).append(") )(?<")
+                .append(PREFIX_MONTHS).append(">\\d+)|(?<").append(SUFFIX_MONTHS).append(">\\d+)(").append(monthPrefix).append("))))|((?<").append(MONTH_WORD).append(">")
                 .append(Stream.of(Month.values()).map(month -> month.getDisplayName(TextStyle.FULL, locale)).collect(Collectors.joining("|")))
-                .append(") (?<").append(DAY).append(">\\d+)( (?<").append(EVERY_YEAR).append(">").append(regexpEveryYear).append("))?)|(?<")
-                .append(EVERY_MINUTE).append(">").append(regexpEveryMinute).append(")|(?<").append(DAY_OF_WEEK_WORD)
+                .append(") (?<").append(DAY).append(">\\d+)( (?<").append(ONE_YEAR).append(">").append(regexpEveryYear).append("))?)|(?<")
+                .append(ONE_MINUTE).append(">").append(regexpEveryMinute).append(")|(?<").append(DAY_OF_WEEK_WORD)
                 .append(">").append(getDayOfWeekPattern(locale)).append(")) ").append(regexRepeat);
 
         return new GroupPattern(
                 Pattern.compile(pattern.toString()),
-                List.of(PREFIX_HOURS, SUFFIX_HOURS, EVERY_HOUR, PREFIX_MINUTES, SUFFIX_MINUTES, EVERY_MINUTE, EVERY_YEAR, DAY, MONTH_WORD, MONTHS, EVERY_MONTH, EVERY_MONTH_DAY, EVERY_DAY, PREFIX_DAYS, SUFFIX_DAYS, DAY_OF_WEEK_WORD, HOUR, MINUTE)
+                List.of(PREFIX_HOURS, SUFFIX_HOURS, ONE_HOUR, PREFIX_MINUTES, SUFFIX_MINUTES, ONE_MINUTE, ONE_YEAR, DAY, MONTH_WORD, SUFFIX_MONTHS, PREFIX_MONTHS, ONE_MONTH, EVERY_MONTH_DAY, ONE_DAY, PREFIX_DAYS, SUFFIX_DAYS, DAY_OF_WEEK_WORD, HOUR, MINUTE)
         );
     }
 
@@ -156,6 +158,10 @@ public class PatternBuilder {
         String typeBefore = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE);
         String hour = localisationService.getMessage(MessagesProperties.REGEXP_HOUR);
         String day = localisationService.getMessage(MessagesProperties.REGEXP_DAY);
+        String yearPrefix = localisationService.getMessage(MessagesProperties.REGEXP_YEAR_PREFIX);
+        String year = localisationService.getMessage(MessagesProperties.REGEXP_YEAR);
+        String month = localisationService.getMessage(MessagesProperties.REGEXP_MONTH);
+        String monthPrefix = localisationService.getMessage(MessagesProperties.REGEXP_MONTH_PREFIX);
 
         patternBuilder.append("((\\b(?<").append(HOUR).append(">2[0-3]|[01]?[0-9])(:(?<").append(MINUTE).append(">[0-5]?[0-9]))?\\b ?)(")
                 .append(timeArticle).append(" ?)?)?((((").append(minutePrefix).append(") )(?<").append(PREFIX_MINUTES).append(">\\d+)|(?<")
@@ -163,10 +169,16 @@ public class PatternBuilder {
                 .append(">").append(hour).append(")|((").append(hourPrefix).append(") )(?<").append(PREFIX_HOURS).append(">\\d+)|(?<")
                 .append(SUFFIX_HOURS).append(">\\d+)(").append(hourPrefix).append(")( )?))?(( )?((?<").append(ONE_DAY).append(">")
                 .append(day).append(")|((").append(dayPrefix).append(") )(?<").append(PREFIX_DAYS).append(">\\d+)|(?<").append(SUFFIX_DAYS)
-                .append(">\\d+)(").append(dayPrefix).append(")))?) (?<").append(TYPE).append(">\\b(").append(eve).append("|").append(typeAfter).append("|")
+                .append(">\\d+)(").append(dayPrefix).append(")))?(( )?((?<" + ONE_MONTH + ">").append(month).append(")|((")
+                .append(monthPrefix).append(") )(?<").append(PREFIX_MONTHS).append(">\\d+)|(?<").append(SUFFIX_MONTHS).append(">\\d+)(")
+                .append(monthPrefix).append(")))?(( )?((?<").append(ONE_YEAR).append(">").append(year).append(")|((").append(yearPrefix)
+                .append(") )(?<").append(PREFIX_YEARS).append(">\\d+)|(?<").append(SUFFIX_YEARS).append(">\\d+)(").append(yearPrefix)
+                .append(")))?) (?<").append(TYPE).append(">\\b(").append(eve).append("|").append(typeAfter).append("|")
                 .append(typeBefore).append("|").append(typeOn).append(")\\b)");
 
-        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, SUFFIX_DAYS, PREFIX_DAYS, ONE_DAY, SUFFIX_HOURS, PREFIX_HOURS, ONE_HOUR, SUFFIX_MINUTES, PREFIX_MINUTES, HOUR, MINUTE));
+        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, SUFFIX_YEARS, PREFIX_YEARS, ONE_YEAR,
+                SUFFIX_MONTHS, PREFIX_MONTHS, ONE_MONTH, SUFFIX_DAYS, PREFIX_DAYS, ONE_DAY, SUFFIX_HOURS,
+                PREFIX_HOURS, ONE_HOUR, SUFFIX_MINUTES, PREFIX_MINUTES, HOUR, MINUTE));
     }
 
     private String getDayOfWeekPattern(Locale locale) {
