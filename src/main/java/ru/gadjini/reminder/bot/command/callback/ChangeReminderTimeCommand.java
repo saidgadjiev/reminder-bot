@@ -83,7 +83,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableC
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        CallbackRequest request = stateService.getState(message.getChatId());
+        CallbackRequest request = stateService.getState(message.getChatId(), true);
         UpdateReminderResult updateReminderResult = reminderService.changeReminderTime(request.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), text);
 
         commandNavigator.silentPop(message.getChatId());

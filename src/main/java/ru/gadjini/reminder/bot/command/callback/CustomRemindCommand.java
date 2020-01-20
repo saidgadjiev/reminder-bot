@@ -99,7 +99,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
     }
 
     private void customRemind(long chatId, String text) {
-        CallbackRequest callbackRequest = stateService.getState(chatId);
+        CallbackRequest callbackRequest = stateService.getState(chatId, true);
         CustomRemindResult customRemindResult = reminderService.customRemind(callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), text);
         commandNavigator.silentPop(chatId);
 

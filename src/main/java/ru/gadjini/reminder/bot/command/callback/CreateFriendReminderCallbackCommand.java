@@ -84,7 +84,7 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        CallbackRequest callbackRequest = stateService.getState(message.getChatId());
+        CallbackRequest callbackRequest = stateService.getState(message.getChatId(), true);
         int receiverId = callbackRequest.getRequestParams().getInt(Arg.FRIEND_ID.getKey());
         Reminder reminder = reminderService.createReminder(
                 new ReminderRequestContext()

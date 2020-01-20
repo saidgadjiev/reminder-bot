@@ -142,7 +142,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        TgUser receiver = stateService.getState(message.getChatId());
+        TgUser receiver = stateService.getState(message.getChatId(), true);
         Reminder reminder = reminderRequestService.createReminder(new ReminderRequestContext()
                 .setText(text)
                 .setReceiverId(receiver.getUserId())

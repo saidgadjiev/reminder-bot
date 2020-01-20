@@ -456,4 +456,6 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITHOUT_TIME = "message.reminder.postpone.bad.time.reminder.without.time";
 
     public static final String MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITH_TIME = "message.reminder.postpone.bad.time.reminder.with.time";
+
+    public static final String MESSAGE_SESSION_EXPIRED = "message.session.expired";
 }

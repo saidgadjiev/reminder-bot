@@ -99,7 +99,7 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
         savedQueryService.saveQuery(message.getFrom().getId(), text);
 
         List<SavedQuery> queries = savedQueryService.getQueries(message.getFrom().getId());
-        int messageId = stateService.getState(message.getChatId());
+        int messageId = stateService.getState(message.getChatId(), true);
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())

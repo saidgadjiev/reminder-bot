@@ -103,7 +103,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     @Override
     public void processNonCommandCallback(CallbackQuery callbackQuery, RequestParams requestParams) {
-        StateData state = stateService.getState(callbackQuery.getMessage().getChatId());
+        StateData state = stateService.getState(callbackQuery.getMessage().getChatId(), true);
         if (state.state == State.TIME) {
             String postponeTime = requestParams.getString(Arg.POSTPONE_TIME.getKey());
             processNonCommandUpdate(callbackQuery.getFrom(), postponeTime, state);
@@ -115,7 +115,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        StateData stateData = stateService.getState(message.getChatId());
+        StateData stateData = stateService.getState(message.getChatId(), true);
 
         processNonCommandUpdate(message.getFrom(), message.getText().trim(), stateData);
     }
