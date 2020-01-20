@@ -2,7 +2,6 @@ package ru.gadjini.reminder.service.parser.time.parser;
 
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.time.OffsetTime;
-import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
@@ -117,17 +116,6 @@ public class OffsetTimeParser {
         } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
             consumeDays(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
-            consumeHours(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
-            consumeMinutes(lexems);
-        }
-    }
-
-    private void consumeOnDays(List<BaseLexem> lexems) {
-        int days = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAYS).getValue());
-        offsetTime.setDays(days);
-
-        if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
             consumeHours(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
             consumeMinutes(lexems);
