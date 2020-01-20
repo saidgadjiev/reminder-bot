@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.domain.time;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.Period;
 
@@ -66,6 +67,11 @@ public class OffsetTime {
 
     public LocalTime getTime() {
         return time;
+    }
+
+    @JsonIgnore
+    public boolean hasTime() {
+        return time != null;
     }
 
     public void setTime(LocalTime time) {

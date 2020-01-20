@@ -214,13 +214,11 @@ public class ReminderRequestService {
         try {
             return requestParser.parseTime(text, zoneId);
         } catch (ParseException ex) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }
     }
 
     public UpdateReminderResult postponeReminder(Reminder reminder, Time postponeTime) {
-        validatorFactory.getValidator(ValidatorType.POSTPONE).validate(new ValidationContext().time(postponeTime));
-
         DateTime remindAtInReceiverZone = buildPostponedRemindAt(postponeTime, reminder.getRemindAtInReceiverZone().copy());
         if (!reminder.getRemindAt().hasTime()) {
             remindAtInReceiverZone.time(null);
@@ -298,7 +296,13 @@ public class ReminderRequestService {
         if (postponeTime.isOffsetTime()) {
             OffsetTime postponeOn = postponeTime.getOffsetTime();
 
-            return remindAt.plusDays(postponeOn.getDays()).plusHours(postponeOn.getHours()).plusMinutes(postponeOn.getMinutes());
+            remindAt = remindAt.plusDays(postponeOn.getDays());
+
+            if (remindAt.hasTime()) {
+                remindAt = remindAt.plusHours(postponeOn.getHours()).plusMinutes(postponeOn.getMinutes());
+            }
+
+            return remindAt;
         } else {
             return postponeTime.getFixedDateTime();
         }

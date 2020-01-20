@@ -77,29 +77,38 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND))
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(prevHistoryName, requestParams))
+                        .replyKeyboard(inlineKeyboardService.getCustomRemindKeyboard(prevHistoryName, requestParams))
         );
 
         return MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION;
     }
 
     @Override
-    public void processNonCommandUpdate(Message message, String text) {
-        CallbackRequest callbackRequest = stateService.getState(message.getChatId());
-        CustomRemindResult customRemindResult = reminderService.customRemind(callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), message.getText().trim());
-        commandNavigator.silentPop(message.getChatId());
+    public void processNonCommandCallback(CallbackQuery callbackQuery, RequestParams requestParams) {
+        customRemind(callbackQuery.getMessage().getChatId(), requestParams.getString(Arg.CUSTOM_REMIND_TIME.getKey()));
+    }
 
-        String prevHistoryName = callbackRequest.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
-        if (prevHistoryName.equals(CommandNames.SCHEDULE_COMMAND_NAME)) {
-            reminderMessageSender.sendCustomRemindCreatedFromReminderTimeDetails(message.getChatId(), callbackRequest.getMessageId(), customRemindResult);
-        } else {
-            reminderMessageSender.sendCustomRemindCreated(message.getChatId(), callbackRequest.getMessageId(), callbackRequest.getReplyKeyboard(), customRemindResult);
-        }
+    @Override
+    public void processNonCommandUpdate(Message message, String text) {
+        customRemind(message.getChatId(), text);
     }
 
     @Override
     public void leave(long chatId) {
         stateService.deleteState(chatId);
+    }
+
+    private void customRemind(long chatId, String text) {
+        CallbackRequest callbackRequest = stateService.getState(chatId);
+        CustomRemindResult customRemindResult = reminderService.customRemind(callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), text);
+        commandNavigator.silentPop(chatId);
+
+        String prevHistoryName = callbackRequest.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
+        if (prevHistoryName.equals(CommandNames.SCHEDULE_COMMAND_NAME)) {
+            reminderMessageSender.sendCustomRemindCreatedFromReminderTimeDetails(chatId, callbackRequest.getMessageId(), customRemindResult);
+        } else {
+            reminderMessageSender.sendCustomRemindCreated(chatId, callbackRequest.getMessageId(), callbackRequest.getReplyKeyboard(), customRemindResult);
+        }
     }
 
 }

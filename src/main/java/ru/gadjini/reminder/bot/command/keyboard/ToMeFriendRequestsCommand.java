@@ -66,7 +66,7 @@ public class ToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableC
 
     @Override
     public String getName() {
-        return MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME;
+        return CommandNames.TO_ME_FRIEND_REQUESTS_COMMAND_NAME;
     }
 
     @Override

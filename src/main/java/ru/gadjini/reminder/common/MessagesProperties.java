@@ -201,9 +201,23 @@ public class MessagesProperties {
 
     public static final String MESSAGE_POSTPONE_30_MIN = "message.postpone.30min";
 
+    public static final String MESSAGE_POSTPONE_1_H = "message.postpone.1h";
+
+    public static final String MESSAGE_POSTPONE_2_H = "message.postpone.2h";
+
+    public static final String MESSAGE_POSTPONE_1_D = "message.postpone.1d";
+
+    public static final String MESSAGE_POSTPONE_2_D = "message.postpone.2d";
+
     public static final String MESSAGE_POSTPONE_REASON_MEETING = "message.postpone.reason.meeting";
 
     public static final String MESSAGE_POSTPONE_WITHOUT_REASON = "message.postpone.without.reason";
+
+    public static final String MESSAGE_REMIND_AFTER_10_MIN = "message.remind.after.10min";
+
+    public static final String MESSAGE_REMIND_AFTER_1_H = "message.remind.after.1h";
+
+    public static final String MESSAGE_REMIND_AFTER_2_H = "message.remind.after.2h";
 
     public static final String REGEXP_DAY = "regexp.day";
 
@@ -436,4 +450,10 @@ public class MessagesProperties {
     public static final String MAIN_MENU_COMMAND_NAME = "main.menu.command.name";
 
     public static final String HELP_COMMAND_NAME = "help.command.name";
+
+    public static final String MESSAGE_REMINDER_BAD_TIME_FORMAT = "message.reminder.bad.time.format";
+
+    public static final String MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITHOUT_TIME = "message.reminder.postpone.bad.time.reminder.without.time";
+
+    public static final String MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITH_TIME = "message.reminder.postpone.bad.time.reminder.with.time";
 }

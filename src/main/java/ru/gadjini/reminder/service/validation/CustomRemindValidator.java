@@ -38,23 +38,23 @@ public class CustomRemindValidator implements Validator {
 
     private void validate(Reminder reminder, OffsetTime offsetTime) {
         if (offsetTime.getType() == OffsetTime.Type.FOR) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }
         if (offsetTime.getType() == OffsetTime.Type.BEFORE && !reminder.getRemindAt().hasTime()) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }
     }
 
     private void validate(FixedTime fixedTime) {
         if (fixedTime.getType() != FixedTime.Type.AT) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }
         if (!fixedTime.getDateTime().hasTime()) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }
         DateTime dateTime = fixedTime.getDateTime();
         if (dateTime.toZonedDateTime().isBefore(ZonedDateTime.now(dateTime.getZoneId()))) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }
     }
 }

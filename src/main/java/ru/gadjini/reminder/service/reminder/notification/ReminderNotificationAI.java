@@ -39,7 +39,7 @@ public class ReminderNotificationAI {
 
     public boolean isNeedCreateReminderNotification(LocalDate remindAt, UserReminderNotification offsetTime) {
         ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime zonedDateTime = ZonedDateTime.of(remindAt, offsetTime.getTime(), ZoneOffset.UTC);
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(remindAt.minusDays(offsetTime.getDays()), offsetTime.getTime(), ZoneOffset.UTC);
 
         return now.isBefore(zonedDateTime);
     }
