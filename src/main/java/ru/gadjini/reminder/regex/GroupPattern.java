@@ -17,6 +17,10 @@ public class GroupPattern {
         this.groups = groups;
     }
 
+    public String getPattern() {
+        return pattern.pattern();
+    }
+
     public GroupMatcher matcher(String text) {
         return new GroupMatcher(groups, pattern.matcher(text));
     }

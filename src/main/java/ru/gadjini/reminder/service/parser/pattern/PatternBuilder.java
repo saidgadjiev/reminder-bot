@@ -74,6 +74,26 @@ public class PatternBuilder {
 
     public static final String EVERY_MONTH_DAY = "everymonthday";
 
+    public static final List<String> FIXED_TIME_PATTERN_GROUPS = List.of(TYPE, YEAR, MONTH, DAY, DAY_WORD, MONTH_WORD, NEXT_WEEK, DAY_OF_WEEK_WORD, HOUR, MINUTE);
+
+    public static final List<String> REPEAT_TIME_PATTERN_GROUPS = List.of(
+            PREFIX_HOURS, SUFFIX_HOURS, ONE_HOUR,
+            PREFIX_MINUTES, SUFFIX_MINUTES, ONE_MINUTE,
+            ONE_YEAR, DAY, MONTH_WORD, SUFFIX_MONTHS,
+            PREFIX_MONTHS, ONE_MONTH, EVERY_MONTH_DAY,
+            ONE_DAY, PREFIX_DAYS, SUFFIX_DAYS,
+            DAY_OF_WEEK_WORD, HOUR, MINUTE
+    );
+
+    public static final List<String> OFFSET_TIME_PATTERN_GROUPS = List.of(
+            TYPE, SUFFIX_YEARS, PREFIX_YEARS,
+            ONE_YEAR, SUFFIX_MONTHS, PREFIX_MONTHS,
+            ONE_MONTH, SUFFIX_DAYS, PREFIX_DAYS,
+            ONE_DAY, SUFFIX_HOURS, PREFIX_HOURS,
+            ONE_HOUR, SUFFIX_MINUTES, PREFIX_MINUTES,
+            HOUR, MINUTE
+    );
+
     private LocalisationService localisationService;
 
     private DayOfWeekService dayOfWeekService;
@@ -115,10 +135,7 @@ public class PatternBuilder {
                 .append(ONE_MINUTE).append(">").append(regexpEveryMinute).append(")|(?<").append(DAY_OF_WEEK_WORD)
                 .append(">").append(getDayOfWeekPattern(locale)).append(")) ").append(regexRepeat);
 
-        return new GroupPattern(
-                Pattern.compile(pattern.toString()),
-                List.of(PREFIX_HOURS, SUFFIX_HOURS, ONE_HOUR, PREFIX_MINUTES, SUFFIX_MINUTES, ONE_MINUTE, ONE_YEAR, DAY, MONTH_WORD, SUFFIX_MONTHS, PREFIX_MONTHS, ONE_MONTH, EVERY_MONTH_DAY, ONE_DAY, PREFIX_DAYS, SUFFIX_DAYS, DAY_OF_WEEK_WORD, HOUR, MINUTE)
-        );
+        return new GroupPattern(Pattern.compile(pattern.toString()), REPEAT_TIME_PATTERN_GROUPS);
     }
 
     public GroupPattern buildTimePattern(Locale locale) {
@@ -142,7 +159,7 @@ public class PatternBuilder {
                 .append(until).append("\\b) ?)?");
 
 
-        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, YEAR, MONTH, DAY, DAY_WORD, MONTH_WORD, NEXT_WEEK, DAY_OF_WEEK_WORD, HOUR, MINUTE));
+        return new GroupPattern(Pattern.compile(patternBuilder.toString()), FIXED_TIME_PATTERN_GROUPS);
     }
 
     public GroupPattern buildOffsetTimePattern() {
@@ -176,9 +193,7 @@ public class PatternBuilder {
                 .append(")))?) (?<").append(TYPE).append(">\\b(").append(eve).append("|").append(typeAfter).append("|")
                 .append(typeBefore).append("|").append(typeOn).append(")\\b)");
 
-        return new GroupPattern(Pattern.compile(patternBuilder.toString()), List.of(TYPE, SUFFIX_YEARS, PREFIX_YEARS, ONE_YEAR,
-                SUFFIX_MONTHS, PREFIX_MONTHS, ONE_MONTH, SUFFIX_DAYS, PREFIX_DAYS, ONE_DAY, SUFFIX_HOURS,
-                PREFIX_HOURS, ONE_HOUR, SUFFIX_MINUTES, PREFIX_MINUTES, HOUR, MINUTE));
+        return new GroupPattern(Pattern.compile(patternBuilder.toString()), OFFSET_TIME_PATTERN_GROUPS);
     }
 
     private String getDayOfWeekPattern(Locale locale) {
