@@ -86,8 +86,8 @@ class FixedTimePatternTest {
 
     @Test
     void matchDayMonthYearTime() {
-        String str = "2030.12.5 в 19:00";
-        match(Patterns.FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.YEAR, "2030"), Map.entry(PatternBuilder.DAY, "5"), Map.entry(PatternBuilder.MONTH, "12"), Map.entry(PatternBuilder.HOUR, "19"), Map.entry(PatternBuilder.MINUTE, "00")));
+        String str = "2030.01.05 в 19:30";
+        match(Patterns.FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.YEAR, "2030"), Map.entry(PatternBuilder.DAY, "05"), Map.entry(PatternBuilder.MONTH, "01"), Map.entry(PatternBuilder.HOUR, "19"), Map.entry(PatternBuilder.MINUTE, "30")));
 
         str = "2030.12.5 19";
         match(Patterns.FIXED_TIME_PATTERN, str, Map.ofEntries(Map.entry(PatternBuilder.YEAR, "2030"), Map.entry(PatternBuilder.DAY, "5"), Map.entry(PatternBuilder.MONTH, "12"), Map.entry(PatternBuilder.HOUR, "19")));
