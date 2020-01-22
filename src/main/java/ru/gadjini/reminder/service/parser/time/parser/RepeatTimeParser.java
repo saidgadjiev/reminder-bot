@@ -37,21 +37,21 @@ public class RepeatTimeParser {
     public RepeatTime parse(List<BaseLexem> lexems) {
         repeatTime.setInterval(new Period());
 
-        if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
-            consumeMinutes(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
-            consumeHours(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.DAY_OF_WEEK)) {
-            consumeDayOfWeek(lexems);
+        if (lexemsConsumer.check(lexems, TimeToken.YEARS)) {
+            consumeYears(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.MONTHS)) {
             consumeMonths(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAY)) {
             repeatTime.setInterval(repeatTime.getInterval().withYears(1));
             consumeDay(lexems);
-        } else if (lexemsConsumer.check(lexems, TimeToken.YEARS)) {
-            consumeYears(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
             consumeDays(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
+            consumeHours(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
+            consumeMinutes(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.DAY_OF_WEEK)) {
+            consumeDayOfWeek(lexems);
         }
 
         return repeatTime;
@@ -91,7 +91,11 @@ public class RepeatTimeParser {
 
     private void consumeDays(List<BaseLexem> lexems) {
         repeatTime.setInterval(repeatTime.getInterval().withDays(Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAYS).getValue())));
-        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+        if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
+            consumeHours(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
+            consumeMinutes(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             repeatTime.setTime(consumeTime(lexems));
         }
     }
