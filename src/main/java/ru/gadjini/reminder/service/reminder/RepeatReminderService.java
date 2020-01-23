@@ -98,7 +98,7 @@ public class RepeatReminderService {
     public DateTime getFirstRemindAt(RepeatTime repeatTime) {
         if (repeatTime.hasDayOfWeek()) {
             return getWeeklyFirstRemindAt(repeatTime);
-        } else if (repeatTime.getInterval().getDays() > 0) {
+        } else if (repeatTime.getInterval().getDays() != 0) {
             return getDailyFirstRemindAt(repeatTime);
         } else if (repeatTime.getInterval().getMonths() != 0) {
             return getMonthlyFirstRemindAt(repeatTime);
@@ -209,6 +209,8 @@ public class RepeatReminderService {
     public DateTime getNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
         if (repeatTime.getDayOfWeek() != null) {
             return getWeeklyNextRemindAt(remindAt, repeatTime);
+        } else if (repeatTime.getInterval().getDays() != 0 || repeatTime.getInterval().getYears() != 0 || repeatTime.getInterval().getMonths() != 0) {
+            return getDailyMonthlyYearlyNextRemindAt(remindAt, repeatTime);
         } else {
             return getIntervalNextRemindAt(remindAt, repeatTime);
         }
@@ -395,7 +397,7 @@ public class RepeatReminderService {
         LocalDate nextDate = (LocalDate) TemporalAdjusters.next(repeatTime.getDayOfWeek()).adjustInto(reminderAt.date());
         LocalDate now = LocalDate.now(zoneId);
 
-        while (now.isAfter(nextDate) || now.isEqual(nextDate)) {
+        while (now.isAfter(nextDate)) {
             nextDate = (LocalDate) TemporalAdjusters.next(repeatTime.getDayOfWeek()).adjustInto(nextDate);
         }
 
@@ -406,26 +408,26 @@ public class RepeatReminderService {
         return DateTime.of(LocalDate.now(repeatTime.getZoneId()), repeatTime.getTime(), repeatTime.getZoneId());
     }
 
-    private DateTime getIntervalNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
-        if (remindAt.hasTime()) {
-            ZonedDateTime now = TimeUtils.now(remindAt.getZoneId());
-            ZonedDateTime nextRemindAt = JodaTimeUtils.plus(remindAt.toZonedDateTime(), repeatTime.getInterval());
+    private DateTime getDailyMonthlyYearlyNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
+        LocalDate now = LocalDate.now(remindAt.getZoneId());
+        LocalDate nextRemindAt = JodaTimeUtils.plus(remindAt.date(), repeatTime.getInterval());
 
-            while (now.isAfter(nextRemindAt) || now.isEqual(nextRemindAt)) {
-                nextRemindAt = JodaTimeUtils.plus(nextRemindAt, repeatTime.getInterval());
-            }
-
-            return DateTime.of(nextRemindAt);
-        } else {
-            LocalDate now = LocalDate.now(remindAt.getZoneId());
-            LocalDate nextRemindAt = JodaTimeUtils.plus(remindAt.date(), repeatTime.getInterval());
-
-            while (now.isAfter(nextRemindAt) || now.isEqual(nextRemindAt)) {
-                nextRemindAt = JodaTimeUtils.plus(nextRemindAt, repeatTime.getInterval());
-            }
-
-            return DateTime.of(nextRemindAt, null, remindAt.getZoneId());
+        while (now.isAfter(nextRemindAt)) {
+            nextRemindAt = JodaTimeUtils.plus(nextRemindAt, repeatTime.getInterval());
         }
+
+        return DateTime.of(nextRemindAt, null, remindAt.getZoneId());
+    }
+
+    private DateTime getIntervalNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
+        ZonedDateTime now = TimeUtils.now(remindAt.getZoneId());
+        ZonedDateTime nextRemindAt = JodaTimeUtils.plus(remindAt.toZonedDateTime(), repeatTime.getInterval());
+
+        while (now.isAfter(nextRemindAt) || now.isEqual(nextRemindAt)) {
+            nextRemindAt = JodaTimeUtils.plus(nextRemindAt, repeatTime.getInterval());
+        }
+
+        return DateTime.of(nextRemindAt);
     }
 
     private DateTime getMonthlyFirstRemindAt(RepeatTime repeatTime) {
