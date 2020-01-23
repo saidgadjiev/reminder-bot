@@ -34,7 +34,7 @@ public class CompletedReminderDao {
                 .addValue(Reminder.TEXT, reminder.getText())
                 .addValue(Reminder.CREATOR_ID, reminder.getCreatorId())
                 .addValue(Reminder.RECEIVER_ID, reminder.getReceiverId())
-                .addValue(Reminder.COMPLETED_AT, Timestamp.valueOf(TimeUtils.now()))
+                .addValue(Reminder.COMPLETED_AT, Timestamp.valueOf(TimeUtils.localDateTimeNow()))
                 .addValue(Reminder.NOTE, reminder.getNote())
                 .addValue(Reminder.REMIND_AT, reminder.getRemindAt().sql(), Types.OTHER)
                 .addValue(Reminder.INITIAL_REMIND_AT, reminder.getRemindAt().sql(), Types.OTHER)

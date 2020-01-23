@@ -8,7 +8,6 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
-import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.*;
@@ -45,7 +44,7 @@ public class FixedTimeParser {
         this.locale = locale;
         this.lexemsConsumer = lexemsConsumer;
         this.fixedTime = new FixedTime();
-        this.fixedTime.setDateTime(DateTime.now(zoneId).time(null));
+        this.fixedTime.setDateTime(TimeUtils.dateTimeNow(zoneId).time(null));
         this.dayOfWeekService = dayOfWeekService;
     }
 
@@ -69,14 +68,14 @@ public class FixedTimeParser {
             LocalTime time = consumeTime(lexems);
             fixedTime.time(time);
         } else {
-            fixedTime.time(TimeUtils.nowTime(fixedTime.getZone()));
+            fixedTime.time(TimeUtils.localTimeNow(fixedTime.getZone()));
         }
 
-        ZonedDateTime now = TimeUtils.now(fixedTime.getZone());
+        ZonedDateTime now = TimeUtils.zonedDateTimeNow(fixedTime.getZone());
         if (fixedTime.date().isBefore(now.toLocalDate())) {
             fixedTime.year(now.getYear() + 1);
         }
-        if (fixedTime.hasTime() && fixedTime.date().equals(LocalDate.now(fixedTime.getZone())) && now.toLocalTime().isAfter(fixedTime.time())) {
+        if (fixedTime.hasTime() && fixedTime.date().equals(TimeUtils.localDateNow(fixedTime.getZone())) && now.toLocalTime().isAfter(fixedTime.time())) {
             fixedTime.plusDays(1);
         }
 

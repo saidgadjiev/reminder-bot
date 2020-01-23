@@ -291,7 +291,7 @@ public class ReminderService {
 
     public ReminderNotification customRemind(int reminderId, RepeatTime repeatTime) {
         ReminderNotification reminderNotification;
-        ZonedDateTime now = TimeUtils.nowZoned();
+        ZonedDateTime now = TimeUtils.zonedDateTimeNow();
 
         if (repeatTime.getDayOfWeek() != null) {
             ZonedDateTime repeatReminder = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek())).with(repeatTime.getTime());
@@ -380,5 +380,12 @@ public class ReminderService {
         reminderNotification.setDelayTime(interval);
 
         return reminderNotification;
+    }
+
+    public enum Filter {
+
+        TODAY,
+
+        ALL
     }
 }

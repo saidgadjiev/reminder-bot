@@ -2,8 +2,8 @@ package ru.gadjini.reminder.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import ru.gadjini.reminder.util.TimeUtils;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -129,7 +129,7 @@ public class UserReminderNotification {
         userReminderNotification.setType(getType());
         userReminderNotification.setDays(getDays());
         if (getTime() != null) {
-            LocalTime time = ZonedDateTime.of(LocalDate.now(getZoneId()), getTime(), getZoneId()).withZoneSameInstant(target).toLocalTime();
+            LocalTime time = ZonedDateTime.of(TimeUtils.localDateNow(getZoneId()), getTime(), getZoneId()).withZoneSameInstant(target).toLocalTime();
             userReminderNotification.setTime(time);
         }
         userReminderNotification.setUserId(getUserId());

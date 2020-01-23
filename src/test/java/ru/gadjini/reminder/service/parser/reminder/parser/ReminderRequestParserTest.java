@@ -17,6 +17,7 @@ import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderLexem;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderToken;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
+import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -47,8 +48,8 @@ class ReminderRequestParserTest {
         Assert.assertEquals(request.getText(), "Тест");
         Assert.assertTrue(request.getTime().isFixedTime());
 
-        LocalDate date = LocalDate.now(TestConstants.TEST_ZONE).withDayOfMonth(25).withMonth(Month.JANUARY.getValue());
-        if (date.isBefore(LocalDate.now(TestConstants.TEST_ZONE))) {
+        LocalDate date = TimeUtils.localDateNow(TestConstants.TEST_ZONE).withDayOfMonth(25).withMonth(Month.JANUARY.getValue());
+        if (date.isBefore(TimeUtils.localDateNow(TestConstants.TEST_ZONE))) {
             date = date.plusYears(1);
         }
         Assert.assertEquals(date, request.getTime().getFixedDateTime().date());

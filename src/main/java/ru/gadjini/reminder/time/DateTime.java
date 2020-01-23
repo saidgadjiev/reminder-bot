@@ -144,7 +144,7 @@ public class DateTime {
     }
 
     public static DateTime now(ZoneId zoneId) {
-        return of(TimeUtils.now(zoneId));
+        return of(TimeUtils.zonedDateTimeNow(zoneId));
     }
 
     public DateTime withZoneSameInstant(ZoneId targetZone) {

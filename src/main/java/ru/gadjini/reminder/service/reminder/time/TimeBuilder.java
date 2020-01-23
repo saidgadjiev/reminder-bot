@@ -9,6 +9,7 @@ import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.service.declension.TimeDeclensionService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
+import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -109,7 +110,7 @@ public class TimeBuilder {
     }
 
     public String time(LocalDate remindAt, ZoneId zoneId) {
-        LocalDate now = LocalDate.now(zoneId);
+        LocalDate now = TimeUtils.localDateNow(zoneId);
 
         if (remindAt.getMonth().equals(now.getMonth()) && remindAt.getYear() == now.getYear()) {
             if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
@@ -125,7 +126,7 @@ public class TimeBuilder {
     }
 
     public String time(ZonedDateTime remindAt) {
-        ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
+        ZonedDateTime now = TimeUtils.zonedDateTimeNow(remindAt.getZone());
 
         if (remindAt.getMonth().equals(now.getMonth()) && remindAt.getYear() == now.getYear()) {
             if (remindAt.getDayOfMonth() == now.getDayOfMonth()) {
@@ -191,7 +192,7 @@ public class TimeBuilder {
 
     private String fixedDate(LocalDate remindAt, ZoneId zoneId) {
         String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
-        LocalDate now = LocalDate.now(zoneId);
+        LocalDate now = TimeUtils.localDateNow(zoneId);
 
         return "<b>" + remindAt.getDayOfMonth() + " " + monthName +
                 "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")"
@@ -208,7 +209,7 @@ public class TimeBuilder {
     private String fixedDay(ZonedDateTime remindAt) {
         String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
         String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
-        ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
+        ZonedDateTime now = TimeUtils.zonedDateTimeNow(remindAt.getZone());
 
         return "<b>" + remindAt.getDayOfMonth() + " " + monthName +
                 "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " +

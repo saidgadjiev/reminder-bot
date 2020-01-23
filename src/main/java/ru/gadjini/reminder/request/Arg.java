@@ -14,7 +14,8 @@ public enum Arg {
     SAVED_QUERY_ID("j"),
     POSTPONE_TIME("k"),
     CALLBACK_DELEGATE("l"),
-    POSTPONE_REASON("m");
+    POSTPONE_REASON("m"),
+    FILTER("n");
 
     private final String key;
 

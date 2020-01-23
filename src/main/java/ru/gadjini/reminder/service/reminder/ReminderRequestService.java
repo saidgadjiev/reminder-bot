@@ -30,6 +30,7 @@ import ru.gadjini.reminder.service.validation.ValidatorFactory;
 import ru.gadjini.reminder.service.validation.ValidatorType;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
+import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -258,7 +259,7 @@ public class ReminderRequestService {
         ZoneId zoneId = offsetTime.getZoneId();
         switch (offsetTime.getType()) {
             case AFTER: {
-                ZonedDateTime dateTime = JodaTimeUtils.plus(ZonedDateTime.now(zoneId), offsetTime.getPeriod());
+                ZonedDateTime dateTime = JodaTimeUtils.plus(TimeUtils.zonedDateTimeNow(zoneId), offsetTime.getPeriod());
 
                 if (offsetTime.getTime() != null) {
                     dateTime = dateTime.with(offsetTime.getTime());
@@ -267,7 +268,7 @@ public class ReminderRequestService {
                 return dateTime;
             }
             case FOR: {
-                return JodaTimeUtils.plus(ZonedDateTime.now(zoneId), offsetTime.getPeriod());
+                return JodaTimeUtils.plus(TimeUtils.zonedDateTimeNow(zoneId), offsetTime.getPeriod());
             }
             case BEFORE: {
                 ZonedDateTime offsetRemindAt = JodaTimeUtils.minus(remindAt, offsetTime.getPeriod());
@@ -284,7 +285,7 @@ public class ReminderRequestService {
     }
 
     private DateTime buildRemindAt(OffsetTime offsetTime) {
-        ZonedDateTime dateTime = ZonedDateTime.now(offsetTime.getZoneId());
+        ZonedDateTime dateTime = TimeUtils.zonedDateTimeNow(offsetTime.getZoneId());
 
         if (offsetTime.getTime() != null) {
             dateTime = dateTime.with(offsetTime.getTime());

@@ -22,8 +22,8 @@ import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.subscription.PaymentMessageService;
 import ru.gadjini.reminder.service.subscription.PlanService;
 import ru.gadjini.reminder.service.subscription.SubscriptionService;
+import ru.gadjini.reminder.util.TimeUtils;
 
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
 import java.util.Collection;
@@ -93,7 +93,7 @@ public class SubscriptionFilter extends BaseBotFilter {
 
             return false;
         }
-        if (subscription.getEndDate().isBefore(LocalDate.now())) {
+        if (subscription.getEndDate().isBefore(TimeUtils.localDateNow())) {
             sendSubscriptionExpired(userId);
 
             return false;

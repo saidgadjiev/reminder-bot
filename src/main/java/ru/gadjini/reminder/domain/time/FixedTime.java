@@ -78,10 +78,6 @@ public class FixedTime {
         return dateTime.hasTime();
     }
 
-    public static DateTime now(ZoneId zoneId) {
-        return DateTime.now(zoneId);
-    }
-
     public DateTime withZoneSameInstant(ZoneId targetZone) {
         return dateTime.withZoneSameInstant(targetZone);
     }

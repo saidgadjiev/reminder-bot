@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.Period;
+import ru.gadjini.reminder.util.TimeUtils;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -105,7 +105,7 @@ public class OffsetTime {
         offsetTime.setType(getType());
         offsetTime.setDays(getDays());
         if (getTime() != null) {
-            LocalTime time = ZonedDateTime.of(LocalDate.now(getZoneId()), getTime(), getZoneId()).withZoneSameInstant(target).toLocalTime();
+            LocalTime time = ZonedDateTime.of(TimeUtils.localDateNow(getZoneId()), getTime(), getZoneId()).withZoneSameInstant(target).toLocalTime();
             offsetTime.setTime(time);
         }
 

@@ -15,6 +15,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
+import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -45,7 +46,7 @@ class FixedTimeParserTest {
         Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "00")));
         Assert.assertTrue(parse.isFixedTime());
 
-        LocalDate localDate = LocalDate.now(TestConstants.TEST_ZONE);
+        LocalDate localDate = TimeUtils.localDateNow(TestConstants.TEST_ZONE);
         LocalTime localTime = LocalTime.of(19, 0);
         if (localTime.isBefore(LocalTime.now(TestConstants.TEST_ZONE))) {
             localDate = localDate.plusDays(1);
@@ -61,7 +62,7 @@ class FixedTimeParserTest {
         Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.DAY_WORD, "завтра"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
-        Assert.assertEquals(parse.getFixedDateTime().date(), LocalDate.now(TestConstants.TEST_ZONE).plusDays(1));
+        Assert.assertEquals(parse.getFixedDateTime().date(), TimeUtils.localDateNow(TestConstants.TEST_ZONE).plusDays(1));
     }
 
     @Test
@@ -70,7 +71,7 @@ class FixedTimeParserTest {
         Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.DAY_WORD, "послезавтра"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
-        Assert.assertEquals(parse.getFixedDateTime().date(), LocalDate.now(TestConstants.TEST_ZONE).plusDays(2));
+        Assert.assertEquals(parse.getFixedDateTime().date(), TimeUtils.localDateNow(TestConstants.TEST_ZONE).plusDays(2));
     }
 
     @Test
@@ -80,7 +81,7 @@ class FixedTimeParserTest {
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
-        LocalDate date = LocalDate.now(TestConstants.TEST_ZONE);
+        LocalDate date = TimeUtils.localDateNow(TestConstants.TEST_ZONE);
         date = (LocalDate) TemporalAdjusters.next(DayOfWeek.WEDNESDAY).adjustInto(date);
         Assert.assertEquals(parse.getFixedDateTime().date(), date);
     }
@@ -92,7 +93,7 @@ class FixedTimeParserTest {
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
-        LocalDate date = LocalDate.now(TestConstants.TEST_ZONE);
+        LocalDate date = TimeUtils.localDateNow(TestConstants.TEST_ZONE);
         date = (LocalDate) TemporalAdjusters.next(DayOfWeek.WEDNESDAY).adjustInto(date);
         Assert.assertEquals(parse.getFixedDateTime().date(), date.plusDays(7));
     }
@@ -104,8 +105,8 @@ class FixedTimeParserTest {
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
-        LocalDate date = LocalDate.now(TestConstants.TEST_ZONE).withDayOfMonth(25).withMonth(Month.SEPTEMBER.getValue());
-        if (date.isBefore(LocalDate.now(TestConstants.TEST_ZONE))) {
+        LocalDate date = TimeUtils.localDateNow(TestConstants.TEST_ZONE).withDayOfMonth(25).withMonth(Month.SEPTEMBER.getValue());
+        if (date.isBefore(TimeUtils.localDateNow(TestConstants.TEST_ZONE))) {
             date = date.plusYears(1);
         }
         Assert.assertEquals(parse.getFixedDateTime().date(), date);
@@ -130,8 +131,8 @@ class FixedTimeParserTest {
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
-        LocalDate date = LocalDate.now(TestConstants.TEST_ZONE).withMonth(1).withDayOfMonth(5);
-        if (date.isBefore(LocalDate.now(TestConstants.TEST_ZONE))) {
+        LocalDate date = TimeUtils.localDateNow(TestConstants.TEST_ZONE).withMonth(1).withDayOfMonth(5);
+        if (date.isBefore(TimeUtils.localDateNow(TestConstants.TEST_ZONE))) {
             date = date.plusYears(1);
         }
         Assert.assertEquals(date, parse.getFixedDateTime().date());

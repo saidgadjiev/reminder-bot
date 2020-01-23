@@ -11,7 +11,6 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeUtils;
 
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 @Service
@@ -44,7 +43,7 @@ public class ReminderTimeValidator implements Validator {
 
     private void validate(DateTime dateTime) {
         if (!dateTime.hasTime()) {
-            if (dateTime.date().isBefore(LocalDate.now(dateTime.getZoneId()))) {
+            if (dateTime.date().isBefore(TimeUtils.localDateNow(dateTime.getZoneId()))) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
             }
         } else {
@@ -53,7 +52,7 @@ public class ReminderTimeValidator implements Validator {
     }
 
     private void validate(ZonedDateTime dateTime) {
-        if (dateTime.isBefore(TimeUtils.now(dateTime.getZone()))) {
+        if (dateTime.isBefore(TimeUtils.zonedDateTimeNow(dateTime.getZone()))) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }
     }

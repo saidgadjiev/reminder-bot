@@ -6,9 +6,9 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTimeFormats;
+import ru.gadjini.reminder.util.TimeUtils;
 import ru.gadjini.reminder.util.UserUtils;
 
-import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
@@ -36,7 +36,7 @@ public class FriendshipMessageBuilder {
         message.append(UserUtils.userLink(friend)).append("\n\n");
         message.append(localisationService.getMessage(MessagesProperties.TIMEZONE, new Object[] {
                 friend.getZone().getDisplayName(TextStyle.FULL, Locale.getDefault()),
-                DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(ZonedDateTime.now(friend.getZone()))
+                DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(TimeUtils.zonedDateTimeNow(friend.getZone()))
         }));
 
         if (StringUtils.isNotBlank(footer)) {

@@ -18,7 +18,7 @@ public class ReminderNotificationAI {
     private static final int ITS_TIME_MINUTE_DIFF = 5;
 
     public boolean isNeedCreateItsTimeNotification(ZonedDateTime remindAt) {
-        ZonedDateTime now = TimeUtils.now(remindAt.getZone());
+        ZonedDateTime now = TimeUtils.zonedDateTimeNow(remindAt.getZone());
 
         return now.plusMinutes(ITS_TIME_MINUTE_DIFF).isBefore(remindAt);
     }
@@ -28,7 +28,7 @@ public class ReminderNotificationAI {
     }
 
     public boolean isNeedCreateReminderNotification(ZonedDateTime remindAt, UserReminderNotification offsetTime) {
-        ZonedDateTime now = ZonedDateTime.now(remindAt.getZone());
+        ZonedDateTime now = TimeUtils.zonedDateTimeNow(remindAt.getZone());
 
         if (offsetTime.getTime() == null) {
             return Duration.between(now, remindAt).toMinutes() > offsetTime.getHours() * 60 + offsetTime.getMinutes() + MINUTE_DIFF;
@@ -38,7 +38,7 @@ public class ReminderNotificationAI {
     }
 
     public boolean isNeedCreateReminderNotification(LocalDate remindAt, UserReminderNotification offsetTime) {
-        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime now = TimeUtils.zonedDateTimeNow();
         ZonedDateTime zonedDateTime = ZonedDateTime.of(remindAt.minusDays(offsetTime.getDays()), offsetTime.getTime(), ZoneOffset.UTC);
 
         return now.isBefore(zonedDateTime);

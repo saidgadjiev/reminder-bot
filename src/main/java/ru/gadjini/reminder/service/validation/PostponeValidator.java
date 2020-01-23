@@ -9,9 +9,7 @@ import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
-
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
+import ru.gadjini.reminder.util.TimeUtils;
 
 @Service
 public class PostponeValidator implements Validator {
@@ -58,14 +56,14 @@ public class PostponeValidator implements Validator {
             if (fixedTime.hasTime()) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITHOUT_TIME));
             }
-            if (dateTime.date().isBefore(LocalDate.now(dateTime.getZoneId()))) {
+            if (dateTime.date().isBefore(TimeUtils.localDateNow(dateTime.getZoneId()))) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
             }
         } else {
             if (!fixedTime.hasTime()) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITH_TIME));
             }
-            if (dateTime.toZonedDateTime().isBefore(ZonedDateTime.now(dateTime.getZoneId()))) {
+            if (dateTime.toZonedDateTime().isBefore(TimeUtils.zonedDateTimeNow(dateTime.getZoneId()))) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
             }
         }

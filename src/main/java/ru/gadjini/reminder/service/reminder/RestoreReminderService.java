@@ -65,13 +65,13 @@ public class RestoreReminderService {
             if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
                 reminderNotificationService.deleteReminderNotification(reminderNotification.getId());
             } else {
-                reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), TimeUtils.now());
+                reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), TimeUtils.localDateTimeNow());
             }
         }
     }
 
     private ZonedDateTime getNextLastRemindAt(ZonedDateTime lastRemindAt, Period period) {
-        ZonedDateTime now = JodaTimeUtils.minus(ZonedDateTime.now(lastRemindAt.getZone()), period);
+        ZonedDateTime now = JodaTimeUtils.minus(TimeUtils.zonedDateTimeNow(lastRemindAt.getZone()), period);
 
         while (now.isAfter(lastRemindAt)) {
             lastRemindAt = JodaTimeUtils.plus(lastRemindAt, period);
@@ -87,9 +87,9 @@ public class RestoreReminderService {
         ReminderNotification reminderNotification = reminder.getReminderNotifications().get(0);
 
         if (reminderNotification.getType() == ReminderNotification.Type.ONCE) {
-            return reminderNotification.getFixedTime().isBefore(TimeUtils.nowZoned());
+            return reminderNotification.getFixedTime().isBefore(TimeUtils.zonedDateTimeNow());
         } else {
-            return TimeUtils.now(reminderNotification.getLastReminderAt().getZone()).isAfter(JodaTimeUtils.plus(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime()));
+            return TimeUtils.zonedDateTimeNow(reminderNotification.getLastReminderAt().getZone()).isAfter(JodaTimeUtils.plus(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime()));
         }
     }
 
