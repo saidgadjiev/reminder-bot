@@ -95,7 +95,7 @@ public class ReminderNotificationMessageBuilder {
             if (message.length() > 0) {
                 message.append("\n");
             }
-            message.append(i++).append(") ").append(reminderNotificationTimeBuilder.time(userReminderNotification.withZone(timeCreator, userReminderNotification.getUser().getZone())));
+            message.append(i++).append(") ").append(reminderNotificationTimeBuilder.time(timeCreator.withZone(userReminderNotification, userReminderNotification.getUser().getZone())));
         }
 
         return message.toString();

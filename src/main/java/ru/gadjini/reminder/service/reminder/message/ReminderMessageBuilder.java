@@ -366,7 +366,7 @@ public class ReminderMessageBuilder {
         if (customRemindResult.isStandard()) {
             return messageBuilder.getCustomRemindCreated(customRemindResult.getZonedDateTime().withZoneSameInstant(receiverZoneId));
         } else {
-            return messageBuilder.getCustomRemindCreated(customRemindResult.getRepeatTime().withZone(timeCreator, receiverZoneId));
+            return messageBuilder.getCustomRemindCreated(timeCreator.withZone(customRemindResult.getRepeatTime(), receiverZoneId));
         }
     }
 

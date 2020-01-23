@@ -1,11 +1,14 @@
 package ru.gadjini.reminder.service.parser.time.parser;
 
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.common.TestConstants;
@@ -15,12 +18,10 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
+import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.Month;
+import java.time.*;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -30,9 +31,11 @@ import java.util.Locale;
 import static ru.gadjini.reminder.service.parser.time.lexer.TimeToken.DAY;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class, TimeCreator.class})
+@ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class})
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class FixedTimeParserTest {
+
+    private static final ZonedDateTime STATIC_TIME = ZonedDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(11, 0), TestConstants.TEST_ZONE);
 
     @Autowired
     private LocalisationService localisationService;
@@ -40,23 +43,24 @@ class FixedTimeParserTest {
     @Autowired
     private DayOfWeekService dayOfWeekService;
 
-    @Autowired
+    @MockBean
     private TimeCreator timeCreator;
+
+    @BeforeEach
+    void setup() {
+        Mockito.when(timeCreator.dateTimeNow(TestConstants.TEST_ZONE)).thenReturn(DateTime.of(STATIC_TIME));
+        Mockito.when(timeCreator.zonedDateTimeNow(TestConstants.TEST_ZONE)).thenReturn(STATIC_TIME);
+    }
 
     @Test
     void hourMinute() {
+        Mockito.when(timeCreator.dateTimeNow(TestConstants.TEST_ZONE)).thenReturn(DateTime.of(STATIC_TIME));
         TimeParser timeParser = parser();
         Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "00")));
         Assert.assertTrue(parse.isFixedTime());
 
-        LocalDate localDate = timeCreator.localDateNow(TestConstants.TEST_ZONE);
-        LocalTime localTime = LocalTime.of(19, 0);
-        if (localTime.isBefore(LocalTime.now(TestConstants.TEST_ZONE))) {
-            localDate = localDate.plusDays(1);
-        }
-
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 0));
-        Assert.assertEquals(parse.getFixedDateTime().date(), localDate);
+        Assert.assertEquals(parse.getFixedDateTime().date(), STATIC_TIME.toLocalDate());
     }
 
     @Test
@@ -65,7 +69,7 @@ class FixedTimeParserTest {
         Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.DAY_WORD, "завтра"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
-        Assert.assertEquals(parse.getFixedDateTime().date(), timeCreator.localDateNow(TestConstants.TEST_ZONE).plusDays(1));
+        Assert.assertEquals(parse.getFixedDateTime().date(), STATIC_TIME.toLocalDate().plusDays(1));
     }
 
     @Test
@@ -74,7 +78,7 @@ class FixedTimeParserTest {
         Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.DAY_WORD, "послезавтра"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
-        Assert.assertEquals(parse.getFixedDateTime().date(), timeCreator.localDateNow(TestConstants.TEST_ZONE).plusDays(2));
+        Assert.assertEquals(parse.getFixedDateTime().date(), STATIC_TIME.toLocalDate().plusDays(2));
     }
 
     @Test
@@ -84,7 +88,7 @@ class FixedTimeParserTest {
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
-        LocalDate date = timeCreator.localDateNow(TestConstants.TEST_ZONE);
+        LocalDate date = STATIC_TIME.toLocalDate();
         date = (LocalDate) TemporalAdjusters.next(DayOfWeek.WEDNESDAY).adjustInto(date);
         Assert.assertEquals(parse.getFixedDateTime().date(), date);
     }
@@ -96,7 +100,7 @@ class FixedTimeParserTest {
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
-        LocalDate date = timeCreator.localDateNow(TestConstants.TEST_ZONE);
+        LocalDate date = STATIC_TIME.toLocalDate();
         date = (LocalDate) TemporalAdjusters.next(DayOfWeek.WEDNESDAY).adjustInto(date);
         Assert.assertEquals(parse.getFixedDateTime().date(), date.plusDays(7));
     }
@@ -108,10 +112,7 @@ class FixedTimeParserTest {
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
-        LocalDate date = timeCreator.localDateNow(TestConstants.TEST_ZONE).withDayOfMonth(25).withMonth(Month.SEPTEMBER.getValue());
-        if (date.isBefore(timeCreator.localDateNow(TestConstants.TEST_ZONE))) {
-            date = date.plusYears(1);
-        }
+        LocalDate date = STATIC_TIME.toLocalDate().withDayOfMonth(25).withMonth(Month.SEPTEMBER.getValue());
         Assert.assertEquals(parse.getFixedDateTime().date(), date);
     }
 
@@ -134,10 +135,7 @@ class FixedTimeParserTest {
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
-        LocalDate date = timeCreator.localDateNow(TestConstants.TEST_ZONE).withMonth(1).withDayOfMonth(5);
-        if (date.isBefore(timeCreator.localDateNow(TestConstants.TEST_ZONE))) {
-            date = date.plusYears(1);
-        }
+        LocalDate date = STATIC_TIME.toLocalDate().withMonth(1).withDayOfMonth(5);
         Assert.assertEquals(date, parse.getFixedDateTime().date());
         Assert.assertEquals(LocalTime.of(19, 30), parse.getFixedDateTime().time());
     }

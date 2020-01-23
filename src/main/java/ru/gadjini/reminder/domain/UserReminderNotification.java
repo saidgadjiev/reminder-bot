@@ -2,11 +2,9 @@ package ru.gadjini.reminder.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 public class UserReminderNotification {
 
@@ -119,22 +117,6 @@ public class UserReminderNotification {
 
     public void setUser(TgUser user) {
         this.user = user;
-    }
-
-    public UserReminderNotification withZone(TimeCreator timeCreator, ZoneId target) {
-        UserReminderNotification userReminderNotification = new UserReminderNotification(target);
-        userReminderNotification.setMinutes(getMinutes());
-        userReminderNotification.setHours(getHours());
-        setUser(getUser());
-        userReminderNotification.setType(getType());
-        userReminderNotification.setDays(getDays());
-        if (getTime() != null) {
-            LocalTime time = ZonedDateTime.of(timeCreator.localDateNow(getZoneId()), getTime(), getZoneId()).withZoneSameInstant(target).toLocalTime();
-            userReminderNotification.setTime(time);
-        }
-        userReminderNotification.setUserId(getUserId());
-
-        return userReminderNotification;
     }
 
     public enum NotificationType {

@@ -240,7 +240,7 @@ public class Reminder {
 
     @JsonIgnore
     public RepeatTime getRepeatRemindAtInReceiverZone(TimeCreator timeCreator) {
-        return repeatRemindAt == null ? null : repeatRemindAt.withZone(timeCreator, receiver.getZone());
+        return repeatRemindAt == null ? null : timeCreator.withZone(repeatRemindAt, receiver.getZone());
     }
 
     public void setRepeatRemindAt(RepeatTime repeatRemindAt) {

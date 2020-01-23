@@ -4,11 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.Period;
-import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 public class OffsetTime {
 
@@ -96,20 +94,6 @@ public class OffsetTime {
 
     public void setZoneId(ZoneId zoneId) {
         this.zoneId = zoneId;
-    }
-
-    public OffsetTime withZone(TimeCreator timeCreator, ZoneId target) {
-        OffsetTime offsetTime = new OffsetTime(target);
-        offsetTime.setMinutes(getMinutes());
-        offsetTime.setHours(getHours());
-        offsetTime.setType(getType());
-        offsetTime.setDays(getDays());
-        if (getTime() != null) {
-            LocalTime time = ZonedDateTime.of(timeCreator.localDateNow(getZoneId()), getTime(), getZoneId()).withZoneSameInstant(target).toLocalTime();
-            offsetTime.setTime(time);
-        }
-
-        return offsetTime;
     }
 
     public enum Type {

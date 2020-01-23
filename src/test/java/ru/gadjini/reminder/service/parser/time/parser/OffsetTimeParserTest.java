@@ -2,11 +2,14 @@ package ru.gadjini.reminder.service.parser.time.parser;
 
 import org.joda.time.Period;
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.common.TestConstants;
@@ -18,11 +21,10 @@ import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
+import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
 
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-import java.time.Month;
+import java.time.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,8 +43,16 @@ class OffsetTimeParserTest {
     @Autowired
     private DayOfWeekService dayOfWeekService;
 
-    @Autowired
+    @MockBean
     private TimeCreator timeCreator;
+
+    @BeforeEach
+    void setup() {
+        ZonedDateTime STATIC_TIME = ZonedDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(11, 0), TestConstants.TEST_ZONE);
+
+        Mockito.when(timeCreator.dateTimeNow(TestConstants.TEST_ZONE)).thenReturn(DateTime.of(STATIC_TIME));
+        Mockito.when(timeCreator.zonedDateTimeNow(TestConstants.TEST_ZONE)).thenReturn(STATIC_TIME);
+    }
 
     @Test
     void afterHours() {

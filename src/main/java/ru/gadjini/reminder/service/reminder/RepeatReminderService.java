@@ -239,7 +239,7 @@ public class RepeatReminderService {
     public Reminder changeReminderTime(int reminderId, int receiverId, RepeatTime repeatTimeInReceiverZone) {
         DateTime nextRemindAt = getFirstRemindAt(repeatTimeInReceiverZone).withZoneSameInstant(ZoneOffset.UTC);
         PGobject sqlObject = nextRemindAt.sqlObject();
-        RepeatTime repeatTime = repeatTimeInReceiverZone.withZone(timeCreator, ZoneOffset.UTC);
+        RepeatTime repeatTime = timeCreator.withZone(repeatTimeInReceiverZone, ZoneOffset.UTC);
         reminderDao.update(
                 Map.ofEntries(
                         Map.entry(ReminderTable.TABLE.REPEAT_REMIND_AT, repeatTime.sqlObject()),

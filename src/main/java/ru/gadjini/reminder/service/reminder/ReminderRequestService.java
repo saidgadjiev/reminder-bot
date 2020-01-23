@@ -160,7 +160,7 @@ public class ReminderRequestService {
             reminderNotification = reminderService.customRemind(reminderId, remindTime);
             customRemindResult.setZonedDateTime(remindTime);
         } else if (customRemind.isRepeatTime()) {
-            customRemind.setRepeatTime(customRemind.getRepeatTime().withZone(timeCreator, ZoneOffset.UTC));
+            customRemind.setRepeatTime(timeCreator.withZone(customRemind.getRepeatTime(), ZoneOffset.UTC));
             reminderNotification = reminderService.customRemind(reminderId, customRemind.getRepeatTime());
             customRemindResult.setRepeatTime(customRemind.getRepeatTime());
             customRemindResult.setLastRemindAt(reminderNotification.getLastReminderAt());
@@ -252,7 +252,7 @@ public class ReminderRequestService {
             reminder.setRemindAt(remindAt);
             reminder.setInitialRemindAt(remindAt);
         } else {
-            reminder.setRepeatRemindAt(time.getRepeatTime().withZone(timeCreator, ZoneOffset.UTC));
+            reminder.setRepeatRemindAt(timeCreator.withZone(time.getRepeatTime(), ZoneOffset.UTC));
             DateTime firstRemindAtInReceiverZone = repeatReminderService.getFirstRemindAt(reminder.getRepeatRemindAtInReceiverZone(timeCreator));
             reminder.setRemindAt(firstRemindAtInReceiverZone.withZoneSameInstant(ZoneOffset.UTC));
         }
