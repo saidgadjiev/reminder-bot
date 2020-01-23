@@ -19,7 +19,7 @@ import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationAI;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.TimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
@@ -39,15 +39,18 @@ public class ReminderService {
 
     private ReminderNotificationAI reminderNotificationAI;
 
+    private TimeCreator timeCreator;
+
     @Autowired
     public ReminderService(ReminderDao reminderDao,
                            ReminderNotificationService reminderNotificationService,
                            UserReminderNotificationService userReminderNotificationService,
-                           ReminderNotificationAI reminderNotificationAI) {
+                           ReminderNotificationAI reminderNotificationAI, TimeCreator timeCreator) {
         this.reminderDao = reminderDao;
         this.reminderNotificationService = reminderNotificationService;
         this.userReminderNotificationService = userReminderNotificationService;
         this.reminderNotificationAI = reminderNotificationAI;
+        this.timeCreator = timeCreator;
     }
 
     @Transactional
@@ -291,7 +294,7 @@ public class ReminderService {
 
     public ReminderNotification customRemind(int reminderId, RepeatTime repeatTime) {
         ReminderNotification reminderNotification;
-        ZonedDateTime now = TimeUtils.zonedDateTimeNow();
+        ZonedDateTime now = timeCreator.zonedDateTimeNow();
 
         if (repeatTime.getDayOfWeek() != null) {
             ZonedDateTime repeatReminder = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek())).with(repeatTime.getTime());

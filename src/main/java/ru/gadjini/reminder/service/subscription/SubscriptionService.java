@@ -7,7 +7,7 @@ import ru.gadjini.reminder.dao.subscription.SubscriptionDao;
 import ru.gadjini.reminder.domain.Plan;
 import ru.gadjini.reminder.domain.Subscription;
 import ru.gadjini.reminder.properties.SubscriptionProperties;
-import ru.gadjini.reminder.util.TimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.LocalDate;
 
@@ -18,10 +18,13 @@ public class SubscriptionService {
 
     private SubscriptionDao subscriptionDao;
 
+    private TimeCreator timeCreator;
+
     @Autowired
-    public SubscriptionService(SubscriptionProperties subscriptionProperties, @Qualifier("redis") SubscriptionDao subscriptionDao) {
+    public SubscriptionService(SubscriptionProperties subscriptionProperties, @Qualifier("redis") SubscriptionDao subscriptionDao, TimeCreator timeCreator) {
         this.subscriptionProperties = subscriptionProperties;
         this.subscriptionDao = subscriptionDao;
+        this.timeCreator = timeCreator;
     }
 
     public Subscription getSubscription(int userId) {
@@ -31,7 +34,7 @@ public class SubscriptionService {
     public void createTrialSubscription(int userId) {
         Subscription subscription = new Subscription();
         subscription.setUserId(userId);
-        subscription.setEndDate(TimeUtils.localDateNow().plusDays(subscriptionProperties.getTrialPeriod()));
+        subscription.setEndDate(timeCreator.localDateNow().plusDays(subscriptionProperties.getTrialPeriod()));
 
         subscriptionDao.create(subscription);
     }

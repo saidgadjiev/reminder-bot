@@ -21,7 +21,7 @@ import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationAI;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.TimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
@@ -43,22 +43,25 @@ public class RepeatReminderService {
 
     private UserReminderNotificationService userReminderNotificationService;
 
+    private TimeCreator timeCreator;
+
     @Autowired
     public RepeatReminderService(ReminderDao reminderDao, CompletedReminderDao completedReminderDao,
                                  ReminderNotificationService reminderNotificationService,
                                  ReminderNotificationAI reminderNotificationAI,
-                                 UserReminderNotificationService userReminderNotificationService) {
+                                 UserReminderNotificationService userReminderNotificationService, TimeCreator timeCreator) {
         this.reminderDao = reminderDao;
         this.completedReminderDao = completedReminderDao;
         this.reminderNotificationService = reminderNotificationService;
         this.reminderNotificationAI = reminderNotificationAI;
         this.userReminderNotificationService = userReminderNotificationService;
+        this.timeCreator = timeCreator;
     }
 
     @Transactional
     public Reminder createReminder(Reminder reminder) {
         Reminder created = reminderDao.create(reminder);
-        List<ReminderNotification> reminderNotifications = getRepeatReminderNotifications(reminder.getRepeatRemindAtInReceiverZone(), reminder.getReceiverId());
+        List<ReminderNotification> reminderNotifications = getRepeatReminderNotifications(reminder.getRepeatRemindAtInReceiverZone(timeCreator), reminder.getReceiverId());
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(created.getId()));
         reminderNotificationService.create(reminderNotifications);
 
@@ -135,7 +138,7 @@ public class RepeatReminderService {
     }
 
     public void autoSkip(Reminder reminder) {
-        DateTime nextRemindAt = getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtInReceiverZone()).withZoneSameInstant(ZoneOffset.UTC);
+        DateTime nextRemindAt = getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtInReceiverZone(timeCreator)).withZoneSameInstant(ZoneOffset.UTC);
         updateNextRemindAt(reminder.getId(), nextRemindAt, reminder.isInactive() ? UpdateSeries.NONE : UpdateSeries.RESET);
     }
 
@@ -236,7 +239,7 @@ public class RepeatReminderService {
     public Reminder changeReminderTime(int reminderId, int receiverId, RepeatTime repeatTimeInReceiverZone) {
         DateTime nextRemindAt = getFirstRemindAt(repeatTimeInReceiverZone).withZoneSameInstant(ZoneOffset.UTC);
         PGobject sqlObject = nextRemindAt.sqlObject();
-        RepeatTime repeatTime = repeatTimeInReceiverZone.withZone(ZoneOffset.UTC);
+        RepeatTime repeatTime = repeatTimeInReceiverZone.withZone(timeCreator, ZoneOffset.UTC);
         reminderDao.update(
                 Map.ofEntries(
                         Map.entry(ReminderTable.TABLE.REPEAT_REMIND_AT, repeatTime.sqlObject()),
@@ -287,7 +290,7 @@ public class RepeatReminderService {
                 reminder.getRepeatRemindAt().getInterval().getDays() > 0 ||
                 reminder.getRepeatRemindAt().getInterval().getMonths() > 0 ||
                 reminder.getRepeatRemindAt().getInterval().getYears() > 0) {
-            LocalDate now = TimeUtils.localDateNow();
+            LocalDate now = timeCreator.localDateNow();
             LocalDate prevDate;
 
             if (reminder.getRepeatRemindAt().getDayOfWeek() != null) {
@@ -298,7 +301,7 @@ public class RepeatReminderService {
 
             return now.isBefore(prevDate) || now.isEqual(prevDate);
         } else {
-            ZonedDateTime now = TimeUtils.zonedDateTimeNow();
+            ZonedDateTime now = timeCreator.zonedDateTimeNow();
             ZonedDateTime prevRemindAt = JodaTimeUtils.minus(reminder.getRemindAt().toZonedDateTime(), reminder.getRepeatRemindAt().getInterval());
 
             return now.isBefore(prevRemindAt);
@@ -306,7 +309,7 @@ public class RepeatReminderService {
     }
 
     private boolean isCanMoveToPrev(ReminderNotification reminderNotification) {
-        ZonedDateTime now = TimeUtils.zonedDateTimeNow();
+        ZonedDateTime now = timeCreator.zonedDateTimeNow();
 
         return now.isBefore(reminderNotification.getLastReminderAt());
     }
@@ -324,7 +327,7 @@ public class RepeatReminderService {
                 reminderNotificationService.deleteReminderNotification(reminderNotification.getId());
             }
         }
-        DateTime nextRemindAt = getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtInReceiverZone()).withZoneSameInstant(ZoneOffset.UTC);
+        DateTime nextRemindAt = getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtInReceiverZone(timeCreator)).withZoneSameInstant(ZoneOffset.UTC);
         updateNextRemindAt(id, nextRemindAt, updateSeries);
         reminder.setRemindAt(nextRemindAt);
     }
@@ -367,14 +370,14 @@ public class RepeatReminderService {
     }
 
     private DateTime getIntervalFirstRemindAt(RepeatTime repeatTime) {
-        ZonedDateTime now = TimeUtils.zonedDateTimeNow(repeatTime.getZoneId());
+        ZonedDateTime now = timeCreator.zonedDateTimeNow(repeatTime.getZoneId());
 
         return DateTime.of(JodaTimeUtils.plus(now, repeatTime.getInterval()));
     }
 
     private DateTime getWeeklyFirstRemindAt(RepeatTime repeatTime) {
         if (repeatTime.hasTime()) {
-            ZonedDateTime now = TimeUtils.zonedDateTimeNow(repeatTime.getZoneId()).with(repeatTime.getTime());
+            ZonedDateTime now = timeCreator.zonedDateTimeNow(repeatTime.getZoneId()).with(repeatTime.getTime());
 
             if (!now.getDayOfWeek().equals(repeatTime.getDayOfWeek())) {
                 now = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek()));
@@ -382,7 +385,7 @@ public class RepeatReminderService {
 
             return DateTime.of(now);
         }
-        LocalDate now = TimeUtils.localDateNow(repeatTime.getZoneId());
+        LocalDate now = timeCreator.localDateNow(repeatTime.getZoneId());
 
         if (now.getDayOfWeek().equals(repeatTime.getDayOfWeek())) {
             DateTime.of(now, null, repeatTime.getZoneId());
@@ -395,7 +398,7 @@ public class RepeatReminderService {
     private DateTime getWeeklyNextRemindAt(DateTime reminderAt, RepeatTime repeatTime) {
         ZoneId zoneId = reminderAt.getZoneId();
         LocalDate nextDate = (LocalDate) TemporalAdjusters.next(repeatTime.getDayOfWeek()).adjustInto(reminderAt.date());
-        LocalDate now = TimeUtils.localDateNow(zoneId);
+        LocalDate now = timeCreator.localDateNow(zoneId);
 
         while (now.isAfter(nextDate)) {
             nextDate = (LocalDate) TemporalAdjusters.next(repeatTime.getDayOfWeek()).adjustInto(nextDate);
@@ -405,11 +408,11 @@ public class RepeatReminderService {
     }
 
     private DateTime getDailyFirstRemindAt(RepeatTime repeatTime) {
-        return DateTime.of(TimeUtils.localDateNow(repeatTime.getZoneId()), repeatTime.getTime(), repeatTime.getZoneId());
+        return DateTime.of(timeCreator.localDateNow(repeatTime.getZoneId()), repeatTime.getTime(), repeatTime.getZoneId());
     }
 
     private DateTime getDailyMonthlyYearlyNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
-        LocalDate now = TimeUtils.localDateNow(remindAt.getZoneId());
+        LocalDate now = timeCreator.localDateNow(remindAt.getZoneId());
         LocalDate nextRemindAt = JodaTimeUtils.plus(remindAt.date(), repeatTime.getInterval());
 
         while (now.isAfter(nextRemindAt)) {
@@ -420,7 +423,7 @@ public class RepeatReminderService {
     }
 
     private DateTime getIntervalNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
-        ZonedDateTime now = TimeUtils.zonedDateTimeNow(remindAt.getZoneId());
+        ZonedDateTime now = timeCreator.zonedDateTimeNow(remindAt.getZoneId());
         ZonedDateTime nextRemindAt = JodaTimeUtils.plus(remindAt.toZonedDateTime(), repeatTime.getInterval());
 
         while (now.isAfter(nextRemindAt) || now.isEqual(nextRemindAt)) {
@@ -432,9 +435,9 @@ public class RepeatReminderService {
 
     private DateTime getMonthlyFirstRemindAt(RepeatTime repeatTime) {
         if (repeatTime.hasTime()) {
-            ZonedDateTime now = TimeUtils.zonedDateTimeNow(repeatTime.getZoneId());
+            ZonedDateTime now = timeCreator.zonedDateTimeNow(repeatTime.getZoneId());
             ZonedDateTime firstRemindAt = ZonedDateTime.of(
-                    TimeUtils.localDateNow(repeatTime.getZoneId()).withDayOfMonth(repeatTime.getDay()),
+                    timeCreator.localDateNow(repeatTime.getZoneId()).withDayOfMonth(repeatTime.getDay()),
                     repeatTime.getTime(), repeatTime.getZoneId()
             );
 
@@ -444,7 +447,7 @@ public class RepeatReminderService {
 
             return DateTime.of(firstRemindAt);
         }
-        LocalDate now = TimeUtils.localDateNow(repeatTime.getZoneId());
+        LocalDate now = timeCreator.localDateNow(repeatTime.getZoneId());
         LocalDate firstRemindAt = now.withDayOfMonth(repeatTime.getDay());
 
         if (now.isAfter(firstRemindAt)) {
@@ -456,9 +459,9 @@ public class RepeatReminderService {
 
     private DateTime getYearlyFirstRemindAt(RepeatTime repeatTime) {
         if (repeatTime.hasTime()) {
-            ZonedDateTime now = TimeUtils.zonedDateTimeNow(repeatTime.getZoneId());
+            ZonedDateTime now = timeCreator.zonedDateTimeNow(repeatTime.getZoneId());
             ZonedDateTime firstRemindAt = ZonedDateTime.of(
-                    TimeUtils.localDateNow(repeatTime.getZoneId()).withDayOfMonth(repeatTime.getDay()).withMonth(repeatTime.getMonth().getValue()),
+                    timeCreator.localDateNow(repeatTime.getZoneId()).withDayOfMonth(repeatTime.getDay()).withMonth(repeatTime.getMonth().getValue()),
                     repeatTime.getTime(), repeatTime.getZoneId()
             );
 
@@ -468,7 +471,7 @@ public class RepeatReminderService {
 
             return DateTime.of(firstRemindAt);
         }
-        LocalDate now = TimeUtils.localDateNow(repeatTime.getZoneId());
+        LocalDate now = timeCreator.localDateNow(repeatTime.getZoneId());
         LocalDate firstRemindAt = now.withDayOfMonth(repeatTime.getDay()).withMonth(repeatTime.getMonth().getValue());
 
         if (now.isAfter(firstRemindAt)) {
@@ -587,7 +590,7 @@ public class RepeatReminderService {
 
     private ReminderNotification intervalReminderNotification(ZonedDateTime lastRemindAt, Period interval, List<ReminderNotification> reminderNotifications) {
         ReminderNotification reminderNotification = ReminderNotification.repeatTime();
-        if (lastRemindAt.isAfter(TimeUtils.zonedDateTimeNow())) {
+        if (lastRemindAt.isAfter(timeCreator.zonedDateTimeNow())) {
             lastRemindAt = JodaTimeUtils.minus(lastRemindAt, interval);
         }
         reminderNotification.setLastReminderAt(lastRemindAt);
@@ -600,7 +603,7 @@ public class RepeatReminderService {
     private ReminderNotification fixedReminderNotification(LocalDate repeatAt, Period period, LocalTime localTime, List<ReminderNotification> reminderNotifications) {
         ReminderNotification reminderNotification = ReminderNotification.repeatTime();
         ZonedDateTime lastRemindAt = ZonedDateTime.of(repeatAt, localTime, ZoneOffset.UTC);
-        if (lastRemindAt.isAfter(TimeUtils.zonedDateTimeNow())) {
+        if (lastRemindAt.isAfter(timeCreator.zonedDateTimeNow())) {
             lastRemindAt = JodaTimeUtils.minus(lastRemindAt, period);
         }
         reminderNotification.setLastReminderAt(lastRemindAt);

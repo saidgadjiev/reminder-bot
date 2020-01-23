@@ -8,7 +8,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
-import ru.gadjini.reminder.util.TimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.*;
 import java.time.format.TextStyle;
@@ -35,16 +35,19 @@ public class FixedTimeParser {
 
     private final LexemsConsumer lexemsConsumer;
 
+    private TimeCreator timeCreator;
+
     public FixedTimeParser(LocalisationService localisationService, Locale locale, LexemsConsumer lexemsConsumer,
-                           ZoneId zoneId, DayOfWeekService dayOfWeekService) {
+                           ZoneId zoneId, DayOfWeekService dayOfWeekService, TimeCreator timeCreator) {
         this.tomorrow = localisationService.getMessage(MessagesProperties.TOMORROW);
         this.dayAfterTomorrow = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
         this.typeUntil = localisationService.getMessage(MessagesProperties.FIXED_TIME_TYPE_UNTIL);
         this.typeAt = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
         this.locale = locale;
         this.lexemsConsumer = lexemsConsumer;
+        this.timeCreator = timeCreator;
         this.fixedTime = new FixedTime();
-        this.fixedTime.setDateTime(TimeUtils.dateTimeNow(zoneId).time(null));
+        this.fixedTime.setDateTime(this.timeCreator.dateTimeNow(zoneId).time(null));
         this.dayOfWeekService = dayOfWeekService;
     }
 
@@ -68,14 +71,14 @@ public class FixedTimeParser {
             LocalTime time = consumeTime(lexems);
             fixedTime.time(time);
         } else {
-            fixedTime.time(TimeUtils.localTimeNow(fixedTime.getZone()));
+            fixedTime.time(timeCreator.localTimeNow(fixedTime.getZone()));
         }
 
-        ZonedDateTime now = TimeUtils.zonedDateTimeNow(fixedTime.getZone());
+        ZonedDateTime now = timeCreator.zonedDateTimeNow(fixedTime.getZone());
         if (fixedTime.date().isBefore(now.toLocalDate())) {
             fixedTime.year(now.getYear() + 1);
         }
-        if (fixedTime.hasTime() && fixedTime.date().equals(TimeUtils.localDateNow(fixedTime.getZone())) && now.toLocalTime().isAfter(fixedTime.time())) {
+        if (fixedTime.hasTime() && fixedTime.date().equals(timeCreator.localDateNow(fixedTime.getZone())) && now.toLocalTime().isAfter(fixedTime.time())) {
             fixedTime.plusDays(1);
         }
 

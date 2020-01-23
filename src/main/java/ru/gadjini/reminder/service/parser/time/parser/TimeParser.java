@@ -7,6 +7,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZoneId;
 import java.util.List;
@@ -24,16 +25,16 @@ public class TimeParser {
 
     private LexemsConsumer lexemsConsumer;
 
-    public TimeParser(LocalisationService localisationService, Locale locale, ZoneId zoneId, DayOfWeekService dayOfWeekService, LexemsConsumer lexemsConsumer) {
+    public TimeParser(LocalisationService localisationService, Locale locale, ZoneId zoneId, DayOfWeekService dayOfWeekService, TimeCreator timeCreator, LexemsConsumer lexemsConsumer) {
         this.lexemsConsumer = lexemsConsumer;
-        this.fixedTimeParser = new FixedTimeParser(localisationService, locale, lexemsConsumer, zoneId, dayOfWeekService);
+        this.fixedTimeParser = new FixedTimeParser(localisationService, locale, lexemsConsumer, zoneId, dayOfWeekService, timeCreator);
         this.repeatTimeParser = new RepeatTimeParser(lexemsConsumer, dayOfWeekService, locale, zoneId);
         this.offsetTimeParser = new OffsetTimeParser(localisationService, zoneId, lexemsConsumer);
         this.time = new Time(zoneId);
     }
 
-    public TimeParser(LocalisationService localisationService, Locale locale, ZoneId zoneId, DayOfWeekService dayOfWeekService) {
-        this(localisationService, locale, zoneId, dayOfWeekService, new LexemsConsumer());
+    public TimeParser(LocalisationService localisationService, Locale locale, ZoneId zoneId, DayOfWeekService dayOfWeekService, TimeCreator timeCreator) {
+        this(localisationService, locale, zoneId, dayOfWeekService, timeCreator, new LexemsConsumer());
     }
 
     public Time parseWithParseException(List<BaseLexem> lexems) {

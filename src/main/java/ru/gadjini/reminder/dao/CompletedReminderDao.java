@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.util.TimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -17,9 +17,12 @@ public class CompletedReminderDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    private TimeCreator timeCreator;
+
     @Autowired
-    public CompletedReminderDao(JdbcTemplate jdbcTemplate) {
+    public CompletedReminderDao(JdbcTemplate jdbcTemplate, TimeCreator timeCreator) {
         this.jdbcTemplate = jdbcTemplate;
+        this.timeCreator = timeCreator;
     }
 
     public void create(Reminder reminder) {
@@ -34,7 +37,7 @@ public class CompletedReminderDao {
                 .addValue(Reminder.TEXT, reminder.getText())
                 .addValue(Reminder.CREATOR_ID, reminder.getCreatorId())
                 .addValue(Reminder.RECEIVER_ID, reminder.getReceiverId())
-                .addValue(Reminder.COMPLETED_AT, Timestamp.valueOf(TimeUtils.localDateTimeNow()))
+                .addValue(Reminder.COMPLETED_AT, Timestamp.valueOf(timeCreator.localDateTimeNow()))
                 .addValue(Reminder.NOTE, reminder.getNote())
                 .addValue(Reminder.REMIND_AT, reminder.getRemindAt().sql(), Types.OTHER)
                 .addValue(Reminder.INITIAL_REMIND_AT, reminder.getRemindAt().sql(), Types.OTHER)

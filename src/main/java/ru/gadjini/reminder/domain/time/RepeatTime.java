@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.Period;
 import org.postgresql.util.PGobject;
 import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.TimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.sql.SQLException;
 import java.time.*;
@@ -121,14 +121,14 @@ public class RepeatTime {
         return result;
     }
 
-    public RepeatTime withZone(ZoneId target) {
+    public RepeatTime withZone(TimeCreator timeCreator, ZoneId target) {
         RepeatTime repeatTime = new RepeatTime(target);
         repeatTime.setDayOfWeek(getDayOfWeek());
         repeatTime.setInterval(getInterval());
         repeatTime.setDay(getDay());
         repeatTime.setMonth(getMonth());
         if (hasTime()) {
-            LocalTime time = ZonedDateTime.of(TimeUtils.localDateNow(zoneId), getTime(), zoneId).withZoneSameInstant(target).toLocalTime();
+            LocalTime time = ZonedDateTime.of(timeCreator.localDateNow(zoneId), getTime(), zoneId).withZoneSameInstant(target).toLocalTime();
             repeatTime.setTime(time);
         }
 

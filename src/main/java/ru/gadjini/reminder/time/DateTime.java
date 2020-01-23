@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.postgresql.util.PGobject;
-import ru.gadjini.reminder.util.TimeUtils;
 
 import java.sql.SQLException;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
@@ -141,10 +143,6 @@ public class DateTime {
         result = 31 * result + (localDate != null ? localDate.hashCode() : 0);
         result = 31 * result + (localTime != null ? localTime.hashCode() : 0);
         return result;
-    }
-
-    public static DateTime now(ZoneId zoneId) {
-        return of(TimeUtils.zonedDateTimeNow(zoneId));
     }
 
     public DateTime withZoneSameInstant(ZoneId targetZone) {

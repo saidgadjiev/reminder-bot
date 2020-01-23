@@ -22,7 +22,7 @@ import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.subscription.PaymentMessageService;
 import ru.gadjini.reminder.service.subscription.PlanService;
 import ru.gadjini.reminder.service.subscription.SubscriptionService;
-import ru.gadjini.reminder.util.TimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZoneId;
 import java.time.format.TextStyle;
@@ -54,13 +54,15 @@ public class SubscriptionFilter extends BaseBotFilter {
 
     private CommandNavigator commandNavigator;
 
+    private TimeCreator timeCreator;
+
     @Autowired
     public SubscriptionFilter(MessageService messageService,
                               LocalisationService localisationService, SubscriptionService subscriptionService,
                               PlanService planService, CurrReplyKeyboard replyKeyboardService,
                               InlineKeyboardService inlineKeyboardService, PaymentMessageService paymentMessageService,
                               SubscriptionProperties subscriptionProperties, Collection<TimeDeclensionService> declensionServices,
-                              CommandNavigator commandNavigator) {
+                              CommandNavigator commandNavigator, TimeCreator timeCreator) {
         this.messageService = messageService;
         this.localisationService = localisationService;
         this.subscriptionService = subscriptionService;
@@ -70,6 +72,7 @@ public class SubscriptionFilter extends BaseBotFilter {
         this.paymentMessageService = paymentMessageService;
         this.subscriptionProperties = subscriptionProperties;
         this.commandNavigator = commandNavigator;
+        this.timeCreator = timeCreator;
         declensionServices.forEach(timeDeclensionService -> declensionServiceMap.put(timeDeclensionService.getLanguage(), timeDeclensionService));
     }
 
@@ -93,7 +96,7 @@ public class SubscriptionFilter extends BaseBotFilter {
 
             return false;
         }
-        if (subscription.getEndDate().isBefore(TimeUtils.localDateNow())) {
+        if (subscription.getEndDate().isBefore(timeCreator.localDateNow())) {
             sendSubscriptionExpired(userId);
 
             return false;

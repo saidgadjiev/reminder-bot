@@ -17,7 +17,7 @@ import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderLexem;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderToken;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
-import ru.gadjini.reminder.util.TimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -27,10 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class})
+@ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class, TimeCreator.class})
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class ReminderRequestParserTest {
 
@@ -40,16 +38,19 @@ class ReminderRequestParserTest {
     @Autowired
     private DayOfWeekService dayOfWeekService;
 
+    @Autowired
+    private TimeCreator timeCreator;
+
     @Test
     void fixedTime() {
-        ReminderRequestParser parser = new ReminderRequestParser(localisationService, Locale.getDefault(), TestConstants.TEST_ZONE, dayOfWeekService);
+        ReminderRequestParser parser = new ReminderRequestParser(localisationService, Locale.getDefault(), TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
         ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
 
         Assert.assertEquals(request.getText(), "Тест");
         Assert.assertTrue(request.getTime().isFixedTime());
 
-        LocalDate date = TimeUtils.localDateNow(TestConstants.TEST_ZONE).withDayOfMonth(25).withMonth(Month.JANUARY.getValue());
-        if (date.isBefore(TimeUtils.localDateNow(TestConstants.TEST_ZONE))) {
+        LocalDate date = timeCreator.localDateNow(TestConstants.TEST_ZONE).withDayOfMonth(25).withMonth(Month.JANUARY.getValue());
+        if (date.isBefore(timeCreator.localDateNow(TestConstants.TEST_ZONE))) {
             date = date.plusYears(1);
         }
         Assert.assertEquals(date, request.getTime().getFixedDateTime().date());
@@ -59,7 +60,7 @@ class ReminderRequestParserTest {
 
     @Test
     void repeatTime() {
-        ReminderRequestParser parser = new ReminderRequestParser(localisationService, Locale.getDefault(), TestConstants.TEST_ZONE, dayOfWeekService);
+        ReminderRequestParser parser = new ReminderRequestParser(localisationService, Locale.getDefault(), TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
         ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
 
         Assert.assertEquals(request.getText(), "Тест");
@@ -73,7 +74,7 @@ class ReminderRequestParserTest {
 
     @Test
     void offsetTime() {
-        ReminderRequestParser parser = new ReminderRequestParser(localisationService, Locale.getDefault(), TestConstants.TEST_ZONE, dayOfWeekService);
+        ReminderRequestParser parser = new ReminderRequestParser(localisationService, Locale.getDefault(), TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
         ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.OFFSET, ""), new TimeLexem(TimeToken.TYPE, "через"), new TimeLexem(TimeToken.YEARS, "2"), new TimeLexem(TimeToken.MONTHS, "2"), new TimeLexem(TimeToken.DAYS, "2"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
 
         Assert.assertEquals(request.getText(), "Тест");

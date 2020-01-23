@@ -17,7 +17,7 @@ import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageS
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.TimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -43,19 +43,22 @@ public class ReminderJob {
 
     private MessageService messageService;
 
+    private TimeCreator timeCreator;
+
     @Autowired
     public ReminderJob(ReminderService reminderService,
                        ReminderNotificationService reminderNotificationService,
                        ReminderNotificationMessageSender reminderNotificationMessageSender,
                        RepeatReminderService repeatReminderService,
                        RestoreReminderService restoreReminderService,
-                       MessageService messageService) {
+                       MessageService messageService, TimeCreator timeCreator) {
         this.reminderService = reminderService;
         this.reminderNotificationService = reminderNotificationService;
         this.reminderNotificationMessageSender = reminderNotificationMessageSender;
         this.repeatReminderService = repeatReminderService;
         this.restoreReminderService = restoreReminderService;
         this.messageService = messageService;
+        this.timeCreator = timeCreator;
 
         LOGGER.debug("Reminder job initialized and working");
     }
@@ -67,7 +70,7 @@ public class ReminderJob {
 
     @Scheduled(cron = "0 0 0 * * *")
     public void deleteCompletedReminders() {
-        int deleted = reminderService.deleteCompletedReminders(TimeUtils.localDateTimeNow());
+        int deleted = reminderService.deleteCompletedReminders(timeCreator.localDateTimeNow());
 
         LOGGER.debug("Delete {} completed reminders at {}", deleted, LocalDateTime.now());
     }
@@ -87,7 +90,7 @@ public class ReminderJob {
 
     @Scheduled(fixedDelay = 1000)
     public void sendReminders() {
-        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(TimeUtils.localDateTimeNow().minusSeconds(8), 30);
+        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(timeCreator.localDateTimeNow().minusSeconds(8), 30);
 
         for (Reminder reminder : reminders) {
             if (restoreReminderService.isNeedRestore(reminder)) {
@@ -147,14 +150,14 @@ public class ReminderJob {
     private void sendRepeatReminderTime(Reminder reminder, ReminderNotification reminderNotification) {
         reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime());
 
-        reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), TimeUtils.localDateTimeNow());
+        reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), timeCreator.localDateTimeNow());
     }
 
     private void sendRepeatReminderTimeForRepeatableReminder(Reminder reminder, ReminderNotification reminderNotification) {
         DateTime nextRemindAt = reminder.getRemindAt();
 
         if (repeatReminderService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
-            nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtInReceiverZone()).withZoneSameInstant(ZoneOffset.UTC);
+            nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtInReceiverZone(timeCreator)).withZoneSameInstant(ZoneOffset.UTC);
             repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt, RepeatReminderService.UpdateSeries.INCREMENT);
             reminder.setRemindAt(nextRemindAt);
         }

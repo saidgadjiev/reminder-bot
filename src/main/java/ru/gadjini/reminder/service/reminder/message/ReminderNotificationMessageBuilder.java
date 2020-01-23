@@ -10,6 +10,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.time.ReminderNotificationTimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -25,13 +26,16 @@ public class ReminderNotificationMessageBuilder {
 
     private LocalisationService localisationService;
 
+    private TimeCreator timeCreator;
+
     @Autowired
     public ReminderNotificationMessageBuilder(MessageBuilder messageBuilder, ReminderNotificationTimeBuilder reminderNotificationTimeBuilder,
-                                              ReminderMessageBuilder reminderMessageBuilder, LocalisationService localisationService) {
+                                              ReminderMessageBuilder reminderMessageBuilder, LocalisationService localisationService, TimeCreator timeCreator) {
         this.messageBuilder = messageBuilder;
         this.reminderNotificationTimeBuilder = reminderNotificationTimeBuilder;
         this.reminderMessageBuilder = reminderMessageBuilder;
         this.localisationService = localisationService;
+        this.timeCreator = timeCreator;
     }
 
     public String getReminderNotificationForReceiver(Reminder reminder, boolean itsTime, DateTime nextRemindAt) {
@@ -91,7 +95,7 @@ public class ReminderNotificationMessageBuilder {
             if (message.length() > 0) {
                 message.append("\n");
             }
-            message.append(i++).append(") ").append(reminderNotificationTimeBuilder.time(userReminderNotification.withZone(userReminderNotification.getUser().getZone())));
+            message.append(i++).append(") ").append(reminderNotificationTimeBuilder.time(userReminderNotification.withZone(timeCreator, userReminderNotification.getUser().getZone())));
         }
 
         return message.toString();

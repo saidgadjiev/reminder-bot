@@ -13,6 +13,7 @@ import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequestParser;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
 import ru.gadjini.reminder.service.parser.time.parser.TimeParser;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZoneId;
 import java.util.List;
@@ -29,26 +30,29 @@ public class RequestParser {
 
     private DayOfWeekService dayOfWeekService;
 
+    private TimeCreator timeCreator;
+
     @Autowired
     public RequestParser(LocalisationService localisationService,
                          ReminderRequestLexerConfig reminderRequestLexerConfig,
                          TimeLexerConfig timeLexerConfig,
-                         DayOfWeekService dayOfWeekService) {
+                         DayOfWeekService dayOfWeekService, TimeCreator timeCreator) {
         this.localisationService = localisationService;
         this.reminderRequestLexerConfig = reminderRequestLexerConfig;
         this.timeLexerConfig = timeLexerConfig;
         this.dayOfWeekService = dayOfWeekService;
+        this.timeCreator = timeCreator;
     }
 
     public ReminderRequest parseRequest(String text, ZoneId zoneId) {
         List<BaseLexem> lexems = new ReminderRequestLexer(reminderRequestLexerConfig, timeLexerConfig, text).tokenize();
 
-        return new ReminderRequestParser(localisationService, Locale.getDefault(), zoneId, dayOfWeekService).parse(lexems);
+        return new ReminderRequestParser(localisationService, Locale.getDefault(), zoneId, dayOfWeekService, timeCreator).parse(lexems);
     }
 
     public Time parseTime(String time, ZoneId zoneId) {
         List<BaseLexem> lexems = new TimeLexer(timeLexerConfig, time, true).tokenizeThrowParseException();
 
-        return new TimeParser(localisationService, Locale.getDefault(), zoneId, dayOfWeekService).parseWithParseException(lexems);
+        return new TimeParser(localisationService, Locale.getDefault(), zoneId, dayOfWeekService, timeCreator).parseWithParseException(lexems);
     }
 }

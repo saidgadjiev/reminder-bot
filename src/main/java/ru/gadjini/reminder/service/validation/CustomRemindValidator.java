@@ -9,16 +9,19 @@ import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.TimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 @Service
 public class CustomRemindValidator implements Validator {
 
     private LocalisationService localisationService;
 
+    private TimeCreator timeCreator;
+
     @Autowired
-    public CustomRemindValidator(LocalisationService localisationService) {
+    public CustomRemindValidator(LocalisationService localisationService, TimeCreator timeCreator) {
         this.localisationService = localisationService;
+        this.timeCreator = timeCreator;
     }
 
     @Override
@@ -52,7 +55,7 @@ public class CustomRemindValidator implements Validator {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }
         DateTime dateTime = fixedTime.getDateTime();
-        if (dateTime.toZonedDateTime().isBefore(TimeUtils.zonedDateTimeNow(dateTime.getZoneId()))) {
+        if (dateTime.toZonedDateTime().isBefore(timeCreator.zonedDateTimeNow(dateTime.getZoneId()))) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }
     }

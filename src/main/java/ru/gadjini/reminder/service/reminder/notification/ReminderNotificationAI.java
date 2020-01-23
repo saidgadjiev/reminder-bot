@@ -1,9 +1,10 @@
 package ru.gadjini.reminder.service.reminder.notification;
 
 import org.joda.time.Period;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.UserReminderNotification;
-import ru.gadjini.reminder.util.TimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -17,8 +18,15 @@ public class ReminderNotificationAI {
 
     private static final int ITS_TIME_MINUTE_DIFF = 5;
 
+    private TimeCreator timeCreator;
+
+    @Autowired
+    public ReminderNotificationAI(TimeCreator timeCreator) {
+        this.timeCreator = timeCreator;
+    }
+
     public boolean isNeedCreateItsTimeNotification(ZonedDateTime remindAt) {
-        ZonedDateTime now = TimeUtils.zonedDateTimeNow(remindAt.getZone());
+        ZonedDateTime now = timeCreator.zonedDateTimeNow(remindAt.getZone());
 
         return now.plusMinutes(ITS_TIME_MINUTE_DIFF).isBefore(remindAt);
     }
@@ -28,7 +36,7 @@ public class ReminderNotificationAI {
     }
 
     public boolean isNeedCreateReminderNotification(ZonedDateTime remindAt, UserReminderNotification offsetTime) {
-        ZonedDateTime now = TimeUtils.zonedDateTimeNow(remindAt.getZone());
+        ZonedDateTime now = timeCreator.zonedDateTimeNow(remindAt.getZone());
 
         if (offsetTime.getTime() == null) {
             return Duration.between(now, remindAt).toMinutes() > offsetTime.getHours() * 60 + offsetTime.getMinutes() + MINUTE_DIFF;
@@ -38,7 +46,7 @@ public class ReminderNotificationAI {
     }
 
     public boolean isNeedCreateReminderNotification(LocalDate remindAt, UserReminderNotification offsetTime) {
-        ZonedDateTime now = TimeUtils.zonedDateTimeNow();
+        ZonedDateTime now = timeCreator.zonedDateTimeNow();
         ZonedDateTime zonedDateTime = ZonedDateTime.of(remindAt.minusDays(offsetTime.getDays()), offsetTime.getTime(), ZoneOffset.UTC);
 
         return now.isBefore(zonedDateTime);

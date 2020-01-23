@@ -9,16 +9,19 @@ import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.TimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 @Service
 public class PostponeValidator implements Validator {
 
     private LocalisationService localisationService;
 
+    private TimeCreator timeCreator;
+
     @Autowired
-    public PostponeValidator(LocalisationService localisationService) {
+    public PostponeValidator(LocalisationService localisationService, TimeCreator timeCreator) {
         this.localisationService = localisationService;
+        this.timeCreator = timeCreator;
     }
 
     @Override
@@ -56,14 +59,14 @@ public class PostponeValidator implements Validator {
             if (fixedTime.hasTime()) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITHOUT_TIME));
             }
-            if (dateTime.date().isBefore(TimeUtils.localDateNow(dateTime.getZoneId()))) {
+            if (dateTime.date().isBefore(timeCreator.localDateNow(dateTime.getZoneId()))) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
             }
         } else {
             if (!fixedTime.hasTime()) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITH_TIME));
             }
-            if (dateTime.toZonedDateTime().isBefore(TimeUtils.zonedDateTimeNow(dateTime.getZoneId()))) {
+            if (dateTime.toZonedDateTime().isBefore(timeCreator.zonedDateTimeNow(dateTime.getZoneId()))) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
             }
         }

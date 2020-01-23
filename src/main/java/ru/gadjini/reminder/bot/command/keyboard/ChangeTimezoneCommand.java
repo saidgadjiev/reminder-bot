@@ -19,7 +19,7 @@ import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.time.DateTimeFormats;
-import ru.gadjini.reminder.util.TimeUtils;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZoneId;
 import java.time.format.TextStyle;
@@ -42,19 +42,22 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
 
     private LocalisationService localisationService;
 
+    private TimeCreator timeCreator;
+
     @Autowired
     public ChangeTimezoneCommand(LocalisationService localisationService,
                                  MessageService messageService,
                                  TgUserService tgUserService,
                                  TimezoneService timezoneService,
                                  CurrReplyKeyboard replyKeyboardService,
-                                 LocalisationService localisationService1) {
+                                 LocalisationService localisationService1, TimeCreator timeCreator) {
         name = localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME);
         this.messageService = messageService;
         this.tgUserService = tgUserService;
         this.timezoneService = timezoneService;
         this.replyKeyboardService = replyKeyboardService;
         this.localisationService = localisationService1;
+        this.timeCreator = timeCreator;
     }
 
     @Override
@@ -76,7 +79,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                         .chatId(message.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.CURRENT_TIMEZONE, new Object[]{
                                 zoneId.getDisplayName(TextStyle.FULL, Locale.getDefault()),
-                                DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(TimeUtils.zonedDateTimeNow(zoneId))
+                                DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(zoneId))
                         })).replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
         );
 
@@ -105,7 +108,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                             .chatId(message.getChatId())
                             .text(localisationService.getMessage(MessagesProperties.TIMEZONE_CHANGED, new Object[]{
                                     zoneId.getDisplayName(TextStyle.FULL, Locale.getDefault()),
-                                    DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(TimeUtils.zonedDateTimeNow(zoneId))
+                                    DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(zoneId))
                             })).replyKeyboard(replyKeyboardMarkup)
             );
         });

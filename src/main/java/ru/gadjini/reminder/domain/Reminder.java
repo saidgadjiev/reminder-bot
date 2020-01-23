@@ -5,6 +5,7 @@ import org.jooq.Field;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.time.DateTime;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -238,8 +239,8 @@ public class Reminder {
     }
 
     @JsonIgnore
-    public RepeatTime getRepeatRemindAtInReceiverZone() {
-        return repeatRemindAt == null ? null : repeatRemindAt.withZone(receiver.getZone());
+    public RepeatTime getRepeatRemindAtInReceiverZone(TimeCreator timeCreator) {
+        return repeatRemindAt == null ? null : repeatRemindAt.withZone(timeCreator, receiver.getZone());
     }
 
     public void setRepeatRemindAt(RepeatTime repeatRemindAt) {

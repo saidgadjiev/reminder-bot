@@ -18,6 +18,7 @@ import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
+import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -30,7 +31,7 @@ import java.util.Locale;
 import static ru.gadjini.reminder.service.parser.time.lexer.TimeToken.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class})
+@ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class, TimeCreator.class})
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class OffsetTimeParserTest {
 
@@ -39,6 +40,9 @@ class OffsetTimeParserTest {
 
     @Autowired
     private DayOfWeekService dayOfWeekService;
+
+    @Autowired
+    private TimeCreator timeCreator;
 
     @Test
     void afterHours() {
@@ -96,6 +100,6 @@ class OffsetTimeParserTest {
     }
 
     private TimeParser parser() {
-        return new TimeParser(localisationService, Locale.getDefault(), TestConstants.TEST_ZONE, dayOfWeekService);
+        return new TimeParser(localisationService, Locale.getDefault(), TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
     }
 }
