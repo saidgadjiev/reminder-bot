@@ -232,8 +232,12 @@ public class ReminderService {
         return reminderDao.deleteCompletedReminders(localDateTime);
     }
 
-    public List<Reminder> getActiveReminders(int userId) {
-        return reminderDao.getActiveReminders(userId);
+    public List<Reminder> getActiveReminders(int userId, Filter filter) {
+        if (filter == Filter.TODAY) {
+            return reminderDao.getActiveReminders(userId, true);
+        }
+
+        return reminderDao.getActiveReminders(userId, false);
     }
 
     public Reminder delete(int reminderId) {
@@ -387,8 +391,28 @@ public class ReminderService {
 
     public enum Filter {
 
-        TODAY,
+        TODAY(0),
 
-        ALL
+        ALL(1);
+
+        private final int code;
+
+        Filter(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public static Filter fromCode(int code) {
+            for (Filter filter : values()) {
+                if (filter.code == code) {
+                    return filter;
+                }
+            }
+
+            throw new IllegalArgumentException();
+        }
     }
 }

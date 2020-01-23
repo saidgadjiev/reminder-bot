@@ -58,7 +58,7 @@ public class ReminderDao {
         }
     }
 
-    public List<Reminder> getActiveReminders(int userId) {
+    public List<Reminder> getActiveReminders(int userId, boolean today) {
         return namedParameterJdbcTemplate.query(
                 "SELECT r.*,\n" +
                         "       (r.repeat_remind_at).*,\n" +
@@ -80,6 +80,7 @@ public class ReminderDao {
                         "                    HAVING COUNT(reminder_id) > 0) rt\n" +
                         "                   ON rt.reminder_id = r.id\n" +
                         "WHERE (r.creator_id = :user_id AND r.status IN (0, 2))\n" +
+                        (today ? "AND (r.remind_at).dt_date < (now()::timestamp AT TIME ZONE 'UTC' AT TIME ZONE rc.zone_id)::date" : "") +
                         "   OR (r.receiver_id = :user_id AND r.status = 0)\n" +
                         "ORDER BY r.remind_at",
                 new MapSqlParameterSource().addValue("user_id", userId),

@@ -9,6 +9,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.TgMessage;
+import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
@@ -38,7 +39,8 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        List<Reminder> reminders = reminderService.getActiveReminders(callbackQuery.getFrom().getId());
+        ReminderService.Filter filter = ReminderService.Filter.fromCode(requestParams.getInt(Arg.FILTER.getKey()));
+        List<Reminder> reminders = reminderService.getActiveReminders(callbackQuery.getFrom().getId(), filter);
 
         reminderMessageSender.sendActiveReminders(
                 callbackQuery.getFrom().getId(),
@@ -51,7 +53,7 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
 
     @Override
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
-        List<Reminder> reminders = reminderService.getActiveReminders(tgMessage.getUser().getId());
+        List<Reminder> reminders = reminderService.getActiveReminders(tgMessage.getUser().getId(), ReminderService.Filter.ALL);
 
         reminderMessageSender.sendActiveReminders(tgMessage.getUser().getId(), tgMessage.getChatId(), tgMessage.getMessageId(), reminders);
     }

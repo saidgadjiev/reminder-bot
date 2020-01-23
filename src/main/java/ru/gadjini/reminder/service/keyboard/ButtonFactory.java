@@ -9,6 +9,7 @@ import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandParser;
 import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.reminder.ReminderService;
 
 import java.util.Objects;
 
@@ -108,8 +109,8 @@ public class ButtonFactory {
         return customRemindButton;
     }
 
-    public InlineKeyboardButton customReminderTimeButton(String name, int reminderId, String prevHistoryName) {
-        InlineKeyboardButton customRemindButton = new InlineKeyboardButton(name);
+    public InlineKeyboardButton customReminderTimeButton(String nameCode, int reminderId, String prevHistoryName) {
+        InlineKeyboardButton customRemindButton = new InlineKeyboardButton(localisationService.getMessage(nameCode));
         customRemindButton.setCallbackData(CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
@@ -136,9 +137,11 @@ public class ButtonFactory {
         return button;
     }
 
-    public InlineKeyboardButton getActiveRemindersButton() {
-        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_DESCRIPTION));
-        button.setCallbackData(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME);
+    public InlineKeyboardButton getActiveRemindersButton(String nameCode, ReminderService.Filter filter) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(nameCode));
+        button.setCallbackData(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams()
+                        .add(Arg.FILTER.getKey(), filter.getCode()).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;
     }
