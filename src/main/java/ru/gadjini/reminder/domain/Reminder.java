@@ -3,6 +3,7 @@ package ru.gadjini.reminder.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.jooq.Field;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
+import ru.gadjini.reminder.domain.jooq.datatype.RepeatTimeRecord;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
@@ -53,6 +54,8 @@ public class Reminder {
 
     public static final String TOTAL_SERIES = "total_series";
 
+    public static final String CURR_REPEAT_INDEX = "curr_repeat_index";
+
     private int id;
 
     private String text;
@@ -75,7 +78,9 @@ public class Reminder {
 
     private String note;
 
-    private RepeatTime repeatRemindAt;
+    private List<RepeatTime> repeatRemindAts;
+
+    private int currRepeatIndex;
 
     private ZonedDateTime completedAt;
 
@@ -111,7 +116,7 @@ public class Reminder {
         this.initialRemindAt = reminder.initialRemindAt;
         this.status = reminder.status;
         this.note = reminder.note;
-        this.repeatRemindAt = reminder.repeatRemindAt;
+        this.repeatRemindAts = reminder.repeatRemindAts;
         this.completedAt = reminder.completedAt;
         this.messageId = reminder.messageId;
         this.reminderNotifications = reminder.reminderNotifications;
@@ -231,20 +236,24 @@ public class Reminder {
 
     @JsonIgnore
     public boolean isRepeatable() {
-        return repeatRemindAt != null;
+        return repeatRemindAts != null && repeatRemindAts.size() > 0;
     }
 
     public RepeatTime getRepeatRemindAt() {
-        return repeatRemindAt;
+        return repeatRemindAts.get(currRepeatIndex);
     }
 
     @JsonIgnore
-    public RepeatTime getRepeatRemindAtInReceiverZone(TimeCreator timeCreator) {
-        return repeatRemindAt == null ? null : timeCreator.withZone(repeatRemindAt, receiver.getZone());
+    public List<RepeatTime> getRepeatRemindAtsInReceiverZone(TimeCreator timeCreator) {
+        return repeatRemindAts == null ? null : timeCreator.withZone(repeatRemindAts, receiver.getZone());
     }
 
-    public void setRepeatRemindAt(RepeatTime repeatRemindAt) {
-        this.repeatRemindAt = repeatRemindAt;
+    public void setRepeatRemindAts(List<RepeatTime> repeatRemindAts) {
+        this.repeatRemindAts = repeatRemindAts;
+    }
+
+    public List<RepeatTime> getRepeatRemindAts() {
+        return repeatRemindAts;
     }
 
     public ZonedDateTime getCompletedAt() {
@@ -344,6 +353,14 @@ public class Reminder {
         this.totalSeries = totalSeries;
     }
 
+    public int getCurrRepeatIndex() {
+        return currRepeatIndex;
+    }
+
+    public void setCurrRepeatIndex(int currRepeatIndex) {
+        this.currRepeatIndex = currRepeatIndex;
+    }
+
     public Map<Field<?>, Object> getDiff(Reminder newReminder) {
         Map<Field<?>, Object> values = new HashMap<>();
         if (!Objects.equals(getText(), newReminder.getText())) {
@@ -352,8 +369,8 @@ public class Reminder {
         if (!Objects.equals(getNote(), newReminder.getNote())) {
             values.put(ReminderTable.TABLE.NOTE, newReminder.getNote());
         }
-        if (!Objects.equals(getRepeatRemindAt(), newReminder.getRepeatRemindAt())) {
-            values.put(ReminderTable.TABLE.REPEAT_REMIND_AT, newReminder.getRepeatRemindAt() == null ? null : newReminder.getRepeatRemindAt().sqlObject());
+        if (!Objects.equals(getRepeatRemindAts(), newReminder.getRepeatRemindAts())) {
+            values.put(ReminderTable.TABLE.REPEAT_REMIND_AT, newReminder.getRepeatRemindAts() == null ? null : newReminder.getRepeatRemindAts().stream().map(RepeatTimeRecord::new).toArray());
         }
         if (!Objects.equals(getRemindAt(), newReminder.getRemindAt())) {
             values.put(ReminderTable.TABLE.REMIND_AT, newReminder.getRemindAt() == null ? null : newReminder.getRemindAt().sqlObject());

@@ -82,18 +82,6 @@ public class FixedTime {
         return dateTime.withZoneSameInstant(targetZone);
     }
 
-    public ZonedDateTime toZonedDateTime() {
-        return dateTime.toZonedDateTime();
-    }
-
-    public String sql() {
-        return dateTime.sql();
-    }
-
-    public PGobject sqlObject() {
-        return dateTime.sqlObject();
-    }
-
     public static DateTime of(LocalDate localDate, LocalTime localTime, ZoneId zoneId) {
         return DateTime.of(localDate, localTime, zoneId);
     }

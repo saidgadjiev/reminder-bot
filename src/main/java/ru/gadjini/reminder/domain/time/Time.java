@@ -6,10 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.ZoneId;
+import java.util.List;
 
 public class Time {
 
-    private RepeatTime repeatTime;
+    private List<RepeatTime> repeatTimes;
 
     private FixedTime fixedTime;
 
@@ -26,12 +27,12 @@ public class Time {
         return zoneId;
     }
 
-    public RepeatTime getRepeatTime() {
-        return repeatTime;
+    public List<RepeatTime> getRepeatTimes() {
+        return repeatTimes;
     }
 
-    public void setRepeatTime(RepeatTime repeatTime) {
-        this.repeatTime = repeatTime;
+    public void setRepeatTimes(List<RepeatTime> repeatTimes) {
+        this.repeatTimes = repeatTimes;
     }
 
     @JsonIgnore
@@ -56,7 +57,7 @@ public class Time {
     }
 
     public boolean isRepeatTime() {
-        return repeatTime != null;
+        return repeatTimes != null && repeatTimes.size() > 0;
     }
 
     public boolean isFixedTime() {

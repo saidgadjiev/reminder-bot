@@ -53,8 +53,9 @@ public class RestoreReminderService {
                 reminderNotificationService.deleteReminderNotification(reminderNotification.getId());
             } else {
                 if (repeatReminderService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
-                    DateTime nextRemindAt = repeatReminderService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtInReceiverZone(timeCreator)).withZoneSameInstant(ZoneOffset.UTC);
-                    repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAt, RepeatReminderService.UpdateSeries.NONE);
+                    RepeatReminderService.RemindAtCandidate nextRemindAtCandidate = repeatReminderService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtsInReceiverZone(timeCreator));
+                    DateTime nextRemindAt = nextRemindAtCandidate.getRemindAt().withZoneSameInstant(ZoneOffset.UTC);
+                    repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAtCandidate.getIndex(), nextRemindAt, RepeatReminderService.UpdateSeries.NONE);
                     reminder.setRemindAt(nextRemindAt);
                 }
                 ZonedDateTime restoredLastRemindAt = getNextLastRemindAt(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime());

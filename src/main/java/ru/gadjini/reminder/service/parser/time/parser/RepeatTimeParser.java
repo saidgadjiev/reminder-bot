@@ -13,11 +13,14 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
 
 public class RepeatTimeParser {
+
+    private List<RepeatTime> repeatTimes = new ArrayList<>();
 
     private RepeatTime repeatTime;
 
@@ -27,14 +30,17 @@ public class RepeatTimeParser {
 
     private LexemsConsumer lexemsConsumer;
 
+    private final ZoneId zoneId;
+
     public RepeatTimeParser(LexemsConsumer lexemsConsumer, DayOfWeekService dayOfWeekService, Locale locale, ZoneId zoneId) {
         this.dayOfWeekService = dayOfWeekService;
         this.locale = locale;
         this.lexemsConsumer = lexemsConsumer;
-        this.repeatTime = new RepeatTime(zoneId);
+        this.zoneId = zoneId;
     }
 
-    public RepeatTime parse(List<BaseLexem> lexems) {
+    public List<RepeatTime> parse(List<BaseLexem> lexems) {
+        repeatTime = new RepeatTime(zoneId);
         repeatTime.setInterval(new Period());
 
         if (lexemsConsumer.check(lexems, TimeToken.YEARS)) {
@@ -52,9 +58,12 @@ public class RepeatTimeParser {
             consumeMinutes(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAY_OF_WEEK)) {
             consumeDayOfWeek(lexems);
+        } else {
+            return repeatTimes;
         }
+        repeatTimes.add(repeatTime);
 
-        return repeatTime;
+        return parse(lexems);
     }
 
     private void consumeMonths(List<BaseLexem> lexems) {

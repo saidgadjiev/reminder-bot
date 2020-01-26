@@ -11,6 +11,7 @@ import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Service
 public class MessageBuilder {
@@ -34,7 +35,7 @@ public class MessageBuilder {
         });
     }
 
-    public String getReminderTimeEditedReceiver(TgUser creator, String reminderText, DateTime from, RepeatTime to) {
+    public String getReminderTimeEditedReceiver(TgUser creator, String reminderText, DateTime from, List<RepeatTime> to) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED_RECEIVER, new Object[]{
                 UserUtils.userLink(creator),
                 reminderText,
@@ -44,7 +45,7 @@ public class MessageBuilder {
     }
 
 
-    public String getReminderTimeEditedReceiver(TgUser creator, String reminderText, RepeatTime from, DateTime to) {
+    public String getReminderTimeEditedReceiver(TgUser creator, String reminderText, List<RepeatTime> from, DateTime to) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED_RECEIVER, new Object[]{
                 UserUtils.userLink(creator),
                 reminderText,
@@ -61,7 +62,7 @@ public class MessageBuilder {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_EDITED, new Object[] {text});
     }
 
-    public String getReminderTimeEditedReceiver(TgUser creator, String reminderText, RepeatTime from, RepeatTime to) {
+    public String getReminderTimeEditedReceiver(TgUser creator, String reminderText, List<RepeatTime> from, List<RepeatTime> to) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED_RECEIVER, new Object[]{
                 UserUtils.userLink(creator),
                 reminderText,
@@ -130,15 +131,15 @@ public class MessageBuilder {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, new Object[]{timeBuilder.time(oldRemindAt), timeBuilder.time(newRemindAt)});
     }
 
-    public String getReminderTimeEdited(DateTime oldRemindAt, RepeatTime newRemindAt) {
+    public String getReminderTimeEdited(DateTime oldRemindAt, List<RepeatTime> newRemindAt) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, new Object[]{timeBuilder.time(oldRemindAt), timeBuilder.time(newRemindAt)});
     }
 
-    public String getReminderTimeEdited(RepeatTime oldRemindAt, DateTime newRemindAt) {
+    public String getReminderTimeEdited(List<RepeatTime> oldRemindAt, DateTime newRemindAt) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, new Object[]{timeBuilder.time(oldRemindAt), timeBuilder.time(newRemindAt)});
     }
 
-    public String getReminderTimeEdited(RepeatTime oldRemindAt, RepeatTime newRemindAt) {
+    public String getReminderTimeEdited(List<RepeatTime> oldRemindAt, List<RepeatTime> newRemindAt) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, new Object[]{timeBuilder.time(oldRemindAt), timeBuilder.time(newRemindAt)});
     }
 
@@ -167,9 +168,9 @@ public class MessageBuilder {
         });
     }
 
-    public String getCustomRemindCreated(RepeatTime repeatTime) {
+    public String getCustomRemindCreated(List<RepeatTime> repeatTimes) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND_CREATED, new Object[]{
-                timeBuilder.time(repeatTime)
+                timeBuilder.time(repeatTimes)
         });
     }
 

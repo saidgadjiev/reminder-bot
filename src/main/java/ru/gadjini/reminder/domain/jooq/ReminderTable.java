@@ -5,6 +5,9 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.jooq.datatype.RepeatTimeRecord;
+import ru.gadjini.reminder.domain.jooq.datatype.RepeatTimeType;
+import ru.gadjini.reminder.domain.time.RepeatTime;
 
 public class ReminderTable extends TableImpl<Record> {
 
@@ -18,7 +21,7 @@ public class ReminderTable extends TableImpl<Record> {
 
     public TableField<Record, Object> INITIAL_REMIND_AT;
 
-    public TableField<Record, Object> REPEAT_REMIND_AT;
+    public TableField<Record, RepeatTimeRecord[]> REPEAT_REMIND_AT;
 
     public TableField<Record, Object> REMIND_AT;
 
@@ -44,6 +47,8 @@ public class ReminderTable extends TableImpl<Record> {
 
     public TableField<Record, Integer> CREATOR_MESSAGE_ID;
 
+    public TableField<Record, Integer> CURR_REPEAT_INDEX;
+
     private ReminderTable() {
         this(DSL.name(Reminder.TYPE), null, null);
     }
@@ -67,7 +72,7 @@ public class ReminderTable extends TableImpl<Record> {
         REMIND_AT = createField(Reminder.REMIND_AT, SQLDataType.OTHER);
         NOTE = createField(Reminder.NOTE, SQLDataType.VARCHAR);
         STATUS = createField(Reminder.STATUS, SQLDataType.INTEGER);
-        REPEAT_REMIND_AT = createField(Reminder.REPEAT_REMIND_AT, SQLDataType.OTHER);
+        REPEAT_REMIND_AT = createField(Reminder.REPEAT_REMIND_AT, RepeatTimeType.REPEAT_TIME_TYPE.getDataType().getArrayDataType(), RepeatTime.TYPE);
         MESSAGE_ID = createField(Reminder.MESSAGE_ID, SQLDataType.INTEGER);
         CURRENT_SERIES = createField(Reminder.CURRENT_SERIES, SQLDataType.INTEGER);
         MAX_SERIES = createField(Reminder.MAX_SERIES, SQLDataType.INTEGER);
@@ -76,6 +81,7 @@ public class ReminderTable extends TableImpl<Record> {
         CREATOR_MESSAGE_ID = createField(Reminder.CREATOR_MESSAGE_ID, SQLDataType.INTEGER);
         RECEIVER_MESSAGE_ID = createField(Reminder.RECEIVER_MESSAGE_ID, SQLDataType.INTEGER);
         TOTAL_SERIES = createField(Reminder.TOTAL_SERIES, SQLDataType.INTEGER);
+        CURR_REPEAT_INDEX = createField(Reminder.CURR_REPEAT_INDEX, SQLDataType.INTEGER);
     }
 
     @Override

@@ -17,10 +17,13 @@ public class TimeLexerConfig {
 
     private final Map<Locale, GroupPattern> offsetTimePatterns = new HashMap<>();
 
+    private final Map<Locale, GroupPattern> repeatWordPatterns = new HashMap<>();
+
     public TimeLexerConfig(PatternBuilder patternBuilder) {
         timePatterns.put(Locale.getDefault(), patternBuilder.buildTimePattern(Locale.getDefault()));
         repeatTimePatterns.put(Locale.getDefault(), patternBuilder.buildRepeatTimePattern(Locale.getDefault()));
         offsetTimePatterns.put(Locale.getDefault(), patternBuilder.buildOffsetTimePattern());
+        repeatWordPatterns.put(Locale.getDefault(), patternBuilder.buildRepeatWordPattern());
     }
 
     public GroupPattern getTimePattern() {
@@ -33,5 +36,9 @@ public class TimeLexerConfig {
 
     public GroupPattern getOffsetTimePattern() {
         return offsetTimePatterns.get(Locale.getDefault());
+    }
+
+    public GroupPattern getRepeatWordPattern() {
+        return repeatWordPatterns.get(Locale.getDefault());
     }
 }

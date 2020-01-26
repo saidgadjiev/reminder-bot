@@ -2,7 +2,6 @@ package ru.gadjini.reminder.service.parser.reminder.parser;
 
 import ru.gadjini.reminder.domain.time.FixedTime;
 import ru.gadjini.reminder.domain.time.OffsetTime;
-import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.time.DateTime;
 
@@ -68,14 +67,6 @@ public class ReminderRequest {
 
     public void setFixedTime(FixedTime fixedTime) {
         time.setFixedTime(fixedTime);
-    }
-
-    public RepeatTime getRepeatTime() {
-        return time.getRepeatTime();
-    }
-
-    public void setRepeatTime(RepeatTime repeatTime) {
-        time.setRepeatTime(repeatTime);
     }
 
     public OffsetTime getOffsetTime() {

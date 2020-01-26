@@ -50,7 +50,7 @@ public class TimeParser {
     public Time parse(List<BaseLexem> lexems) {
         if (lexemsConsumer.check(lexems, TimeToken.REPEAT)) {
             lexemsConsumer.consume(lexems, TimeToken.REPEAT);
-            time.setRepeatTime(repeatTimeParser.parse(lexems));
+            time.setRepeatTimes(repeatTimeParser.parse(lexems));
         } else if (lexemsConsumer.check(lexems, TimeToken.OFFSET)) {
             lexemsConsumer.consume(lexems, TimeToken.OFFSET);
             time.setOffsetTime(offsetTimeParser.parse(lexems));

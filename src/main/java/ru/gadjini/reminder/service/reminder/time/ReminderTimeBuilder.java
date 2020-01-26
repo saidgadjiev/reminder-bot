@@ -23,7 +23,7 @@ public class ReminderTimeBuilder {
             return "<b>" + timeBuilder.deactivated() + "</b>";
         }
         if (reminder.isRepeatable()) {
-            return timeBuilder.time(reminder.getRepeatRemindAtInReceiverZone(timeCreator));
+            return timeBuilder.time(reminder.getRepeatRemindAtsInReceiverZone(timeCreator));
         } else {
             return timeBuilder.time(reminder.getRemindAtInReceiverZone());
         }

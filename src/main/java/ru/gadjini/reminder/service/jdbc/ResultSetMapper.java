@@ -1,7 +1,9 @@
 package ru.gadjini.reminder.service.jdbc;
 
 import org.apache.commons.lang3.StringUtils;
+import org.postgresql.jdbc.PgArray;
 import org.postgresql.util.PGInterval;
+import org.postgresql.util.PGobject;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.*;
 import ru.gadjini.reminder.domain.time.RepeatTime;
@@ -18,10 +20,15 @@ import java.time.Month;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class ResultSetMapper {
+
+    private static final Pattern CUSTOM_TIME_ARG_PATTERN = Pattern.compile("[^,]*,");
 
     public SavedQuery mapSavedQuery(ResultSet rs) throws SQLException {
         SavedQuery savedQuery = new SavedQuery();
@@ -115,9 +122,11 @@ public class ResultSetMapper {
         String repeatRemindAt = rs.getString(Reminder.REPEAT_REMIND_AT);
 
         if (StringUtils.isNotBlank(repeatRemindAt)) {
-            reminder.setRepeatRemindAt(mapRepeatTime(rs));
+            reminder.setRepeatRemindAts(mapRepeatTime(rs));
         }
         reminder.setRemindAt(mapDateTime(rs));
+        //TODO: исправить. initial remind at не совпадает с rmeind at
+        reminder.setInitialRemindAt(reminder.getRemindAt());
 
         if (columnNames.contains("rc_zone_id")) {
             String zoneId = rs.getString("rc_zone_id");
@@ -221,29 +230,60 @@ public class ResultSetMapper {
         return DateTime.of(rs.getDate(DateTime.DATE).toLocalDate(), time == null ? null : time.toLocalTime(), ZoneOffset.UTC);
     }
 
-    private RepeatTime mapRepeatTime(ResultSet rs) throws SQLException {
-        RepeatTime repeatTime = new RepeatTime(ZoneOffset.UTC);
-        String weekDay = rs.getString(RepeatTime.WEEK_DAY);
-        if (StringUtils.isNotBlank(weekDay)) {
-            repeatTime.setDayOfWeek(DayOfWeek.valueOf(weekDay));
-        }
-        Time time = rs.getTime(RepeatTime.TIME);
-        if (time != null) {
-            repeatTime.setTime(time.toLocalTime());
-        }
-        PGInterval interval = (PGInterval) rs.getObject(RepeatTime.INTERVAL);
-        if (interval != null) {
-            repeatTime.setInterval(JodaTimeUtils.toPeriod(interval));
-        }
-        String month = rs.getString(RepeatTime.MONTH);
-        if (StringUtils.isNotBlank(month)) {
-            repeatTime.setMonth(Month.valueOf(month));
-        }
-        int day = rs.getInt(RepeatTime.DAY);
-        if (day != 0) {
-            repeatTime.setDay(day);
+    private List<RepeatTime> mapRepeatTime(ResultSet rs) throws SQLException {
+        List<RepeatTime> repeatTimes = new ArrayList<>();
+        PgArray arr = (PgArray) rs.getArray(Reminder.REPEAT_REMIND_AT);
+        Object[] unparsedRepeatTimes = (Object[]) arr.getArray();
+
+        for (Object object : unparsedRepeatTimes) {
+            String t = ((PGobject) object).getValue();
+            t = t.substring(1, t.length() - 1);
+            Matcher argMatcher = CUSTOM_TIME_ARG_PATTERN.matcher(t);
+
+            RepeatTime repeatTime = new RepeatTime(ZoneOffset.UTC);
+            if (argMatcher.find()) {
+                String weekDay = t.substring(argMatcher.start(), argMatcher.end() - 1);
+                if (StringUtils.isNotBlank(weekDay)) {
+                    repeatTime.setDayOfWeek(DayOfWeek.valueOf(weekDay));
+                }
+            }
+            if (argMatcher.find()) {
+                String timeArg = t.substring(argMatcher.start(), argMatcher.end() - 1);
+                Time time = StringUtils.isNotBlank(timeArg) ? Time.valueOf(timeArg) : null;
+                if (time != null) {
+                    repeatTime.setTime(time.toLocalTime());
+                }
+            }
+            if (argMatcher.find()) {
+                String arg = t.substring(argMatcher.start(), argMatcher.end() - 1);
+                PGInterval interval = null;
+                if (StringUtils.isNotBlank(arg)) {
+                    interval = new PGInterval();
+                    interval.setValue(arg);
+                }
+                if (interval != null) {
+                    repeatTime.setInterval(JodaTimeUtils.toPeriod(interval));
+                }
+            }
+            if (argMatcher.find()) {
+                String month = t.substring(argMatcher.start(), argMatcher.end() - 1);
+                if (StringUtils.isNotBlank(month)) {
+                    repeatTime.setMonth(Month.valueOf(month));
+                }
+            }
+            if (argMatcher.find()) {
+                String arg = t.substring(argMatcher.start(), argMatcher.end() - 1);
+                int day = 0;
+                if (StringUtils.isNotBlank(arg)) {
+                    day = Integer.parseInt(arg);
+                }
+                if (day != 0) {
+                    repeatTime.setDay(day);
+                }
+            }
+            repeatTimes.add(repeatTime);
         }
 
-        return repeatTime;
+        return repeatTimes;
     }
 }

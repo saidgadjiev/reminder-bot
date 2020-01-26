@@ -9,6 +9,7 @@ import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import ru.gadjini.reminder.service.parser.pattern.Patterns;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import static ru.gadjini.reminder.service.parser.time.lexer.TimeToken.DAY;
@@ -21,6 +22,7 @@ class FixedTimeLexerTest {
         Mockito.when(TIME_LEXER_CONFIG.getTimePattern()).thenReturn(new GroupPattern(Patterns.FIXED_TIME_PATTERN, PatternBuilder.FIXED_TIME_PATTERN_GROUPS));
         Mockito.when(TIME_LEXER_CONFIG.getOffsetTimePattern()).thenReturn(new GroupPattern(Patterns.OFFSET_TIME_PATTERN, PatternBuilder.OFFSET_TIME_PATTERN_GROUPS));
         Mockito.when(TIME_LEXER_CONFIG.getRepeatTimePattern()).thenReturn(new GroupPattern(Patterns.REPEAT_TIME_PATTERN, PatternBuilder.REPEAT_TIME_PATTERN_GROUPS));
+        Mockito.when(TIME_LEXER_CONFIG.getRepeatWordPattern()).thenReturn(new GroupPattern(Patterns.REPEAT_WORD_PATTERN, Collections.emptyList()));
     }
 
     @Test

@@ -16,6 +16,8 @@ import java.util.Objects;
 
 public class RepeatTime {
 
+    public static final String TYPE = "repeat_time";
+
     public static final String WEEK_DAY = "rt_day_of_week";
 
     public static final String TIME = "rt_time";
@@ -26,7 +28,7 @@ public class RepeatTime {
 
     public static final String DAY = "rt_day";
 
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     private DayOfWeek dayOfWeek;
 

@@ -54,6 +54,19 @@ public class ReminderNotificationMessageBuilder {
         }
     }
 
+    public String getReminderTimeMessage(List<ReminderNotification> reminderNotifications) {
+        StringBuilder message = new StringBuilder();
+
+        for (ReminderNotification notification : reminderNotifications) {
+            if (message.length() > 0) {
+                message.append("\n");
+            }
+            message.append(getReminderTimeMessage(notification));
+        }
+
+        return message.toString();
+    }
+
     public String getReminderTimeMessage(ReminderNotification reminderNotification) {
         if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
             return reminderNotificationTimeBuilder.time(reminderNotification);

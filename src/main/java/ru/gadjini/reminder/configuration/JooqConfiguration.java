@@ -15,9 +15,8 @@ public class JooqConfiguration {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DefaultConfiguration configuration(ConnectionProvider connectionProvider) {
+    public DefaultConfiguration configuration() {
         DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
-        jooqConfiguration.set(connectionProvider);
         jooqConfiguration.setSQLDialect(SQLDialect.POSTGRES);
         jooqConfiguration.setSettings(SettingsTools.defaultSettings().withParamCastMode(ParamCastMode.NEVER));
 

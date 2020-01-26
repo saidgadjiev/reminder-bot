@@ -19,9 +19,7 @@ import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,6 +34,7 @@ class ReminderRequestLexerTest {
         Mockito.when(TIME_LEXER_CONFIG.getTimePattern()).thenReturn(new GroupPattern(Patterns.FIXED_TIME_PATTERN, PatternBuilder.FIXED_TIME_PATTERN_GROUPS));
         Mockito.when(TIME_LEXER_CONFIG.getOffsetTimePattern()).thenReturn(new GroupPattern(Patterns.OFFSET_TIME_PATTERN, PatternBuilder.OFFSET_TIME_PATTERN_GROUPS));
         Mockito.when(TIME_LEXER_CONFIG.getRepeatTimePattern()).thenReturn(new GroupPattern(Patterns.REPEAT_TIME_PATTERN, PatternBuilder.REPEAT_TIME_PATTERN_GROUPS));
+        Mockito.when(TIME_LEXER_CONFIG.getRepeatWordPattern()).thenReturn(new GroupPattern(Patterns.REPEAT_WORD_PATTERN, Collections.emptyList()));
     }
 
     @Autowired
@@ -55,6 +54,14 @@ class ReminderRequestLexerTest {
         ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str);
         List<BaseLexem> lexems = lexer.tokenize();
         Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
+    }
+
+    @Test
+    void repeatTimes() {
+        String str = "Тест каждое 25 января 19:30 среду 19:30";
+        ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str);
+        List<BaseLexem> lexems = lexer.tokenize();
+        Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30"), new TimeLexem(TimeToken.DAY_OF_WEEK, "среду"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
     }
 
     @Test

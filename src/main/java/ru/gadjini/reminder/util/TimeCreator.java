@@ -7,6 +7,8 @@ import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TimeCreator {
@@ -37,6 +39,16 @@ public class TimeCreator {
 
     public DateTime dateTimeNow(ZoneId zoneId) {
         return DateTime.of(zonedDateTimeNow(zoneId));
+    }
+
+    public List<RepeatTime> withZone(List<RepeatTime> repeatTimes, ZoneId target) {
+        List<RepeatTime> resultList = new ArrayList<>();
+
+        for (RepeatTime repeatTime : repeatTimes) {
+            resultList.add(withZone(repeatTime, target));
+        }
+
+        return resultList;
     }
 
     public RepeatTime withZone(RepeatTime repeatTime, ZoneId target) {

@@ -11,6 +11,7 @@ import java.time.DayOfWeek;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
@@ -104,13 +105,18 @@ public class PatternBuilder {
         this.dayOfWeekService = dayOfWeekService;
     }
 
+    public GroupPattern buildRepeatWordPattern() {
+        String regexRepeat = localisationService.getMessage(MessagesProperties.REGEXP_REPEAT);
+
+        return new GroupPattern(Pattern.compile(regexRepeat + "$"), Collections.emptyList());
+    }
+
     public GroupPattern buildRepeatTimePattern(Locale locale) {
         StringBuilder pattern = new StringBuilder();
 
         String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX);
         String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX);
         String regexpTimeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
-        String regexRepeat = localisationService.getMessage(MessagesProperties.REGEXP_REPEAT);
         String regexpEveryDay = localisationService.getMessage(MessagesProperties.REGEXP_DAY);
         String regexpEveryMinute = localisationService.getMessage(MessagesProperties.REGEXP_MINUTE);
         String regexpEveryMonthDayPrefix = localisationService.getMessage(MessagesProperties.REGEXP_MONTH_DAY_PREFIX);
@@ -133,7 +139,7 @@ public class PatternBuilder {
                 .append(Stream.of(Month.values()).map(month -> month.getDisplayName(TextStyle.FULL, locale)).collect(Collectors.joining("|")))
                 .append(") (?<").append(DAY).append(">\\d+)( (?<").append(ONE_YEAR).append(">").append(regexpEveryYear).append("))?)|(?<")
                 .append(ONE_MINUTE).append(">").append(regexpEveryMinute).append(")|(?<").append(DAY_OF_WEEK_WORD)
-                .append(">").append(getDayOfWeekPattern(locale)).append(")) ").append(regexRepeat);
+                .append(">").append(getDayOfWeekPattern(locale)).append("))");
 
         return new GroupPattern(Pattern.compile(pattern.toString()), REPEAT_TIME_PATTERN_GROUPS);
     }

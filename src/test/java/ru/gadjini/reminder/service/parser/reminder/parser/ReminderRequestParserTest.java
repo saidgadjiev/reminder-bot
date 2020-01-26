@@ -19,6 +19,7 @@ import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import ru.gadjini.reminder.util.TimeCreator;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Month;
@@ -66,10 +67,27 @@ class ReminderRequestParserTest {
         Assert.assertEquals(request.getText(), "Тест");
         Assert.assertTrue(request.getTime().isRepeatTime());
 
-        Assert.assertEquals(25, request.getTime().getRepeatTime().getDay());
-        Assert.assertEquals(Month.JANUARY, request.getRepeatTime().getMonth());
+        Assert.assertEquals(25, request.getTime().getRepeatTimes().get(0).getDay());
+        Assert.assertEquals(Month.JANUARY, request.getTime().getRepeatTimes().get(0).getMonth());
         Assert.assertEquals(TestConstants.TEST_ZONE, request.getZone());
-        Assert.assertEquals(LocalTime.of(19, 30), request.getRepeatTime().getTime());
+        Assert.assertEquals(LocalTime.of(19, 30), request.getTime().getRepeatTimes().get(0).getTime());
+    }
+
+    @Test
+    void repeatTimes() {
+        ReminderRequestParser parser = new ReminderRequestParser(localisationService, Locale.getDefault(), TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
+        ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30"), new TimeLexem(TimeToken.DAY_OF_WEEK, "среду"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+
+        Assert.assertEquals(request.getText(), "Тест");
+        Assert.assertTrue(request.getTime().isRepeatTime());
+
+        Assert.assertEquals(25, request.getTime().getRepeatTimes().get(0).getDay());
+        Assert.assertEquals(Month.JANUARY, request.getTime().getRepeatTimes().get(0).getMonth());
+        Assert.assertEquals(TestConstants.TEST_ZONE, request.getZone());
+        Assert.assertEquals(LocalTime.of(19, 30), request.getTime().getRepeatTimes().get(0).getTime());
+
+        Assert.assertEquals(DayOfWeek.WEDNESDAY, request.getTime().getRepeatTimes().get(1).getDayOfWeek());
+        Assert.assertEquals(LocalTime.of(19, 30), request.getTime().getRepeatTimes().get(1).getTime());
     }
 
     @Test

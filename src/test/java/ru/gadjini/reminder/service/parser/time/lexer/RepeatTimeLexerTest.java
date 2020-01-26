@@ -9,6 +9,7 @@ import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import ru.gadjini.reminder.service.parser.pattern.Patterns;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import static ru.gadjini.reminder.service.parser.time.lexer.TimeToken.*;
@@ -21,6 +22,7 @@ class RepeatTimeLexerTest {
         Mockito.when(TIME_LEXER_CONFIG.getTimePattern()).thenReturn(new GroupPattern(Patterns.FIXED_TIME_PATTERN, PatternBuilder.FIXED_TIME_PATTERN_GROUPS));
         Mockito.when(TIME_LEXER_CONFIG.getOffsetTimePattern()).thenReturn(new GroupPattern(Patterns.OFFSET_TIME_PATTERN, PatternBuilder.OFFSET_TIME_PATTERN_GROUPS));
         Mockito.when(TIME_LEXER_CONFIG.getRepeatTimePattern()).thenReturn(new GroupPattern(Patterns.REPEAT_TIME_PATTERN, PatternBuilder.REPEAT_TIME_PATTERN_GROUPS));
+        Mockito.when(TIME_LEXER_CONFIG.getRepeatWordPattern()).thenReturn(new GroupPattern(Patterns.REPEAT_WORD_PATTERN, Collections.emptyList()));
     }
 
     @Test
@@ -146,6 +148,16 @@ class RepeatTimeLexerTest {
         TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str);
         LinkedList<BaseLexem> lexems = timeLexer.tokenize();
         Assert.assertEquals(expected(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(DAYS, "2"), new TimeLexem(HOURS, "2"), new TimeLexem(MINUTES, "20")), lexems);
+        Assert.assertEquals("Тест", timeLexer.eraseTime());
+    }
+
+    @Test
+    void repeatTimes() {
+        String str = "Тест каждый вторник в 19:30 среду 20:00";
+        TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str);
+        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
+
+        Assert.assertEquals(expected(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(DAY_OF_WEEK, "вторник"), new TimeLexem(HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30"), new TimeLexem(DAY_OF_WEEK, "среду"), new TimeLexem(HOUR, "20"), new TimeLexem(TimeToken.MINUTE, "00")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
     }
 

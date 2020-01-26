@@ -5,7 +5,6 @@ import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -14,13 +13,15 @@ import ru.gadjini.reminder.domain.jooq.FriendshipTable;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.jooq.TgUserTable;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
+import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.jdbc.JooqPreparedSetter;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
+import java.sql.Array;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -102,7 +103,7 @@ public class ReminderDao {
 
     public List<Reminder> getCompletedReminders(int userId) {
         return namedParameterJdbcTemplate.query(
-                        "SELECT r.*," +
+                "SELECT r.*," +
                         "       (r.remind_at).*,\n" +
                         "       (r.repeat_remind_at).*,\n" +
                         "       1 AS status,\n" +
@@ -191,7 +192,7 @@ public class ReminderDao {
         if (reminderMapping == null) {
             jdbcTemplate.update(
                     update.getSQL(),
-                    new JooqPreparedSetter(update.getParams())
+                    new JooqPreparedSetter(updateValues.keySet(), update.getParams())
             );
 
             return null;
@@ -296,28 +297,36 @@ public class ReminderDao {
     }
 
     private Reminder createByReceiverId(Reminder reminder) {
-        jdbcTemplate.query("WITH r AS (\n" +
-                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
-                        "                       note, message_id, read) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, receiver_id, creator_id\n" +
-                        ")\n" +
-                        "SELECT r.id,\n" +
-                        "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
-                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
-                        "FROM r\n" +
-                        "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
-                        "         LEFT JOIN friendship f ON CASE\n" +
-                        "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
-                        "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END",
-                new SqlParameterValue[]{
-                        new SqlParameterValue(Types.VARCHAR, reminder.getText()),
-                        new SqlParameterValue(Types.INTEGER, reminder.getCreatorId()),
-                        new SqlParameterValue(Types.INTEGER, reminder.getReceiverId()),
-                        new SqlParameterValue(Types.OTHER, reminder.getRemindAt().sql()),
-                        new SqlParameterValue(Types.OTHER, reminder.getRepeatRemindAt() != null ? reminder.getRepeatRemindAt().sql() : null),
-                        new SqlParameterValue(Types.OTHER, reminder.getRemindAt().sql()),
-                        new SqlParameterValue(Types.VARCHAR, reminder.getNote()),
-                        new SqlParameterValue(Types.INTEGER, reminder.getMessageId()),
-                        new SqlParameterValue(Types.BOOLEAN, reminder.isRead())
+        jdbcTemplate.query(
+                con -> {
+                    PreparedStatement ps = con.prepareStatement("WITH r AS (\n" +
+                            "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
+                            "                       note, message_id, read, curr_repeat_index) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, receiver_id, creator_id\n" +
+                            ")\n" +
+                            "SELECT r.id,\n" +
+                            "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
+                            "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
+                            "FROM r\n" +
+                            "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
+                            "         LEFT JOIN friendship f ON CASE\n" +
+                            "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
+                            "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END");
+
+                    ps.setString(1, reminder.getText());
+                    ps.setInt(2, reminder.getCreatorId());
+                    ps.setInt(3, reminder.getReceiverId());
+                    ps.setObject(4, reminder.getRemindAt().sqlObject());
+
+                    Object[] repeatTimes = reminder.getRepeatRemindAts() != null ? reminder.getRepeatRemindAts().stream().map(RepeatTime::sqlObject).toArray() : null;
+                    Array array = con.createArrayOf(RepeatTime.TYPE, repeatTimes);
+                    ps.setArray(5, array);
+                    ps.setObject(6, reminder.getRemindAt().sqlObject());
+                    ps.setString(7, reminder.getNote());
+                    ps.setInt(8, reminder.getMessageId());
+                    ps.setBoolean(9, reminder.isRead());
+                    ps.setInt(10, reminder.getCurrRepeatIndex());
+
+                    return ps;
                 },
                 rs -> {
                     reminder.setId(rs.getInt(Reminder.ID));
@@ -330,29 +339,38 @@ public class ReminderDao {
     }
 
     private Reminder createByReceiverName(Reminder reminder) {
-        jdbcTemplate.query("\n" +
-                        "WITH r AS (\n" +
-                        "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, initial_remind_at,\n" +
-                        "                          note, message_id, read) SELECT ?, ?, user_id, ?, ?, ?, ? FROM tg_user WHERE username = ? RETURNING id, receiver_id, creator_id\n" +
-                        ")\n" +
-                        "SELECT r.id,\n" +
-                        "       r.receiver_id,\n" +
-                        "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
-                        "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
-                        "FROM r\n" +
-                        "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
-                        "         LEFT JOIN friendship f ON CASE\n" +
-                        "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
-                        "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END",
-                new SqlParameterValue[]{
-                        new SqlParameterValue(Types.VARCHAR, reminder.getText()),
-                        new SqlParameterValue(Types.INTEGER, reminder.getCreatorId()),
-                        new SqlParameterValue(Types.OTHER, reminder.getRemindAt().sql()),
-                        new SqlParameterValue(Types.OTHER, reminder.getRemindAt().sql()),
-                        new SqlParameterValue(Types.VARCHAR, reminder.getReceiver().getUsername()),
-                        new SqlParameterValue(Types.VARCHAR, reminder.getNote()),
-                        new SqlParameterValue(Types.INTEGER, reminder.getMessageId()),
-                        new SqlParameterValue(Types.BOOLEAN, reminder.isRead())
+        jdbcTemplate.query(
+                con -> {
+                    PreparedStatement ps = con.prepareStatement("WITH r AS (\n" +
+                            "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
+                            "                          note, message_id, read, curr_repeat_index) SELECT ?, ?, user_id, ?, ?, ?, ?, ?, ?, ? FROM tg_user WHERE username = ? RETURNING id, receiver_id, creator_id\n" +
+                            ")\n" +
+                            "SELECT r.id,\n" +
+                            "       r.receiver_id,\n" +
+                            "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
+                            "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
+                            "FROM r\n" +
+                            "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
+                            "         LEFT JOIN friendship f ON CASE\n" +
+                            "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
+                            "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END");
+
+                    ps.setString(1, reminder.getText());
+                    ps.setInt(2, reminder.getCreatorId());
+                    ps.setObject(3, reminder.getRemindAt().sqlObject());
+
+                    Object[] repeatTimes = reminder.getRepeatRemindAts() != null ? reminder.getRepeatRemindAts().stream().map(RepeatTime::sqlObject).toArray() : null;
+                    Array array = con.createArrayOf(RepeatTime.TYPE, repeatTimes);
+                    ps.setArray(4, array);
+
+                    ps.setObject(5, reminder.getRemindAt().sqlObject());
+                    ps.setString(6, reminder.getNote());
+                    ps.setInt(7, reminder.getMessageId());
+                    ps.setBoolean(8, reminder.isRead());
+                    ps.setInt(9, reminder.getCurrRepeatIndex());
+                    ps.setString(10, reminder.getReceiver().getUsername());
+
+                    return ps;
                 },
                 rs -> {
                     reminder.setId(rs.getInt(Reminder.ID));
@@ -372,7 +390,7 @@ public class ReminderDao {
 
         SelectJoinStep<Record> from = select.from(r);
         from.leftJoin("(SELECT reminder_id, TRUE as exists_notifications FROM reminder_time WHERE custom = TRUE GROUP BY reminder_id HAVING COUNT(reminder_id) > 0) rt")
-        .on("rt.reminder_id = r.id");
+                .on("rt.reminder_id = r.id");
         if (reminderMapping.getReceiverMapping() != null
                 && reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_NAME)
                 || reminderMapping.getCreatorMapping() != null) {

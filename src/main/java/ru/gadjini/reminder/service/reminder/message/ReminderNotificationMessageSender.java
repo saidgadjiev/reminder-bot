@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.EditMessageContext;
@@ -12,6 +13,8 @@ import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.time.DateTime;
+
+import java.util.stream.Collectors;
 
 @Service
 public class ReminderNotificationMessageSender {
@@ -63,19 +66,22 @@ public class ReminderNotificationMessageSender {
     }
 
     public void sendCustomRemindCreatedFromReminderTimeDetails(long chatId, int messageId, CustomRemindResult customRemindResult) {
-        String text = reminderNotificationMessageBuilder.getReminderTimeMessage(customRemindResult.getReminderNotification());
+        String text = reminderNotificationMessageBuilder.getReminderTimeMessage(customRemindResult.getReminderNotifications());
 
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(text)
-                        .replyKeyboard(inlineKeyboardService.getReminderTimeKeyboard(customRemindResult.getReminderNotification().getId(), customRemindResult.getReminderNotification().getReminderId()))
+                        .replyKeyboard(inlineKeyboardService.getReminderTimesListKeyboard(
+                                customRemindResult.getReminderNotifications().stream().map(ReminderNotification::getId).collect(Collectors.toList()),
+                                customRemindResult.getReminder().getId())
+                        )
         );
     }
 
     public void sendCustomRemindCreated(long chatId, int messageId, InlineKeyboardMarkup replyKeyboard, CustomRemindResult customRemindResult) {
-        Reminder reminder = customRemindResult.getReminderNotification().getReminder();
+        Reminder reminder = customRemindResult.getReminder();
         String text = reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId());
 
         messageService.editMessageAsync(
