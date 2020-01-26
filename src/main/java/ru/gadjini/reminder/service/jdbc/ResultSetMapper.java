@@ -236,7 +236,10 @@ public class ResultSetMapper {
         Object[] unparsedRepeatTimes = (Object[]) arr.getArray();
 
         for (Object object : unparsedRepeatTimes) {
-            String t = ((PGobject) object).getValue();
+            if (object == null) {
+                continue;
+            }
+            String t = ((PGobject) object).getValue().replace("\"", "");
             t = t.substring(1, t.length() - 1);
             Matcher argMatcher = CUSTOM_TIME_ARG_PATTERN.matcher(t);
 

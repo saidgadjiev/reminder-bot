@@ -6,10 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.util.TimeCreator;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 
 @Service
 public class ReminderNotificationAI {
@@ -46,8 +43,12 @@ public class ReminderNotificationAI {
     }
 
     public boolean isNeedCreateReminderNotification(LocalDate remindAt, UserReminderNotification offsetTime) {
+        return isNeedCreateReminderNotification(remindAt, offsetTime.getDays(), offsetTime.getTime());
+    }
+
+    public boolean isNeedCreateReminderNotification(LocalDate remindAt, int days, LocalTime time) {
         ZonedDateTime now = timeCreator.zonedDateTimeNow();
-        ZonedDateTime zonedDateTime = ZonedDateTime.of(remindAt.minusDays(offsetTime.getDays()), offsetTime.getTime(), ZoneOffset.UTC);
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(remindAt.minusDays(days), time, ZoneOffset.UTC);
 
         return now.isBefore(zonedDateTime);
     }

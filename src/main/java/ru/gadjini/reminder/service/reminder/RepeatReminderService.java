@@ -615,6 +615,9 @@ public class RepeatReminderService {
         LocalDate repeatReminder = getFirstRemindAt(repeatTimeInReceiverZone).date();
 
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITHOUT_TIME);
+
+        fixedReminderNotification(repeatReminder, repeatTimeInReceiverZone.getInterval(), LocalTime.of(5, 0), reminderNotifications).setCustom(false);
+
         for (UserReminderNotification offsetTime : userReminderNotifications) {
             if (repeatTimeInReceiverZone.getInterval().getDays() == 1 && offsetTime.getDays() != 0) {
                 continue;
@@ -628,6 +631,9 @@ public class RepeatReminderService {
 
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITHOUT_TIME);
         Period repeatPeriod = new Period().withDays(7);
+
+        fixedReminderNotification(repeatReminder, repeatPeriod, LocalTime.of(5, 0), reminderNotifications).setCustom(false);
+
         for (UserReminderNotification offsetTime : userReminderNotifications) {
             fixedReminderNotification(repeatReminder.minusDays(offsetTime.getDays()), repeatPeriod, offsetTime.getTime(), reminderNotifications).setCustom(true);
         }

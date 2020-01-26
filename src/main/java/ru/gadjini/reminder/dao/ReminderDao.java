@@ -62,7 +62,6 @@ public class ReminderDao {
     public List<Reminder> getActiveReminders(int userId, boolean today) {
         return namedParameterJdbcTemplate.query(
                 "SELECT r.*,\n" +
-                        "       (r.repeat_remind_at).*,\n" +
                         "       (r.remind_at).*,\n" +
                         "       rc.zone_id                                                                            AS rc_zone_id,\n" +
                         "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
@@ -91,11 +90,11 @@ public class ReminderDao {
 
     public List<Reminder> getOverdueRepeatReminders() {
         return jdbcTemplate.query(
-                "SELECT r.*, (r.remind_at).*, (r.repeat_remind_at).*, rc.zone_id as rc_zone_id\n" +
+                "SELECT r.*, (r.remind_at).*, rc.zone_id as rc_zone_id\n" +
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
                         "WHERE r.status = 0\n" +
-                        "  AND r.repeat_remind_at::varchar IS NOT NULL\n" +
+                        "  AND r.repeat_remind_at[1] IS NOT NULL\n" +
                         "  AND (r.remind_at).dt_date < (now()::timestamp AT TIME ZONE 'UTC' AT TIME ZONE rc.zone_id)::date",
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
         );
@@ -105,7 +104,6 @@ public class ReminderDao {
         return namedParameterJdbcTemplate.query(
                 "SELECT r.*," +
                         "       (r.remind_at).*,\n" +
-                        "       (r.repeat_remind_at).*,\n" +
                         "       1 AS status,\n" +
                         "       rc.zone_id                                                                            AS rc_zone_id,\n" +
                         "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
@@ -137,7 +135,6 @@ public class ReminderDao {
 
         namedParameterJdbcTemplate.query(
                 "SELECT r.*,\n" +
-                        "       (r.repeat_remind_at).*,\n" +
                         "       (r.remind_at).*,\n" +
                         "       rt.id as rt_id,\n" +
                         "       rc.zone_id                                       as rc_zone_id,\n" +
@@ -218,7 +215,6 @@ public class ReminderDao {
                         "r.note, r.message_id, r.count_series, r.total_series, r.current_series, r.max_series, r.status, r.read, old.reminder_text AS old_text\n" +
                         ")\n" +
                         "SELECT r.*,\n" +
-                        "       (r.repeat_remind_at).*,\n" +
                         "       (r.remind_at).*,\n" +
                         "       rc.zone_id                                                                            AS rc_zone_id,\n" +
                         "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
@@ -386,7 +382,7 @@ public class ReminderDao {
 
     private SelectSelectStep<Record> buildSelect(ReminderMapping reminderMapping) {
         ReminderTable r = ReminderTable.TABLE.as("r");
-        SelectSelectStep<Record> select = dslContext.select(r.asterisk(), DSL.field("(r.repeat_remind_at).*"), DSL.field("(r.remind_at).*"), DSL.field("CASE WHEN rt.exists_notifications IS NULL THEN TRUE ELSE FALSE END suppress_notifications"));
+        SelectSelectStep<Record> select = dslContext.select(r.asterisk(), DSL.field("(r.remind_at).*"), DSL.field("CASE WHEN rt.exists_notifications IS NULL THEN TRUE ELSE FALSE END suppress_notifications"));
 
         SelectJoinStep<Record> from = select.from(r);
         from.leftJoin("(SELECT reminder_id, TRUE as exists_notifications FROM reminder_time WHERE custom = TRUE GROUP BY reminder_id HAVING COUNT(reminder_id) > 0) rt")

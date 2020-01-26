@@ -124,10 +124,14 @@ public class RepeatTimeLexer {
             matchEnd += tmp.length() - trimmed.length();
             tmp = trimmed;
 
+            if (tmp.isEmpty()) {
+                break;
+            }
+
             matcher = lexerConfig.getRepeatTimePattern().maxMatcher(tmp);
         }
         if (fullMatch) {
-            matcher = lexerConfig.getRepeatWordPattern().maxMatcher(tmp);
+            matcher = lexerConfig.getRepeatWordPattern().matcher(tmp);
 
             if (!matcher.matches()) {
                 return null;

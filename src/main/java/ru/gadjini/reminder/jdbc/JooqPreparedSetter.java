@@ -86,7 +86,9 @@ public class JooqPreparedSetter implements PreparedStatementSetter, ParameterDis
     }
 
     private static String toPGString(Object o) {
-        if (o instanceof byte[])
+        if (o == null) {
+            return null;
+        } else if (o instanceof byte[])
             return toPGString((byte[]) o);
         else if (o instanceof Object[])
             return toPGArrayString((Object[]) o);
@@ -104,7 +106,7 @@ public class JooqPreparedSetter implements PreparedStatementSetter, ParameterDis
 
         String separator = "";
         for (int i = 0; i < r.size(); i++) {
-            @SuppressWarnings({ "unchecked", "rawtypes" })
+            @SuppressWarnings({"unchecked", "rawtypes"})
             Object a = ((Converter) r.field(i).getConverter()).to(r.get(i));
             sb.append(separator);
 

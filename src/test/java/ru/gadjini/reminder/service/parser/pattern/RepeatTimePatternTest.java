@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.gadjini.reminder.service.parser.pattern.PatternBuilder.*;
-import static ru.gadjini.reminder.service.parser.pattern.Patterns.*;
+import static ru.gadjini.reminder.service.parser.pattern.Patterns.repeatTimeMatch;
 
 
 class RepeatTimePatternTest {
