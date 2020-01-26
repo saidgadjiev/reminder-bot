@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.configuration;
 
-import org.jooq.ConnectionProvider;
 import org.jooq.SQLDialect;
 import org.jooq.conf.ParamCastMode;
 import org.jooq.conf.SettingsTools;

@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.domain.time;
 
-import org.postgresql.util.PGobject;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.LocalDate;

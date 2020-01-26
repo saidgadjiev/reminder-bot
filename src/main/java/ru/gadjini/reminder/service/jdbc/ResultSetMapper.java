@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 @Service
 public class ResultSetMapper {
 
-    private static final Pattern CUSTOM_TIME_ARG_PATTERN = Pattern.compile("[^,]*,");
+    private static final Pattern CUSTOM_TIME_ARG_PATTERN = Pattern.compile("[^,]*,?");
 
     public SavedQuery mapSavedQuery(ResultSet rs) throws SQLException {
         SavedQuery savedQuery = new SavedQuery();
@@ -275,7 +275,7 @@ public class ResultSetMapper {
                 }
             }
             if (argMatcher.find()) {
-                String arg = t.substring(argMatcher.start(), argMatcher.end() - 1);
+                String arg = t.substring(argMatcher.start(), argMatcher.end());
                 int day = 0;
                 if (StringUtils.isNotBlank(arg)) {
                     day = Integer.parseInt(arg);

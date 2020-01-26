@@ -1,9 +1,10 @@
 package ru.gadjini.reminder.jdbc;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.jooq.*;
+import org.jooq.Converter;
+import org.jooq.EnumType;
+import org.jooq.Param;
+import org.jooq.Record;
 import org.jooq.tools.StringUtils;
-import org.jooq.util.postgres.PostgresUtils;
 import org.springframework.jdbc.core.ArgumentTypePreparedStatementSetter;
 import org.springframework.jdbc.core.ParameterDisposer;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -11,28 +12,18 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.Integer.toOctalString;
 import static org.jooq.tools.StringUtils.leftPad;
 
 public class JooqPreparedSetter implements PreparedStatementSetter, ParameterDisposer {
 
-    private Object[] values;
-
-    private int[] types;
-
-    private List<Field<?>> fields;
-
     private ArgumentTypePreparedStatementSetter statementSetter;
 
     public JooqPreparedSetter(Map<String, Param<?>> params) {
-        this(Collections.emptyList(), params);
-    }
-
-    public JooqPreparedSetter(Collection<Field<?>> fields, Map<String, Param<?>> params) {
-        this.fields = new ArrayList<>(fields);
-
         List<Object> valuesList = new ArrayList<>();
         List<Integer> typesList = new ArrayList<>();
 
@@ -47,8 +38,8 @@ public class JooqPreparedSetter implements PreparedStatementSetter, ParameterDis
             typesList.add(type);
         }
 
-        values = valuesList.toArray();
-        types = typesList.stream().mapToInt(i -> i).toArray();
+        Object[] values = valuesList.toArray();
+        int[] types = typesList.stream().mapToInt(i -> i).toArray();
         statementSetter = new ArgumentTypePreparedStatementSetter(values, types);
     }
 

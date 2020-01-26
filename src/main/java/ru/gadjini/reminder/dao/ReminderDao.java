@@ -189,7 +189,7 @@ public class ReminderDao {
         if (reminderMapping == null) {
             jdbcTemplate.update(
                     update.getSQL(),
-                    new JooqPreparedSetter(updateValues.keySet(), update.getParams())
+                    new JooqPreparedSetter(update.getParams())
             );
 
             return null;
