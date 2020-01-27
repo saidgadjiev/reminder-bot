@@ -106,16 +106,9 @@ public class ReminderRequestService {
 
         ReminderRequest reminderRequest = requestExtractor.extract(context);
 
-        Reminder newReminder = new Reminder();
-        newReminder.setId(oldReminder.getId());
-        newReminder.setReceiverId(oldReminder.getReceiverId());
-        newReminder.setCreatorId(oldReminder.getCreatorId());
-        newReminder.setCreatorMessageId(oldReminder.getCreatorMessageId());
-        newReminder.setReceiverMessageId(oldReminder.getReceiverMessageId());
+        Reminder newReminder = new Reminder(oldReminder);
         newReminder.setText(reminderRequest.getText());
         newReminder.setNote(reminderRequest.getNote());
-        newReminder.setReceiver(oldReminder.getReceiver());
-        newReminder.setCreator(oldReminder.getCreator());
         setTime(newReminder, reminderRequest.getTime());
 
         Map<Field<?>, Object> values = oldReminder.getDiff(newReminder);
@@ -132,8 +125,6 @@ public class ReminderRequestService {
                 reminderService.updateReminderNotifications(oldReminder.getId(), oldReminder.getReceiverId(), newReminder.getRemindAt());
             }
         }
-        newReminder.setCreator(oldReminder.getCreator());
-        newReminder.setReceiver(oldReminder.getReceiver());
 
         return new UpdateReminderResult(oldReminder, newReminder);
     }
@@ -186,22 +177,20 @@ public class ReminderRequestService {
         Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone());
         validatorFactory.getValidator(ValidatorType.REMINDER_TIME_VALIDATOR).validate(new ValidationContext().time(newReminderTimeInReceiverZone));
 
+        Reminder newReminder = new Reminder(oldReminder);
         Reminder changed;
         if (newReminderTimeInReceiverZone.isRepeatTime()) {
             changed = repeatReminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), newReminderTimeInReceiverZone.getRepeatTimes());
         } else if (newReminderTimeInReceiverZone.isOffsetTime()) {
             ZonedDateTime remindAtInReceiverZone = buildRemindTime(newReminderTimeInReceiverZone.getOffsetTime(), null);
-            changed = reminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), DateTime.of(remindAtInReceiverZone.withZoneSameInstant(ZoneOffset.UTC)));
+            changed = reminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), DateTime.of(remindAtInReceiverZone));
         } else {
-            changed = reminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), newReminderTimeInReceiverZone.getFixedDateTime().withZoneSameInstant(ZoneOffset.UTC));
+            changed = reminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), newReminderTimeInReceiverZone.getFixedDateTime());
         }
-
-        changed.setReceiverId(oldReminder.getReceiverId());
-        changed.setCreatorId(oldReminder.getCreatorId());
-        changed.setCreator(oldReminder.getCreator());
-        changed.setReceiver(oldReminder.getReceiver());
-        changed.setText(oldReminder.getText());
-        changed.setNote(oldReminder.getNote());
+        newReminder.setRemindAt(changed.getRemindAt());
+        newReminder.setInitialRemindAt(changed.getInitialRemindAt());
+        newReminder.setRepeatRemindAts(changed.getRepeatRemindAts());
+        newReminder.setCurrRepeatIndex(changed.getCurrRepeatIndex());
 
         return new UpdateReminderResult(oldReminder, changed);
     }

@@ -142,22 +142,27 @@ public class ReminderService {
     }
 
     @Transactional
-    public Reminder changeReminderTime(int reminderId, int receiverId, DateTime remindAt) {
+    public Reminder changeReminderTime(int reminderId, int receiverId, DateTime remindAtInReceiverZone) {
+        DateTime remindAt = remindAtInReceiverZone.withZoneSameInstant(ZoneOffset.UTC);
         Map<Field<?>, Object> updateValues = new HashMap<>();
         updateValues.put(ReminderTable.TABLE.INITIAL_REMIND_AT, remindAt.sqlObject());
         updateValues.put(ReminderTable.TABLE.REMIND_AT, remindAt.sqlObject());
         updateValues.put(ReminderTable.TABLE.REPEAT_REMIND_AT, null);
+        updateValues.put(ReminderTable.TABLE.CURR_REPEAT_INDEX, null);
 
-        Reminder reminder = reminderDao.update(
-                updateValues,
-                ReminderTable.TABLE.ID.eq(reminderId),
-                new ReminderMapping().setCreatorMapping(new Mapping()).setReceiverMapping(new Mapping())
-        );
+        reminderDao.update(updateValues, ReminderTable.TABLE.ID.eq(reminderId), null);
 
-        List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAt, receiverId);
+        List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAtInReceiverZone, receiverId);
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
         reminderNotificationService.deleteReminderNotifications(reminderId);
         reminderNotificationService.create(reminderNotifications);
+
+        Reminder reminder = new Reminder();
+
+        reminder.setRemindAt(remindAt);
+        reminder.setInitialRemindAt(remindAt);
+        reminder.setRepeatRemindAts(null);
+        reminder.setCurrRepeatIndex(null);
 
         return reminder;
     }

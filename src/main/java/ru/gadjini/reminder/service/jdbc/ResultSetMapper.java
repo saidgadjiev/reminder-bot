@@ -103,6 +103,15 @@ public class ResultSetMapper {
                 reminder.setReceiverMessageId(receiverMessageId);
             }
         }
+
+        if (columnNames.contains(Reminder.CURR_REPEAT_INDEX)) {
+            int currRepeatIndex = rs.getInt(Reminder.CURR_REPEAT_INDEX);
+
+            if (!rs.wasNull()) {
+                reminder.setCurrRepeatIndex(currRepeatIndex);
+            }
+        }
+
         if (columnNames.contains(Reminder.CREATOR_MESSAGE_ID)) {
             int creatorMessageId = rs.getInt(Reminder.CREATOR_MESSAGE_ID);
             if (!rs.wasNull()) {

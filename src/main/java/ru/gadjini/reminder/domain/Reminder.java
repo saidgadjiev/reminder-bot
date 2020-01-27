@@ -82,7 +82,7 @@ public class Reminder {
 
     private List<RepeatTime> repeatRemindAts;
 
-    private int currRepeatIndex;
+    private Integer currRepeatIndex;
 
     private ZonedDateTime completedAt;
 
@@ -359,11 +359,11 @@ public class Reminder {
         this.totalSeries = totalSeries;
     }
 
-    public int getCurrRepeatIndex() {
+    public Integer getCurrRepeatIndex() {
         return currRepeatIndex;
     }
 
-    public void setCurrRepeatIndex(int currRepeatIndex) {
+    public void setCurrRepeatIndex(Integer currRepeatIndex) {
         this.currRepeatIndex = currRepeatIndex;
     }
 

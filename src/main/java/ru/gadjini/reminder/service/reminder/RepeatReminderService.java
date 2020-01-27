@@ -304,7 +304,8 @@ public class RepeatReminderService {
                 Map.ofEntries(
                         Map.entry(ReminderTable.TABLE.REPEAT_REMIND_AT, repeatTimes.stream().map(RepeatTimeRecord::new).toArray()),
                         Map.entry(ReminderTable.TABLE.INITIAL_REMIND_AT, sqlObject),
-                        Map.entry(ReminderTable.TABLE.REMIND_AT, sqlObject)
+                        Map.entry(ReminderTable.TABLE.REMIND_AT, sqlObject),
+                        Map.entry(ReminderTable.TABLE.CURR_REPEAT_INDEX, remindAtCandidate.index)
                 ),
                 ReminderTable.TABLE.ID.eq(reminderId),
                 null
@@ -320,11 +321,10 @@ public class RepeatReminderService {
         reminderNotificationService.create(notifications);
 
         Reminder reminder = new Reminder();
-        reminder.setId(reminderId);
-        reminder.setReceiverId(receiverId);
         reminder.setRepeatRemindAts(repeatTimes);
         reminder.setInitialRemindAt(firstRemindAt);
         reminder.setRemindAt(firstRemindAt);
+        reminder.setCurrRepeatIndex(remindAtCandidate.getIndex());
 
         return reminder;
     }
