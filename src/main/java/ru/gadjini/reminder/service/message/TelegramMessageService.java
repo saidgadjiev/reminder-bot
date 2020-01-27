@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.job.MessageSenderJob;
@@ -69,8 +70,10 @@ public class TelegramMessageService implements MessageService {
 
         try {
             telegramService.execute(deleteMessage);
-        } catch (TelegramApiException e) {
-            LOGGER.error(e.getMessage(), e);
+        } catch (TelegramApiRequestException ex) {
+            LOGGER.error(ex.getApiResponse(), ex);
+        } catch (TelegramApiException ex) {
+            LOGGER.error(ex.getMessage(), ex);
         }
     }
 
@@ -122,8 +125,10 @@ public class TelegramMessageService implements MessageService {
 
         try {
             telegramService.execute(answerCallbackQuery);
-        } catch (TelegramApiException e) {
-            LOGGER.error(e.getMessage(), e);
+        } catch (TelegramApiRequestException ex) {
+            LOGGER.error(ex.getApiResponse(), ex);
+        } catch (TelegramApiException ex) {
+            LOGGER.error(ex.getMessage(), ex);
         }
     }
 
@@ -151,6 +156,8 @@ public class TelegramMessageService implements MessageService {
 
         try {
             telegramService.execute(editMessageText);
+        } catch (TelegramApiRequestException ex) {
+            LOGGER.error(ex.getApiResponse(), ex);
         } catch (TelegramApiException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }

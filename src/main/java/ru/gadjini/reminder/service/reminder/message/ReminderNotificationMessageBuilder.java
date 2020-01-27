@@ -40,17 +40,17 @@ public class ReminderNotificationMessageBuilder {
 
     public String getReminderNotificationForReceiver(Reminder reminder, boolean itsTime, DateTime nextRemindAt) {
         if (itsTime) {
-            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId(), nextRemindAt));
+            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getReceiverId()).nextRemindAt(nextRemindAt).remindNotification(true)));
         } else {
-            return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId()));
+            return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getReceiverId()).remindNotification(true)));
         }
     }
 
     public String getReminderNotificationMySelf(Reminder reminder, boolean itsTime, DateTime nextRemindAt) {
         if (itsTime) {
-            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, reminder.getCreatorId(), nextRemindAt));
+            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getCreatorId()).nextRemindAt(nextRemindAt).remindNotification(true)));
         } else {
-            return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, reminder.getCreatorId()));
+            return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getCreatorId()).remindNotification(true)));
         }
     }
 

@@ -13,5 +13,6 @@ CREATE TABLE IF NOT EXISTS completed_reminder
     current_series    INT          NOT NULL DEFAULT 0,
     max_series        INT          NOT NULL DEFAULT 0,
     total_series      INT          NOT NULL DEFAULT 0,
-    count_series      BOOLEAN      NOT NULL DEFAULT FALSE
+    count_series      BOOLEAN      NOT NULL DEFAULT FALSE,
+    created_at          TIMESTAMP(0) NOT NULL DEFAULT NOW()
 );

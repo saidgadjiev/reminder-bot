@@ -56,6 +56,8 @@ public class Reminder {
 
     public static final String CURR_REPEAT_INDEX = "curr_repeat_index";
 
+    public static final String CREATED_AT = "created_at";
+
     private int id;
 
     private String text;
@@ -102,6 +104,8 @@ public class Reminder {
 
     private Integer receiverMessageId;
 
+    private ZonedDateTime createdAt;
+
     public Reminder() {
     }
 
@@ -128,6 +132,8 @@ public class Reminder {
         this.creatorMessageId = reminder.creatorMessageId;
         this.receiverMessageId = reminder.receiverMessageId;
         this.totalSeries = reminder.totalSeries;
+        this.createdAt = reminder.createdAt;
+        this.currRepeatIndex = reminder.currRepeatIndex;
     }
 
     public int getId() {
@@ -385,6 +391,18 @@ public class Reminder {
 
     public void setSuppressNotifications(boolean suppressNotifications) {
         this.suppressNotifications = suppressNotifications;
+    }
+
+    public ZonedDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(ZonedDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public ZonedDateTime getCreatedAtInReceiverZone() {
+        return createdAt.withZoneSameInstant(receiver.getZone());
     }
 
     public enum Status {

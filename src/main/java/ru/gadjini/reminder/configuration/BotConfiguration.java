@@ -86,8 +86,8 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
     }
 
     @Bean
-    public BotFilter botFilter(SubscriptionFilter subscriptionFilter, ReminderBotFilter reminderBotFilter, StartCommandFilter startCommandFilter, InviteFilter inviteFilter) {
-        inviteFilter.setNext(startCommandFilter).setNext(subscriptionFilter).setNext(reminderBotFilter);
+    public BotFilter botFilter(ReminderBotFilter reminderBotFilter, StartCommandFilter startCommandFilter, InviteFilter inviteFilter) {
+        inviteFilter.setNext(startCommandFilter).setNext(reminderBotFilter);
 
         return inviteFilter;
     }

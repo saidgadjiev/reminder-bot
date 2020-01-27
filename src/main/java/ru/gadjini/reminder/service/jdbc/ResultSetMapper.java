@@ -119,6 +119,9 @@ public class ResultSetMapper {
         if (completedAt != null) {
             reminder.setCompletedAt(ZonedDateTime.of(completedAt.toLocalDateTime(), ZoneOffset.UTC));
         }
+        Timestamp createdAt = rs.getTimestamp(Reminder.CREATED_AT);
+        reminder.setCreatedAt(ZonedDateTime.of(createdAt.toLocalDateTime(), ZoneOffset.UTC));
+
         String repeatRemindAt = rs.getString(Reminder.REPEAT_REMIND_AT);
 
         if (StringUtils.isNotBlank(repeatRemindAt)) {

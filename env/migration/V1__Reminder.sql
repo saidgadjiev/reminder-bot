@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS reminder
     read                BOOLEAN      NOT NULL DEFAULT FALSE,
     message_id          INT          NOT NULL,
     receiver_message_id INT,
-    create_message_id   INT
+    create_message_id   INT,
+    created_at          TIMESTAMP(0) NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS reminder_time

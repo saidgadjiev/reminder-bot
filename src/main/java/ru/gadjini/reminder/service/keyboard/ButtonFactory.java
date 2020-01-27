@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CommandParser;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.reminder.ReminderService;
 
 import java.util.Objects;
 
@@ -137,7 +137,7 @@ public class ButtonFactory {
         return button;
     }
 
-    public InlineKeyboardButton getActiveRemindersButton(String nameCode, ReminderService.Filter filter) {
+    public InlineKeyboardButton getActiveRemindersButton(String nameCode, ReminderDao.Filter filter) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(nameCode));
         button.setCallbackData(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()

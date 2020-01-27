@@ -42,7 +42,7 @@ public class ReminderMessageBuilder {
     }
 
     public String getReminderMessage(Reminder reminder) {
-        return getReminderMessage(reminder, reminder.getCreatorId());
+        return getReminderMessage(reminder, new Config().receiverId(reminder.getCreatorId()));
     }
 
     public String getMySelfReminderEdited(Reminder reminder) {
@@ -59,16 +59,12 @@ public class ReminderMessageBuilder {
         return message.toString();
     }
 
-    public String getReminderMessage(Reminder reminder, int messageReceiverId) {
-        return getReminderMessage(reminder, messageReceiverId, null);
-    }
-
-    public String getReminderMessage(Reminder reminder, int messageReceiverId, DateTime nextRemindAt) {
+    public String getReminderMessage(Reminder reminder, Config config) {
         StringBuilder result = new StringBuilder();
         String text = reminder.getText();
         String note = reminder.getNote();
 
-        if (reminder.isSuppressNotifications() && messageReceiverId == reminder.getReceiverId()) {
+        if (reminder.isSuppressNotifications() && config.receiverId == reminder.getReceiverId()) {
             result.append(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI)).append(" ");
         }
         result.append(text).append(" ");
@@ -79,32 +75,38 @@ public class ReminderMessageBuilder {
             if (reminder.isRepeatable()) {
                 result
                         .append(timeBuilder.time(reminder.getRepeatRemindAtsInReceiverZone(timeCreator))).append("\n")
-                        .append(messageBuilder.getNextRemindAt(nextRemindAt == null ? reminder.getRemindAtInReceiverZone() : nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId())));
-
-                if (reminder.isCountSeries()) {
-                    result
-                            .append("\n")
-                            .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries())).append("\n")
-                            .append(messageBuilder.getMaxSeries(reminder.getMaxSeries())).append("\n")
-                            .append(messageBuilder.getTotalSeries(reminder.getTotalSeries()));
-                }
+                        .append(messageBuilder.getNextRemindAt(config.nextRemindAt == null ? reminder.getRemindAtInReceiverZone() : config.nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId())));
             } else {
                 result.append(timeBuilder.time(reminder.getRemindAtInReceiverZone()));
             }
         }
+
+        if (!config.remindNotification) {
+            result.append("\n")
+                    .append(messageBuilder.getReminderCreatedAt(reminder.getCreatedAtInReceiverZone()));
+        }
+
         if (reminder.isNotMySelf()) {
             result.append("\n")
                     .append(reminder.isRead() ? messageBuilder.getReminderRead() : messageBuilder.getReminderUnread());
 
-            if (messageReceiverId == reminder.getCreatorId()) {
+            if (config.receiverId == reminder.getCreatorId()) {
                 result
                         .append("\n")
                         .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
-            } else if (messageReceiverId == reminder.getReceiverId()) {
+            } else if (config.receiverId == reminder.getReceiverId()) {
                 result
                         .append("\n")
                         .append(messageBuilder.getReminderCreator(reminder.getCreator()));
             }
+        }
+
+        if (reminder.isRepeatable() && reminder.isCountSeries()) {
+            result
+                    .append("\n\n")
+                    .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries())).append("\n")
+                    .append(messageBuilder.getMaxSeries(reminder.getMaxSeries())).append("\n")
+                    .append(messageBuilder.getTotalSeries(reminder.getTotalSeries()));
         }
 
         if (StringUtils.isNotBlank(note)) {
@@ -250,7 +252,7 @@ public class ReminderMessageBuilder {
     }
 
     public String getNewReminder(Reminder reminder, int messageReceiverId) {
-        return messageBuilder.getNewReminder(getReminderMessage(reminder, messageReceiverId));
+        return messageBuilder.getNewReminder(getReminderMessage(reminder, new Config().receiverId(messageReceiverId)));
     }
 
     public String getCompletedRemindersList(int requesterId, List<Reminder> reminders) {
@@ -492,6 +494,43 @@ public class ReminderMessageBuilder {
                     .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries())).append("\n")
                     .append(messageBuilder.getMaxSeries(reminder.getMaxSeries())).append("\n")
                     .append(messageBuilder.getTotalSeries(reminder.getTotalSeries()));
+        }
+    }
+
+    public static class Config {
+
+        private boolean remindNotification;
+
+        private int receiverId;
+
+        private DateTime nextRemindAt;
+
+        public boolean remindNotification() {
+            return this.remindNotification;
+        }
+
+        public Config remindNotification(final boolean remindNotification) {
+            this.remindNotification = remindNotification;
+            return this;
+        }
+
+        public int receiverId() {
+            return receiverId;
+        }
+
+        public Config receiverId(final int receiverId) {
+            this.receiverId = receiverId;
+
+            return this;
+        }
+
+        public DateTime nextRemindAt() {
+            return this.nextRemindAt;
+        }
+
+        public Config nextRemindAt(final DateTime nextRemindAt) {
+            this.nextRemindAt = nextRemindAt;
+            return this;
         }
     }
 }

@@ -62,7 +62,7 @@ public class CreatorReminderCommand implements CallbackBotCommand, NavigableCall
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
-                        .text(messageBuilder.getReminderMessage(reminder, reminder.getCreatorId()))
+                        .text(messageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getCreatorId())))
                         .replyKeyboard(inlineKeyboardService.getCreatorReminderKeyboard(reminder))
         );
         if (replyKeyboard != null) {

@@ -5,11 +5,11 @@ $BODY$
 BEGIN
     WITH r AS (
         DELETE FROM reminder WHERE id = NEW.id RETURNING id, reminder_text, creator_id, receiver_id, remind_at,
-            repeat_remind_at, initial_remind_at, NOW(), note, count_series, max_series, current_series
+            repeat_remind_at, initial_remind_at, NOW(), note, count_series, max_series, current_series, created_at
     )
     INSERT
     INTO completed_reminder(reminder_id, reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at,
-                            initial_remind_at, completed_at, note, count_series, current_series, max_series)
+                            initial_remind_at, completed_at, note, count_series, current_series, max_series, created_at)
     SELECT *
     FROM r;
 

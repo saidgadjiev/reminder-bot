@@ -148,6 +148,16 @@ public class TimeBuilder {
         return time(period, true);
     }
 
+    public String fixedDay(ZonedDateTime remindAt) {
+        String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+        String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
+        ZonedDateTime now = timeCreator.zonedDateTimeNow(remindAt.getZone());
+
+        return "<b>" + remindAt.getDayOfMonth() + " " + monthName +
+                "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " +
+                timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + (now.getYear() < remindAt.getYear() ? " " + remindAt.getYear() : "") + "</b>";
+    }
+
     public String time(Period period, boolean bold) {
         StringBuilder time = new StringBuilder();
 
@@ -195,16 +205,6 @@ public class TimeBuilder {
         return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
     }
 
-    private String fixedDay(ZonedDateTime remindAt) {
-        String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
-        String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
-        ZonedDateTime now = timeCreator.zonedDateTimeNow(remindAt.getZone());
-
-        return "<b>" + remindAt.getDayOfMonth() + " " + monthName +
-                "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " +
-                timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + (now.getYear() < remindAt.getYear() ? " " + remindAt.getYear() : "") + "</b>";
-    }
-
     private String tomorrowTime(ZonedDateTime remindAt) {
         String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
         String today = localisationService.getMessage(MessagesProperties.TOMORROW);
@@ -247,7 +247,7 @@ public class TimeBuilder {
             }
         }
 
-        return time.toString();
+        return time.toString().trim();
     }
 
     private String getPeriodView(Period period) {
@@ -270,6 +270,6 @@ public class TimeBuilder {
             time.append(declensionService.minute(period.getMinutes())).append(" ");
         }
 
-        return time.toString();
+        return time.toString().trim();
     }
 }

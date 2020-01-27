@@ -23,6 +23,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -59,7 +61,7 @@ public class ReminderDao {
         }
     }
 
-    public List<Reminder> getActiveReminders(int userId, boolean today) {
+    public List<Reminder> getActiveReminders(int userId, Filter filter) {
         return namedParameterJdbcTemplate.query(
                 "SELECT r.*,\n" +
                         "       (r.remind_at).*,\n" +
@@ -79,9 +81,9 @@ public class ReminderDao {
                         "                    GROUP BY reminder_id\n" +
                         "                    HAVING COUNT(reminder_id) > 0) rt\n" +
                         "                   ON rt.reminder_id = r.id\n" +
-                        "WHERE (r.creator_id = :user_id AND r.status IN (0, 2))\n" +
-                        (today ? "AND (r.remind_at).dt_date < (now()::timestamp AT TIME ZONE 'UTC' AT TIME ZONE rc.zone_id)::date" : "") +
-                        "   OR (r.receiver_id = :user_id AND r.status = 0)\n" +
+                        "WHERE ((r.creator_id = :user_id AND r.status IN (0, 2))\n" +
+                        "   OR (r.receiver_id = :user_id AND r.status = 0))\n" +
+                        (filter == Filter.TODAY ? "AND (r.remind_at).dt_date = (now()::timestamp AT TIME ZONE 'UTC' AT TIME ZONE rc.zone_id)::date\n" : "") +
                         "ORDER BY r.remind_at",
                 new MapSqlParameterSource().addValue("user_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
@@ -94,7 +96,7 @@ public class ReminderDao {
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
                         "WHERE r.status = 0\n" +
-                        "  AND r.repeat_remind_at[1] IS NOT NULL\n" +
+                        "  AND r.repeat_remind_at IS NOT NULL\n" +
                         "  AND (r.remind_at).dt_date < (now()::timestamp AT TIME ZONE 'UTC' AT TIME ZONE rc.zone_id)::date",
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
         );
@@ -297,9 +299,10 @@ public class ReminderDao {
                 con -> {
                     PreparedStatement ps = con.prepareStatement("WITH r AS (\n" +
                             "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
-                            "                       note, message_id, read, curr_repeat_index) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, receiver_id, creator_id\n" +
+                            "                       note, message_id, read, curr_repeat_index) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, receiver_id, creator_id, created_at\n" +
                             ")\n" +
                             "SELECT r.id,\n" +
+                            "       r.created_at,\n" +
                             "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
                             "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
                             "FROM r\n" +
@@ -328,6 +331,9 @@ public class ReminderDao {
                     reminder.setId(rs.getInt(Reminder.ID));
                     reminder.getReceiver().setName(rs.getString("rc_name"));
                     reminder.getCreator().setName(rs.getString("cr_name"));
+
+                    Timestamp createdAt = rs.getTimestamp(Reminder.CREATED_AT);
+                    reminder.setCreatedAt(ZonedDateTime.of(createdAt.toLocalDateTime(), ZoneOffset.UTC));
                 }
         );
 
@@ -339,10 +345,11 @@ public class ReminderDao {
                 con -> {
                     PreparedStatement ps = con.prepareStatement("WITH r AS (\n" +
                             "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
-                            "                          note, message_id, read, curr_repeat_index) SELECT ?, ?, user_id, ?, ?, ?, ?, ?, ?, ? FROM tg_user WHERE username = ? RETURNING id, receiver_id, creator_id\n" +
+                            "                          note, message_id, read, curr_repeat_index) SELECT ?, ?, user_id, ?, ?, ?, ?, ?, ?, ? FROM tg_user WHERE username = ? RETURNING id, receiver_id, creator_id, created_at\n" +
                             ")\n" +
                             "SELECT r.id,\n" +
                             "       r.receiver_id,\n" +
+                            "       r.created_at,\n" +
                             "       CASE WHEN f.user_one_id = r.receiver_id THEN f.user_one_name ELSE f.user_two_name END AS rc_name,\n" +
                             "       CASE WHEN f.user_one_id = r.creator_id THEN f.user_one_name ELSE f.user_two_name END  AS cr_name\n" +
                             "FROM r\n" +
@@ -374,6 +381,9 @@ public class ReminderDao {
                     reminder.getReceiver().setUserId(reminder.getReceiverId());
                     reminder.getReceiver().setName(rs.getString("rc_name"));
                     reminder.getCreator().setName(rs.getString("cr_name"));
+
+                    Timestamp createdAt = rs.getTimestamp(Reminder.CREATED_AT);
+                    reminder.setCreatedAt(ZonedDateTime.of(createdAt.toLocalDateTime(), ZoneOffset.UTC));
                 }
         );
 
@@ -420,5 +430,32 @@ public class ReminderDao {
         }
 
         return select;
+    }
+
+    public enum Filter {
+
+        TODAY(0),
+
+        ALL(1);
+
+        private final int code;
+
+        Filter(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public static Filter fromCode(int code) {
+            for (Filter filter : values()) {
+                if (filter.code == code) {
+                    return filter;
+                }
+            }
+
+            throw new IllegalArgumentException();
+        }
     }
 }

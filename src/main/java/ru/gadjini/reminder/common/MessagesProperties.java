@@ -219,7 +219,13 @@ public class MessagesProperties {
 
     public static final String MESSAGE_POSTPONE_WITHOUT_REASON = "message.postpone.without.reason";
 
-    public static final String MESSAGE_REMIND_AFTER_10_MIN = "message.remind.after.10min";
+    public static final String MESSAGE_REMIND_AFTER_30_MIN = "message.remind.after.30min";
+
+    public static final String MESSAGE_REMIND_BEFORE_15_MIN = "message.remind.before.15min";
+
+    public static final String MESSAGE_REMIND_BEFORE_30_MIN = "message.remind.before.30min";
+
+    public static final String MESSAGE_REMIND_BEFORE_1_H = "message.remind.before.1h";
 
     public static final String MESSAGE_REMIND_AFTER_1_H = "message.remind.after.1h";
 
@@ -466,4 +472,6 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITH_TIME = "message.reminder.postpone.bad.time.reminder.with.time";
 
     public static final String MESSAGE_SESSION_EXPIRED = "message.session.expired";
+
+    public static final String MESSAGE_REMINDER_CREATED_AT = "message.reminder.created.at";
 }

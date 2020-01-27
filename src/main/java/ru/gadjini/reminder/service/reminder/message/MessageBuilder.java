@@ -229,4 +229,8 @@ public class MessageBuilder {
     public String getReadReminderCreator(TgUser receiver, String text) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_READ_REMINDER_CREATOR, new Object[] {UserUtils.userLink(receiver), text});
     }
+
+    public String getReminderCreatedAt(ZonedDateTime createdAt) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_AT, new Object[] {timeBuilder.fixedDay(createdAt)});
+    }
 }

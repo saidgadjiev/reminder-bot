@@ -309,7 +309,7 @@ public class ReminderMessageSender {
                         .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(oldReminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME))
         );
         if (oldReminder.isMySelf()) {
-            tryEditRemindMessage(messageId, oldReminder, reminderMessageBuilder.getReminderMessage(newReminder, newReminder.getReceiverId()));
+            tryEditRemindMessage(messageId, oldReminder, reminderMessageBuilder.getReminderMessage(newReminder, new ReminderMessageBuilder.Config().receiverId(newReminder.getReceiverId())));
         } else {
             sendEditMessageToReceiver(oldReminder, reminderMessageBuilder.getReminderTimeChanged(oldReminder, newReminder));
         }
@@ -360,7 +360,7 @@ public class ReminderMessageSender {
                         .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(newReminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME))
         );
         if (newReminder.isMySelf()) {
-            tryEditRemindMessage(messageId, newReminder, reminderMessageBuilder.getReminderMessage(newReminder, newReminder.getReceiverId()));
+            tryEditRemindMessage(messageId, newReminder, reminderMessageBuilder.getReminderMessage(newReminder, new ReminderMessageBuilder.Config().receiverId(newReminder.getReceiverId())));
         } else {
             sendEditMessageToReceiver(newReminder, reminderMessageBuilder.getReminderTextChanged(oldReminder.getText(), newReminder.getText(), newReminder.getCreator()));
         }
@@ -558,7 +558,7 @@ public class ReminderMessageSender {
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(chatId)
                         .messageId(messageId)
-                        .text(reminderMessageBuilder.getReminderMessage(reminder, userId))
+                        .text(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(userId)))
                         .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
         );
     }
@@ -582,7 +582,7 @@ public class ReminderMessageSender {
                         .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME))
         );
         if (reminder.isMySelf()) {
-            tryEditRemindMessage(messageId, reminder, reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId()));
+            tryEditRemindMessage(messageId, reminder, reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getReceiverId())));
         } else {
             sendEditMessageToReceiver(reminder, reminderMessageBuilder.getReminderNoteChangedForReceiver(reminder.getText(), reminder.getNote(), reminder.getCreator()));
         }
@@ -597,7 +597,7 @@ public class ReminderMessageSender {
                         .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME))
         );
         if (reminder.isMySelf()) {
-            tryEditRemindMessage(messageId, reminder, reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId()));
+            tryEditRemindMessage(messageId, reminder, reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getReceiverId())));
         } else {
             sendEditMessageToReceiver(reminder, reminderMessageBuilder.getReminderNoteDeletedReceiver(reminder.getCreator(), reminder.getText()));
         }
@@ -608,7 +608,7 @@ public class ReminderMessageSender {
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(reminder.getCreatorId())
                         .messageId(messageId)
-                        .text(reminderMessageBuilder.getReminderMessage(reminder, reminder.getCreatorId()))
+                        .text(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getCreatorId())))
                         .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
         );
         if (reminder.isNotMySelf()) {
@@ -626,7 +626,7 @@ public class ReminderMessageSender {
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(reminder.getCreatorId())
                         .messageId(messageId)
-                        .text(reminderMessageBuilder.getReminderMessage(reminder, reminder.getCreatorId()))
+                        .text(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getCreatorId())))
                         .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
         );
         if (reminder.isNotMySelf()) {
@@ -656,7 +656,7 @@ public class ReminderMessageSender {
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(chatId)
                             .messageId(messageId)
-                            .text(reminderMessageBuilder.getReminderMessage(reminder, reminder.getReceiverId()))
+                            .text(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getReceiverId())))
                             .replyKeyboard(KeyboardUtils.removeButton(inlineKeyboardMarkup, CommandNames.READ_REMINDER_COMMAND_NAME)));
 
             if (reminder.getCreatorMessageId() != null) {

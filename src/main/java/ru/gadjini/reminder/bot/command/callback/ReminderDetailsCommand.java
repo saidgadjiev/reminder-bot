@@ -69,7 +69,7 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
-                        .text(messageBuilder.getReminderMessage(reminder, tgMessage.getUser().getId()))
+                        .text(messageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(tgMessage.getUser().getId())))
                         .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(tgMessage.getUser().getId(), reminder))
         );
     }

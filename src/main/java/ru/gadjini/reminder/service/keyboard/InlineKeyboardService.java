@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.PaymentType;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.UserReminderNotification;
@@ -17,7 +18,6 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandParser;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.reminder.ReminderService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +77,12 @@ public class InlineKeyboardService {
 
         List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
         keyboard.add(List.of(
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_10_MIN), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_10_MIN))),
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_15_MIN), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_15_MIN))),
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_30_MIN), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_30_MIN))),
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_1_H), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_1_H)))
+        ));
+        keyboard.add(List.of(
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_30_MIN), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_30_MIN))),
                 buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_1_H), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_1_H))),
                 buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_2_H), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_2_H)))
         ));
@@ -226,8 +231,7 @@ public class InlineKeyboardService {
 
             inlineKeyboardMarkup.getKeyboard().add(row);
         }
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.getActiveRemindersButton(MessagesProperties.TODAY_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderService.Filter.TODAY)));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.getActiveRemindersButton(MessagesProperties.ALL_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderService.Filter.ALL)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.getActiveRemindersButton(MessagesProperties.TODAY_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderDao.Filter.TODAY), buttonFactory.getActiveRemindersButton(MessagesProperties.ALL_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderDao.Filter.ALL)));
         if (prevHistoryName != null) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName)));
         }
@@ -315,7 +319,7 @@ public class InlineKeyboardService {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.getCompletedRemindersButton()));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.getActiveRemindersButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderService.Filter.ALL)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.getActiveRemindersButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderDao.Filter.ALL)));
 
         return inlineKeyboardMarkup;
     }
