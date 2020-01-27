@@ -245,6 +245,7 @@ public class Reminder {
         return repeatRemindAts != null && repeatRemindAts.size() > 0;
     }
 
+    @JsonIgnore
     public RepeatTime getRepeatRemindAt() {
         return repeatRemindAts.get(currRepeatIndex);
     }
@@ -367,23 +368,6 @@ public class Reminder {
         this.currRepeatIndex = currRepeatIndex;
     }
 
-    public Map<Field<?>, Object> getDiff(Reminder newReminder) {
-        Map<Field<?>, Object> values = new HashMap<>();
-        if (!Objects.equals(getText(), newReminder.getText())) {
-            values.put(ReminderTable.TABLE.TEXT, newReminder.getText());
-        }
-        if (!Objects.equals(getNote(), newReminder.getNote())) {
-            values.put(ReminderTable.TABLE.NOTE, newReminder.getNote());
-        }
-        if (!Objects.equals(getRepeatRemindAts(), newReminder.getRepeatRemindAts())) {
-            values.put(ReminderTable.TABLE.REPEAT_REMIND_AT, newReminder.getRepeatRemindAts() == null ? null : newReminder.getRepeatRemindAts().stream().map(RepeatTimeRecord::new).toArray());
-        }
-        if (!Objects.equals(getRemindAt(), newReminder.getRemindAt())) {
-            values.put(ReminderTable.TABLE.REMIND_AT, newReminder.getRemindAt() == null ? null : newReminder.getRemindAt().sqlObject());
-        }
-
-        return values;
-    }
 
     public boolean isSuppressNotifications() {
         return suppressNotifications;
@@ -401,8 +385,27 @@ public class Reminder {
         this.createdAt = createdAt;
     }
 
+    @JsonIgnore
     public ZonedDateTime getCreatedAtInReceiverZone() {
         return createdAt.withZoneSameInstant(receiver.getZone());
+    }
+
+    public Map<Field<?>, Object> getDiff(Reminder newReminder) {
+        Map<Field<?>, Object> values = new HashMap<>();
+        if (!Objects.equals(getText(), newReminder.getText())) {
+            values.put(ReminderTable.TABLE.TEXT, newReminder.getText());
+        }
+        if (!Objects.equals(getNote(), newReminder.getNote())) {
+            values.put(ReminderTable.TABLE.NOTE, newReminder.getNote());
+        }
+        if (!Objects.equals(getRepeatRemindAts(), newReminder.getRepeatRemindAts())) {
+            values.put(ReminderTable.TABLE.REPEAT_REMIND_AT, newReminder.getRepeatRemindAts() == null ? null : newReminder.getRepeatRemindAts().stream().map(RepeatTimeRecord::new).toArray());
+        }
+        if (!Objects.equals(getRemindAt(), newReminder.getRemindAt())) {
+            values.put(ReminderTable.TABLE.REMIND_AT, newReminder.getRemindAt() == null ? null : newReminder.getRemindAt().sqlObject());
+        }
+
+        return values;
     }
 
     public enum Status {
