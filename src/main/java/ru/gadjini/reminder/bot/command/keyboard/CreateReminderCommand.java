@@ -59,6 +59,11 @@ public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCo
     }
 
     @Override
+    public boolean accept(Message message) {
+        return message.hasText() || message.hasVideo();
+    }
+
+    @Override
     public boolean processMessage(Message message, String text) {
         List<String> queries = savedQueryService.getQueriesOnly(message.getFrom().getId());
         ReplyKeyboardMarkup savedQueriesKeyboard = replyKeyboardService.getSavedQueriesKeyboard(message.getChatId(), queries);

@@ -18,10 +18,7 @@ import ru.gadjini.reminder.jdbc.JooqPreparedSetter;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
-import java.sql.Array;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -323,7 +320,11 @@ public class ReminderDao {
                     ps.setString(7, reminder.getNote());
                     ps.setInt(8, reminder.getMessageId());
                     ps.setBoolean(9, reminder.isRead());
-                    ps.setInt(10, reminder.getCurrRepeatIndex());
+                    if (reminder.getCurrRepeatIndex() == null) {
+                        ps.setNull(10, Types.INTEGER);
+                    } else {
+                        ps.setInt(10, reminder.getCurrRepeatIndex());
+                    }
 
                     return ps;
                 },
