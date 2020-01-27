@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.TgMessage;
@@ -47,15 +48,21 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
                 callbackQuery.getFrom().getId(),
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
+                callbackQuery.getMessage().getText(),
                 reminders
         );
-        return null;
+
+        return getCallbackAnswer(filter);
     }
 
     @Override
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         List<Reminder> reminders = reminderService.getActiveReminders(tgMessage.getUser().getId(), ReminderDao.Filter.ALL);
 
-        reminderMessageSender.sendActiveReminders(tgMessage.getUser().getId(), tgMessage.getChatId(), tgMessage.getMessageId(), reminders);
+        reminderMessageSender.sendActiveReminders(tgMessage.getUser().getId(), tgMessage.getChatId(), tgMessage.getMessageId(), null, reminders);
+    }
+
+    private String getCallbackAnswer(ReminderDao.Filter filter) {
+        return filter == ReminderDao.Filter.ALL ? MessagesProperties.ALL_ACTIVE_REMINDERS_COMMAND_DESCRIPTION : MessagesProperties.TODAY_ACTIVE_REMINDERS_COMMAND_DESCRIPTION;
     }
 }

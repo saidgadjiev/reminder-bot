@@ -304,8 +304,9 @@ public class ReminderMessageBuilder {
                 text.append("\n");
             }
         }
+        String textStr = text.toString();
 
-        return text.toString();
+        return textStr.substring(0, textStr.length() - 1);
     }
 
     public String getReminderTimeChanged(Reminder oldReminder, Reminder newReminder) {

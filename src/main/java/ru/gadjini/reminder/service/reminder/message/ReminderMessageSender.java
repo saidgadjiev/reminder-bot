@@ -15,8 +15,10 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.util.KeyboardUtils;
+import ru.gadjini.reminder.util.TextUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -525,23 +527,29 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendActiveReminders(int userId, long chatId, int messageId, List<Reminder> reminders) {
+    public void sendActiveReminders(int userId, long chatId, int messageId, String currText, List<Reminder> reminders) {
         if (reminders.isEmpty()) {
-            messageService.editMessageAsync(
-                    new EditMessageContext(PriorityJob.Priority.HIGH)
-                            .chatId(chatId)
-                            .messageId(messageId)
-                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_ACTIVE_REMINDERS_EMPTY))
-                            .replyKeyboard(inlineKeyboardService.getEmptyRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME))
-            );
+            String text = localisationService.getMessage(MessagesProperties.MESSAGE_ACTIVE_REMINDERS_EMPTY);
+            if (!Objects.equals(currText, text)) {
+                messageService.editMessageAsync(
+                        new EditMessageContext(PriorityJob.Priority.HIGH)
+                                .chatId(chatId)
+                                .messageId(messageId)
+                                .text(localisationService.getMessage(MessagesProperties.MESSAGE_ACTIVE_REMINDERS_EMPTY))
+                                .replyKeyboard(inlineKeyboardService.getEmptyRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME))
+                );
+            }
         } else {
-            messageService.editMessageAsync(
-                    new EditMessageContext(PriorityJob.Priority.HIGH)
-                            .chatId(chatId)
-                            .messageId(messageId)
-                            .text(reminderMessageBuilder.getActiveRemindersList(userId, reminders))
-                            .replyKeyboard(inlineKeyboardService.getActiveRemindersListKeyboard(reminders.stream().map(Reminder::getId).collect(Collectors.toList()), CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME))
-            );
+            String text = reminderMessageBuilder.getActiveRemindersList(userId, reminders);
+            if (!Objects.equals(TextUtils.removeHtmlTags(text), currText)) {
+                messageService.editMessageAsync(
+                        new EditMessageContext(PriorityJob.Priority.HIGH)
+                                .chatId(chatId)
+                                .messageId(messageId)
+                                .text(reminderMessageBuilder.getActiveRemindersList(userId, reminders))
+                                .replyKeyboard(inlineKeyboardService.getActiveRemindersListKeyboard(reminders.stream().map(Reminder::getId).collect(Collectors.toList()), CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME))
+                );
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
+import ru.gadjini.reminder.util.TextUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class ReminderRequestLexer {
     }
 
     private LinkedList<BaseLexem> tokenizeReminderTextAndNote(String tokenizeStr, LinkedList<BaseLexem> lexems) {
-        lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, StringUtils.capitalize(removeHtmlTags(tokenizeStr).trim())));
+        lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, StringUtils.capitalize(TextUtils.removeHtmlTags(tokenizeStr).trim())));
 
         if (parts.length > 1) {
             lexems.add(new ReminderLexem(ReminderToken.NOTE, parts[1]));
@@ -52,9 +53,5 @@ public class ReminderRequestLexer {
         }
 
         return parts;
-    }
-
-    private String removeHtmlTags(String str) {
-        return str.replaceAll("<.*?>", "");
     }
 }
