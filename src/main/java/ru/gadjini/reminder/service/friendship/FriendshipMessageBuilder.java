@@ -61,7 +61,7 @@ public class FriendshipMessageBuilder {
             if (message.length() > 0) {
                 message.append("\n");
             }
-            message.append(i++).append(") ").append(UserUtils.userLink(friend));
+            message.append("<b>").append(i++).append("</b>) ").append(UserUtils.userLink(friend));
         }
         if (StringUtils.isNotBlank(footer)) {
             message.append("\n\n").append(localisationService.getMessage(footer));
