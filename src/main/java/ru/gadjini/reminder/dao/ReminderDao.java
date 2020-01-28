@@ -215,8 +215,7 @@ public class ReminderDao {
         return jdbcTemplate.query(
                 "WITH r AS (\n" +
                         "    UPDATE reminder r SET reminder_text = ? FROM reminder old WHERE r.id = old.id AND r.id = ? " +
-                        "RETURNING r.id, r.receiver_id, r.remind_at, r.completed_at, r.repeat_remind_at, r.creator_id, r.reminder_text, " +
-                        "r.note, r.message_id, r.count_series, r.total_series, r.current_series, r.max_series, r.status, r.read, old.reminder_text AS old_text\n" +
+                        "RETURNING r.*, old.reminder_text AS old_text\n" +
                         ")\n" +
                         "SELECT r.*,\n" +
                         "       (r.remind_at).*,\n" +
@@ -301,7 +300,7 @@ public class ReminderDao {
                 con -> {
                     PreparedStatement ps = con.prepareStatement("WITH r AS (\n" +
                             "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
-                            "                       note, message_id, read, curr_repeat_index) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id, receiver_id, creator_id, created_at\n" +
+                            "                       note, message_id, read, curr_repeat_index) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *\n" +
                             ")\n" +
                             "SELECT r.id,\n" +
                             "       r.created_at,\n" +
@@ -351,7 +350,7 @@ public class ReminderDao {
                 con -> {
                     PreparedStatement ps = con.prepareStatement("WITH r AS (\n" +
                             "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
-                            "                          note, message_id, read, curr_repeat_index) SELECT ?, ?, user_id, ?, ?, ?, ?, ?, ?, ? FROM tg_user WHERE username = ? RETURNING id, receiver_id, creator_id, created_at\n" +
+                            "                          note, message_id, read, curr_repeat_index) SELECT ?, ?, user_id, ?, ?, ?, ?, ?, ?, ? FROM tg_user WHERE username = ? RETURNING *\n" +
                             ")\n" +
                             "SELECT r.id,\n" +
                             "       r.receiver_id,\n" +
