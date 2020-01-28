@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.jooq.Field;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.jooq.datatype.RepeatTimeRecord;
@@ -148,7 +147,6 @@ public class Reminder {
         return remindAt;
     }
 
-    @JsonIgnore
     public DateTime getRemindAtInReceiverZone() {
         return remindAt.withZoneSameInstant(receiver.getZone());
     }
@@ -181,7 +179,6 @@ public class Reminder {
         this.receiverId = receiverId;
     }
 
-    @JsonIgnore
     public List<ReminderNotification> getReminderNotifications() {
         return reminderNotifications;
     }
@@ -194,7 +191,6 @@ public class Reminder {
         return receiver;
     }
 
-    @JsonIgnore
     public ZoneId getReceiverZoneId() {
         return receiver.getZone();
     }
@@ -211,7 +207,6 @@ public class Reminder {
         return creator;
     }
 
-    @JsonIgnore
     public boolean hasReceiverMessage() {
         return receiverMessageId != null;
     }
@@ -240,17 +235,14 @@ public class Reminder {
         this.note = note;
     }
 
-    @JsonIgnore
     public boolean isRepeatable() {
         return repeatRemindAts != null && repeatRemindAts.size() > 0;
     }
 
-    @JsonIgnore
     public RepeatTime getRepeatRemindAt() {
         return repeatRemindAts.get(currRepeatIndex);
     }
 
-    @JsonIgnore
     public List<RepeatTime> getRepeatRemindAtsInReceiverZone(TimeCreator timeCreator) {
         return repeatRemindAts == null ? null : timeCreator.withZone(repeatRemindAts, receiver.getZone());
     }
@@ -267,7 +259,6 @@ public class Reminder {
         return completedAt;
     }
 
-    @JsonIgnore
     public ZonedDateTime getCompletedAtInReceiverZone() {
         return completedAt.withZoneSameInstant(receiver.getZone());
     }
@@ -276,12 +267,10 @@ public class Reminder {
         this.completedAt = completedAt;
     }
 
-    @JsonIgnore
     public boolean isMySelf() {
         return creatorId == receiverId;
     }
 
-    @JsonIgnore
     public boolean isNotMySelf() {
         return creatorId != receiverId;
     }
@@ -310,7 +299,6 @@ public class Reminder {
         this.maxSeries = maxSeries;
     }
 
-    @JsonIgnore
     public boolean isInactive() {
         return status == Status.INACTIVE;
     }
@@ -327,7 +315,6 @@ public class Reminder {
         return read;
     }
 
-    @JsonIgnore
     public boolean isUnread() {
         return !isRead();
     }
@@ -385,7 +372,6 @@ public class Reminder {
         this.createdAt = createdAt;
     }
 
-    @JsonIgnore
     public ZonedDateTime getCreatedAtInReceiverZone() {
         return createdAt.withZoneSameInstant(receiver.getZone());
     }

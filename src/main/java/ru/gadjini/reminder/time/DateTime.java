@@ -1,8 +1,5 @@
 package ru.gadjini.reminder.time;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.postgresql.util.PGobject;
 
 import java.sql.SQLException;
@@ -13,7 +10,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class DateTime {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -30,8 +26,7 @@ public class DateTime {
 
     private LocalTime localTime;
 
-    @JsonCreator
-    public DateTime(@JsonProperty("zoneId") ZoneId zoneId) {
+    public DateTime(ZoneId zoneId) {
         this.zoneId = zoneId;
     }
 
@@ -125,26 +120,6 @@ public class DateTime {
         return localTime != null;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DateTime dateTime = (DateTime) o;
-
-        if (!Objects.equals(zoneId, dateTime.zoneId)) return false;
-        if (!Objects.equals(localDate, dateTime.localDate)) return false;
-        return Objects.equals(localTime, dateTime.localTime);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = zoneId != null ? zoneId.hashCode() : 0;
-        result = 31 * result + (localDate != null ? localDate.hashCode() : 0);
-        result = 31 * result + (localTime != null ? localTime.hashCode() : 0);
-        return result;
-    }
-
     public DateTime withZoneSameInstant(ZoneId targetZone) {
         if (localTime != null) {
             return DateTime.of(toZonedDateTime().withZoneSameInstant(targetZone));
@@ -197,5 +172,25 @@ public class DateTime {
         dateTime.localTime = zonedDateTime.toLocalTime();
 
         return dateTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DateTime dateTime = (DateTime) o;
+
+        if (!Objects.equals(zoneId, dateTime.zoneId)) return false;
+        if (!Objects.equals(localDate, dateTime.localDate)) return false;
+        return Objects.equals(localTime, dateTime.localTime);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = zoneId != null ? zoneId.hashCode() : 0;
+        result = 31 * result + (localDate != null ? localDate.hashCode() : 0);
+        result = 31 * result + (localTime != null ? localTime.hashCode() : 0);
+        return result;
     }
 }

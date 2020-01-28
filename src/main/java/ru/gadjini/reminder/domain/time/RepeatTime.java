@@ -1,7 +1,5 @@
 package ru.gadjini.reminder.domain.time;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.Period;
 import org.postgresql.util.PGobject;
 import ru.gadjini.reminder.util.JodaTimeUtils;
@@ -42,8 +40,7 @@ public class RepeatTime {
 
     private ZoneId zoneId;
 
-    @JsonCreator
-    public RepeatTime(@JsonProperty("zoneId") ZoneId zoneId) {
+    public RepeatTime(ZoneId zoneId) {
         this.zoneId = zoneId;
     }
 

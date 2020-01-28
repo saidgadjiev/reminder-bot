@@ -1,8 +1,5 @@
 package ru.gadjini.reminder.domain.time;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.Period;
 
 import java.time.LocalTime;
@@ -18,8 +15,7 @@ public class OffsetTime {
 
     private ZoneId zoneId;
 
-    @JsonCreator
-    public OffsetTime(@JsonProperty("zoneId") ZoneId zoneId) {
+    public OffsetTime(ZoneId zoneId) {
         this.zoneId = zoneId;
     }
 
@@ -79,7 +75,6 @@ public class OffsetTime {
         return time;
     }
 
-    @JsonIgnore
     public boolean hasTime() {
         return time != null;
     }
