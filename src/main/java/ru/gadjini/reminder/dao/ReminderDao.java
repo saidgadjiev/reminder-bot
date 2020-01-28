@@ -82,7 +82,7 @@ public class ReminderDao {
                         "WHERE ((r.creator_id = :user_id AND r.status IN (0, 2))\n" +
                         "   OR (r.receiver_id = :user_id AND r.status = 0))\n" +
                         (filter == Filter.TODAY ? "AND (r.remind_at).dt_date = (now()::timestamp AT TIME ZONE 'UTC' AT TIME ZONE rc.zone_id)::date\n" : "") +
-                        "ORDER BY r.remind_at",
+                        "ORDER BY (r.remind_at).dt_date DESC, (r.remind_at).dt_time DESC NULLS LAST, r.id",
                 new MapSqlParameterSource().addValue("user_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
         );
@@ -114,7 +114,7 @@ public class ReminderDao {
                         "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
                         "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
                         "WHERE r.receiver_id = :creator_id\n" +
-                        "ORDER BY remind_at",
+                        "ORDER BY (r.remind_at).dt_date DESC, (r.remind_at).dt_time DESC NULLS LAST, r.id",
                 new MapSqlParameterSource().addValue("creator_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
         );
