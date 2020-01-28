@@ -118,13 +118,15 @@ public class ReminderRequestService {
         reminderService.updateReminder(oldReminder.getId(), values);
 
         boolean needUpdateNotifications = isNeedUpdateNotifications(values);
+        List<ReminderNotification> notifications = new ArrayList<>();
         if (needUpdateNotifications) {
             if (newReminder.isRepeatable()) {
-                repeatReminderService.updateReminderNotifications(oldReminder.getId(), oldReminder.getReceiverId(), newReminder.getRepeatRemindAtsInReceiverZone(timeCreator));
+                notifications = repeatReminderService.updateReminderNotifications(oldReminder.getId(), oldReminder.getReceiverId(), newReminder.getRepeatRemindAtsInReceiverZone(timeCreator));
             } else {
-                reminderService.updateReminderNotifications(oldReminder.getId(), oldReminder.getReceiverId(), newReminder.getRemindAt());
+                notifications = reminderService.updateReminderNotifications(oldReminder.getId(), oldReminder.getReceiverId(), newReminder.getRemindAt());
             }
         }
+        newReminder.setSuppressNotifications(notifications.size() == 0);
 
         return new UpdateReminderResult(oldReminder, newReminder);
     }
@@ -191,6 +193,7 @@ public class ReminderRequestService {
         newReminder.setInitialRemindAt(changed.getInitialRemindAt());
         newReminder.setRepeatRemindAts(changed.getRepeatRemindAts());
         newReminder.setCurrRepeatIndex(changed.getCurrRepeatIndex());
+        newReminder.setSuppressNotifications(changed.isSuppressNotifications());
 
         return new UpdateReminderResult(oldReminder, newReminder);
     }

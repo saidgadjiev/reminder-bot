@@ -60,6 +60,8 @@ public class ReminderService {
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(created.getId()));
         reminderNotificationService.create(reminderNotifications);
 
+        reminder.setSuppressNotifications(reminderNotifications.size() == 0);
+
         return reminder;
     }
 
@@ -123,11 +125,13 @@ public class ReminderService {
         );
     }
 
-    public void updateReminderNotifications(int reminderId, int receiverId, DateTime remindAt) {
+    public List<ReminderNotification> updateReminderNotifications(int reminderId, int receiverId, DateTime remindAt) {
         reminderNotificationService.deleteReminderNotifications(reminderId);
         List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAt, receiverId);
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
         reminderNotificationService.create(reminderNotifications);
+
+        return reminderNotifications;
     }
 
     public Reminder getReminderByMessageId(int messageId, ReminderMapping reminderMapping) {
@@ -162,6 +166,7 @@ public class ReminderService {
         reminder.setInitialRemindAt(remindAt);
         reminder.setRepeatRemindAts(null);
         reminder.setCurrRepeatIndex(null);
+        reminder.setSuppressNotifications(reminderNotifications.size() == 0);
 
         return reminder;
     }

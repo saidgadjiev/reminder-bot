@@ -68,6 +68,7 @@ public class RepeatReminderService {
         }
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(created.getId()));
         reminderNotificationService.create(reminderNotifications);
+        reminder.setSuppressNotifications(reminderNotifications.size() == 0);
 
         return created;
     }
@@ -125,7 +126,7 @@ public class RepeatReminderService {
         return new RemindAtCandidate(index, firstRemindAt);
     }
 
-    void updateReminderNotifications(int reminderId, int receiverId, List<RepeatTime> repeatTimesInReceiverZone) {
+    List<ReminderNotification> updateReminderNotifications(int reminderId, int receiverId, List<RepeatTime> repeatTimesInReceiverZone) {
         reminderNotificationService.deleteReminderNotifications(reminderId);
         List<ReminderNotification> reminderNotifications = new ArrayList<>();
         for (RepeatTime repeatTimeInReceiverZone : repeatTimesInReceiverZone) {
@@ -133,6 +134,8 @@ public class RepeatReminderService {
         }
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
         reminderNotificationService.create(reminderNotifications);
+
+        return reminderNotifications;
     }
 
     public List<Reminder> getOverdueRepeatReminders() {
@@ -325,6 +328,7 @@ public class RepeatReminderService {
         reminder.setInitialRemindAt(firstRemindAt);
         reminder.setRemindAt(firstRemindAt);
         reminder.setCurrRepeatIndex(remindAtCandidate.getIndex());
+        reminder.setSuppressNotifications(notifications.size() == 0);
 
         return reminder;
     }

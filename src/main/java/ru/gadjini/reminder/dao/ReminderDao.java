@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.jooq.FriendshipTable;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.jooq.TgUserTable;
@@ -149,11 +150,10 @@ public class ReminderDao {
                         "         INNER JOIN reminder r ON rt.reminder_id = r.id\n" +
                         "         INNER JOIN tg_user rc ON r.receiver_id = rc.user_id\n" +
                         "         INNER JOIN tg_user cr ON r.creator_id = cr.user_id\n" +
-                        "         INNER JOIN subscription sb ON r.receiver_id = sb.user_id\n" +
                         "         LEFT JOIN friendship f ON CASE\n" +
                         "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
                         "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
-                        "WHERE sb.end_date >= current_date AND r.status = 0 AND CASE\n" +
+                        "WHERE r.status = 0 AND CASE\n" +
                         "          WHEN rt.time_type = 0 THEN :curr_date >= rt.fixed_time\n" +
                         "          ELSE date_diff_in_minute(:curr_date, rt.last_reminder_at) >= minute(rt.delay_time)\n" +
                         "          END\n" +
@@ -176,6 +176,11 @@ public class ReminderDao {
                     reminder.getReminderNotifications().add(resultSetMapper.mapReminderTime(rs, "rt_"));
                 }
         );
+        reminders.forEach((integer, reminder) -> {
+            if (reminder.getReminderNotifications().stream().noneMatch(ReminderNotification::isCustom)) {
+                reminder.setSuppressNotifications(true);
+            }
+        });
 
         return new ArrayList<>(reminders.values());
     }
