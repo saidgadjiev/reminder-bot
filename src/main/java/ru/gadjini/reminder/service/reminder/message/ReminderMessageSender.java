@@ -403,12 +403,12 @@ public class ReminderMessageSender {
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(reminder.getReceiverId())
                             .messageId(messageId)
-                            .text(reminderMessageBuilder.getRepeatReminderStoppedForCreator(reminder))
+                            .text(reminderMessageBuilder.getRepeatReminderStoppedForReceiver(reminder))
                             .replyKeyboard(new KeyboardCustomizer(inlineKeyboardMarkup).removeExclude(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME).getKeyboardMarkup()));
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getCreatorId())
-                            .text(reminderMessageBuilder.getRepeatReminderStoppedForReceiver(reminder))
+                            .text(reminderMessageBuilder.getRepeatReminderStoppedForCreator(reminder))
             );
         }
         tryDeleteRemindMessage(messageId, reminder);

@@ -197,7 +197,7 @@ public class ReminderMessageBuilder {
 
         message.append(messageBuilder.getReminderStopped(reminder.getText())).append("\n");
         appendRepeatReminderCommonValues(message, reminder);
-        message.append("\n").append(messageBuilder.getReminderReceiver(reminder.getCreator()));
+        message.append("\n").append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
         return message.toString();
     }
