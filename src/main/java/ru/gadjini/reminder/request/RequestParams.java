@@ -42,8 +42,8 @@ public class RequestParams {
         return this;
     }
 
-    public RequestParams add(RequestParams requestParams) {
-        params.putAll(requestParams.params);
+    public RequestParams merge(RequestParams requestParams) {
+        requestParams.params.forEach((s, s2) -> params.putIfAbsent(s, s2));
 
         return this;
     }

@@ -318,7 +318,7 @@ public class ButtonFactory {
         button.setCallbackData(CommandNames.DEACTIVATE_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
-                        .add(requestParams)
+                        .merge(requestParams)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;
@@ -329,7 +329,7 @@ public class ButtonFactory {
         button.setCallbackData(CommandNames.ACTIVATE_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
-                        .add(requestParams)
+                        .merge(requestParams)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;

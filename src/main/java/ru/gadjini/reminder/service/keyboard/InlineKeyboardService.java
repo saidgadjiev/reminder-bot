@@ -225,7 +225,7 @@ public class InlineKeyboardService {
                 button.setCallbackData(CommandNames.REMINDER_DETAILS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                         new RequestParams()
                                 .add(Arg.REMINDER_ID.getKey(), remindId)
-                                .add(requestParams)
+                                .merge(requestParams)
                                 .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
                 row.add(button);
             }
