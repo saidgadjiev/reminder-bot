@@ -89,7 +89,7 @@ class FixedTimeParserTest {
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
         LocalDate date = STATIC_TIME.toLocalDate();
-        date = (LocalDate) TemporalAdjusters.next(DayOfWeek.WEDNESDAY).adjustInto(date);
+        date = (LocalDate) TemporalAdjusters.nextOrSame(DayOfWeek.WEDNESDAY).adjustInto(date);
         Assert.assertEquals(parse.getFixedDateTime().date(), date);
     }
 
@@ -101,7 +101,7 @@ class FixedTimeParserTest {
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
         LocalDate date = STATIC_TIME.toLocalDate();
-        date = (LocalDate) TemporalAdjusters.next(DayOfWeek.WEDNESDAY).adjustInto(date);
+        date = (LocalDate) TemporalAdjusters.nextOrSame(DayOfWeek.WEDNESDAY).adjustInto(date);
         Assert.assertEquals(parse.getFixedDateTime().date(), date.plusDays(7));
     }
 

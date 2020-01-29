@@ -309,7 +309,7 @@ public class ReminderService {
             ZonedDateTime now = timeCreator.zonedDateTimeNow();
 
             if (repeatTime.getDayOfWeek() != null) {
-                ZonedDateTime repeatReminder = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek())).with(repeatTime.getTime());
+                ZonedDateTime repeatReminder = now.with(TemporalAdjusters.nextOrSame(repeatTime.getDayOfWeek())).with(repeatTime.getTime());
                 reminderNotification = fixedRepeatReminderTime(repeatReminder.toLocalDate(), 7, repeatTime.getTime());
             } else if (repeatTime.getInterval().getDays() > 0) {
                 ZonedDateTime repeatReminder = now.with(repeatTime.getTime());

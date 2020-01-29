@@ -109,7 +109,7 @@ public class FixedTimeParser {
                 .filter(dow -> dayOfWeekService.isThatDay(dow, locale, dayOfWeekValue))
                 .findFirst()
                 .orElseThrow();
-        LocalDate dayOfWeekDate = (LocalDate) TemporalAdjusters.next(dayOfWeek).adjustInto(fixedTime.date());
+        LocalDate dayOfWeekDate = (LocalDate) TemporalAdjusters.nextOrSame(dayOfWeek).adjustInto(fixedTime.date());
 
         fixedTime.date(dayOfWeekDate);
 

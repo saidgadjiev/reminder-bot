@@ -428,7 +428,7 @@ public class RepeatReminderService {
             ZonedDateTime now = timeCreator.zonedDateTimeNow(repeatTime.getZoneId()).with(repeatTime.getTime());
 
             if (!now.getDayOfWeek().equals(repeatTime.getDayOfWeek())) {
-                now = now.with(TemporalAdjusters.next(repeatTime.getDayOfWeek()));
+                now = now.with(TemporalAdjusters.nextOrSame(repeatTime.getDayOfWeek()));
             }
 
             return DateTime.of(now);
@@ -438,7 +438,7 @@ public class RepeatReminderService {
         if (now.getDayOfWeek().equals(repeatTime.getDayOfWeek())) {
             DateTime.of(now, null, repeatTime.getZoneId());
         }
-        now = (LocalDate) TemporalAdjusters.next(repeatTime.getDayOfWeek()).adjustInto(now);
+        now = (LocalDate) TemporalAdjusters.nextOrSame(repeatTime.getDayOfWeek()).adjustInto(now);
 
         return DateTime.of(now, null, repeatTime.getZoneId());
     }
