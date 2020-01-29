@@ -10,11 +10,12 @@ import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
+import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
-import ru.gadjini.reminder.util.KeyboardUtils;
+import ru.gadjini.reminder.util.KeyboardCustomizer;
 import ru.gadjini.reminder.util.TextUtils;
 
 import java.util.List;
@@ -72,14 +73,14 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendRepeatReminderSkippedFromList(int messageId, int userId, Reminder reminder) {
+    public void sendRepeatReminderSkippedFromList(int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, Reminder reminder) {
         if (reminder.isMySelf()) {
             messageService.editMessageAsync(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(reminder.getReceiverId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getMySelfRepeatReminderSkipped(reminder))
-                            .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
+                            .replyKeyboard(inlineKeyboardMarkup)
             );
         } else {
             messageService.editMessageAsync(
@@ -87,7 +88,7 @@ public class ReminderMessageSender {
                             .chatId(reminder.getReceiverId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getRepeatReminderSkippedForReceiver(reminder))
-                            .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
+                            .replyKeyboard(inlineKeyboardMarkup)
             );
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
@@ -99,13 +100,13 @@ public class ReminderMessageSender {
         tryDeleteRemindMessage(messageId, reminder);
     }
 
-    public void sendRepeatReminderReturnedFromList(long chatId, int messageId, int userId, Reminder reminder) {
+    public void sendRepeatReminderReturnedFromList(long chatId, int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, Reminder reminder) {
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderMessage(reminder))
-                        .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
+                        .replyKeyboard(inlineKeyboardMarkup)
         );
         if (reminder.isNotMySelf()) {
             messageService.sendMessageAsync(
@@ -118,13 +119,13 @@ public class ReminderMessageSender {
         tryDeleteRemindMessage(messageId, reminder);
     }
 
-    public void sendRepeatReminderCantBeReturnedFromList(long chatId, int messageId, int userId, Reminder reminder) {
+    public void sendRepeatReminderCantBeReturnedFromList(long chatId, int messageId, InlineKeyboardMarkup inlineKeyboardMarkup) {
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_RETURNED))
-                        .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
+                        .replyKeyboard(inlineKeyboardMarkup)
         );
     }
 
@@ -196,14 +197,14 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendRepeatReminderCompletedFromList(int messageId, int userId, Reminder reminder) {
+    public void sendRepeatReminderCompletedFromList(int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, Reminder reminder) {
         if (reminder.isMySelf()) {
             messageService.editMessageAsync(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(reminder.getReceiverId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminder))
-                            .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
+                            .replyKeyboard(inlineKeyboardMarkup)
             );
         } else {
             messageService.editMessageAsync(
@@ -211,7 +212,7 @@ public class ReminderMessageSender {
                             .chatId(reminder.getReceiverId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getRepeatReminderCompletedForReceiver(reminder))
-                            .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
+                            .replyKeyboard(inlineKeyboardMarkup)
             );
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
@@ -246,14 +247,14 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendReminderCompletedFromList(int messageId, Reminder reminder) {
+    public void sendReminderCompletedFromList(int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, Reminder reminder) {
         if (reminder.isMySelf()) {
             messageService.editMessageAsync(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(reminder.getReceiverId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getMySelfReminderCompleted(reminder))
-                            .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME))
+                            .replyKeyboard(new KeyboardCustomizer(inlineKeyboardMarkup).removeExclude(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME).getKeyboardMarkup())
             );
         } else {
             messageService.editMessageAsync(
@@ -261,7 +262,7 @@ public class ReminderMessageSender {
                             .chatId(reminder.getReceiverId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getReminderCompletedForReceiver(reminder))
-                            .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME))
+                            .replyKeyboard(new KeyboardCustomizer(inlineKeyboardMarkup).removeExclude(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME).getKeyboardMarkup())
             );
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
@@ -388,14 +389,14 @@ public class ReminderMessageSender {
         );
     }
 
-    public void sendRepeatReminderStoppedFromList(int messageId, Reminder reminder) {
+    public void sendRepeatReminderStoppedFromList(int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, Reminder reminder) {
         if (reminder.isMySelf()) {
             messageService.editMessageAsync(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(reminder.getReceiverId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getMySelfRepeatReminderStopped(reminder))
-                            .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME))
+                            .replyKeyboard(new KeyboardCustomizer(inlineKeyboardMarkup).removeExclude(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME).getKeyboardMarkup())
             );
         } else {
             messageService.editMessageAsync(
@@ -403,7 +404,7 @@ public class ReminderMessageSender {
                             .chatId(reminder.getReceiverId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getRepeatReminderStoppedForCreator(reminder))
-                            .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME)));
+                            .replyKeyboard(new KeyboardCustomizer(inlineKeyboardMarkup).removeExclude(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME).getKeyboardMarkup()));
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getCreatorId())
@@ -438,13 +439,13 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendReminderDeleted(int messageId, Reminder reminder) {
+    public void sendReminderDeleted(int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, Reminder reminder) {
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(reminder.getCreatorId())
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderDeletedForCreator(reminder))
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME))
+                        .replyKeyboard(new KeyboardCustomizer(inlineKeyboardMarkup).removeExclude(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME).getKeyboardMarkup())
         );
         if (reminder.isNotMySelf()) {
             messageService.sendMessageAsync(
@@ -527,7 +528,7 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendActiveReminders(int userId, long chatId, int messageId, String currText, List<Reminder> reminders) {
+    public void sendActiveReminders(int userId, long chatId, int messageId, String currText, String header, RequestParams requestParams, List<Reminder> reminders) {
         if (reminders.isEmpty()) {
             String text = localisationService.getMessage(MessagesProperties.MESSAGE_ACTIVE_REMINDERS_EMPTY);
             if (!Objects.equals(currText, text)) {
@@ -536,18 +537,22 @@ public class ReminderMessageSender {
                                 .chatId(chatId)
                                 .messageId(messageId)
                                 .text(localisationService.getMessage(MessagesProperties.MESSAGE_ACTIVE_REMINDERS_EMPTY))
-                                .replyKeyboard(inlineKeyboardService.getEmptyRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME))
+                                .replyKeyboard(inlineKeyboardService.getEmptyActiveRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME))
                 );
             }
         } else {
-            String text = reminderMessageBuilder.getActiveRemindersList(userId, reminders);
+            String text = reminderMessageBuilder.getActiveRemindersList(userId, reminders, header);
             if (!Objects.equals(TextUtils.removeHtmlTags(text), currText)) {
                 messageService.editMessageAsync(
                         new EditMessageContext(PriorityJob.Priority.HIGH)
                                 .chatId(chatId)
                                 .messageId(messageId)
-                                .text(reminderMessageBuilder.getActiveRemindersList(userId, reminders))
-                                .replyKeyboard(inlineKeyboardService.getActiveRemindersListKeyboard(reminders.stream().map(Reminder::getId).collect(Collectors.toList()), CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME))
+                                .text(text)
+                                .replyKeyboard(inlineKeyboardService.getActiveRemindersListKeyboard(
+                                        reminders.stream().map(Reminder::getId).collect(Collectors.toList()),
+                                        CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME,
+                                        requestParams
+                                ))
                 );
             }
         }
@@ -561,13 +566,13 @@ public class ReminderMessageSender {
         );
     }
 
-    public void sendReminderDetails(long chatId, int userId, Integer messageId, Reminder reminder) {
+    public void sendReminderDetails(long chatId, int userId, Integer messageId, RequestParams requestParams, Reminder reminder) {
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(userId)))
-                        .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
+                        .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, requestParams, reminder))
         );
     }
 
@@ -611,13 +616,13 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendReminderDeactivated(int messageId, int userId, Reminder reminder) {
+    public void sendReminderDeactivated(int messageId, int userId, RequestParams requestParams, Reminder reminder) {
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(reminder.getCreatorId())
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getCreatorId())))
-                        .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
+                        .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, requestParams, reminder))
         );
         if (reminder.isNotMySelf()) {
             messageService.sendMessageAsync(
@@ -629,13 +634,13 @@ public class ReminderMessageSender {
         tryDeleteRemindMessage(messageId, reminder);
     }
 
-    public void sendReminderActivated(int messageId, int userId, Reminder reminder) {
+    public void sendReminderActivated(int messageId, int userId, RequestParams requestParams, Reminder reminder) {
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(reminder.getCreatorId())
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getCreatorId())))
-                        .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
+                        .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, requestParams, reminder))
         );
         if (reminder.isNotMySelf()) {
             messageService.sendMessageAsync(
@@ -648,13 +653,28 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendCountSeriesEnabledOrDisabled(long chatId, int messageId, int userId, Reminder reminder) {
+    public void sendCountSeriesEnabledOrDisabled(long chatId, int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, Reminder reminder) {
+        InlineKeyboardMarkup newKeyboard;
+
+        if (reminder.isCountSeries()) {
+            newKeyboard = new KeyboardCustomizer(inlineKeyboardMarkup).replaceButton(
+                    CommandNames.ENABLE_COUNT_SERIES_COMMAND_NAME,
+                    CommandNames.DISABLE_COUNT_SERIES_COMMAND_NAME,
+                    localisationService.getMessage(MessagesProperties.DISABLE_COUNT_SERIES_COMMAND_DESCRIPTION)
+            ).getKeyboardMarkup();
+        } else {
+            newKeyboard = new KeyboardCustomizer(inlineKeyboardMarkup).replaceButton(
+                    CommandNames.DISABLE_COUNT_SERIES_COMMAND_NAME,
+                    CommandNames.ENABLE_COUNT_SERIES_COMMAND_NAME,
+                    localisationService.getMessage(MessagesProperties.ENABLE_COUNT_SERIES_COMMAND_DESCRIPTION)
+            ).getKeyboardMarkup();
+        }
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(chatId)
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderMessage(reminder))
-                        .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(userId, reminder))
+                        .replyKeyboard(newKeyboard)
         );
     }
 
@@ -665,7 +685,7 @@ public class ReminderMessageSender {
                             .chatId(chatId)
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getReceiverId())))
-                            .replyKeyboard(KeyboardUtils.removeButton(inlineKeyboardMarkup, CommandNames.READ_REMINDER_COMMAND_NAME)));
+                            .replyKeyboard(new KeyboardCustomizer(inlineKeyboardMarkup).remove(CommandNames.READ_REMINDER_COMMAND_NAME).getKeyboardMarkup()));
 
             if (reminder.getCreatorMessageId() != null) {
                 messageService.deleteMessage(reminder.getCreatorId(), reminder.getCreatorMessageId());

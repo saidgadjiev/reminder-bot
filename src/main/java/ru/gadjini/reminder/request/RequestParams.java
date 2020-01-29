@@ -8,6 +8,8 @@ import java.util.Map;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class RequestParams {
 
+    public static final RequestParams EMPTY = new RequestParams();
+
     private Map<String, String> params = new HashMap<>();
 
     public String getString(String key) {
@@ -36,6 +38,12 @@ public class RequestParams {
 
     public RequestParams add(String key, Boolean value) {
         params.put(key, String.valueOf(value));
+
+        return this;
+    }
+
+    public RequestParams add(RequestParams requestParams) {
+        params.putAll(requestParams.params);
 
         return this;
     }

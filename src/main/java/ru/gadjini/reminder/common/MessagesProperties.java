@@ -474,4 +474,8 @@ public class MessagesProperties {
     public static final String MESSAGE_SESSION_EXPIRED = "message.session.expired";
 
     public static final String MESSAGE_REMINDER_CREATED_AT = "message.reminder.created.at";
+
+    public static final String MESSAGE_ACTIVE_REMINDERS_ALL = "message.active.reminders.all";
+
+    public static final String MESSAGE_ACTIVE_REMINDERS_TODAY = "message.active.reminders.today";
 }

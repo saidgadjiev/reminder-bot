@@ -49,6 +49,8 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 callbackQuery.getMessage().getText(),
+                getHeader(filter),
+                new RequestParams().add(Arg.FILTER.getKey(), filter.getCode()),
                 reminders
         );
 
@@ -57,12 +59,25 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
 
     @Override
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
-        List<Reminder> reminders = reminderService.getActiveReminders(tgMessage.getUser().getId(), ReminderDao.Filter.ALL);
+        ReminderDao.Filter filter = requestParams.contains(Arg.FILTER.getKey()) ? ReminderDao.Filter.fromCode(requestParams.getInt(Arg.FILTER.getKey())) : ReminderDao.Filter.ALL;
+        List<Reminder> reminders = reminderService.getActiveReminders(tgMessage.getUser().getId(), filter);
 
-        reminderMessageSender.sendActiveReminders(tgMessage.getUser().getId(), tgMessage.getChatId(), tgMessage.getMessageId(), null, reminders);
+        reminderMessageSender.sendActiveReminders(
+                tgMessage.getUser().getId(),
+                tgMessage.getChatId(),
+                tgMessage.getMessageId(),
+                null,
+                getHeader(filter),
+                new RequestParams().add(Arg.FILTER.getKey(), filter.getCode()),
+                reminders
+        );
     }
 
     private String getCallbackAnswer(ReminderDao.Filter filter) {
         return filter == ReminderDao.Filter.ALL ? MessagesProperties.ALL_ACTIVE_REMINDERS_COMMAND_DESCRIPTION : MessagesProperties.TODAY_ACTIVE_REMINDERS_COMMAND_DESCRIPTION;
+    }
+
+    private String getHeader(ReminderDao.Filter filter) {
+        return filter == ReminderDao.Filter.ALL ? MessagesProperties.MESSAGE_ACTIVE_REMINDERS_ALL : MessagesProperties.MESSAGE_ACTIVE_REMINDERS_TODAY;
     }
 }

@@ -3,6 +3,7 @@ package ru.gadjini.reminder.bot.command.callback;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -11,7 +12,7 @@ import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
-import ru.gadjini.reminder.util.KeyboardUtils;
+import ru.gadjini.reminder.util.KeyboardCustomizer;
 
 @Component
 public class CompleteCommand implements CallbackBotCommand {
@@ -40,21 +41,21 @@ public class CompleteCommand implements CallbackBotCommand {
 
         Reminder reminder = reminderService.completeReminder(reminderId);
 
-        boolean isCalledFromReminderDetails = KeyboardUtils.hasButton(callbackQuery.getMessage().getReplyMarkup(), CommandNames.GO_BACK_CALLBACK_COMMAND_NAME);
+        boolean isCalledFromReminderDetails = new KeyboardCustomizer(callbackQuery.getMessage().getReplyMarkup()).hasButton(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME);
         if (isCalledFromReminderDetails) {
-            return doCompleteFromList(reminder, callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
+            return doCompleteFromList(reminder, callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), callbackQuery.getMessage().getReplyMarkup());
         } else {
             return doComplete(reminder, callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
         }
     }
 
-    private String doCompleteFromList(Reminder reminder, long chatId, int messageId) {
+    private String doCompleteFromList(Reminder reminder, long chatId, int messageId, InlineKeyboardMarkup inlineKeyboardMarkup) {
         if (reminder == null) {
             reminderMessageSender.sendReminderCantBeCompletedFromList(chatId, messageId);
 
             return MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED;
         } else {
-            reminderMessageSender.sendReminderCompletedFromList(messageId, reminder);
+            reminderMessageSender.sendReminderCompletedFromList(messageId, inlineKeyboardMarkup, reminder);
 
             return MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER;
         }

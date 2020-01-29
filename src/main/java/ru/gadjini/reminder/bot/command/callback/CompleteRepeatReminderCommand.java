@@ -11,7 +11,7 @@ import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
-import ru.gadjini.reminder.util.KeyboardUtils;
+import ru.gadjini.reminder.util.KeyboardCustomizer;
 
 @Component
 public class CompleteRepeatReminderCommand implements CallbackBotCommand {
@@ -35,9 +35,9 @@ public class CompleteRepeatReminderCommand implements CallbackBotCommand {
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Reminder reminder = repeatReminderService.complete(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
-        boolean isCalledFromReminderDetails = KeyboardUtils.hasButton(callbackQuery.getMessage().getReplyMarkup(), CommandNames.GO_BACK_CALLBACK_COMMAND_NAME);
+        boolean isCalledFromReminderDetails = new KeyboardCustomizer(callbackQuery.getMessage().getReplyMarkup()).hasButton(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME);
         if (isCalledFromReminderDetails) {
-            reminderMessageSender.sendRepeatReminderCompletedFromList(callbackQuery.getMessage().getMessageId(), callbackQuery.getFrom().getId(), reminder);
+            reminderMessageSender.sendRepeatReminderCompletedFromList(callbackQuery.getMessage().getMessageId(), callbackQuery.getMessage().getReplyMarkup(), reminder);
         } else {
             reminderMessageSender.sendRepeatReminderCompleted(reminder);
         }

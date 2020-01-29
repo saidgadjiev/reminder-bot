@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
@@ -55,7 +56,13 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
         if (reminder == null) {
             reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
         } else {
-            reminderMessageSender.sendReminderDetails(callbackQuery.getMessage().getChatId(), callbackQuery.getFrom().getId(), callbackQuery.getMessage().getMessageId(), reminder);
+            reminderMessageSender.sendReminderDetails(
+                    callbackQuery.getMessage().getChatId(),
+                    callbackQuery.getFrom().getId(),
+                    callbackQuery.getMessage().getMessageId(),
+                    requestParams,
+                    reminder
+            );
         }
 
         return null;
@@ -70,7 +77,7 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
                         .text(messageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(tgMessage.getUser().getId())))
-                        .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(tgMessage.getUser().getId(), reminder))
+                        .replyKeyboard(inlineKeyboardService.getReminderDetailsKeyboard(tgMessage.getUser().getId(), new RequestParams().add(Arg.FILTER.getKey(), ReminderDao.Filter.ALL.getCode()), reminder))
         );
     }
 }

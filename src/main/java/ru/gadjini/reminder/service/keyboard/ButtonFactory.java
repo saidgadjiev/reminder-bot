@@ -69,23 +69,23 @@ public class ButtonFactory {
     }
 
     public InlineKeyboardButton skipRepeatReminderButton(int reminderId) {
-        InlineKeyboardButton completeReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.SKIP_REPEAT_REMINDER_COMMAND_DESCRIPTION));
-        completeReminderButton.setCallbackData(CommandNames.SKIP_REPEAT_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+        InlineKeyboardButton skipReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.SKIP_REPEAT_REMINDER_COMMAND_DESCRIPTION));
+        skipReminderButton.setCallbackData(CommandNames.SKIP_REPEAT_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
-        return completeReminderButton;
+        return skipReminderButton;
     }
 
     public InlineKeyboardButton stopRepeatReminderButton(int reminderId) {
-        InlineKeyboardButton completeReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.STOP_REPEAT_REMINDER_COMMAND_DESCRIPTION));
-        completeReminderButton.setCallbackData(CommandNames.STOP_REPEAT_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+        InlineKeyboardButton stopReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.STOP_REPEAT_REMINDER_COMMAND_DESCRIPTION));
+        stopReminderButton.setCallbackData(CommandNames.STOP_REPEAT_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
-        return completeReminderButton;
+        return stopReminderButton;
     }
 
     public InlineKeyboardButton cancelReminderButton(int reminderId) {
@@ -313,21 +313,23 @@ public class ButtonFactory {
         return button;
     }
 
-    public InlineKeyboardButton deactivateReminderButton(int reminderId) {
+    public InlineKeyboardButton deactivateReminderButton(int reminderId, RequestParams requestParams) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.DEACTIVATE_REMINDER_COMMAND_DESCRIPTION));
         button.setCallbackData(CommandNames.DEACTIVATE_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
+                        .add(requestParams)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;
     }
 
-    public InlineKeyboardButton activateReminderButton(int reminderId) {
+    public InlineKeyboardButton activateReminderButton(int reminderId, RequestParams requestParams) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.ACTIVATE_REMINDER_COMMAND_DESCRIPTION));
         button.setCallbackData(CommandNames.ACTIVATE_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
+                        .add(requestParams)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;

@@ -34,7 +34,7 @@ public class DeactivateReminderCommand implements CallbackBotCommand {
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Reminder reminder = reminderService.deactivate(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
-        messageSender.sendReminderDeactivated(callbackQuery.getMessage().getMessageId(), callbackQuery.getFrom().getId(), reminder);
+        messageSender.sendReminderDeactivated(callbackQuery.getMessage().getMessageId(), callbackQuery.getFrom().getId(), requestParams, reminder);
 
         return MessagesProperties.MESSAGE_REMINDER_DEACTIVATED_ANSWER;
     }

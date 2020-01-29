@@ -16,7 +16,7 @@ import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageBuilder;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
-import ru.gadjini.reminder.util.KeyboardUtils;
+import ru.gadjini.reminder.util.KeyboardCustomizer;
 
 import java.util.Collections;
 
@@ -61,14 +61,15 @@ public class SuppressNotificationsCommand implements CallbackBotCommand {
         }
         Reminder reminder = reminderService.getReminder(reminderId);
 
-        if (KeyboardUtils.hasButton(callbackQuery.getMessage().getReplyMarkup(), CommandNames.SCHEDULE_COMMAND_NAME)
-        || KeyboardUtils.hasButton(callbackQuery.getMessage().getReplyMarkup(), CommandNames.REMINDER_DETAILS_COMMAND_NAME)) {
+        KeyboardCustomizer keyboardCustomizer = new KeyboardCustomizer(callbackQuery.getMessage().getReplyMarkup());
+        if (keyboardCustomizer.hasButton(CommandNames.SCHEDULE_COMMAND_NAME)
+        || keyboardCustomizer.hasButton(CommandNames.REMINDER_DETAILS_COMMAND_NAME)) {
             messageService.editMessage(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(callbackQuery.getMessage().getChatId())
                             .messageId(callbackQuery.getMessage().getMessageId())
                             .text(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getReceiverId())))
-                            .replyKeyboard(KeyboardUtils.removeButton(callbackQuery.getMessage().getReplyMarkup(), CommandNames.SUPPRESS_NOTIFICATIONS_COMMAND_NAME))
+                            .replyKeyboard(keyboardCustomizer.remove(CommandNames.SUPPRESS_NOTIFICATIONS_COMMAND_NAME).getKeyboardMarkup())
             );
         } else {
             messageService.editMessage(

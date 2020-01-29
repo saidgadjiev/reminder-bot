@@ -278,8 +278,12 @@ public class ReminderMessageBuilder {
         return text.toString();
     }
 
-    public String getActiveRemindersList(int requesterId, List<Reminder> reminders) {
+    public String getActiveRemindersList(int requesterId, List<Reminder> reminders, String header) {
         StringBuilder text = new StringBuilder();
+
+        if (StringUtils.isNotBlank(header)) {
+            text.append(localisationService.getMessage(header)).append("\n\n");
+        }
 
         int i = 1;
         for (Reminder reminder : reminders) {
