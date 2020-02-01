@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS plan
     active              BOOLEAN DEFAULT FALSE
 );
 
-INSERT INTO plan(description, price, active, period)
-VALUES ('Чтобы продлить подписку вам нужно оптатить 49 <b>рублей</b>', 49, TRUE, '1 months');
+INSERT INTO plan(description, payment_description, price, active, period)
+VALUES ('Чтобы продлить подписку вам нужно оптатить 49 <b>рублей</b>', 'Продление подписки на бот Reminder', 49, TRUE, '1 months');
 
 CREATE TABLE IF NOT EXISTS subscription
 (
