@@ -3,7 +3,6 @@ target
 logs/
 *.iml
 atlassian-ide-plugin.xml
-*.sh
 overlays
 dfc.keystore
 .idea
