@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -24,7 +25,8 @@ public class ReminderWebhookBot extends TelegramWebhookBot {
     private MessageService messageService;
 
     @Autowired
-    public ReminderWebhookBot(BotProperties botProperties, BotFilter botFilter, MessageService messageService) {
+    public ReminderWebhookBot(DefaultBotOptions botOptions, BotProperties botProperties, BotFilter botFilter, MessageService messageService) {
+        super(botOptions);
         this.botProperties = botProperties;
         this.botFilter = botFilter;
         this.messageService = messageService;
@@ -56,4 +58,6 @@ public class ReminderWebhookBot extends TelegramWebhookBot {
     public String getBotPath() {
         return botProperties.getName();
     }
+
+
 }

@@ -11,8 +11,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
+import org.telegram.telegrambots.meta.ApiContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import org.telegram.telegrambots.meta.generics.BotOptions;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.keyboard.UserReminderNotificationScheduleCommand;
 import ru.gadjini.reminder.common.CommandNames;
@@ -90,5 +93,15 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
         inviteFilter.setNext(startCommandFilter).setNext(reminderBotFilter);
 
         return inviteFilter;
+    }
+
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public DefaultBotOptions botOptions() {
+        DefaultBotOptions defaultBotOptions = ApiContext.getInstance(DefaultBotOptions.class);
+
+        defaultBotOptions.setMaxWebhookConnections(300);
+
+        return defaultBotOptions;
     }
 }
