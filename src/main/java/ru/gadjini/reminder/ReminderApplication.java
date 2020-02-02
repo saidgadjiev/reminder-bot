@@ -25,6 +25,8 @@ public class ReminderApplication {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReminderApplication.class);
 
     public static void main(String[] args) {
+        LOGGER.info("Server timezone: " + System.getProperty("user.timezone"));
+
         ApiContextInitializer.init();
         try {
             SpringApplication application = new SpringApplication(ReminderApplication.class);
