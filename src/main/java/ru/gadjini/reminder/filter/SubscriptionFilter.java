@@ -1,7 +1,6 @@
 package ru.gadjini.reminder.filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -31,7 +30,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-@Component
+//@Component
 public class SubscriptionFilter extends BaseBotFilter {
 
     private MessageService messageService;

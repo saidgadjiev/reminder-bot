@@ -21,7 +21,6 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.filter.BotFilter;
-import ru.gadjini.reminder.filter.InviteFilter;
 import ru.gadjini.reminder.filter.ReminderBotFilter;
 import ru.gadjini.reminder.filter.StartCommandFilter;
 import ru.gadjini.reminder.properties.WebHookProperties;
@@ -91,10 +90,10 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
     }
 
     @Bean
-    public BotFilter botFilter(ReminderBotFilter reminderBotFilter, StartCommandFilter startCommandFilter, InviteFilter inviteFilter) {
-        inviteFilter.setNext(startCommandFilter).setNext(reminderBotFilter);
+    public BotFilter botFilter(ReminderBotFilter reminderBotFilter, StartCommandFilter startCommandFilter) {
+        startCommandFilter.setNext(reminderBotFilter);
 
-        return inviteFilter;
+        return startCommandFilter;
     }
 
     @Bean

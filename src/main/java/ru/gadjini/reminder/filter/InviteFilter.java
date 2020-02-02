@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -23,7 +22,7 @@ import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardServiceImpl;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
-@Component
+//@Component
 public class InviteFilter extends BaseBotFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InviteFilter.class);

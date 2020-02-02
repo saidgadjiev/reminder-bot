@@ -97,9 +97,9 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME)));
         //keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.SUBSCRIPTION_COMMAND_NAME)));
 
-        if (userId == 171271164) {
+        /*if (userId == 171271164) {
             keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.CREATE_INVITE_COMMAND_NAME)));
-        }
+        }*/
 
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.HELP_COMMAND_NAME)));
 
