@@ -10,6 +10,8 @@ import org.glassfish.grizzly.threadpool.ThreadPoolProbe;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.generics.Webhook;
@@ -25,8 +27,12 @@ import java.net.URI;
 
 public class DefaultWebhook implements Webhook {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultWebhook.class);
+
     private String keystoreServerFile;
+
     private String keystoreServerPwd;
+
     private String internalUrl;
 
     private final RestApi restApi;
@@ -94,6 +100,7 @@ public class DefaultWebhook implements Webhook {
         addProbe(grizzlyServer, new ThreadLoggingProbe());
         try {
             grizzlyServer.start();
+            LOGGER.debug("Grizzly server started at: " + internalUrl);
         } catch (IOException e) {
             grizzlyServer.shutdown();
             throw new TelegramApiRequestException("Error starting webhook server", e);

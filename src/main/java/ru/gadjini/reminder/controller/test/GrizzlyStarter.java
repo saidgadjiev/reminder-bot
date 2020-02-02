@@ -48,6 +48,7 @@ public class GrizzlyStarter {
 
         try {
             httpServer.start();
+            LOGGER.debug("Grizzly server started at: " + webHookProperties.getInternalUrl());
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);
             httpServer.shutdown();
