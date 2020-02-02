@@ -10,13 +10,13 @@
         </rollingPolicy>
 
         <encoder>
-            <pattern>%relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+            <pattern>%d{"MM-dd HH:mm:ss"} [%thread] %-5level %logger{35} \(%file:%line\) - %msg%n</pattern>
         </encoder>
     </appender>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+            <pattern>%d{"MM-dd HH:mm:ss"} [%thread] %-5level %logger{35} \(%file:%line\) - %msg%n</pattern>
         </encoder>
     </appender>
 
