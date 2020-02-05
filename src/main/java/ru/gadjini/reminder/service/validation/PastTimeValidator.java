@@ -28,7 +28,7 @@ public class PastTimeValidator implements Validator {
     @Override
     public void validate(ValidationContext validationContext) {
         if (validationContext.dateTime().isBefore(timeCreator.zonedDateTimeNow(validationContext.dateTime().getZone()))) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_PAST_TIME));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_PAST_TIME));
         }
     }
 }

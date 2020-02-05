@@ -52,7 +52,7 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
                              CurrReplyKeyboard replyKeyboardService, InlineKeyboardService inlineKeyboardService,
                              SavedQueryService savedQueryService, @Qualifier("chain") ReminderRequestExtractor reminderRequestExtractor,
                              SavedQueryMessageBuilder messageBuilder) {
-        name = localisationService.getMessage(MessagesProperties.SAVED_QUERY_COMMAND_NAME);
+        name = localisationService.getCurrentLocaleMessage(MessagesProperties.SAVED_QUERY_COMMAND_NAME);
         this.localisationService = localisationService;
         this.stateService = stateService;
         this.messageService = messageService;
@@ -82,7 +82,7 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(message.getChatId())
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_SAVED_QUERY_INPUT))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SAVED_QUERY_INPUT))
                         .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
         );
 

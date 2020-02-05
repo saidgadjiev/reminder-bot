@@ -23,7 +23,6 @@ import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZoneId;
 import java.time.format.TextStyle;
-import java.util.Locale;
 
 @Component
 public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCommand {
@@ -51,7 +50,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                                  TimezoneService timezoneService,
                                  CurrReplyKeyboard replyKeyboardService,
                                  LocalisationService localisationService1, TimeCreator timeCreator) {
-        name = localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME);
+        name = localisationService.getCurrentLocaleMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME);
         this.messageService = messageService;
         this.tgUserService = tgUserService;
         this.timezoneService = timezoneService;
@@ -77,8 +76,8 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getMessage(MessagesProperties.CURRENT_TIMEZONE, new Object[]{
-                                zoneId.getDisplayName(TextStyle.FULL, Locale.getDefault()),
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.CURRENT_TIMEZONE, new Object[]{
+                                zoneId.getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale()),
                                 DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(zoneId))
                         })).replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
         );
@@ -106,8 +105,8 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(message.getChatId())
-                            .text(localisationService.getMessage(MessagesProperties.TIMEZONE_CHANGED, new Object[]{
-                                    zoneId.getDisplayName(TextStyle.FULL, Locale.getDefault()),
+                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.TIMEZONE_CHANGED, new Object[]{
+                                    zoneId.getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale()),
                                     DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(zoneId))
                             })).replyKeyboard(replyKeyboardMarkup)
             );

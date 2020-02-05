@@ -32,7 +32,7 @@ public class RepeatTimeParser {
 
     private final ZoneId zoneId;
 
-    public RepeatTimeParser(LexemsConsumer lexemsConsumer, DayOfWeekService dayOfWeekService, Locale locale, ZoneId zoneId) {
+    RepeatTimeParser(LexemsConsumer lexemsConsumer, DayOfWeekService dayOfWeekService, Locale locale, ZoneId zoneId) {
         this.dayOfWeekService = dayOfWeekService;
         this.locale = locale;
         this.lexemsConsumer = lexemsConsumer;
@@ -123,7 +123,7 @@ public class RepeatTimeParser {
     private void consumeDayOfWeek(List<BaseLexem> lexems) {
         String dayOfWeekValue = lexemsConsumer.consume(lexems, TimeToken.DAY_OF_WEEK).getValue();
         DayOfWeek dayOfWeek = Stream.of(DayOfWeek.values())
-                .filter(dow -> dayOfWeekService.isThatDay(dow, locale, dayOfWeekValue))
+                .filter(dow -> dayOfWeekService.isThatDay(dow, dayOfWeekValue))
                 .findFirst()
                 .orElseThrow();
 

@@ -41,13 +41,13 @@ public class CreateReminderValidator implements Validator {
 
     private void checkFriendShip(int userId, String receiverName) {
         if (!friendshipService.existFriendship(userId, receiverName, Friendship.Status.ACCEPTED)) {
-            throw new UserException(localisationService.getMessage(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND)));
+            throw new UserException(localisationService.getCurrentLocaleMessage(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND)));
         }
     }
 
     private void checkFriendShip(int userId, int receiverId) {
         if (!friendshipService.existFriendship(userId, receiverId, Friendship.Status.ACCEPTED)) {
-            throw new UserException(localisationService.getMessage(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND)));
+            throw new UserException(localisationService.getCurrentLocaleMessage(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND)));
         }
     }
 }

@@ -29,7 +29,7 @@ public class CommandStateService {
         T state = commandStateDao.getState(chatId);
 
         if (expiredCheck && state == null) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_SESSION_EXPIRED));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SESSION_EXPIRED));
         }
 
         return state;

@@ -138,7 +138,7 @@ public class UserReminderNotificationService {
         try {
             return requestParser.parseTime(text, zoneId);
         } catch (ParseException ex) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMIND));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_REMIND));
         }
     }
 }

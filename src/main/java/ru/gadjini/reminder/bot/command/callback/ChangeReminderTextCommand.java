@@ -78,7 +78,7 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableC
 
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TEXT))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TEXT))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, requestParams))
         );
 

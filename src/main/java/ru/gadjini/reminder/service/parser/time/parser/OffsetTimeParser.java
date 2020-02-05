@@ -27,10 +27,10 @@ public class OffsetTimeParser {
     private LexemsConsumer lexemsConsumer;
 
     public OffsetTimeParser(LocalisationService localisationService, ZoneId zoneId, LexemsConsumer lexemsConsumer) {
-        this.typeBefore = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE);
-        this.typeAfter = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_AFTER);
-        this.typeOn = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_FOR);
-        this.eve = localisationService.getMessage(MessagesProperties.EVE);
+        this.typeBefore = localisationService.getCurrentLocaleMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE);
+        this.typeAfter = localisationService.getCurrentLocaleMessage(MessagesProperties.OFFSET_TIME_TYPE_AFTER);
+        this.typeOn = localisationService.getCurrentLocaleMessage(MessagesProperties.OFFSET_TIME_TYPE_FOR);
+        this.eve = localisationService.getCurrentLocaleMessage(MessagesProperties.EVE);
         this.lexemsConsumer = lexemsConsumer;
         this.offsetTime = new OffsetTime(zoneId);
     }

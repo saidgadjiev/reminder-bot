@@ -9,22 +9,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.common.TestConstants;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.DayOfWeekService;
+import ru.gadjini.reminder.service.context.UserContextResolver;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
-import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
-import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.*;
-import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,11 +32,11 @@ import java.util.Locale;
 import static ru.gadjini.reminder.service.parser.time.lexer.TimeToken.*;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class, TimeCreator.class})
+@ContextConfiguration(classes = {UserContextResolver.class, LocalisationService.class, DayOfWeekService.class, TimeCreator.class})
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class RepeatTimeParserTest {
 
-    @Autowired
+    @SpyBean
     private LocalisationService localisationService;
 
     @Autowired
@@ -52,6 +51,8 @@ class RepeatTimeParserTest {
 
         Mockito.when(timeCreator.dateTimeNow(TestConstants.TEST_ZONE)).thenReturn(DateTime.of(STATIC_TIME));
         Mockito.when(timeCreator.zonedDateTimeNow(TestConstants.TEST_ZONE)).thenReturn(STATIC_TIME);
+
+        Mockito.doReturn(new Locale("ru")).when(localisationService).getCurrentLocale();
     }
 
     @Test
@@ -175,6 +176,6 @@ class RepeatTimeParserTest {
     }
 
     private TimeParser parser() {
-        return new TimeParser(localisationService, Locale.getDefault(), TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
+        return new TimeParser(localisationService, TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
     }
 }

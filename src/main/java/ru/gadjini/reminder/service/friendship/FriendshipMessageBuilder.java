@@ -11,7 +11,6 @@ import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.format.TextStyle;
 import java.util.List;
-import java.util.Locale;
 
 @Service
 public class FriendshipMessageBuilder {
@@ -30,15 +29,15 @@ public class FriendshipMessageBuilder {
     }
 
     public String getFriendDetailsWithFooterCode(TgUser friend, String footerCode) {
-        return getFriendDetails(friend, localisationService.getMessage(footerCode));
+        return getFriendDetails(friend, localisationService.getCurrentLocaleMessage(footerCode));
     }
 
     public String getFriendDetails(TgUser friend, String footer) {
         StringBuilder message = new StringBuilder();
 
         message.append(UserUtils.userLink(friend)).append("\n\n");
-        message.append(localisationService.getMessage(MessagesProperties.TIMEZONE, new Object[] {
-                friend.getZone().getDisplayName(TextStyle.FULL, Locale.getDefault()),
+        message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.TIMEZONE, new Object[] {
+                friend.getZone().getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale()),
                 DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(friend.getZone()))
         }));
 
@@ -52,7 +51,7 @@ public class FriendshipMessageBuilder {
 
     public String getFriendsList(List<TgUser> items, String emptyCode, String footer) {
         if (items.isEmpty()) {
-            return localisationService.getMessage(emptyCode);
+            return localisationService.getCurrentLocaleMessage(emptyCode);
         }
         StringBuilder message = new StringBuilder();
 
@@ -64,7 +63,7 @@ public class FriendshipMessageBuilder {
             message.append("<b>").append(i++).append("</b>) ").append(UserUtils.userLink(friend));
         }
         if (StringUtils.isNotBlank(footer)) {
-            message.append("\n\n").append(localisationService.getMessage(footer));
+            message.append("\n\n").append(localisationService.getCurrentLocaleMessage(footer));
         }
 
         return message.toString();

@@ -1,10 +1,15 @@
 package ru.gadjini.reminder.service.parser.reminder.lexer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.message.LocalisationService;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -12,13 +17,19 @@ public class ReminderRequestLexerConfig {
 
     private static final String DEFAULT_NOTE_START = ";";
 
-    private String textAndNoteBreakPattern;
+    private final LocalisationService localisationService;
 
+    private Map<Locale, String> textAndNoteBreakPatterns = new HashMap<>();
+
+    @Autowired
     public ReminderRequestLexerConfig(LocalisationService localisationService) {
-        textAndNoteBreakPattern = localisationService.getMessage(MessagesProperties.REGEXP_NOTE_START) + "|" + DEFAULT_NOTE_START;
+        this.localisationService = localisationService;
+        for (Locale locale: localisationService.getSupportedLocales()) {
+            textAndNoteBreakPatterns.put(locale, localisationService.getMessage(MessagesProperties.REGEXP_NOTE_START, locale) + "|" + DEFAULT_NOTE_START);
+        }
     }
 
     public String getTextAndNoteBreakPattern() {
-        return textAndNoteBreakPattern;
+        return textAndNoteBreakPatterns.get(localisationService.getCurrentLocale());
     }
 }

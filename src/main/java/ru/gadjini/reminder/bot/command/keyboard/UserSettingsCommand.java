@@ -28,7 +28,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
 
     @Autowired
     public UserSettingsCommand(LocalisationService localisationService, MessageService messageService, CurrReplyKeyboard replyKeyboardService) {
-        this.name = localisationService.getMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME);
+        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME);
         this.localisationService = localisationService;
         this.messageService = messageService;
         this.replyKeyboardService = replyKeyboardService;
@@ -44,7 +44,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_SETTINGS))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_SETTINGS))
                         .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(message.getChatId()))
         );
         return true;
@@ -60,7 +60,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_SETTINGS))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_SETTINGS))
                         .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(chatId))
         );
     }

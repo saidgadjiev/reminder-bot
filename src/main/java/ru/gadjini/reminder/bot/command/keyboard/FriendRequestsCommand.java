@@ -29,7 +29,7 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
     public FriendRequestsCommand(CurrReplyKeyboard replyKeyboardService, MessageService messageService, LocalisationService localisationService) {
         this.replyKeyboardService = replyKeyboardService;
         this.messageService = messageService;
-        this.name = localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME);
+        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME);
         this.localisationService = localisationService;
     }
 
@@ -43,7 +43,7 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUESTS))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_REQUESTS))
                         .replyKeyboard(replyKeyboardService.getFriendRequestsKeyboard(message.getChatId()))
         );
 

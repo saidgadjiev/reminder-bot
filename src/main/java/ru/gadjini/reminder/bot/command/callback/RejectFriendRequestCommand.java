@@ -53,13 +53,13 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(friendship.getUserOneId())
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED_INITIATOR,
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED_INITIATOR,
                                 new Object[]{UserUtils.userLink(friendship.getUserTwo())}
                         ))
         );
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME))
         );
 

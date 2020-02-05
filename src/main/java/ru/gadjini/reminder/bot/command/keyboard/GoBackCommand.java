@@ -17,7 +17,7 @@ public class GoBackCommand implements KeyboardBotCommand {
 
     @Autowired
     public GoBackCommand(LocalisationService messageSource, CommandNavigator commandNavigator) {
-        this.description = messageSource.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME);
+        this.description = messageSource.getCurrentLocaleMessage(MessagesProperties.GO_BACK_COMMAND_NAME);
         this.commandNavigator = commandNavigator;
     }
 

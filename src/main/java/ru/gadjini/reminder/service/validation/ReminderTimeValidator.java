@@ -47,7 +47,7 @@ public class ReminderTimeValidator implements Validator {
     private void validate(DateTime dateTime) {
         if (!dateTime.hasTime()) {
             if (dateTime.date().isBefore(timeCreator.localDateNow(dateTime.getZoneId()))) {
-                throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
+                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
             }
         } else {
             validate(dateTime.toZonedDateTime());
@@ -56,19 +56,19 @@ public class ReminderTimeValidator implements Validator {
 
     private void validate(ZonedDateTime dateTime) {
         if (dateTime.isBefore(timeCreator.zonedDateTimeNow(dateTime.getZone()))) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }
     }
 
     private void validate(OffsetTime offsetTime) {
         if (offsetTime.getType() != OffsetTime.Type.AFTER) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }
     }
 
     private void validate(FixedTime fixedTime) {
         if (fixedTime.getType() != FixedTime.Type.AT) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }
 
         validate(fixedTime.getDateTime());

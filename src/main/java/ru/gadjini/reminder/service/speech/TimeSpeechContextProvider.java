@@ -27,9 +27,9 @@ public class TimeSpeechContextProvider implements SpeechContextProvider {
 
     @Autowired
     public TimeSpeechContextProvider(LocalisationService localisationService, DayOfWeekService dayOfWeekService) {
-        this.offsetTimePhrases = localisationService.getMessage(MessagesProperties.OFFSET_TIME_PHRASES);
-        this.repeatTimePhrases = localisationService.getMessage(MessagesProperties.REPEAT_TIME_PHRASES);
-        this.fixedTimePhrases = localisationService.getMessage(MessagesProperties.FIXED_TIME_PHRASES);
+        this.offsetTimePhrases = localisationService.getCurrentLocaleMessage(MessagesProperties.OFFSET_TIME_PHRASES);
+        this.repeatTimePhrases = localisationService.getCurrentLocaleMessage(MessagesProperties.REPEAT_TIME_PHRASES);
+        this.fixedTimePhrases = localisationService.getCurrentLocaleMessage(MessagesProperties.FIXED_TIME_PHRASES);
         this.dayOfWeekService = dayOfWeekService;
     }
 

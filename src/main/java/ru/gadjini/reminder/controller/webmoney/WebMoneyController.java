@@ -83,8 +83,8 @@ public class WebMoneyController {
         return Map.of(
                 FAIL, fail,
                 TEMPLATE, "payment_result.ftl",
-                PAYMENT_RESULT, localisationService.getMessage(fail ? MessagesProperties.MESSAGE_PAYMENT_FAIL : MessagesProperties.MESSAGE_PAYMENT_SUCCESS),
-                REDIRECT, localisationService.getMessage(MessagesProperties.MESSAGE_TELEGRAM_REDIRECT),
+                PAYMENT_RESULT, localisationService.getCurrentLocaleMessage(fail ? MessagesProperties.MESSAGE_PAYMENT_FAIL : MessagesProperties.MESSAGE_PAYMENT_SUCCESS),
+                REDIRECT, localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TELEGRAM_REDIRECT),
                 BOT_NAME, botProperties.getName()
         );
     }
@@ -100,7 +100,7 @@ public class WebMoneyController {
     @Path("/fail")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response fail(@FormParam("user_id") int userId) {
-        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(userId).text(localisationService.getMessage(MessagesProperties.MESSAGE_PAYMENT_FAIL)));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(userId).text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_PAYMENT_FAIL)));
 
         return Response.seeOther(URI.create(redirectUrl(true))).build();
     }
@@ -196,7 +196,7 @@ public class WebMoneyController {
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(userId)
-                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}))
+                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}))
                             .replyKeyboard(replyKeyboardService.getMainMenu(userId, userId))
             );
             commandNavigator.setCurrentCommand(userId, CommandNames.START_COMMAND_NAME);

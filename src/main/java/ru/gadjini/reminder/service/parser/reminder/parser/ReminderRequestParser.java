@@ -13,7 +13,6 @@ import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Locale;
 
 public class ReminderRequestParser {
 
@@ -23,10 +22,9 @@ public class ReminderRequestParser {
 
     private LexemsConsumer lexemsConsumer;
 
-    public ReminderRequestParser(LocalisationService localisationService,
-                                 Locale locale, ZoneId zoneId, DayOfWeekService dayOfWeekService, TimeCreator timeCreator) {
+    public ReminderRequestParser(LocalisationService localisationService, ZoneId zoneId, DayOfWeekService dayOfWeekService, TimeCreator timeCreator) {
         lexemsConsumer = new LexemsConsumer();
-        timeParser = new TimeParser(localisationService, locale, zoneId, dayOfWeekService, timeCreator, lexemsConsumer);
+        timeParser = new TimeParser(localisationService, zoneId, dayOfWeekService, timeCreator, lexemsConsumer);
         reminderRequest.setTime(new Time(zoneId));
     }
 

@@ -12,6 +12,7 @@ import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.properties.SubscriptionProperties;
 import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.declension.TimeDeclensionProvider;
 import ru.gadjini.reminder.service.declension.TimeDeclensionService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
@@ -25,10 +26,6 @@ import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZoneId;
 import java.time.format.TextStyle;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 //@Component
 public class SubscriptionFilter extends BaseBotFilter {
@@ -49,7 +46,7 @@ public class SubscriptionFilter extends BaseBotFilter {
 
     private SubscriptionProperties subscriptionProperties;
 
-    private Map<String, TimeDeclensionService> declensionServiceMap = new HashMap<>();
+    private TimeDeclensionProvider timeDeclensionProvider;
 
     private CommandNavigator commandNavigator;
 
@@ -60,7 +57,7 @@ public class SubscriptionFilter extends BaseBotFilter {
                               LocalisationService localisationService, SubscriptionService subscriptionService,
                               PlanService planService, CurrReplyKeyboard replyKeyboardService,
                               InlineKeyboardService inlineKeyboardService, PaymentMessageService paymentMessageService,
-                              SubscriptionProperties subscriptionProperties, Collection<TimeDeclensionService> declensionServices,
+                              SubscriptionProperties subscriptionProperties, TimeDeclensionProvider timeDeclensionProvider,
                               CommandNavigator commandNavigator, TimeCreator timeCreator) {
         this.messageService = messageService;
         this.localisationService = localisationService;
@@ -70,9 +67,9 @@ public class SubscriptionFilter extends BaseBotFilter {
         this.inlineKeyboardService = inlineKeyboardService;
         this.paymentMessageService = paymentMessageService;
         this.subscriptionProperties = subscriptionProperties;
+        this.timeDeclensionProvider = timeDeclensionProvider;
         this.commandNavigator = commandNavigator;
         this.timeCreator = timeCreator;
-        declensionServices.forEach(timeDeclensionService -> declensionServiceMap.put(timeDeclensionService.getLanguage(), timeDeclensionService));
     }
 
     @Override
@@ -105,16 +102,16 @@ public class SubscriptionFilter extends BaseBotFilter {
     }
 
     private void sendTrialSubscriptionStarted(int userId) {
-        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
+        TimeDeclensionService declensionService = timeDeclensionProvider.getService(localisationService.getCurrentLocale().getLanguage());
 
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
                         .text(
-                                localisationService.getMessage(MessagesProperties.MESSAGE_TRIAL_PERIOD_STARTED,
+                                localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TRIAL_PERIOD_STARTED,
                                         new Object[]{
                                                 declensionService.day(subscriptionProperties.getTrialPeriod()),
-                                                ZoneId.of(ReminderConstants.DEFAULT_TIMEZONE).getDisplayName(TextStyle.FULL, Locale.getDefault())
+                                                ZoneId.of(ReminderConstants.DEFAULT_TIMEZONE).getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale())
                                         })
                         ).replyKeyboard(replyKeyboardService.getMainMenu(userId, userId))
         );
@@ -124,7 +121,7 @@ public class SubscriptionFilter extends BaseBotFilter {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_EXPIRED))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_EXPIRED))
                         .replyKeyboard(replyKeyboardService.removeKeyboard(userId))
         );
 
@@ -144,6 +141,6 @@ public class SubscriptionFilter extends BaseBotFilter {
     }
 
     private String getNeedPayMessage(String planDesc) {
-        return planDesc + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_CHOOSE_PAYMENT_TYPE);
+        return planDesc + "\n\n" + localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CHOOSE_PAYMENT_TYPE);
     }
 }

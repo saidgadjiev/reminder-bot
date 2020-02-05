@@ -64,7 +64,7 @@ public class InviteFilter extends BaseBotFilter {
                 messageService.sendMessageAsync(
                         new SendMessageContext(PriorityJob.Priority.MEDIUM)
                                 .chatId(message.getChatId())
-                                .text(localisationService.getMessage(MessagesProperties.MESSAGE_BOT_CLOSE_TESTING))
+                                .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BOT_CLOSE_TESTING))
                                 .replyKeyboard(replyKeyboardService.removeKeyboard(message.getChatId()))
                 );
             } else {
@@ -76,7 +76,7 @@ public class InviteFilter extends BaseBotFilter {
                     messageService.sendMessageAsync(
                             new SendMessageContext(PriorityJob.Priority.MEDIUM)
                                     .chatId(message.getChatId())
-                                    .text(localisationService.getMessage(MessagesProperties.MESSAGE_INVITE_TOKEN_NOT_FOUND))
+                                    .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_INVITE_TOKEN_NOT_FOUND))
                                     .replyKeyboard(replyKeyboardService.removeKeyboard(message.getChatId()))
                     );
                 }
@@ -108,7 +108,7 @@ public class InviteFilter extends BaseBotFilter {
             return objectMapper.treeToValue(objectNode, Update.class);
         } catch (JsonProcessingException e) {
             LOGGER.error(e.getMessage(), e);
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_ERROR));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_ERROR));
         }
     }
 

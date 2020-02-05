@@ -70,7 +70,7 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(callbackQuery.getMessage().getChatId())
                         .messageId(callbackQuery.getMessage().getMessageId())
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.FRIEND_DETAILS_COMMAND_NAME, CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD, requestParams))
         );
 

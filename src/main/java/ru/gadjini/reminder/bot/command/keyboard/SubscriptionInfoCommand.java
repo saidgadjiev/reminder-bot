@@ -32,7 +32,7 @@ public class SubscriptionInfoCommand implements KeyboardBotCommand {
     public SubscriptionInfoCommand(LocalisationService localisationService,
                                    SubscriptionService subscriptionService,
                                    MessageService messageService, PlanService planService, TimeBuilder timeBuilder) {
-        this.name = localisationService.getMessage(MessagesProperties.SUBSCRIPTION_COMMAND_NAME);
+        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.SUBSCRIPTION_COMMAND_NAME);
         this.localisationService = localisationService;
         this.subscriptionService = subscriptionService;
         this.messageService = messageService;
@@ -58,13 +58,13 @@ public class SubscriptionInfoCommand implements KeyboardBotCommand {
         Plan plan = planService.getActivePlan();
 
         if (subscription.getPlanId() == null) {
-            return localisationService.getMessage(
+            return localisationService.getCurrentLocaleMessage(
                     MessagesProperties.MESSAGE_TRIAL_SUBSCRIPTION_END_DATE,
                     new Object[]{DateTimeFormats.PAYMENT_PERIOD_PATTERN.format(subscription.getEndDate()), plan.getPrice(), timeBuilder.time(plan.getPeriod())}
             );
         }
 
-        return localisationService.getMessage(
+        return localisationService.getCurrentLocaleMessage(
                 MessagesProperties.MESSAGE_SUBSCRIPTION_END_DATE,
                 new Object[]{DateTimeFormats.PAYMENT_PERIOD_PATTERN.format(subscription.getEndDate()), plan.getPrice(), timeBuilder.time(plan.getPeriod())}
         );

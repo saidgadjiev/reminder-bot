@@ -27,7 +27,7 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
     private RequestParser requestParser;
 
     public FriendRequestExtractor(LocalisationService localisationService, FriendshipService friendshipService, RequestParser requestParser) {
-        this.forFriendStart = localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START).toLowerCase();
+        this.forFriendStart = localisationService.getCurrentLocaleMessage(MessagesProperties.FOR_FRIEND_REMINDER_START).toLowerCase();
         this.friendshipService = friendshipService;
         this.localisationService = localisationService;
         this.requestParser = requestParser;
@@ -44,7 +44,7 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
 
                 return reminderRequest;
             } catch (ParseException ex) {
-                throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
             }
         }
 
@@ -71,9 +71,9 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
             StringBuilder message = new StringBuilder();
 
             if (voice) {
-                message.append(localisationService.getMessage(MessagesProperties.MESSAGE_VOICE_REQUEST, new Object[]{text})).append(" ");
+                message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_VOICE_REQUEST, new Object[]{text})).append(" ");
             }
-            message.append(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_WITH_NAME_NOT_FOUND));
+            message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_WITH_NAME_NOT_FOUND));
 
             throw new UserException(message.toString());
         }

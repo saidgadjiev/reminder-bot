@@ -69,7 +69,7 @@ public class CreatorReminderCommand implements CallbackBotCommand, NavigableCall
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(tgMessage.getChatId())
-                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_HOW_HELP))
+                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_HOW_HELP))
                             .replyKeyboard(replyKeyboard)
             );
         }

@@ -74,7 +74,7 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableCal
 
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_NAME))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_NAME))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.FRIEND_DETAILS_COMMAND_NAME, requestParams))
         );
 

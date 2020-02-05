@@ -35,7 +35,7 @@ public class FromMeFriendRequests implements KeyboardBotCommand, NavigableCallba
     @Autowired
     public FromMeFriendRequests(LocalisationService localisationService, FriendshipService friendshipService,
                                 FriendshipMessageBuilder friendshipMessageBuilder, InlineKeyboardService inlineKeyboardService, MessageService messageService) {
-        this.name = localisationService.getMessage(MessagesProperties.FROM_ME_FRIEND_REQUESTS_COMMAND_NAME);
+        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.FROM_ME_FRIEND_REQUESTS_COMMAND_NAME);
         this.friendshipService = friendshipService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.inlineKeyboardService = inlineKeyboardService;

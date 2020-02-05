@@ -43,7 +43,7 @@ public class ToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableC
         this.friendshipService = friendshipService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.messageService = messageService;
-        this.name = localisationService.getMessage(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME);
+        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME);
     }
 
     @Override

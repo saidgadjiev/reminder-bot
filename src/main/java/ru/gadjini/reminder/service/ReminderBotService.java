@@ -124,7 +124,7 @@ public class ReminderBotService {
                 messageService.sendMessageAsync(
                         new SendMessageContext(PriorityJob.Priority.MEDIUM)
                                 .chatId(message.getChatId())
-                                .text(localisationService.getMessage(MessagesProperties.MESSAGE_UNKNOWN_COMMAND)));
+                                .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_UNKNOWN_COMMAND)));
                 return;
             }
         } else if (commandExecutor.isTextCommand(message.getChatId(), text)) {

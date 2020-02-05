@@ -183,7 +183,7 @@ public class TelegramMessageService implements MessageService {
         sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_ERROR))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_ERROR))
                         .replyKeyboard(replyKeyboard)
         );
     }
@@ -198,7 +198,7 @@ public class TelegramMessageService implements MessageService {
         sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_BOT_RESTARTED))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BOT_RESTARTED))
                         .replyKeyboard(replyKeyboard)
         );
     }

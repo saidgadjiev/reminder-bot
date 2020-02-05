@@ -1,16 +1,18 @@
 package ru.gadjini.reminder.service.parser.reminder.lexer;
 
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.regex.GroupPattern;
-import ru.gadjini.reminder.service.DayOfWeekService;
+import ru.gadjini.reminder.service.context.UserContextResolver;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
@@ -21,10 +23,8 @@ import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {LocalisationService.class, ReminderRequestLexerConfig.class})
+@ContextConfiguration(classes = {UserContextResolver.class, LocalisationService.class, ReminderRequestLexerConfig.class})
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class ReminderRequestLexerTest {
 
@@ -37,8 +37,16 @@ class ReminderRequestLexerTest {
         Mockito.when(TIME_LEXER_CONFIG.getRepeatWordPattern()).thenReturn(new GroupPattern(Patterns.REPEAT_WORD_PATTERN, Collections.emptyList()));
     }
 
+    @SpyBean
+    private LocalisationService localisationService;
+
     @Autowired
     private ReminderRequestLexerConfig lexerConfig;
+
+    @BeforeEach
+    void setUp() {
+        Mockito.doReturn(new Locale("ru")).when(localisationService).getCurrentLocale();
+    }
 
     @Test
     void fixedTime() {

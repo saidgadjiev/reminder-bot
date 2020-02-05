@@ -27,7 +27,7 @@ public class RefreshUserDataCommand implements KeyboardBotCommand {
 
     @Autowired
     public RefreshUserDataCommand(LocalisationService localisationService, TgUserService tgUserService, LocalisationService localisationService1, MessageService messageService) {
-        this.name = localisationService.getMessage(MessagesProperties.REFRESH_USER_DATA_COMMAND_NAME);
+        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.REFRESH_USER_DATA_COMMAND_NAME);
         this.tgUserService = tgUserService;
         this.localisationService = localisationService1;
         this.messageService = messageService;
@@ -49,10 +49,10 @@ public class RefreshUserDataCommand implements KeyboardBotCommand {
     private String message(TgUser user) {
         StringBuilder message = new StringBuilder();
 
-        message.append(localisationService.getMessage(MessagesProperties.MESSAGE_USER_DATA_REFRESHED)).append("\n");
-        message.append(localisationService.getMessage(MessagesProperties.MESSAGE_USER_DATA, new Object[]{
+        message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_DATA_REFRESHED)).append("\n");
+        message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_DATA, new Object[]{
                 user.getName(),
-                StringUtils.isNotBlank(user.getUsername()) ? TgUser.USERNAME_START + user.getUsername() : localisationService.getMessage(MessagesProperties.MESSAGE_USERNAME_NOT_EXISTS),
+                StringUtils.isNotBlank(user.getUsername()) ? TgUser.USERNAME_START + user.getUsername() : localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USERNAME_NOT_EXISTS),
                 UserUtils.userLink(user.getUserId())
         }));
 

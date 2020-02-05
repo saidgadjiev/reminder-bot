@@ -25,7 +25,7 @@ public class FriendsNamesSpeechContextProvider implements SpeechContextProvider 
 
     @Autowired
     public FriendsNamesSpeechContextProvider(LocalisationService localisationService, FriendshipService friendshipService) {
-        this.forFriendStart = localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START);
+        this.forFriendStart = localisationService.getCurrentLocaleMessage(MessagesProperties.FOR_FRIEND_REMINDER_START);
         this.friendshipService = friendshipService;
     }
 

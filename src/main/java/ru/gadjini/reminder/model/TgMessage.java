@@ -109,4 +109,14 @@ public class TgMessage {
 
         return update.getMessage().getFrom().getId();
     }
+
+    public static User getUser(Update update) {
+        if (update.hasCallbackQuery()) {
+            return update.getCallbackQuery().getFrom();
+        } else if (update.hasEditedMessage()) {
+            return update.getEditedMessage().getFrom();
+        }
+
+        return update.getMessage().getFrom();
+    }
 }

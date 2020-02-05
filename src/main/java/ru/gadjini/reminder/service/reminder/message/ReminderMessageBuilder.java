@@ -65,7 +65,7 @@ public class ReminderMessageBuilder {
         String note = reminder.getNote();
 
         if (reminder.isSuppressNotifications() && config.receiverId == reminder.getReceiverId()) {
-            result.append(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI)).append(" ");
+            result.append(localisationService.getCurrentLocaleMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI)).append(" ");
         }
         result.append(text).append(" ");
 
@@ -282,7 +282,7 @@ public class ReminderMessageBuilder {
         StringBuilder text = new StringBuilder();
 
         if (StringUtils.isNotBlank(header)) {
-            text.append(localisationService.getMessage(header)).append("\n\n");
+            text.append(localisationService.getCurrentLocaleMessage(header)).append("\n\n");
         }
 
         int i = 1;
@@ -291,7 +291,7 @@ public class ReminderMessageBuilder {
             text.append(number);
 
             if (reminder.isSuppressNotifications() && requesterId == reminder.getReceiverId()) {
-                text.append(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI)).append(" ");
+                text.append(localisationService.getCurrentLocaleMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI)).append(" ");
             }
             text.append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder)).append(")\n");
 

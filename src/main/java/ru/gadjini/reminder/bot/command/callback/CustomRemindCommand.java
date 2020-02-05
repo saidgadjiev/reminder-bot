@@ -76,7 +76,7 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
 
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND))
                         .replyKeyboard(inlineKeyboardService.getCustomRemindKeyboard(prevHistoryName, requestParams))
         );
 

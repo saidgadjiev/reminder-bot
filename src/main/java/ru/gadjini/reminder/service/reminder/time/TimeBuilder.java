@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.RepeatTime;
+import ru.gadjini.reminder.service.declension.TimeDeclensionProvider;
 import ru.gadjini.reminder.service.declension.TimeDeclensionService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
@@ -16,7 +17,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 @Service
 public class TimeBuilder {
@@ -25,19 +27,19 @@ public class TimeBuilder {
 
     private LocalisationService localisationService;
 
-    private Map<String, TimeDeclensionService> declensionServiceMap = new HashMap<>();
+    private final TimeDeclensionProvider timeDeclensionProvider;
 
     private TimeCreator timeCreator;
 
     @Autowired
-    public TimeBuilder(LocalisationService localisationService, Collection<TimeDeclensionService> declensionServices, TimeCreator timeCreator) {
+    public TimeBuilder(LocalisationService localisationService, TimeDeclensionProvider timeDeclensionProvider, TimeCreator timeCreator) {
         this.localisationService = localisationService;
+        this.timeDeclensionProvider = timeDeclensionProvider;
         this.timeCreator = timeCreator;
-        declensionServices.forEach(timeDeclensionService -> declensionServiceMap.put(timeDeclensionService.getLanguage(), timeDeclensionService));
     }
 
     public String deactivated() {
-        return localisationService.getMessage(MessagesProperties.DEACTIVATED_TIME);
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.DEACTIVATED_TIME);
     }
 
     public String time(OffsetTime offsetTime) {
@@ -45,10 +47,10 @@ public class TimeBuilder {
 
         builder.append("<b>");
         if (offsetTime.getDays() > 0 || offsetTime.getHours() > 0 || offsetTime.getMinutes() > 0) {
-            String typeBefore = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE);
+            String typeBefore = localisationService.getCurrentLocaleMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE);
             builder.append(typeBefore).append(" ");
         }
-        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
+        TimeDeclensionService declensionService = timeDeclensionProvider.getService(localisationService.getCurrentLocale().getLanguage());
 
         if (offsetTime.getDays() != 0) {
             builder.append(declensionService.day(offsetTime.getDays())).append(" ");
@@ -60,7 +62,7 @@ public class TimeBuilder {
             builder.append(declensionService.minute(offsetTime.getMinutes())).append(" ");
         }
         if (offsetTime.getTime() != null) {
-            String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
+            String timeArticle = localisationService.getCurrentLocaleMessage(MessagesProperties.TIME_ARTICLE);
             builder.append(timeArticle).append(" ").append(DATE_TIME_FORMATTER.format(offsetTime.getTime()));
         }
 
@@ -71,7 +73,7 @@ public class TimeBuilder {
         StringBuilder time = new StringBuilder();
 
         time.append("<b>");
-        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
+        TimeDeclensionService declensionService = timeDeclensionProvider.getService(localisationService.getCurrentLocale().getLanguage());
         if (repeatTimes.get(0).getDayOfWeek() != null) {
             time.append(declensionService.getRepeatWord(repeatTimes.get(0).getDayOfWeek())).append(" ");
         } else {
@@ -92,7 +94,7 @@ public class TimeBuilder {
         StringBuilder time = new StringBuilder();
 
         time.append("<b>");
-        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
+        TimeDeclensionService declensionService = timeDeclensionProvider.getService(localisationService.getCurrentLocale().getLanguage());
         if (repeatTime.getDayOfWeek() != null) {
             time.append(declensionService.getRepeatWord(repeatTime.getDayOfWeek())).append(" ");
         } else {
@@ -149,19 +151,19 @@ public class TimeBuilder {
     }
 
     public String fixedDay(ZonedDateTime remindAt) {
-        String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
-        String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
+        String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale());
+        String timeArticle = localisationService.getCurrentLocaleMessage(MessagesProperties.TIME_ARTICLE);
         ZonedDateTime now = timeCreator.zonedDateTimeNow(remindAt.getZone());
 
         return "<b>" + remindAt.getDayOfMonth() + " " + monthName +
-                "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " +
+                "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, localisationService.getCurrentLocale()) + ") " +
                 timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + (now.getYear() < remindAt.getYear() ? " " + remindAt.getYear() : "") + "</b>";
     }
 
     public String time(Period period, boolean bold) {
         StringBuilder time = new StringBuilder();
 
-        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
+        TimeDeclensionService declensionService = timeDeclensionProvider.getService(localisationService.getCurrentLocale().getLanguage());
         if (bold) {
             time.append("<b>");
         }
@@ -172,57 +174,57 @@ public class TimeBuilder {
     }
 
     private String todayDate(LocalDate remindAt) {
-        String today = localisationService.getMessage(MessagesProperties.TODAY);
+        String today = localisationService.getCurrentLocaleMessage(MessagesProperties.TODAY);
 
-        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")</b>";
+        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, localisationService.getCurrentLocale()) + ")</b>";
     }
 
     private String tomorrowDate(LocalDate remindAt) {
-        String today = localisationService.getMessage(MessagesProperties.TOMORROW);
+        String today = localisationService.getCurrentLocaleMessage(MessagesProperties.TOMORROW);
 
-        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")</b>";
+        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, localisationService.getCurrentLocale()) + ")</b>";
     }
 
     private String dayAfterTomorrowDate(LocalDate remindAt) {
-        String today = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
+        String today = localisationService.getCurrentLocaleMessage(MessagesProperties.DAY_AFTER_TOMORROW);
 
-        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")</b>";
+        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, localisationService.getCurrentLocale()) + ")</b>";
     }
 
     private String fixedDate(LocalDate remindAt, ZoneId zoneId) {
-        String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault());
+        String monthName = remindAt.getMonth().getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale());
         LocalDate now = timeCreator.localDateNow(zoneId);
 
         return "<b>" + remindAt.getDayOfMonth() + " " + monthName +
-                "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ")"
+                "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, localisationService.getCurrentLocale()) + ")"
                 + (now.getYear() < remindAt.getYear() ? " " + remindAt.getYear() : "") + "</b>";
     }
 
     private String todayTime(ZonedDateTime remindAt) {
-        String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
-        String today = localisationService.getMessage(MessagesProperties.TODAY);
+        String timeArticle = localisationService.getCurrentLocaleMessage(MessagesProperties.TIME_ARTICLE);
+        String today = localisationService.getCurrentLocaleMessage(MessagesProperties.TODAY);
 
-        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
+        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, localisationService.getCurrentLocale()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
     }
 
     private String tomorrowTime(ZonedDateTime remindAt) {
-        String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
-        String today = localisationService.getMessage(MessagesProperties.TOMORROW);
+        String timeArticle = localisationService.getCurrentLocaleMessage(MessagesProperties.TIME_ARTICLE);
+        String today = localisationService.getCurrentLocaleMessage(MessagesProperties.TOMORROW);
 
-        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
+        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, localisationService.getCurrentLocale()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
     }
 
     private String dayAfterTomorrowTime(ZonedDateTime remindAt) {
-        String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
-        String today = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
+        String timeArticle = localisationService.getCurrentLocaleMessage(MessagesProperties.TIME_ARTICLE);
+        String today = localisationService.getCurrentLocaleMessage(MessagesProperties.DAY_AFTER_TOMORROW);
 
-        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
+        return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, localisationService.getCurrentLocale()) + ") " + timeArticle + " " + DATE_TIME_FORMATTER.format(remindAt) + "</b>";
     }
 
     private String getRepeatTimeView(RepeatTime repeatTime) {
         StringBuilder time = new StringBuilder();
 
-        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
+        TimeDeclensionService declensionService = timeDeclensionProvider.getService(localisationService.getCurrentLocale().getLanguage());
         if (repeatTime.getDayOfWeek() != null) {
             time.append(declensionService.dayOfWeek(repeatTime.getDayOfWeek())).append(" ");
             if (repeatTime.getTime() != null) {
@@ -230,13 +232,13 @@ public class TimeBuilder {
             }
         } else if (repeatTime.getInterval().getMonths() != 0) {
             time.append(getPeriodView(repeatTime.getInterval())).append(" ");
-            time.append(repeatTime.getDay()).append(" ").append(localisationService.getMessage(MessagesProperties.REGEXP_MONTH_DAY_PREFIX));
+            time.append(repeatTime.getDay()).append(" ").append(localisationService.getCurrentLocaleMessage(MessagesProperties.REGEXP_MONTH_DAY_PREFIX));
             if (repeatTime.getTime() != null) {
                 time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
             }
         } else if (repeatTime.getInterval().getYears() != 0) {
             time.append(getPeriodView(repeatTime.getInterval())).append(" ");
-            time.append(repeatTime.getDay()).append(" ").append(repeatTime.getMonth().getDisplayName(TextStyle.FULL, Locale.getDefault()));
+            time.append(repeatTime.getDay()).append(" ").append(repeatTime.getMonth().getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale()));
             if (repeatTime.getTime() != null) {
                 time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
             }
@@ -253,7 +255,7 @@ public class TimeBuilder {
     private String getPeriodView(Period period) {
         StringBuilder time = new StringBuilder();
 
-        TimeDeclensionService declensionService = declensionServiceMap.get(Locale.getDefault().getLanguage());
+        TimeDeclensionService declensionService = timeDeclensionProvider.getService(localisationService.getCurrentLocale().getLanguage());
         if (period.getYears() != 0) {
             time.append(declensionService.year(period.getYears())).append(" ");
         }

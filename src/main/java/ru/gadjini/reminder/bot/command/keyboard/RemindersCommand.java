@@ -30,7 +30,7 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
 
     @Autowired
     public RemindersCommand(LocalisationService localisationService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
-        this.name = localisationService.getMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME);
+        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME);
         this.localisationService = localisationService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
@@ -46,7 +46,7 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS))
                         .replyKeyboard(inlineKeyboardService.getRemindersMenu())
         );
 
@@ -64,7 +64,7 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS))
                         .replyKeyboard(inlineKeyboardService.getRemindersMenu())
         );
     }

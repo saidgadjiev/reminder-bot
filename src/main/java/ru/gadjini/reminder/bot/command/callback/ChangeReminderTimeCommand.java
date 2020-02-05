@@ -74,7 +74,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableC
 
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TIME))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, requestParams))
         );
 

@@ -44,7 +44,7 @@ public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCo
     public CreateReminderCommand(LocalisationService localisationService, SavedQueryService savedQueryService,
                                  CurrReplyKeyboard replyKeyboardService, MessageService messageService,
                                  ReminderRequestService reminderRequestService, ReminderMessageSender reminderMessageSender) {
-        this.name = localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME);
+        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME);
         this.localisationService = localisationService;
         this.savedQueryService = savedQueryService;
         this.replyKeyboardService = replyKeyboardService;
@@ -71,7 +71,7 @@ public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCo
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_CREATE_REMINDER))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CREATE_REMINDER))
                         .replyKeyboard(savedQueriesKeyboard)
         );
 

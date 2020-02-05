@@ -55,8 +55,8 @@ public class InlineKeyboardService {
         List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
 
         keyboard.add(List.of(
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_REASON.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING))),
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_REASON.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON)))
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_REASON.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING))),
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_REASON.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON)))
         ));
 
         keyboard.add(List.of(buttonFactory.goBackCallbackButton(prevCommand, requestParams)));
@@ -77,14 +77,14 @@ public class InlineKeyboardService {
 
         List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
         keyboard.add(List.of(
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_15_MIN), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_15_MIN))),
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_30_MIN), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_30_MIN))),
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_1_H), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_1_H)))
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_15_MIN), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_15_MIN))),
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_30_MIN), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_30_MIN))),
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_1_H), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_BEFORE_1_H)))
         ));
         keyboard.add(List.of(
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_30_MIN), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_30_MIN))),
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_1_H), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_1_H))),
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_2_H), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_REMIND_AFTER_2_H)))
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_AFTER_30_MIN), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_AFTER_30_MIN))),
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_AFTER_1_H), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_AFTER_1_H))),
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_AFTER_2_H), CommandNames.CUSTOM_REMINDER_TIME_COMMAND_NAME, new RequestParams().add(Arg.CUSTOM_REMIND_TIME.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_AFTER_2_H)))
         ));
         keyboard.add(List.of(buttonFactory.goBackCallbackButton(prevCommand, requestParams)));
 
@@ -117,9 +117,9 @@ public class InlineKeyboardService {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getMessage(MessagesProperties.PAYMENT_BEELINE_COMMAND_DESCRIPTION), buildPayUrl(userId, planId, PaymentType.BEELINE))));
-        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getMessage(MessagesProperties.PAYMENT_CARD_COMMAND_DESCRIPTION), buildPayUrl(userId, planId, PaymentType.CARD))));
-        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getMessage(MessagesProperties.PAYMENT_WEB_MONEY_DESCRIPTION), buildPayUrl(userId, planId, PaymentType.WEB_MONEY))));
+        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getCurrentLocaleMessage(MessagesProperties.PAYMENT_BEELINE_COMMAND_DESCRIPTION), buildPayUrl(userId, planId, PaymentType.BEELINE))));
+        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getCurrentLocaleMessage(MessagesProperties.PAYMENT_CARD_COMMAND_DESCRIPTION), buildPayUrl(userId, planId, PaymentType.CARD))));
+        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getCurrentLocaleMessage(MessagesProperties.PAYMENT_WEB_MONEY_DESCRIPTION), buildPayUrl(userId, planId, PaymentType.WEB_MONEY))));
 
         return keyboardMarkup;
     }
@@ -483,8 +483,8 @@ public class InlineKeyboardService {
 
         List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
         keyboard.add(List.of(
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_1_D), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_1_D))),
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_2_D), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_2_D)))
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_1_D), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_1_D))),
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_2_D), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_2_D)))
         ));
         keyboard.add(List.of(buttonFactory.goBackCallbackButton(prevCommand, requestParams)));
 
@@ -496,13 +496,13 @@ public class InlineKeyboardService {
 
         List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
         keyboard.add(List.of(
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN))),
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN))),
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_1_H), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_1_H)))
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_15_MIN))),
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_30_MIN))),
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_1_H), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_1_H)))
         ));
         keyboard.add(List.of(
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_2_H), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_2_H))),
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_1_D), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_1_D)))
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_2_H), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_2_H))),
+                buttonFactory.delegateButton(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_1_D), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_TIME.getKey(), localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_1_D)))
         ));
         keyboard.add(List.of(buttonFactory.goBackCallbackButton(prevCommand, requestParams)));
 

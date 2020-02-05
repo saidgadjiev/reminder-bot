@@ -58,7 +58,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                                          CurrReplyKeyboard replyKeyboardService, CommandNavigator commandNavigator,
                                          ReminderMessageSender reminderMessageSender, FriendshipMessageBuilder friendshipMessageBuilder) {
         this.stateService = stateService;
-        this.forFriendStart = localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START).toLowerCase();
+        this.forFriendStart = localisationService.getCurrentLocaleMessage(MessagesProperties.FOR_FRIEND_REMINDER_START).toLowerCase();
         this.friendRequestExtractor = friendRequestExtractor;
         this.reminderRequestService = reminderRequestService;
         this.messageService = messageService;

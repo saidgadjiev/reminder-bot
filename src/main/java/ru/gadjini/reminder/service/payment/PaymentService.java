@@ -77,23 +77,23 @@ public class PaymentService {
 
     private void validate(Plan plan) {
         if (!plan.isActive()) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_INVALID_PLAN));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_INVALID_PLAN));
         }
     }
 
     private void validate(Plan plan, WebMoneyPayment webMoneyPayment) {
         if (!webMoneyProperties.getSecretKey().equals(webMoneyPayment.secretKey())) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST));
         }
         validate(plan, webMoneyPayment.paymentAmount());
         if (!webMoneyProperties.getPurse().equals(webMoneyPayment.payeePurse())) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST));
         }
     }
 
     private void validate(Plan plan, double paymentAmount) {
         if (plan.getPrice() > paymentAmount) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST));
         }
     }
 

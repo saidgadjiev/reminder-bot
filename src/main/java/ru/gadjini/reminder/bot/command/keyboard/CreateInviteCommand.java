@@ -20,7 +20,7 @@ public class CreateInviteCommand implements KeyboardBotCommand {
     private MessageService messageService;
 
     public CreateInviteCommand(LocalisationService localisationService, InviteService inviteService, MessageService messageService) {
-        this.name = localisationService.getMessage(MessagesProperties.CREATE_INVITE_COMMAND_NAME);
+        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.CREATE_INVITE_COMMAND_NAME);
         this.inviteService = inviteService;
         this.messageService = messageService;
     }

@@ -29,7 +29,7 @@ public class HelpCommand extends BotCommand implements KeyboardBotCommand {
         super(CommandNames.HELP_COMMAND_NAME, "");
         this.messageService = messageService;
         this.localisationService = localisationService;
-        this.name = localisationService.getMessage(MessagesProperties.HELP_COMMAND_NAME);
+        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.HELP_COMMAND_NAME);
     }
 
     @Override
@@ -53,6 +53,6 @@ public class HelpCommand extends BotCommand implements KeyboardBotCommand {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(userId)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_HELP)));
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_HELP)));
     }
 }

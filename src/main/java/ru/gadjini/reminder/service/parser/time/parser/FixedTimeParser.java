@@ -14,7 +14,6 @@ import java.time.*;
 import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Stream;
 
 public class FixedTimeParser {
@@ -29,21 +28,21 @@ public class FixedTimeParser {
 
     private String typeAt;
 
-    private Locale locale;
-
     private DayOfWeekService dayOfWeekService;
+
+    private final LocalisationService localisationService;
 
     private final LexemsConsumer lexemsConsumer;
 
     private TimeCreator timeCreator;
 
-    public FixedTimeParser(LocalisationService localisationService, Locale locale, LexemsConsumer lexemsConsumer,
+    FixedTimeParser(LocalisationService localisationService, LexemsConsumer lexemsConsumer,
                            ZoneId zoneId, DayOfWeekService dayOfWeekService, TimeCreator timeCreator) {
-        this.tomorrow = localisationService.getMessage(MessagesProperties.TOMORROW);
-        this.dayAfterTomorrow = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW);
-        this.typeUntil = localisationService.getMessage(MessagesProperties.FIXED_TIME_TYPE_UNTIL);
-        this.typeAt = localisationService.getMessage(MessagesProperties.TIME_ARTICLE);
-        this.locale = locale;
+        this.tomorrow = localisationService.getCurrentLocaleMessage(MessagesProperties.TOMORROW);
+        this.dayAfterTomorrow = localisationService.getCurrentLocaleMessage(MessagesProperties.DAY_AFTER_TOMORROW);
+        this.typeUntil = localisationService.getCurrentLocaleMessage(MessagesProperties.FIXED_TIME_TYPE_UNTIL);
+        this.typeAt = localisationService.getCurrentLocaleMessage(MessagesProperties.TIME_ARTICLE);
+        this.localisationService = localisationService;
         this.lexemsConsumer = lexemsConsumer;
         this.timeCreator = timeCreator;
         this.fixedTime = new FixedTime();
@@ -106,7 +105,7 @@ public class FixedTimeParser {
     private void consumeDayOfWeek(List<BaseLexem> lexems) {
         String dayOfWeekValue = lexemsConsumer.consume(lexems, TimeToken.DAY_OF_WEEK).getValue();
         DayOfWeek dayOfWeek = Stream.of(DayOfWeek.values())
-                .filter(dow -> dayOfWeekService.isThatDay(dow, locale, dayOfWeekValue))
+                .filter(dow -> dayOfWeekService.isThatDay(dow, dayOfWeekValue))
                 .findFirst()
                 .orElseThrow();
         LocalDate dayOfWeekDate = (LocalDate) TemporalAdjusters.nextOrSame(dayOfWeek).adjustInto(fixedTime.date());
@@ -148,7 +147,7 @@ public class FixedTimeParser {
     private void consumeMonthWord(List<BaseLexem> lexems) {
         String month = lexemsConsumer.consume(lexems, TimeToken.MONTH_WORD).getValue();
 
-        Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, locale).equals(month)).findFirst().orElseThrow(ParseException::new);
+        Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale()).equals(month)).findFirst().orElseThrow(ParseException::new);
 
         fixedTime.month(m.getValue());
         if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {

@@ -43,7 +43,7 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
-        this.name = localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME);
+        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME);
     }
 
     @Override

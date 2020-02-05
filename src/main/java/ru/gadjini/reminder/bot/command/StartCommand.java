@@ -50,7 +50,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
         this.replyKeyboardService = replyKeyboardService;
         this.reminderMessageSender = reminderMessageSender;
         this.localisationService = localisationService;
-        this.name = localisationService.getMessage(MessagesProperties.MAIN_MENU_COMMAND_NAME);
+        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.MAIN_MENU_COMMAND_NAME);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_START))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_START))
                         .replyKeyboard(replyKeyboardService.getMainMenu(userId, userId)));
     }
 }

@@ -70,7 +70,7 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
                     new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(tgMessage.getChatId())
                             .messageId(tgMessage.getMessageId())
-                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_NOT_FOUND))
+                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_NOT_FOUND))
                             .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendUserId))
             );
         } else {

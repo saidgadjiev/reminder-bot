@@ -55,7 +55,7 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
                                                                       CurrReplyKeyboard replyKeyboardService
     ) {
         return new UserReminderNotificationScheduleCommand(
-                localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME), CommandNames.USER_REMINDER_NOTIFICATION_WITH_TIME_HISTORY_NAME, UserReminderNotification.NotificationType.WITH_TIME, userReminderNotificationService, messageBuilder, messageService, inlineKeyboardService, replyKeyboardService, stateService,
+                localisationService.getCurrentLocaleMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME), CommandNames.USER_REMINDER_NOTIFICATION_WITH_TIME_HISTORY_NAME, UserReminderNotification.NotificationType.WITH_TIME, userReminderNotificationService, messageBuilder, messageService, inlineKeyboardService, replyKeyboardService, stateService,
                 localisationService);
     }
 
@@ -69,7 +69,7 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
                                                                          CurrReplyKeyboard replyKeyboardService
     ) {
         return new UserReminderNotificationScheduleCommand(
-                localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME), CommandNames.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_HISTORY_NAME, UserReminderNotification.NotificationType.WITHOUT_TIME, userReminderNotificationService, messageBuilder, messageService, inlineKeyboardService, replyKeyboardService, stateService,
+                localisationService.getCurrentLocaleMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME), CommandNames.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_HISTORY_NAME, UserReminderNotification.NotificationType.WITHOUT_TIME, userReminderNotificationService, messageBuilder, messageService, inlineKeyboardService, replyKeyboardService, stateService,
                 localisationService);
     }
 

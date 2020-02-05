@@ -9,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.common.TestConstants;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.DayOfWeekService;
+import ru.gadjini.reminder.service.context.UserContextResolver;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
@@ -31,13 +33,13 @@ import java.util.Locale;
 import static ru.gadjini.reminder.service.parser.time.lexer.TimeToken.DAY;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class})
+@ContextConfiguration(classes = {UserContextResolver.class, LocalisationService.class, DayOfWeekService.class})
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class FixedTimeParserTest {
 
     private static final ZonedDateTime STATIC_TIME = ZonedDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(11, 0), TestConstants.TEST_ZONE);
 
-    @Autowired
+    @SpyBean
     private LocalisationService localisationService;
 
     @Autowired
@@ -50,6 +52,8 @@ class FixedTimeParserTest {
     void setup() {
         Mockito.when(timeCreator.dateTimeNow(TestConstants.TEST_ZONE)).thenReturn(DateTime.of(STATIC_TIME));
         Mockito.when(timeCreator.zonedDateTimeNow(TestConstants.TEST_ZONE)).thenReturn(STATIC_TIME);
+
+        Mockito.doReturn(new Locale("ru")).when(localisationService).getCurrentLocale();
     }
 
     @Test
@@ -145,6 +149,6 @@ class FixedTimeParserTest {
     }
 
     private TimeParser parser() {
-        return new TimeParser(localisationService, Locale.getDefault(), TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
+        return new TimeParser(localisationService, TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
     }
 }
