@@ -9,8 +9,8 @@ services:
       - 443:443
     volumes:
       - ../../nginx/prod:/etc/nginx/conf.d
-      - ../certbot/conf:/etc/letsencrypt
-      - ../certbot/www:/var/www/certbot
+      - ../../../../data/certbot/conf:/etc/letsencrypt
+      - ../../../../certbot/www:/var/www/certbot
     depends_on:
       - app
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
@@ -18,15 +18,15 @@ services:
     image: certbot/certbot
     container_name: certboot
     volumes:
-      - ../certbot/conf:/etc/letsencrypt
-      - ../certbot/www:/var/www/certbot
+      - ../../../../certbot/conf:/etc/letsencrypt
+      - ../../../../certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
   app:
     container_name: app
     restart: always
     build: ../../../
     volumes:
-      - ../../../logs:/app/logs
+      - ../../../../data/logs:/app/logs
     expose:
       - 8000
     ports:
@@ -41,7 +41,7 @@ services:
     image: postgres:alpine
     restart: always
     volumes:
-      - ../../../data/postgres:/var/lib/postgresql/data
+      - ../../../../data/postgres:/var/lib/postgresql/data
     ports:
       - 5432:5432
     env_file:
@@ -51,4 +51,4 @@ services:
     image: redis:alpine
     restart: always
     volumes:
-      - ../../../data/redis:/opt/redis/data
+      - ../../../../data/redis:/opt/redis/data
