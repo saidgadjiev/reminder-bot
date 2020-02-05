@@ -23,11 +23,14 @@ import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZoneId;
 import java.time.format.TextStyle;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 @Component
 public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCommand {
 
-    private String name;
+    private Set<String> names = new HashSet<>();
 
     private MessageService messageService;
 
@@ -50,18 +53,21 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                                  TimezoneService timezoneService,
                                  CurrReplyKeyboard replyKeyboardService,
                                  LocalisationService localisationService1, TimeCreator timeCreator) {
-        name = localisationService.getCurrentLocaleMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME);
         this.messageService = messageService;
         this.tgUserService = tgUserService;
         this.timezoneService = timezoneService;
         this.replyKeyboardService = replyKeyboardService;
         this.localisationService = localisationService1;
         this.timeCreator = timeCreator;
+
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.names.add(localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME, locale));
+        }
     }
 
     @Override
     public boolean canHandle(long chatId, String command) {
-        return name.equals(command);
+        return names.contains(command);
     }
 
     @Autowired

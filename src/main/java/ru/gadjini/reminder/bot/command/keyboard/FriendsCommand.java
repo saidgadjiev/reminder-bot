@@ -20,7 +20,10 @@ import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -34,7 +37,7 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
 
     private MessageService messageService;
 
-    private String name;
+    private Set<String> names = new HashSet<>();
 
     @Autowired
     public FriendsCommand(InlineKeyboardService inlineKeyboardService, FriendshipMessageBuilder friendshipMessageBuilder,
@@ -43,12 +46,15 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
-        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME);
+
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.names.add(localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME, locale));
+        }
     }
 
     @Override
     public boolean canHandle(long chatId, String command) {
-        return this.name.equals(command);
+        return this.names.contains(command);
     }
 
     @Override

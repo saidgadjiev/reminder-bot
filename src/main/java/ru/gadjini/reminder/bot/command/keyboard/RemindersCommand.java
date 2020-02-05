@@ -17,10 +17,14 @@ import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 @Component
 public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBotCommand {
 
-    private String name;
+    private Set<String> names = new HashSet<>();
 
     private final LocalisationService localisationService;
 
@@ -30,15 +34,18 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
 
     @Autowired
     public RemindersCommand(LocalisationService localisationService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
-        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME);
         this.localisationService = localisationService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
+
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.names.add(localisationService.getMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME, locale));
+        }
     }
 
     @Override
     public boolean canHandle(long chatId, String command) {
-        return name.equals(command);
+        return names.contains(command);
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
 import ru.gadjini.reminder.common.Articles;
+import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.domain.TgUser;
@@ -24,6 +25,10 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 @Component
 public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBotCommand {
 
@@ -39,7 +44,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
 
     private CommandNavigator commandNavigator;
 
-    private String name;
+    private Set<String> names = new HashSet<>();
 
     @Autowired
     public SendFriendRequestCommand(LocalisationService localisationService,
@@ -51,20 +56,23 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
         this.localisationService = localisationService;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
-        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME);
         this.inlineKeyboardService = inlineKeyboardService;
         this.replyKeyboardService = replyKeyboardService;
         this.commandNavigator = commandNavigator;
+
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.names.add(localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME, locale));
+        }
     }
 
     @Override
     public String getHistoryName() {
-        return name;
+        return CommandNames.SEND_FRIEND_REQUEST_COMMAND_NAME;
     }
 
     @Override
     public boolean canHandle(long chatId, String command) {
-        return name.equals(command);
+        return names.contains(command);
     }
 
     @Override
@@ -72,7 +80,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME, new Object[] {Articles.USERNAME}))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME, new Object[]{Articles.USERNAME}))
                         .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
         );
         return true;

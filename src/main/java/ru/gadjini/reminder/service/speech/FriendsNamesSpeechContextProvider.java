@@ -8,9 +8,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class FriendsNamesSpeechContextProvider implements SpeechContextProvider {
@@ -19,14 +17,17 @@ public class FriendsNamesSpeechContextProvider implements SpeechContextProvider 
 
     private static final float LOWER_BOOST_BOUND = 5.f;
 
-    private String forFriendStart;
+    private Set<String> forFriendStarts = new HashSet<>();
 
     private FriendshipService friendshipService;
 
     @Autowired
     public FriendsNamesSpeechContextProvider(LocalisationService localisationService, FriendshipService friendshipService) {
-        this.forFriendStart = localisationService.getCurrentLocaleMessage(MessagesProperties.FOR_FRIEND_REMINDER_START);
         this.friendshipService = friendshipService;
+
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.forFriendStarts.add(localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START, locale));
+        }
     }
 
     @Override
@@ -36,12 +37,14 @@ public class FriendsNamesSpeechContextProvider implements SpeechContextProvider 
 
         float startBoost = LOWER_BOOST_BOUND;
         List<SpeechContext> speechContexts = new ArrayList<>();
-        for (String name : friendsNames) {
-            String phrase = forFriendStart + " " + name;
-            SpeechContext speechContext = SpeechContext.newBuilder().addPhrases(phrase).setBoost(startBoost).buildPartial();
+        for (String forFriendStart: forFriendStarts) {
+            for (String name : friendsNames) {
+                String phrase = forFriendStart + " " + name;
+                SpeechContext speechContext = SpeechContext.newBuilder().addPhrases(phrase).setBoost(startBoost).buildPartial();
 
-            startBoost += step;
-            speechContexts.add(speechContext);
+                startBoost += step;
+                speechContexts.add(speechContext);
+            }
         }
 
         return speechContexts;

@@ -21,12 +21,15 @@ import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 import ru.gadjini.reminder.service.savedquery.SavedQueryService;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 @Component
 public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCommand {
 
-    private String name;
+    private Set<String> names = new HashSet<>();
 
     private final LocalisationService localisationService;
 
@@ -44,18 +47,21 @@ public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCo
     public CreateReminderCommand(LocalisationService localisationService, SavedQueryService savedQueryService,
                                  CurrReplyKeyboard replyKeyboardService, MessageService messageService,
                                  ReminderRequestService reminderRequestService, ReminderMessageSender reminderMessageSender) {
-        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME);
         this.localisationService = localisationService;
         this.savedQueryService = savedQueryService;
         this.replyKeyboardService = replyKeyboardService;
         this.messageService = messageService;
         this.reminderRequestService = reminderRequestService;
         this.reminderMessageSender = reminderMessageSender;
+
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.names.add(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME, locale));
+        }
     }
 
     @Override
     public boolean canHandle(long chatId, String command) {
-        return name.equals(command);
+        return names.contains(command);
     }
 
     @Override

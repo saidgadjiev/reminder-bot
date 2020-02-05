@@ -28,6 +28,10 @@ import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.request.FriendRequestExtractor;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 @Component
 public class CreateReminderKeyboardCommand implements KeyboardBotCommand, NavigableBotCommand {
 
@@ -35,7 +39,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     private CommandStateService stateService;
 
-    private String forFriendStart;
+    private Set<String> forFriendStart = new HashSet<>();
 
     private FriendRequestExtractor friendRequestExtractor;
 
@@ -58,7 +62,6 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                                          CurrReplyKeyboard replyKeyboardService, CommandNavigator commandNavigator,
                                          ReminderMessageSender reminderMessageSender, FriendshipMessageBuilder friendshipMessageBuilder) {
         this.stateService = stateService;
-        this.forFriendStart = localisationService.getCurrentLocaleMessage(MessagesProperties.FOR_FRIEND_REMINDER_START).toLowerCase();
         this.friendRequestExtractor = friendRequestExtractor;
         this.reminderRequestService = reminderRequestService;
         this.messageService = messageService;
@@ -66,6 +69,10 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
         this.commandNavigator = commandNavigator;
         this.reminderMessageSender = reminderMessageSender;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
+
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.forFriendStart.add(localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START, locale).toLowerCase());
+        }
     }
 
     @Override
@@ -74,7 +81,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
             return false;
         }
 
-        return command != null && command.toLowerCase().startsWith(forFriendStart);
+        return command != null && forFriendStart.stream().anyMatch(command::startsWith);
     }
 
     @Override

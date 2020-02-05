@@ -15,6 +15,10 @@ import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 @Component
 public class HelpCommand extends BotCommand implements KeyboardBotCommand {
 
@@ -22,14 +26,16 @@ public class HelpCommand extends BotCommand implements KeyboardBotCommand {
 
     private LocalisationService localisationService;
 
-    private String name;
+    private Set<String> names = new HashSet<>();
 
     @Autowired
     public HelpCommand(MessageService messageService, LocalisationService localisationService) {
         super(CommandNames.HELP_COMMAND_NAME, "");
         this.messageService = messageService;
         this.localisationService = localisationService;
-        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.HELP_COMMAND_NAME);
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.names.add(localisationService.getMessage(MessagesProperties.HELP_COMMAND_NAME, locale));
+        }
     }
 
     @Override
@@ -39,7 +45,7 @@ public class HelpCommand extends BotCommand implements KeyboardBotCommand {
 
     @Override
     public boolean canHandle(long chatId, String command) {
-        return name.equals(command);
+        return names.contains(command);
     }
 
     @Override

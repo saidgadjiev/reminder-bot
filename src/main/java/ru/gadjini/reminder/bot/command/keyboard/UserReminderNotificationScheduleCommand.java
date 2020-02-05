@@ -17,14 +17,16 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UserReminderNotificationScheduleCommand implements KeyboardBotCommand, NavigableBotCommand {
 
     private CommandStateService stateService;
 
-    private String name;
+    private Set<String> names = new HashSet<>();
 
     private UserReminderNotification.NotificationType notificationType;
 
@@ -42,7 +44,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
 
     private LocalisationService localisationService;
 
-    public UserReminderNotificationScheduleCommand(String name, String historyName,
+    public UserReminderNotificationScheduleCommand(Set<String> names, String historyName,
                                                    UserReminderNotification.NotificationType notificationType,
                                                    UserReminderNotificationService userReminderNotificationService,
                                                    ReminderNotificationMessageBuilder messageBuilder,
@@ -51,7 +53,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
                                                    LocalisationService localisationService) {
         this.stateService = stateService;
         this.notificationType = notificationType;
-        this.name = name;
+        this.names = names;
         this.historyName = historyName;
         this.userReminderNotificationService = userReminderNotificationService;
         this.messageBuilder = messageBuilder;
@@ -63,7 +65,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
 
     @Override
     public boolean canHandle(long chatId, String command) {
-        return name.equals(command);
+        return names.contains(command);
     }
 
     @Override

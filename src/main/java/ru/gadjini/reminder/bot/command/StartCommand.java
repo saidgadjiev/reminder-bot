@@ -24,6 +24,10 @@ import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 @Component
 public class StartCommand extends BotCommand implements NavigableBotCommand, KeyboardBotCommand {
 
@@ -37,7 +41,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
 
     private LocalisationService localisationService;
 
-    private String name;
+    private Set<String> names = new HashSet<>();
 
     @Autowired
     public StartCommand(MessageService messageService,
@@ -50,7 +54,9 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
         this.replyKeyboardService = replyKeyboardService;
         this.reminderMessageSender = reminderMessageSender;
         this.localisationService = localisationService;
-        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.MAIN_MENU_COMMAND_NAME);
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.names.add(localisationService.getMessage(MessagesProperties.MAIN_MENU_COMMAND_NAME, locale));
+        }
     }
 
     @Override
@@ -100,7 +106,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
 
     @Override
     public boolean canHandle(long chatId, String command) {
-        return name.equals(command);
+        return names.contains(command);
     }
 
     @Override

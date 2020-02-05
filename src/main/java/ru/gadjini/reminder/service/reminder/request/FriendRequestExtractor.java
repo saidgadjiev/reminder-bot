@@ -11,14 +11,13 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Component
 public class FriendRequestExtractor extends BaseRequestExtractor {
 
-    private String forFriendStart;
+    private Set<String> forFriendStarts = new HashSet<>();
 
     private FriendshipService friendshipService;
 
@@ -27,15 +26,19 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
     private RequestParser requestParser;
 
     public FriendRequestExtractor(LocalisationService localisationService, FriendshipService friendshipService, RequestParser requestParser) {
-        this.forFriendStart = localisationService.getCurrentLocaleMessage(MessagesProperties.FOR_FRIEND_REMINDER_START).toLowerCase();
         this.friendshipService = friendshipService;
         this.localisationService = localisationService;
         this.requestParser = requestParser;
+
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.forFriendStarts.add(localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START, locale).toLowerCase());
+        }
     }
 
     @Override
     public ReminderRequest extract(ReminderRequestContext context) {
-        if (context.getText().toLowerCase().startsWith(forFriendStart)) {
+        Optional<String> forFriendStart = forFriendStarts.stream().filter(f -> context.getText().startsWith(f)).findFirst();
+        if (forFriendStart.isPresent()) {
             ExtractReceiverResult extractReceiverResult = extractReceiver(context.getUser().getId(), context.getText(), context.isVoice());
 
             try {
@@ -52,6 +55,7 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
     }
 
     public ExtractReceiverResult extractReceiver(int userId, String text, boolean voice) {
+        String forFriendStart = forFriendStarts.stream().filter(text::startsWith).findFirst().orElseThrow();
         String textWithoutForFriendStart = text.substring(forFriendStart.length()).trim();
         String[] words = textWithoutForFriendStart.split(" ");
         Collection<String> names = new ArrayList<>();

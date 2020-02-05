@@ -33,6 +33,10 @@ import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 import ru.gadjini.reminder.service.reminder.request.*;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 @Configuration
 public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
 
@@ -54,8 +58,17 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
                                                                       InlineKeyboardService inlineKeyboardService,
                                                                       CurrReplyKeyboard replyKeyboardService
     ) {
+        Set<String> names = new HashSet<>();
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            names.add(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME, locale));
+        }
+
         return new UserReminderNotificationScheduleCommand(
-                localisationService.getCurrentLocaleMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME), CommandNames.USER_REMINDER_NOTIFICATION_WITH_TIME_HISTORY_NAME, UserReminderNotification.NotificationType.WITH_TIME, userReminderNotificationService, messageBuilder, messageService, inlineKeyboardService, replyKeyboardService, stateService,
+                names,
+                CommandNames.USER_REMINDER_NOTIFICATION_WITH_TIME_HISTORY_NAME,
+                UserReminderNotification.NotificationType.WITH_TIME,
+                userReminderNotificationService, messageBuilder,
+                messageService, inlineKeyboardService, replyKeyboardService, stateService,
                 localisationService);
     }
 
@@ -68,8 +81,16 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
                                                                          InlineKeyboardService inlineKeyboardService,
                                                                          CurrReplyKeyboard replyKeyboardService
     ) {
+        Set<String> names = new HashSet<>();
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            names.add(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME, locale));
+        }
+
         return new UserReminderNotificationScheduleCommand(
-                localisationService.getCurrentLocaleMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME), CommandNames.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_HISTORY_NAME, UserReminderNotification.NotificationType.WITHOUT_TIME, userReminderNotificationService, messageBuilder, messageService, inlineKeyboardService, replyKeyboardService, stateService,
+                names, CommandNames.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_HISTORY_NAME,
+                UserReminderNotification.NotificationType.WITHOUT_TIME, userReminderNotificationService,
+                messageBuilder, messageService, inlineKeyboardService, replyKeyboardService,
+                stateService,
                 localisationService);
     }
 

@@ -10,6 +10,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.gadjini.reminder.bot.api.ApiContextInitializer;
 import ru.gadjini.reminder.properties.*;
 
+import java.util.Locale;
+
 
 @SpringBootApplication
 @EnableConfigurationProperties(value = {
@@ -26,6 +28,7 @@ public class ReminderApplication {
 
     public static void main(String[] args) {
         LOGGER.info("Server timezone: " + System.getProperty("user.timezone"));
+        LOGGER.info("Server default locale: " + Locale.getDefault().getLanguage());
 
         ApiContextInitializer.init();
         try {

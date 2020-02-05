@@ -10,24 +10,31 @@ import ru.gadjini.reminder.service.InviteService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 @Component
 public class CreateInviteCommand implements KeyboardBotCommand {
 
-    private String name;
+    private Set<String> names = new HashSet<>();
 
     private InviteService inviteService;
 
     private MessageService messageService;
 
     public CreateInviteCommand(LocalisationService localisationService, InviteService inviteService, MessageService messageService) {
-        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.CREATE_INVITE_COMMAND_NAME);
         this.inviteService = inviteService;
         this.messageService = messageService;
+
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.names.add(localisationService.getMessage(MessagesProperties.CREATE_INVITE_COMMAND_NAME, locale));
+        }
     }
 
     @Override
     public boolean canHandle(long chatId, String command) {
-        return name.equals(command);
+        return names.contains(command);
     }
 
     @Override

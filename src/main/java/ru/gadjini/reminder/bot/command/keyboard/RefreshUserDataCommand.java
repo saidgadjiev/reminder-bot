@@ -14,10 +14,14 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 @Component
 public class RefreshUserDataCommand implements KeyboardBotCommand {
 
-    private String name;
+    private Set<String> names = new HashSet<>();
 
     private TgUserService tgUserService;
 
@@ -27,15 +31,18 @@ public class RefreshUserDataCommand implements KeyboardBotCommand {
 
     @Autowired
     public RefreshUserDataCommand(LocalisationService localisationService, TgUserService tgUserService, LocalisationService localisationService1, MessageService messageService) {
-        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.REFRESH_USER_DATA_COMMAND_NAME);
         this.tgUserService = tgUserService;
         this.localisationService = localisationService1;
         this.messageService = messageService;
+
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.names.add(localisationService.getMessage(MessagesProperties.REFRESH_USER_DATA_COMMAND_NAME, locale));
+        }
     }
 
     @Override
     public boolean canHandle(long chatId, String command) {
-        return name.equals(command);
+        return names.contains(command);
     }
 
     @Override

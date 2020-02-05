@@ -8,22 +8,29 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 @Component
 public class GoBackCommand implements KeyboardBotCommand {
 
     private CommandNavigator commandNavigator;
 
-    private String description;
+    private Set<String> names = new HashSet<>();
 
     @Autowired
-    public GoBackCommand(LocalisationService messageSource, CommandNavigator commandNavigator) {
-        this.description = messageSource.getCurrentLocaleMessage(MessagesProperties.GO_BACK_COMMAND_NAME);
+    public GoBackCommand(LocalisationService localisationService, CommandNavigator commandNavigator) {
         this.commandNavigator = commandNavigator;
+
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.names.add(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME, locale));
+        }
     }
 
     @Override
     public boolean canHandle(long chatId, String command) {
-        return description.equals(command);
+        return names.contains(command);
     }
 
     @Override

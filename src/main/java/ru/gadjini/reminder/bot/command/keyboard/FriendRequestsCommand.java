@@ -14,6 +14,10 @@ import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 @Component
 public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCommand {
 
@@ -23,19 +27,22 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
 
     private final LocalisationService localisationService;
 
-    private String name;
+    private Set<String> names = new HashSet<>();
 
     @Autowired
     public FriendRequestsCommand(CurrReplyKeyboard replyKeyboardService, MessageService messageService, LocalisationService localisationService) {
         this.replyKeyboardService = replyKeyboardService;
         this.messageService = messageService;
-        this.name = localisationService.getCurrentLocaleMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME);
         this.localisationService = localisationService;
+
+        for (Locale locale : localisationService.getSupportedLocales()) {
+            this.names.add(localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME, locale));
+        }
     }
 
     @Override
     public boolean canHandle(long chatId, String command) {
-        return name.equals(command);
+        return names.contains(command);
     }
 
     @Override
