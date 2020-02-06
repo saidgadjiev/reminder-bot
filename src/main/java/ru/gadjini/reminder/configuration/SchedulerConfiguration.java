@@ -15,7 +15,7 @@ public class SchedulerConfiguration {
     @Bean
     public TaskScheduler threadPoolTaskScheduler(){
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        threadPoolTaskScheduler.setPoolSize(Runtime.getRuntime().availableProcessors() * 2);
+        threadPoolTaskScheduler.setPoolSize(2 + Runtime.getRuntime().availableProcessors() * 2);
         threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
         threadPoolTaskScheduler.setErrorHandler(throwable -> LOGGER.error(throwable.getMessage(), throwable));
 
