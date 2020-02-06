@@ -34,9 +34,9 @@ import java.util.Locale;
 import java.util.Set;
 
 @Component
-public class CreateReminderKeyboardCommand implements KeyboardBotCommand, NavigableBotCommand {
+public class CreateForFriendReminderKeyboardCommand implements KeyboardBotCommand, NavigableBotCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CreateReminderKeyboardCommand.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateForFriendReminderKeyboardCommand.class);
 
     private CommandStateService stateService;
 
@@ -59,11 +59,11 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
     private TgUserService userService;
 
     @Autowired
-    public CreateReminderKeyboardCommand(CommandStateService stateService, LocalisationService localisationService,
-                                         FriendRequestExtractor friendRequestExtractor,
-                                         ReminderRequestService reminderRequestService, MessageService messageService,
-                                         CurrReplyKeyboard replyKeyboardService, CommandNavigator commandNavigator,
-                                         ReminderMessageSender reminderMessageSender, FriendshipMessageBuilder friendshipMessageBuilder, TgUserService userService) {
+    public CreateForFriendReminderKeyboardCommand(CommandStateService stateService, LocalisationService localisationService,
+                                                  FriendRequestExtractor friendRequestExtractor,
+                                                  ReminderRequestService reminderRequestService, MessageService messageService,
+                                                  CurrReplyKeyboard replyKeyboardService, CommandNavigator commandNavigator,
+                                                  ReminderMessageSender reminderMessageSender, FriendshipMessageBuilder friendshipMessageBuilder, TgUserService userService) {
         this.stateService = stateService;
         this.friendRequestExtractor = friendRequestExtractor;
         this.reminderRequestService = reminderRequestService;

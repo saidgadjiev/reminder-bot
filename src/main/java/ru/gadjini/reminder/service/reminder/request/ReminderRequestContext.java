@@ -48,11 +48,11 @@ public class ReminderRequestContext {
     }
 
     public ZoneId getReceiverZone() {
-        return receiver.getZone();
+        return receiver == null ? null : receiver.getZone();
     }
 
     public Locale getReceiverLocale() {
-        return receiver.getLocale();
+        return receiver == null ? null : receiver.getLocale();
     }
 
     public TgUser getReceiver() {
