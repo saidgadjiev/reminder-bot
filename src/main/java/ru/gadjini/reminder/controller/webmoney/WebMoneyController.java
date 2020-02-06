@@ -31,6 +31,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.Locale;
 import java.util.Map;
 
 import static ru.gadjini.reminder.common.TemplateConstants.*;
@@ -197,11 +198,12 @@ public class WebMoneyController {
 
     private void sendSubscriptionRenewed(int userId, LocalDate subscriptionEnd) {
         try {
+            Locale locale = userService.getLocale(userId);
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(userId)
-                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}, userService.getLocale(userId)))
-                            .replyKeyboard(replyKeyboardService.getMainMenu(userId, userId))
+                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}, locale))
+                            .replyKeyboard(replyKeyboardService.getMainMenu(userId, locale))
             );
             commandNavigator.setCurrentCommand(userId, CommandNames.START_COMMAND_NAME);
         } catch (Exception ex) {

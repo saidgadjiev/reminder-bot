@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import ru.gadjini.reminder.dao.keyboard.ReplyKeyboardDao;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @Qualifier("currkeyboard")
@@ -22,18 +23,18 @@ public class CurrReplyKeyboard implements ReplyKeyboardService {
     }
 
     @Override
-    public ReplyKeyboardMarkup getSavedQueriesKeyboard(long chatId, List<String> queries) {
-        return setCurrentKeyboard(chatId, keyboardService.getSavedQueriesKeyboard(chatId, queries));
+    public ReplyKeyboardMarkup getSavedQueriesKeyboard(long chatId, List<String> queries, Locale locale) {
+        return setCurrentKeyboard(chatId, keyboardService.getSavedQueriesKeyboard(chatId, queries, locale));
     }
 
     @Override
-    public ReplyKeyboardMarkup getFriendRequestsKeyboard(long chatId) {
-        return setCurrentKeyboard(chatId, keyboardService.getFriendRequestsKeyboard(chatId));
+    public ReplyKeyboardMarkup getFriendRequestsKeyboard(long chatId, Locale locale) {
+        return setCurrentKeyboard(chatId, keyboardService.getFriendRequestsKeyboard(chatId, locale));
     }
 
     @Override
-    public ReplyKeyboardMarkup getUserSettingsKeyboard(long chatId) {
-        return setCurrentKeyboard(chatId, keyboardService.getUserSettingsKeyboard(chatId));
+    public ReplyKeyboardMarkup getUserSettingsKeyboard(long chatId, Locale locale) {
+        return setCurrentKeyboard(chatId, keyboardService.getUserSettingsKeyboard(chatId, locale));
     }
 
     @Override
@@ -46,18 +47,18 @@ public class CurrReplyKeyboard implements ReplyKeyboardService {
     }
 
     @Override
-    public ReplyKeyboardMarkup getUserReminderNotificationSettingsKeyboard(long chatId) {
-        return setCurrentKeyboard(chatId, keyboardService.getUserReminderNotificationSettingsKeyboard(chatId));
+    public ReplyKeyboardMarkup getUserReminderNotificationSettingsKeyboard(long chatId, Locale locale) {
+        return setCurrentKeyboard(chatId, keyboardService.getUserReminderNotificationSettingsKeyboard(chatId, locale));
     }
 
     @Override
-    public ReplyKeyboardMarkup getMainMenu(long chatId, int userId) {
-        return setCurrentKeyboard(chatId, keyboardService.getMainMenu(chatId, userId));
+    public ReplyKeyboardMarkup getMainMenu(long chatId, Locale locale) {
+        return setCurrentKeyboard(chatId, keyboardService.getMainMenu(chatId, locale));
     }
 
     @Override
-    public ReplyKeyboardMarkup goBackCommand(long chatId) {
-        return setCurrentKeyboard(chatId, keyboardService.goBackCommand(chatId));
+    public ReplyKeyboardMarkup goBackCommand(long chatId, Locale locale) {
+        return setCurrentKeyboard(chatId, keyboardService.goBackCommand(chatId, locale));
     }
 
     public ReplyKeyboardMarkup getCurrentReplyKeyboard(long chatId) {

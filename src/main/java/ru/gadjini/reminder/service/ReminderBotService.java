@@ -155,7 +155,7 @@ public class ReminderBotService {
         }
         if (commandNavigator.isEmpty(chatId)) {
             commandNavigator.zeroRestore(chatId, (NavigableBotCommand) commandExecutor.getBotCommand(CommandNames.START_COMMAND_NAME));
-            messageService.sendBotRestartedMessage(chatId, replyKeyboardService.getMainMenu(chatId, (int) chatId));
+            messageService.sendBotRestartedMessage(chatId, replyKeyboardService.getMainMenu(chatId, userService.getLocale((int) chatId)));
 
             return true;
         }

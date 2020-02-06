@@ -78,14 +78,14 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
     @Override
     public boolean processMessage(Message message, String text) {
         ZoneId zoneId = tgUserService.getTimeZone(message.getFrom().getId());
-
+        Locale locale = tgUserService.getLocale(message.getFrom().getId());
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .text(localisationService.getCurrentLocaleMessage(MessagesProperties.CURRENT_TIMEZONE, new Object[]{
-                                zoneId.getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale(message.getFrom().getLanguageCode())),
+                                zoneId.getDisplayName(TextStyle.FULL, locale),
                                 DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(zoneId))
-                        }, localisationService.getCurrentLocale(message.getFrom().getLanguageCode()))).replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
+                        }, localisationService.getCurrentLocale(message.getFrom().getLanguageCode()))).replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId(), locale))
         );
 
         return true;

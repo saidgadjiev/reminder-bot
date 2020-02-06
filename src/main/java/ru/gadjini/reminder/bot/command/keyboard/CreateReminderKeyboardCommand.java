@@ -16,6 +16,7 @@ import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
@@ -57,12 +58,14 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     private LocalisationService localisationService;
 
+    private TgUserService userService;
+
     @Autowired
     public CreateReminderKeyboardCommand(CommandStateService stateService, LocalisationService localisationService,
                                          FriendRequestExtractor friendRequestExtractor,
                                          ReminderRequestService reminderRequestService, MessageService messageService,
                                          CurrReplyKeyboard replyKeyboardService, CommandNavigator commandNavigator,
-                                         ReminderMessageSender reminderMessageSender, FriendshipMessageBuilder friendshipMessageBuilder) {
+                                         ReminderMessageSender reminderMessageSender, FriendshipMessageBuilder friendshipMessageBuilder, TgUserService userService) {
         this.stateService = stateService;
         this.friendRequestExtractor = friendRequestExtractor;
         this.reminderRequestService = reminderRequestService;
@@ -72,6 +75,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
         this.reminderMessageSender = reminderMessageSender;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.localisationService = localisationService;
+        this.userService = userService;
 
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.forFriendStart.add(localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START, locale).toLowerCase());
@@ -99,7 +103,8 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     @Override
     public boolean processMessage(Message message, String text) {
-        FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(message.getFrom().getId(), text, message.hasVoice(), null);
+        Locale locale = userService.getLocale(message.getFrom().getId());
+        FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(message.getFrom().getId(), text, message.hasVoice(), locale);
 
         if (StringUtils.isBlank(extractReceiverResult.getText())) {
             TgUser receiver = extractReceiverResult.getReceiver();
@@ -107,8 +112,8 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(message.getChatId())
-                            .text(friendshipMessageBuilder.getFriendDetailsWithFooterCode(receiver, MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT, localisationService.getCurrentLocale(message.getFrom().getLanguageCode())))
-                            .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
+                            .text(friendshipMessageBuilder.getFriendDetailsWithFooterCode(receiver, MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT, locale))
+                            .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId(), locale))
             );
             return true;
         } else {
@@ -129,8 +134,8 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                 messageService.sendMessageAsync(
                         new SendMessageContext(PriorityJob.Priority.MEDIUM)
                                 .chatId(message.getChatId())
-                                .text(friendshipMessageBuilder.getFriendDetails(receiver, ex.getMessage(), localisationService.getCurrentLocale(message.getFrom().getLanguageCode())))
-                                .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
+                                .text(friendshipMessageBuilder.getFriendDetails(receiver, ex.getMessage(), locale))
+                                .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId(), locale))
                 );
 
                 return true;

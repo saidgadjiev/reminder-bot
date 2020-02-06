@@ -109,7 +109,8 @@ public class SubscriptionFilter extends BaseBotFilter {
     }
 
     private void sendTrialSubscriptionStarted(User user) {
-        TimeDeclensionService declensionService = timeDeclensionProvider.getService(localisationService.getCurrentLocale(user.getLanguageCode()).getLanguage());
+        Locale locale = userService.getLocale((user.getId()));
+        TimeDeclensionService declensionService = timeDeclensionProvider.getService(locale.getLanguage());
 
         int userId = user.getId();
         messageService.sendMessageAsync(
@@ -119,9 +120,9 @@ public class SubscriptionFilter extends BaseBotFilter {
                                 localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TRIAL_PERIOD_STARTED,
                                         new Object[]{
                                                 declensionService.day(subscriptionProperties.getTrialPeriod()),
-                                                ZoneId.of(ReminderConstants.DEFAULT_TIMEZONE).getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale(user.getLanguageCode()))
+                                                ZoneId.of(ReminderConstants.DEFAULT_TIMEZONE).getDisplayName(TextStyle.FULL, locale)
                                         }, localisationService.getCurrentLocale(user.getLanguageCode()))
-                        ).replyKeyboard(replyKeyboardService.getMainMenu(userId, userId))
+                        ).replyKeyboard(replyKeyboardService.getMainMenu(userId, locale))
         );
     }
 

@@ -89,11 +89,12 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
                 msg -> stateService.setState(msg.getChatId(), msg.getMessageId())
         );
 
+        Locale locale = userService.getLocale(message.getFrom().getId());
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SAVED_QUERY_INPUT, userService.getLocale(message.getFrom().getId())))
-                        .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SAVED_QUERY_INPUT, locale))
+                        .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId(), locale))
         );
 
         return true;

@@ -81,11 +81,12 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
 
     @Override
     public boolean processMessage(Message message, String text) {
+        Locale locale = userService.getLocale(message.getFrom().getId());
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME, new Object[]{Articles.USERNAME}, localisationService.getCurrentLocale(message.getFrom().getLanguageCode())))
-                        .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME, new Object[]{Articles.USERNAME}, locale))
+                        .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId(), locale))
         );
         return true;
     }

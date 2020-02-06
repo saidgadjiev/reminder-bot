@@ -19,6 +19,7 @@ import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -82,11 +83,13 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
                         .replyKeyboard(inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType)),
                 msg -> stateService.setState(msg.getChatId(), msg.getMessageId())
         );
+
+        Locale locale = userService.getLocale(message.getFrom().getId());
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_EDIT_USER_REMINDER_NOTIFICATION, userService.getLocale(message.getFrom().getId())))
-                        .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_EDIT_USER_REMINDER_NOTIFICATION, locale))
+                        .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId(), locale))
         );
         return true;
     }

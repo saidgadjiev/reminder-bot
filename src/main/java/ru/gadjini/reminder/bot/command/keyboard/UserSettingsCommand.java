@@ -52,11 +52,12 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
 
     @Override
     public boolean processMessage(Message message, String text) {
+        Locale locale = userService.getLocale(message.getFrom().getId());
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_SETTINGS, userService.getLocale(message.getFrom().getId())))
-                        .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(message.getChatId()))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_SETTINGS, locale))
+                        .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(message.getChatId(), locale))
         );
         return true;
     }
@@ -68,16 +69,19 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
 
     @Override
     public void restore(Message message) {
+        Locale locale = userService.getLocale(message.getFrom().getId());
+
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_SETTINGS, userService.getLocale(message.getFrom().getId())))
-                        .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(message.getChatId()))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_SETTINGS, locale))
+                        .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(message.getChatId(), locale))
         );
     }
 
     @Override
     public ReplyKeyboardMarkup getKeyboard(long chatId) {
-        return replyKeyboardService.getUserSettingsKeyboard(chatId);
+        Locale locale = userService.getLocale((int) chatId);
+        return replyKeyboardService.getUserSettingsKeyboard(chatId, locale);
     }
 }

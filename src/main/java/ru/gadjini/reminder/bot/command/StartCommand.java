@@ -16,6 +16,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -41,19 +42,22 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
 
     private LocalisationService localisationService;
 
+    private TgUserService userService;
+
     private Set<String> names = new HashSet<>();
 
     @Autowired
     public StartCommand(MessageService messageService,
                         ReminderRequestService reminderRequestService,
                         CurrReplyKeyboard replyKeyboardService,
-                        ReminderMessageSender reminderMessageSender, LocalisationService localisationService) {
+                        ReminderMessageSender reminderMessageSender, LocalisationService localisationService, TgUserService userService) {
         super(CommandNames.START_COMMAND_NAME, "");
         this.messageService = messageService;
         this.reminderRequestService = reminderRequestService;
         this.replyKeyboardService = replyKeyboardService;
         this.reminderMessageSender = reminderMessageSender;
         this.localisationService = localisationService;
+        this.userService = userService;
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.names.add(localisationService.getMessage(MessagesProperties.MAIN_MENU_COMMAND_NAME, locale));
         }
@@ -71,7 +75,8 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
 
     @Override
     public ReplyKeyboardMarkup getKeyboard(long chatId) {
-        return replyKeyboardService.getMainMenu(chatId, (int) chatId);
+        Locale locale = userService.getLocale((int) chatId);
+        return replyKeyboardService.getMainMenu(chatId, locale);
     }
 
     @Override
@@ -81,7 +86,8 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
 
     @Override
     public void restore(Message message) {
-        sendMainMenu(message.getChatId().intValue(), localisationService.getCurrentLocale(message.getFrom().getLanguageCode()));
+        Locale locale = userService.getLocale(message.getFrom().getId());
+        sendMainMenu(message.getChatId().intValue(), locale);
     }
 
     @Override
@@ -111,7 +117,8 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
 
     @Override
     public boolean processMessage(Message message, String text) {
-        sendMainMenu(message.getFrom().getId(), localisationService.getCurrentLocale(message.getFrom().getLanguageCode()));
+        Locale locale = userService.getLocale(message.getFrom().getId());
+        sendMainMenu(message.getFrom().getId(), locale);
 
         return true;
     }
@@ -121,6 +128,6 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
                         .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_START, locale))
-                        .replyKeyboard(replyKeyboardService.getMainMenu(userId, userId)));
+                        .replyKeyboard(replyKeyboardService.getMainMenu(userId, locale)));
     }
 }

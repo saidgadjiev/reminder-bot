@@ -52,11 +52,12 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
 
     @Override
     public boolean processMessage(Message message, String text) {
+        Locale locale = userService.getLocale(message.getFrom().getId());
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION, userService.getLocale(message.getFrom().getId())))
-                        .replyKeyboard(replyKeyboardService.getUserReminderNotificationSettingsKeyboard(message.getChatId()))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION, locale))
+                        .replyKeyboard(replyKeyboardService.getUserReminderNotificationSettingsKeyboard(message.getChatId(), locale))
         );
         return true;
     }
@@ -68,16 +69,18 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
 
     @Override
     public void restore(Message message) {
+        Locale locale = userService.getLocale(message.getFrom().getId());
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION, userService.getLocale(message.getFrom().getId())))
-                        .replyKeyboard(replyKeyboardService.getUserReminderNotificationSettingsKeyboard(message.getChatId()))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION, locale))
+                        .replyKeyboard(replyKeyboardService.getUserReminderNotificationSettingsKeyboard(message.getChatId(), locale))
         );
     }
 
     @Override
     public ReplyKeyboardMarkup getKeyboard(long chatId) {
-        return replyKeyboardService.getUserReminderNotificationSettingsKeyboard(chatId);
+        Locale locale = userService.getLocale((int) chatId);
+        return replyKeyboardService.getUserReminderNotificationSettingsKeyboard(chatId, locale);
     }
 }

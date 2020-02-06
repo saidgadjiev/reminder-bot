@@ -76,12 +76,13 @@ public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCo
     @Override
     public boolean processMessage(Message message, String text) {
         List<String> queries = savedQueryService.getQueriesOnly(message.getFrom().getId());
-        ReplyKeyboardMarkup savedQueriesKeyboard = replyKeyboardService.getSavedQueriesKeyboard(message.getChatId(), queries);
+        Locale locale = userService.getLocale(message.getFrom().getId());
+        ReplyKeyboardMarkup savedQueriesKeyboard = replyKeyboardService.getSavedQueriesKeyboard(message.getChatId(), queries, locale);
 
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CREATE_REMINDER, userService.getLocale(message.getFrom().getId())))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CREATE_REMINDER, locale))
                         .replyKeyboard(savedQueriesKeyboard)
         );
 
@@ -111,7 +112,8 @@ public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCo
     @Override
     public ReplyKeyboardMarkup getKeyboard(long chatId) {
         List<String> queries = savedQueryService.getQueriesOnly((int) chatId);
-        return replyKeyboardService.getSavedQueriesKeyboard(chatId, queries);
+        Locale locale = userService.getLocale((int) chatId);
+        return replyKeyboardService.getSavedQueriesKeyboard(chatId, queries, locale);
     }
 
     @Override
