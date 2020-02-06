@@ -65,12 +65,8 @@ public class ReminderJob {
 
     @PostConstruct
     public void onStartup() {
+        sendReminders();
         moveReminders();
-    }
-
-    @Scheduled(cron = "* * * * * *")
-    public void test() {
-        LOGGER.info("Test");
     }
 
     @Scheduled(cron = "0 0 0 * * *")
@@ -95,9 +91,9 @@ public class ReminderJob {
         LOGGER.debug("Move reminders finished at {}", LocalDateTime.now());
     }
 
-    @Scheduled(fixedDelay = 10 * 1000)
+    @Scheduled(cron = "10 * * * * *")
     public void sendReminders() {
-        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().minusSeconds(8), 30);
+        List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now(), 30);
 
         for (Reminder reminder : reminders) {
             if (restoreReminderService.isNeedRestore(reminder)) {
