@@ -23,7 +23,7 @@ public class ReminderNotificationTimeBuilder {
 
     public String time(ReminderNotification reminderNotification, Locale locale) {
         if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
-            return timeBuilder.time(reminderNotification.getFixedTime().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone()), null);
+            return timeBuilder.time(reminderNotification.getFixedTime().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone()), locale);
         }
 
         RepeatTime repeatTime = new RepeatTime(reminderNotification.getLastReminderAt().getZone());

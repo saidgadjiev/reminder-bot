@@ -166,6 +166,7 @@ public class ReminderRequestService {
             reminderNotifications.add(reminderService.customRemind(reminderId, remindTime));
             customRemindResult.setZonedDateTime(remindTime);
         }
+        reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminder(reminder));
         customRemindResult.setReminderNotifications(reminderNotifications);
         customRemindResult.setReminder(reminder);
 

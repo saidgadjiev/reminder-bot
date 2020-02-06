@@ -55,7 +55,7 @@ public class ReminderNotificationMessageBuilder {
         }
     }
 
-    public String getReminderTimeMessage(List<ReminderNotification> reminderNotifications, Locale locale) {
+    public String getReminderTimesMessage(List<ReminderNotification> reminderNotifications, Locale locale) {
         StringBuilder message = new StringBuilder();
 
         for (ReminderNotification notification : reminderNotifications) {
