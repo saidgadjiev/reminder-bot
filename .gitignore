@@ -271,3 +271,4 @@ __pycache__/
 .env
 data/
 *.csv
+api.json
