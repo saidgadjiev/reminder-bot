@@ -109,7 +109,7 @@ public class SubscriptionFilter extends BaseBotFilter {
     }
 
     private void sendTrialSubscriptionStarted(User user) {
-        Locale locale = userService.getLocale((user.getId()));
+        Locale locale = userService.getLocale(user.getId());
         TimeDeclensionService declensionService = timeDeclensionProvider.getService(locale.getLanguage());
 
         int userId = user.getId();

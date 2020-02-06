@@ -12,7 +12,6 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -35,16 +34,13 @@ public class AcceptFriendRequestCommand implements CallbackBotCommand {
 
     private LocalisationService localisationService;
 
-    private TgUserService userService;
-
     @Autowired
     public AcceptFriendRequestCommand(FriendshipService friendshipService, MessageService messageService,
                                       InlineKeyboardService inlineKeyboardService,
-                                      FriendshipMessageBuilder friendshipMessageBuilder, LocalisationService localisationService, TgUserService userService) {
+                                      FriendshipMessageBuilder friendshipMessageBuilder, LocalisationService localisationService) {
         this.inlineKeyboardService = inlineKeyboardService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.localisationService = localisationService;
-        this.userService = userService;
         this.name = CommandNames.ACCEPT_FRIEND_REQUEST_COMMAND_NAME;
         this.friendshipService = friendshipService;
         this.messageService = messageService;

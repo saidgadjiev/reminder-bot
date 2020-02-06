@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.EditMessageContext;
@@ -18,7 +17,6 @@ import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 @Service
 public class ReminderNotificationMessageSender {
