@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS tg_user
 (
-    user_id  INTEGER      NOT NULL UNIQUE,
-    username VARCHAR(128) UNIQUE,
-    name     VARCHAR(128) NOT NULL,
-    chat_id  INTEGER      NOT NULL UNIQUE,
-    zone_id  VARCHAR(128) NOT NULL DEFAULT 'Europe/Moscow',
+    user_id    INTEGER      NOT NULL UNIQUE,
+    username   VARCHAR(128) UNIQUE,
+    name       VARCHAR(128) NOT NULL,
+    chat_id    INTEGER      NOT NULL UNIQUE,
+    zone_id    VARCHAR(128) NOT NULL DEFAULT 'Europe/Moscow',
     created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
     PRIMARY KEY (user_id),
     UNIQUE (user_id, chat_id)
@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS reminder
     receiver_id         INTEGER      NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
     remind_at           datetime     NOT NULL,
     repeat_remind_at    repeat_time[],
+    curr_repeat_index   INT,
     initial_remind_at   datetime     NOT NULL,
     status              INT          NOT NULL DEFAULT 0,
     note                TEXT,
@@ -29,7 +30,7 @@ CREATE TABLE IF NOT EXISTS reminder
     read                BOOLEAN      NOT NULL DEFAULT FALSE,
     message_id          INT          NOT NULL,
     receiver_message_id INT,
-    create_message_id   INT,
+    creator_message_id  INT,
     created_at          TIMESTAMP(0) NOT NULL DEFAULT NOW()
 );
 
