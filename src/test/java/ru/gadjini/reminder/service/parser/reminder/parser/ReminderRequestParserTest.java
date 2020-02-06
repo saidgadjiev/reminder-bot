@@ -11,7 +11,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.common.TestConstants;
 import ru.gadjini.reminder.service.DayOfWeekService;
-import ru.gadjini.reminder.service.context.UserContextResolver;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderLexem;
@@ -30,7 +29,7 @@ import java.util.List;
 import java.util.Locale;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {UserContextResolver.class, LocalisationService.class, DayOfWeekService.class, TimeCreator.class})
+@ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class, TimeCreator.class})
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class ReminderRequestParserTest {
 

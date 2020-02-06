@@ -14,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.common.TestConstants;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.DayOfWeekService;
-import ru.gadjini.reminder.service.context.UserContextResolver;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
@@ -32,7 +31,7 @@ import java.util.Locale;
 import static ru.gadjini.reminder.service.parser.time.lexer.TimeToken.DAY;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {UserContextResolver.class, LocalisationService.class, DayOfWeekService.class})
+@ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class})
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class FixedTimeParserTest {
 

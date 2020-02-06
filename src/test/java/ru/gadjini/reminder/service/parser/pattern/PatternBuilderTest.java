@@ -10,13 +10,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.service.DayOfWeekService;
-import ru.gadjini.reminder.service.context.UserContextResolver;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
 import java.util.Locale;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {UserContextResolver.class, LocalisationService.class, DayOfWeekService.class, PatternBuilder.class})
+@ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class, PatternBuilder.class})
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class PatternBuilderTest {
 

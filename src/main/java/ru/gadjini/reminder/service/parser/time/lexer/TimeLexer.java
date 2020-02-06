@@ -28,8 +28,8 @@ public class TimeLexer {
 
         str = str.toLowerCase();
         this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, str, fullMatch, locale);
-        this.fixedTimeLexer = new FixedTimeLexer(timeLexerConfig, str, fullMatch);
-        this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, str, fullMatch);
+        this.fixedTimeLexer = new FixedTimeLexer(timeLexerConfig, str, fullMatch, locale);
+        this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, str, fullMatch, locale);
     }
 
     public List<BaseLexem> tokenizeThrowParseException() {

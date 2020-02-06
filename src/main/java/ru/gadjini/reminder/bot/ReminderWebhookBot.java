@@ -11,9 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.filter.BotFilter;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.properties.BotProperties;
-import ru.gadjini.reminder.service.context.UserContext;
-import ru.gadjini.reminder.service.context.UserContextHolder;
-import ru.gadjini.reminder.service.context.UserContextRepository;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.MessageService;
 
 @Component
@@ -27,28 +25,27 @@ public class ReminderWebhookBot extends TelegramWebhookBot {
 
     private MessageService messageService;
 
-    private UserContextRepository userContextRepository;
+    private TgUserService userService;
 
     @Autowired
-    public ReminderWebhookBot(DefaultBotOptions botOptions, BotProperties botProperties, BotFilter botFilter, MessageService messageService, UserContextRepository userContextRepository) {
+    public ReminderWebhookBot(DefaultBotOptions botOptions, BotProperties botProperties, BotFilter botFilter,
+                              MessageService messageService, TgUserService userService) {
         super(botOptions);
         this.botProperties = botProperties;
         this.botFilter = botFilter;
         this.messageService = messageService;
-        this.userContextRepository = userContextRepository;
+        this.userService = userService;
     }
 
     @Override
     public BotApiMethod onWebhookUpdateReceived(Update update) {
         try {
-            UserContext userContext = userContextRepository.loadContext(update);
-            UserContextHolder.set(userContext);
             botFilter.doFilter(update);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
-            messageService.sendErrorMessage(TgMessage.getChatId(update), locale);
-        } finally {
-            UserContextHolder.remove();
+
+            TgMessage tgMessage = TgMessage.from(update);
+            messageService.sendErrorMessage(TgMessage.getChatId(update), userService.getLocale(tgMessage.getUser().getId()));
         }
 
         return null;

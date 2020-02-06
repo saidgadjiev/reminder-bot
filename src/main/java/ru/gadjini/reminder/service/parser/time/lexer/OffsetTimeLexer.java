@@ -6,6 +6,7 @@ import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 
 public class OffsetTimeLexer {
@@ -16,12 +17,15 @@ public class OffsetTimeLexer {
 
     private final boolean fullMatch;
 
+    private final Locale locale;
+
     private int end;
 
-    public OffsetTimeLexer(TimeLexerConfig lexerConfig, String str, boolean fullMatch) {
+    public OffsetTimeLexer(TimeLexerConfig lexerConfig, String str, boolean fullMatch, Locale locale) {
         this.lexerConfig = lexerConfig;
         this.str = str;
         this.fullMatch = fullMatch;
+        this.locale = locale;
     }
 
     @SuppressWarnings("CPD-START")

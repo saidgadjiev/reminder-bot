@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigura
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.regex.GroupPattern;
-import ru.gadjini.reminder.service.context.UserContextResolver;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
@@ -24,7 +23,7 @@ import java.util.*;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {UserContextResolver.class, LocalisationService.class, ReminderRequestLexerConfig.class})
+@ContextConfiguration(classes = {LocalisationService.class, ReminderRequestLexerConfig.class})
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class ReminderRequestLexerTest {
 

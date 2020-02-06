@@ -22,9 +22,9 @@ public class ReminderRequestLexer {
 
     public ReminderRequestLexer(ReminderRequestLexerConfig lexerConfig, TimeLexerConfig timeLexerConfig, String str, Locale locale) {
         this.lexerConfig = lexerConfig;
+        this.locale = locale;
         this.parts = breakToTextAndNote(str);
         this.timeLexer = new TimeLexer(timeLexerConfig, parts[0], locale);
-        this.locale = locale;
     }
 
     public List<BaseLexem> tokenize() {

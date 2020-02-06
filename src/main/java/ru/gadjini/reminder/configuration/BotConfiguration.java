@@ -24,6 +24,7 @@ import ru.gadjini.reminder.filter.BotFilter;
 import ru.gadjini.reminder.filter.ReminderBotFilter;
 import ru.gadjini.reminder.filter.StartCommandFilter;
 import ru.gadjini.reminder.properties.WebHookProperties;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -56,7 +57,8 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
                                                                       ReminderNotificationMessageBuilder messageBuilder,
                                                                       MessageService messageService,
                                                                       InlineKeyboardService inlineKeyboardService,
-                                                                      CurrReplyKeyboard replyKeyboardService
+                                                                      CurrReplyKeyboard replyKeyboardService,
+                                                                      TgUserService userService
     ) {
         Set<String> names = new HashSet<>();
         for (Locale locale : localisationService.getSupportedLocales()) {
@@ -79,7 +81,8 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
                                                                          ReminderNotificationMessageBuilder messageBuilder,
                                                                          MessageService messageService,
                                                                          InlineKeyboardService inlineKeyboardService,
-                                                                         CurrReplyKeyboard replyKeyboardService
+                                                                         CurrReplyKeyboard replyKeyboardService,
+                                                                         TgUserService userService
     ) {
         Set<String> names = new HashSet<>();
         for (Locale locale : localisationService.getSupportedLocales()) {

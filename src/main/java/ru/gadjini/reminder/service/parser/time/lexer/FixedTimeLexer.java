@@ -6,6 +6,7 @@ import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 
 public class FixedTimeLexer {
@@ -18,10 +19,13 @@ public class FixedTimeLexer {
 
     private boolean fullMatch;
 
-    public FixedTimeLexer(TimeLexerConfig lexerConfig, String str, boolean fullMatch) {
+    private final Locale locale;
+
+    public FixedTimeLexer(TimeLexerConfig lexerConfig, String str, boolean fullMatch, Locale locale) {
         this.lexerConfig = lexerConfig;
         this.str = str;
         this.fullMatch = fullMatch;
+        this.locale = locale;
     }
 
     public LinkedList<BaseLexem> tokenize() {
