@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS tg_user
     name     VARCHAR(128) NOT NULL,
     chat_id  INTEGER      NOT NULL UNIQUE,
     zone_id  VARCHAR(128) NOT NULL DEFAULT 'Europe/Moscow',
+    created_at TIMESTAMP(0) NOT NULL DEFAULT NOW(),
     PRIMARY KEY (user_id),
     UNIQUE (user_id, chat_id)
 );
