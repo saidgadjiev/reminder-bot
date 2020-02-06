@@ -14,11 +14,14 @@ import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
+
+import java.util.Locale;
 
 @Component
 public class DeleteFriendCommand implements CallbackBotCommand {
@@ -31,14 +34,17 @@ public class DeleteFriendCommand implements CallbackBotCommand {
 
     private LocalisationService localisationService;
 
+    private TgUserService userService;
+
     private String name;
 
     @Autowired
-    public DeleteFriendCommand(MessageService messageService, FriendshipService friendshipService, InlineKeyboardService inlineKeyboardService, LocalisationService localisationService) {
+    public DeleteFriendCommand(MessageService messageService, FriendshipService friendshipService, InlineKeyboardService inlineKeyboardService, LocalisationService localisationService, TgUserService userService) {
         this.messageService = messageService;
         this.friendshipService = friendshipService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.localisationService = localisationService;
+        this.userService = userService;
         name = CommandNames.DELETE_FRIEND_COMMAND_NAME;
     }
 
@@ -51,10 +57,11 @@ public class DeleteFriendCommand implements CallbackBotCommand {
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         FriendshipService.DeleteFriendResult deleteFriendResult = friendshipService.deleteFriend(TgMessage.from(callbackQuery), requestParams.getInt(Arg.FRIEND_ID.getKey()));
 
+        Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_DELETED))
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_FRIENDS_COMMAND_HISTORY_NAME))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_DELETED, locale))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_FRIENDS_COMMAND_HISTORY_NAME, locale))
         );
         if (deleteFriendResult.getReminders().size() > 0) {
             sendRemindersDeleted(callbackQuery.getMessage().getChatId(), callbackQuery.getFrom().getId(), deleteFriendResult);
@@ -83,7 +90,7 @@ public class DeleteFriendCommand implements CallbackBotCommand {
                         .chatId(friend.getUserId())
                         .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIENDSHIP_INTERRUPTED, new Object[]{
                                 UserUtils.userLink(friendship.getUser(userId))
-                        }))
+                        }, friend.getLocale()))
         );
 
         deleteFriendResult.getReminders().stream()

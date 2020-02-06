@@ -31,6 +31,7 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
 
     private LocalisationService localisationService;
 
+
     @Autowired
     public RejectFriendRequestCommand(FriendshipService friendshipService, MessageService messageService,
                                       InlineKeyboardService inlineKeyboardService, LocalisationService localisationService) {
@@ -54,13 +55,13 @@ public class RejectFriendRequestCommand implements CallbackBotCommand {
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(friendship.getUserOneId())
                         .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED_INITIATOR,
-                                new Object[]{UserUtils.userLink(friendship.getUserTwo())}
-                        ))
+                                new Object[]{UserUtils.userLink(friendship.getUserTwo())},
+                                friendship.getUserOne().getLocale()))
         );
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED))
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED, localisationService.getCurrentLocale(callbackQuery.getFrom().getLanguageCode())))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME, friendship.getUserTwo().getLocale()))
         );
 
         return MessagesProperties.MESSAGE_FRIEND_REQUEST_REJECTED;

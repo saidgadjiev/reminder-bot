@@ -20,7 +20,7 @@ public class SavedQueryMessageBuilder {
 
     public String getMessage(List<SavedQuery> queries) {
         if (queries.isEmpty()) {
-            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SAVED_QUERY_EMPTY);
+            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SAVED_QUERY_EMPTY, null);
         }
 
         StringBuilder message = new StringBuilder();

@@ -41,17 +41,17 @@ public class ReminderNotificationMessageBuilder {
 
     public String getReminderNotificationForReceiver(Reminder reminder, boolean itsTime, DateTime nextRemindAt) {
         if (itsTime) {
-            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getReceiverId()).nextRemindAt(nextRemindAt).remindNotification(true)));
+            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getReceiverId()).nextRemindAt(nextRemindAt).remindNotification(true)), reminder.getReceiver().getLocale());
         } else {
-            return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getReceiverId()).remindNotification(true)));
+            return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getReceiverId()).remindNotification(true)), reminder.getReceiver().getLocale());
         }
     }
 
     public String getReminderNotificationMySelf(Reminder reminder, boolean itsTime, DateTime nextRemindAt) {
         if (itsTime) {
-            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getCreatorId()).nextRemindAt(nextRemindAt).remindNotification(true)));
+            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getCreatorId()).nextRemindAt(nextRemindAt).remindNotification(true)), reminder.getCreator().getLocale());
         } else {
-            return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getCreatorId()).remindNotification(true)));
+            return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getCreatorId()).remindNotification(true)), reminder.getReceiver().getLocale());
         }
     }
 
@@ -75,7 +75,7 @@ public class ReminderNotificationMessageBuilder {
             StringBuilder message = new StringBuilder(reminderNotificationTimeBuilder.time(reminderNotification, locale));
 
             ZonedDateTime nextRemindAt = JodaTimeUtils.plus(reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone()), reminderNotification.getDelayTime());
-            message.append("\n").append(messageBuilder.getNextReminderNotificationAt(nextRemindAt));
+            message.append("\n").append(messageBuilder.getNextReminderNotificationAt(nextRemindAt, locale));
 
             return message.toString();
         }
@@ -83,7 +83,7 @@ public class ReminderNotificationMessageBuilder {
 
     public String getReminderNotifications(List<ReminderNotification> reminderNotifications) {
         if (reminderNotifications.isEmpty()) {
-            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS);
+            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS, null);
         }
         StringBuilder message = new StringBuilder();
 
@@ -100,7 +100,7 @@ public class ReminderNotificationMessageBuilder {
 
     public String getUserReminderNotifications(List<UserReminderNotification> userReminderNotifications) {
         if (userReminderNotifications.isEmpty()) {
-            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS);
+            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS, null);
         }
         StringBuilder message = new StringBuilder();
 

@@ -40,7 +40,7 @@ public class HelpCommand extends BotCommand implements KeyboardBotCommand {
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings) {
-        sendHelpMessage(user.getId());
+        sendHelpMessage(user.getId(), localisationService.getCurrentLocale(user.getLanguageCode()));
     }
 
     @Override
@@ -50,15 +50,15 @@ public class HelpCommand extends BotCommand implements KeyboardBotCommand {
 
     @Override
     public boolean processMessage(Message message, String text) {
-        sendHelpMessage(message.getFrom().getId());
+        sendHelpMessage(message.getFrom().getId(), localisationService.getCurrentLocale(message.getFrom().getLanguageCode()));
 
         return false;
     }
 
-    private void sendHelpMessage(int userId) {
+    private void sendHelpMessage(int userId, Locale locale) {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(userId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_HELP)));
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_HELP, locale)));
     }
 }

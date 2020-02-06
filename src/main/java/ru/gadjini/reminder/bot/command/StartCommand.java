@@ -61,7 +61,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] args) {
-        sendMainMenu(user.getId());
+        sendMainMenu(user.getId(), localisationService.getCurrentLocale(user.getLanguageCode()));
     }
 
     @Override
@@ -80,8 +80,8 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
     }
 
     @Override
-    public void restore(long chatId) {
-        sendMainMenu((int) chatId);
+    public void restore(Message message) {
+        sendMainMenu(message.getChatId().intValue(), localisationService.getCurrentLocale(message.getFrom().getLanguageCode()));
     }
 
     @Override
@@ -111,16 +111,16 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
 
     @Override
     public boolean processMessage(Message message, String text) {
-        sendMainMenu(message.getFrom().getId());
+        sendMainMenu(message.getFrom().getId(), localisationService.getCurrentLocale(message.getFrom().getLanguageCode()));
 
         return true;
     }
 
-    private void sendMainMenu(int userId) {
+    private void sendMainMenu(int userId, Locale locale) {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_START))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_START, locale))
                         .replyKeyboard(replyKeyboardService.getMainMenu(userId, userId)));
     }
 }

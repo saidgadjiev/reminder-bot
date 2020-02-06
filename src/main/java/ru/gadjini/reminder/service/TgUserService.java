@@ -11,6 +11,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.ZoneId;
+import java.util.Locale;
 
 @Service
 public class TgUserService {
@@ -37,6 +38,14 @@ public class TgUserService {
         return tgUserDao.isExists(userId);
     }
 
+    public Locale getLocale(int userId) {
+        return Locale.getDefault();
+    }
+
+    public Locale getLocale(String username) {
+        return Locale.getDefault();
+    }
+
     public TgUser createOrUpdateUser(long chatId, User user) {
         TgUser tgUser = new TgUser();
 
@@ -54,7 +63,7 @@ public class TgUserService {
         String zone = tgUserDao.getTimeZone(userId);
 
         if (zone == null) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TIMEZONE_NOT_EXISTS));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TIMEZONE_NOT_EXISTS, getLocale(userId)));
         }
 
         return ZoneId.of(zone);
@@ -64,7 +73,7 @@ public class TgUserService {
         String zone = tgUserDao.getTimeZone(username);
 
         if (zone == null) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TIMEZONE_NOT_EXISTS));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TIMEZONE_NOT_EXISTS, getLocale(username)));
         }
 
         return ZoneId.of(zone);

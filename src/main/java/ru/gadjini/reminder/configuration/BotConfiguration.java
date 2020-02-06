@@ -69,7 +69,7 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
                 UserReminderNotification.NotificationType.WITH_TIME,
                 userReminderNotificationService, messageBuilder,
                 messageService, inlineKeyboardService, replyKeyboardService, stateService,
-                localisationService);
+                localisationService, userService);
     }
 
     @Bean
@@ -91,7 +91,7 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
                 UserReminderNotification.NotificationType.WITHOUT_TIME, userReminderNotificationService,
                 messageBuilder, messageService, inlineKeyboardService, replyKeyboardService,
                 stateService,
-                localisationService);
+                localisationService, userService);
     }
 
     @Bean

@@ -36,38 +36,38 @@ public class PostponeValidator implements Validator {
         } else if (validationContext.time().isOffsetTime()) {
             validate(validationContext.reminder(), validationContext.time().getOffsetTime());
         } else {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, null));
         }
     }
 
     private void validate(Reminder reminder, OffsetTime offsetTime) {
         if (offsetTime.getType() != OffsetTime.Type.FOR) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, null));
         }
         if (!reminder.getRemindAt().hasTime() && (offsetTime.getHours() != 0 || offsetTime.getMinutes() != 0)) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITHOUT_TIME));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITHOUT_TIME, null));
         }
     }
 
     private void validate(Reminder reminder, FixedTime fixedTime) {
         if (fixedTime.getType() != FixedTime.Type.UNTIL) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, null));
         }
 
         DateTime dateTime = fixedTime.getDateTime();
         if (!reminder.getRemindAt().hasTime()) {
             if (fixedTime.hasTime()) {
-                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITHOUT_TIME));
+                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITHOUT_TIME, null));
             }
             if (dateTime.date().isBefore(timeCreator.localDateNow(dateTime.getZoneId()))) {
-                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
+                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, null));
             }
         } else {
             if (!fixedTime.hasTime()) {
-                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITH_TIME));
+                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONE_BAD_TIME_REMINDER_WITH_TIME, null));
             }
             if (dateTime.toZonedDateTime().isBefore(timeCreator.zonedDateTimeNow(dateTime.getZoneId()))) {
-                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
+                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, null));
             }
         }
     }

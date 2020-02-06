@@ -10,6 +10,7 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -29,13 +30,16 @@ public class CancelFriendRequestCommand implements CallbackBotCommand {
 
     private InlineKeyboardService inlineKeyboardService;
 
+    private TgUserService userService;
+
     @Autowired
     public CancelFriendRequestCommand(FriendshipService friendshipService, MessageService messageService,
-                                      FriendshipMessageBuilder friendshipMessageBuilder, InlineKeyboardService inlineKeyboardService) {
+                                      FriendshipMessageBuilder friendshipMessageBuilder, InlineKeyboardService inlineKeyboardService, TgUserService userService) {
         this.friendshipService = friendshipService;
         this.messageService = messageService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.inlineKeyboardService = inlineKeyboardService;
+        this.userService = userService;
     }
 
     @Override
@@ -49,7 +53,7 @@ public class CancelFriendRequestCommand implements CallbackBotCommand {
         List<TgUser> requests = friendshipService.getFromMeFriendRequests(callbackQuery.getFrom().getId());
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(friendshipMessageBuilder.getFriendsList(requests, MessagesProperties.MESSAGE_FROM_ME_FRIEND_REQUESTS_EMPTY, null))
+                        .text(friendshipMessageBuilder.getFriendsList(requests, MessagesProperties.MESSAGE_FROM_ME_FRIEND_REQUESTS_EMPTY, null, userService.getLocale(callbackQuery.getFrom().getId())))
                         .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(requests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.CANCEL_FRIEND_REQUEST_COMMAND_NAME))
         );
 

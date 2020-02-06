@@ -39,7 +39,7 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
     public ReminderRequest extract(ReminderRequestContext context) {
         Optional<String> forFriendStart = forFriendStarts.stream().filter(f -> context.getText().startsWith(f)).findFirst();
         if (forFriendStart.isPresent()) {
-            ExtractReceiverResult extractReceiverResult = extractReceiver(context.getUser().getId(), context.getText(), context.isVoice());
+            ExtractReceiverResult extractReceiverResult = extractReceiver(context.getUser().getId(), context.getText(), context.isVoice(), localisationService.getCurrentLocale(context.getUser().getLanguageCode()));
 
             try {
                 ReminderRequest reminderRequest = requestParser.parseRequest(extractReceiverResult.text, extractReceiverResult.receiver.getZone(), extractReceiverResult.receiver.getLocale());
@@ -47,14 +47,14 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
 
                 return reminderRequest;
             } catch (ParseException ex) {
-                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT));
+                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, extractReceiverResult.receiver.getLocale()));
             }
         }
 
         return super.extract(context);
     }
 
-    public ExtractReceiverResult extractReceiver(int userId, String text, boolean voice) {
+    public ExtractReceiverResult extractReceiver(int userId, String text, boolean voice, Locale locale) {
         String forFriendStart = forFriendStarts.stream().filter(text::startsWith).findFirst().orElseThrow();
         String textWithoutForFriendStart = text.substring(forFriendStart.length()).trim();
         String[] words = textWithoutForFriendStart.split(" ");
@@ -75,9 +75,9 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
             StringBuilder message = new StringBuilder();
 
             if (voice) {
-                message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_VOICE_REQUEST, new Object[]{text})).append(" ");
+                message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_VOICE_REQUEST, new Object[]{text}, locale)).append(" ");
             }
-            message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_WITH_NAME_NOT_FOUND));
+            message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_WITH_NAME_NOT_FOUND, locale));
 
             throw new UserException(message.toString());
         }

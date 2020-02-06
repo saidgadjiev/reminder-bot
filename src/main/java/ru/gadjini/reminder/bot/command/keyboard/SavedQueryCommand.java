@@ -12,6 +12,7 @@ import ru.gadjini.reminder.domain.SavedQuery;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
@@ -50,11 +51,13 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
 
     private SavedQueryMessageBuilder messageBuilder;
 
+    private TgUserService userService;
+
     @Autowired
     public SavedQueryCommand(LocalisationService localisationService, CommandStateService stateService, MessageService messageService,
                              CurrReplyKeyboard replyKeyboardService, InlineKeyboardService inlineKeyboardService,
                              SavedQueryService savedQueryService, @Qualifier("chain") ReminderRequestExtractor reminderRequestExtractor,
-                             SavedQueryMessageBuilder messageBuilder) {
+                             SavedQueryMessageBuilder messageBuilder, TgUserService userService) {
         this.localisationService = localisationService;
         this.stateService = stateService;
         this.messageService = messageService;
@@ -63,6 +66,7 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
         this.savedQueryService = savedQueryService;
         this.reminderRequestExtractor = reminderRequestExtractor;
         this.messageBuilder = messageBuilder;
+        this.userService = userService;
 
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.names.add(localisationService.getMessage(MessagesProperties.SAVED_QUERY_COMMAND_NAME, locale));
@@ -88,7 +92,7 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SAVED_QUERY_INPUT))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SAVED_QUERY_INPUT, userService.getLocale(message.getFrom().getId())))
                         .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
         );
 

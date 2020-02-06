@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
@@ -71,7 +72,8 @@ public class CommandNavigator {
         return navigatorDao.get(chatId) == null;
     }
 
-    public void pop(long chatId) {
+    public void pop(Message message) {
+        long chatId = message.getChatId();
         NavigableBotCommand currentCommand = getCurrentCommand(chatId);
         String parentHistoryName = navigatorDao.popParent(chatId, CommandNames.START_COMMAND_NAME);
 
@@ -81,9 +83,9 @@ public class CommandNavigator {
             NavigableBotCommand parentCommand = navigableBotCommands.get(parentHistoryName);
 
             setCurrentCommand(chatId, parentCommand);
-            parentCommand.restore(chatId);
+            parentCommand.restore(message);
         } else {
-            currentCommand.restore(chatId);
+            currentCommand.restore(message);
         }
     }
 

@@ -28,6 +28,7 @@ import ru.gadjini.reminder.service.validation.ValidationContext;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
 import ru.gadjini.reminder.service.validation.ValidatorType;
 
+import java.util.Locale;
 import java.util.Objects;
 
 @Component
@@ -95,8 +96,8 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(callbackQuery.getMessage().getChatId())
                         .messageId(callbackQuery.getMessage().getMessageId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_TIME))
-                        .replyKeyboard(inlineKeyboardService.getPostponeKeyboard(reminder.getRemindAt().hasTime(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, requestParams))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_TIME, reminder.getReceiver().getLocale()))
+                        .replyKeyboard(inlineKeyboardService.getPostponeKeyboard(reminder.getRemindAt().hasTime(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, requestParams, reminder.getReceiver().getLocale()))
         );
 
         return MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION;
@@ -133,9 +134,9 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     private void processNonCommandUpdate(User from, String text, StateData stateData) {
         if (stateData.getState() == State.TIME) {
-            postponeTime(from.getId(), text, stateData);
+            postponeTime(from.getId(), text, stateData, localisationService.getCurrentLocale(from.getLanguageCode()));
         } else {
-            if (Objects.equals(text, localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON))) {
+            if (Objects.equals(text, localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON, localisationService.getCurrentLocale(from.getLanguageCode())))) {
                 postpone(from.getId(), null, stateData);
             } else {
                 postpone(from.getId(), text, stateData);
@@ -143,7 +144,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         }
     }
 
-    private void postponeTime(int userId, String text, StateData stateData) {
+    private void postponeTime(int userId, String text, StateData stateData, Locale locale) {
         Reminder reminder = ReminderData.to(stateData.getReminder());
         Time parseTime = reminderRequestService.parseTime(text, reminder.getReceiver().getZone(), reminder.getReceiver().getLocale());
 
@@ -157,8 +158,8 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(userId)
                             .messageId(stateData.getCallbackRequest().getMessageId())
-                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_REASON))
-                            .replyKeyboard(inlineKeyboardService.getPostponeMessagesKeyboard(CommandNames.REMINDER_DETAILS_COMMAND_NAME, stateData.getCallbackRequest().getRequestParams())));
+                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_REASON, locale))
+                            .replyKeyboard(inlineKeyboardService.getPostponeMessagesKeyboard(CommandNames.REMINDER_DETAILS_COMMAND_NAME, stateData.getCallbackRequest().getRequestParams(), locale)));
         } else {
             postpone(userId, null, stateData);
         }

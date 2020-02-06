@@ -14,6 +14,7 @@ import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
@@ -21,6 +22,8 @@ import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
+
+import java.util.Locale;
 
 @Component
 public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
@@ -39,18 +42,21 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableCal
 
     private LocalisationService localisationService;
 
+    private TgUserService userService;
+
     @Autowired
     public ChangeFriendNameCommand(CommandStateService stateService, MessageService messageService,
                                    FriendshipService friendshipService,
                                    FriendshipMessageBuilder friendshipMessageBuilder,
                                    InlineKeyboardService inlineKeyboardService,
-                                   LocalisationService localisationService) {
+                                   LocalisationService localisationService, TgUserService userService) {
         this.stateService = stateService;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.inlineKeyboardService = inlineKeyboardService;
         this.localisationService = localisationService;
+        this.userService = userService;
     }
 
     @Autowired
@@ -72,10 +78,11 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableCal
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams, null));
 
+        Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_NAME))
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.FRIEND_DETAILS_COMMAND_NAME, requestParams))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_NAME, locale))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.FRIEND_DETAILS_COMMAND_NAME, requestParams, locale))
         );
 
         return null;
@@ -92,8 +99,8 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableCal
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .messageId(callbackRequest.getMessageId())
-                        .text(friendshipMessageBuilder.getFriendDetails(friend))
-                        .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friend.getUserId()))
+                        .text(friendshipMessageBuilder.getFriendDetails(friend, localisationService.getCurrentLocale(message.getFrom().getLanguageCode())))
+                        .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friend.getUserId(), null))
         );
     }
 

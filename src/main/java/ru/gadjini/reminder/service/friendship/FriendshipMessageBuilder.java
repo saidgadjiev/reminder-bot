@@ -1,7 +1,6 @@
 package ru.gadjini.reminder.service.friendship;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
@@ -31,7 +30,7 @@ public class FriendshipMessageBuilder {
     }
 
     public String getFriendDetailsWithFooterCode(TgUser friend, String footerCode, Locale locale) {
-        return getFriendDetails(friend, localisationService.getCurrentLocaleMessage(footerCode), locale);
+        return getFriendDetails(friend, localisationService.getCurrentLocaleMessage(footerCode, locale), locale);
     }
 
     public String getFriendDetails(TgUser friend, String footer, Locale locale) {
@@ -41,7 +40,7 @@ public class FriendshipMessageBuilder {
         message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.TIMEZONE, new Object[] {
                 friend.getZone().getDisplayName(TextStyle.FULL, locale),
                 DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(friend.getZone()))
-        }));
+        }, locale));
 
         if (StringUtils.isNotBlank(footer)) {
             message.append("\n\n").append(footer);
@@ -50,10 +49,9 @@ public class FriendshipMessageBuilder {
         return message.toString();
     }
 
-
-    public String getFriendsList(List<TgUser> items, String emptyCode, String footer) {
+    public String getFriendsList(List<TgUser> items, String emptyCode, String footer, Locale locale) {
         if (items.isEmpty()) {
-            return localisationService.getCurrentLocaleMessage(emptyCode);
+            return localisationService.getCurrentLocaleMessage(emptyCode, locale);
         }
         StringBuilder message = new StringBuilder();
 
@@ -65,7 +63,7 @@ public class FriendshipMessageBuilder {
             message.append("<b>").append(i++).append("</b>) ").append(UserUtils.userLink(friend));
         }
         if (StringUtils.isNotBlank(footer)) {
-            message.append("\n\n").append(localisationService.getCurrentLocaleMessage(footer));
+            message.append("\n\n").append(localisationService.getCurrentLocaleMessage(footer, locale));
         }
 
         return message.toString();

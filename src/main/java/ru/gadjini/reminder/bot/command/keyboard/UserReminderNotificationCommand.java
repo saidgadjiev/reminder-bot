@@ -10,6 +10,7 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -30,11 +31,14 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
 
     private ReplyKeyboardService replyKeyboardService;
 
+    private TgUserService userService;
+
     @Autowired
-    public UserReminderNotificationCommand(MessageService messageService, LocalisationService localisationService, CurrReplyKeyboard replyKeyboardService) {
+    public UserReminderNotificationCommand(MessageService messageService, LocalisationService localisationService, CurrReplyKeyboard replyKeyboardService, TgUserService userService) {
         this.messageService = messageService;
         this.localisationService = localisationService;
         this.replyKeyboardService = replyKeyboardService;
+        this.userService = userService;
 
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.names.add(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME, locale));
@@ -51,7 +55,7 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION, userService.getLocale(message.getFrom().getId())))
                         .replyKeyboard(replyKeyboardService.getUserReminderNotificationSettingsKeyboard(message.getChatId()))
         );
         return true;
@@ -63,12 +67,12 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
     }
 
     @Override
-    public void restore(long chatId) {
+    public void restore(Message message) {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
-                        .chatId(chatId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION))
-                        .replyKeyboard(replyKeyboardService.getUserReminderNotificationSettingsKeyboard(chatId))
+                        .chatId(message.getChatId())
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION, userService.getLocale(message.getFrom().getId())))
+                        .replyKeyboard(replyKeyboardService.getUserReminderNotificationSettingsKeyboard(message.getChatId()))
         );
     }
 

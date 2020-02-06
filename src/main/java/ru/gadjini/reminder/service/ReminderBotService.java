@@ -46,13 +46,17 @@ public class ReminderBotService {
 
     private LocalisationService localisationService;
 
+    private TgUserService userService;
+
     @Autowired
     public ReminderBotService(CommandExecutor commandExecutor,
                               CommandNavigator commandNavigator,
                               MessageService messageService,
                               CurrReplyKeyboard replyKeyboardService,
                               MessageTextExtractor messageTextExtractor,
-                              LatencyMeterFactory latencyMeterFactory, LocalisationService localisationService) {
+                              LatencyMeterFactory latencyMeterFactory,
+                              LocalisationService localisationService,
+                              TgUserService userService) {
         this.commandExecutor = commandExecutor;
         this.commandNavigator = commandNavigator;
         this.messageService = messageService;
@@ -60,6 +64,7 @@ public class ReminderBotService {
         this.messageTextExtractor = messageTextExtractor;
         this.latencyMeterFactory = latencyMeterFactory;
         this.localisationService = localisationService;
+        this.userService = userService;
     }
 
     public void handleUpdate(Update update) {
@@ -124,7 +129,7 @@ public class ReminderBotService {
                 messageService.sendMessageAsync(
                         new SendMessageContext(PriorityJob.Priority.MEDIUM)
                                 .chatId(message.getChatId())
-                                .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_UNKNOWN_COMMAND)));
+                                .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_UNKNOWN_COMMAND, userService.getLocale(message.getFrom().getId()))));
                 return;
             }
         } else if (commandExecutor.isTextCommand(message.getChatId(), text)) {

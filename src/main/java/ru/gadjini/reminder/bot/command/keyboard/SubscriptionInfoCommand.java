@@ -67,13 +67,13 @@ public class SubscriptionInfoCommand implements KeyboardBotCommand {
         if (subscription.getPlanId() == null) {
             return localisationService.getCurrentLocaleMessage(
                     MessagesProperties.MESSAGE_TRIAL_SUBSCRIPTION_END_DATE,
-                    new Object[]{DateTimeFormats.PAYMENT_PERIOD_PATTERN.format(subscription.getEndDate()), plan.getPrice(), timeBuilder.time(plan.getPeriod(), locale)}
-            );
+                    new Object[]{DateTimeFormats.PAYMENT_PERIOD_PATTERN.format(subscription.getEndDate()), plan.getPrice(), timeBuilder.time(plan.getPeriod(), locale)},
+                    locale);
         }
 
         return localisationService.getCurrentLocaleMessage(
                 MessagesProperties.MESSAGE_SUBSCRIPTION_END_DATE,
-                new Object[]{DateTimeFormats.PAYMENT_PERIOD_PATTERN.format(subscription.getEndDate()), plan.getPrice(), timeBuilder.time(plan.getPeriod(), locale)}
-        );
+                new Object[]{DateTimeFormats.PAYMENT_PERIOD_PATTERN.format(subscription.getEndDate()), plan.getPrice(), timeBuilder.time(plan.getPeriod(), locale)},
+                locale);
     }
 }

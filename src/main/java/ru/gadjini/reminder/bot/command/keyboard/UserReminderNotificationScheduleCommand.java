@@ -8,6 +8,7 @@ import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -17,7 +18,6 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,7 +26,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
 
     private CommandStateService stateService;
 
-    private Set<String> names = new HashSet<>();
+    private Set<String> names;
 
     private UserReminderNotification.NotificationType notificationType;
 
@@ -44,13 +44,15 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
 
     private LocalisationService localisationService;
 
+    private TgUserService userService;
+
     public UserReminderNotificationScheduleCommand(Set<String> names, String historyName,
                                                    UserReminderNotification.NotificationType notificationType,
                                                    UserReminderNotificationService userReminderNotificationService,
                                                    ReminderNotificationMessageBuilder messageBuilder,
                                                    MessageService messageService, InlineKeyboardService inlineKeyboardService,
                                                    CurrReplyKeyboard replyKeyboardService, CommandStateService stateService,
-                                                   LocalisationService localisationService) {
+                                                   LocalisationService localisationService, TgUserService userService) {
         this.stateService = stateService;
         this.notificationType = notificationType;
         this.names = names;
@@ -61,6 +63,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
         this.inlineKeyboardService = inlineKeyboardService;
         this.replyKeyboardService = replyKeyboardService;
         this.localisationService = localisationService;
+        this.userService = userService;
     }
 
     @Override
@@ -82,7 +85,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_EDIT_USER_REMINDER_NOTIFICATION))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_EDIT_USER_REMINDER_NOTIFICATION, userService.getLocale(message.getFrom().getId())))
                         .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
         );
         return true;

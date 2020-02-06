@@ -13,6 +13,7 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -32,11 +33,14 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
 
     private InlineKeyboardService inlineKeyboardService;
 
+    private TgUserService userService;
+
     @Autowired
-    public RemindersCommand(LocalisationService localisationService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
+    public RemindersCommand(LocalisationService localisationService, MessageService messageService, InlineKeyboardService inlineKeyboardService, TgUserService userService) {
         this.localisationService = localisationService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
+        this.userService = userService;
 
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.names.add(localisationService.getMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME, locale));
@@ -50,11 +54,12 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
 
     @Override
     public boolean processMessage(Message message, String text) {
+        Locale locale = userService.getLocale(message.getFrom().getId());
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS))
-                        .replyKeyboard(inlineKeyboardService.getRemindersMenu())
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS, locale))
+                        .replyKeyboard(inlineKeyboardService.getRemindersMenu(locale))
         );
 
         return false;
@@ -71,8 +76,8 @@ public class RemindersCommand implements KeyboardBotCommand, NavigableCallbackBo
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS))
-                        .replyKeyboard(inlineKeyboardService.getRemindersMenu())
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_LET_SEE_ON_REMINDERS, userService.getLocale(tgMessage.getUser().getId())))
+                        .replyKeyboard(inlineKeyboardService.getRemindersMenu(null))
         );
     }
 }

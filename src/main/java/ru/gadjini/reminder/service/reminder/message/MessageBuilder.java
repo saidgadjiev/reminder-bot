@@ -33,7 +33,7 @@ public class MessageBuilder {
                 reminderText,
                 timeBuilder.time(from, locale),
                 timeBuilder.time(to, locale)
-        });
+        }, locale);
     }
 
     public String getReminderTimeEditedReceiver(TgUser creator, String reminderText, DateTime from, List<RepeatTime> to, Locale receiverLocale) {
@@ -42,7 +42,7 @@ public class MessageBuilder {
                 reminderText,
                 timeBuilder.time(from, receiverLocale),
                 timeBuilder.time(to, receiverLocale)
-        });
+        }, receiverLocale);
     }
 
 
@@ -52,15 +52,15 @@ public class MessageBuilder {
                 reminderText,
                 timeBuilder.time(from, receiverLocale),
                 timeBuilder.time(to, receiverLocale)
-        });
+        }, receiverLocale);
     }
 
-    public String getReminderEditedReceiver(TgUser creator) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_EDITED_RECEIVER, new Object[]{UserUtils.userLink(creator)});
+    public String getReminderEditedReceiver(TgUser creator, Locale receiverLocale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_EDITED_RECEIVER, new Object[]{UserUtils.userLink(creator)}, receiverLocale);
     }
 
-    public String getReminderEdited(String text) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_EDITED, new Object[] {text});
+    public String getReminderEdited(String text, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_EDITED, new Object[] {text}, locale);
     }
 
     public String getReminderTimeEditedReceiver(TgUser creator, String reminderText, List<RepeatTime> from, List<RepeatTime> to, Locale receiverLocale) {
@@ -69,169 +69,169 @@ public class MessageBuilder {
                 reminderText,
                 timeBuilder.time(from, receiverLocale),
                 timeBuilder.time(to, receiverLocale)
-        });
+        }, receiverLocale);
     }
 
     public String getReminderCreator(TgUser creator) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_CREATOR, new Object[]{UserUtils.userLink(creator)});
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_CREATOR, new Object[]{UserUtils.userLink(creator)}, creator.getLocale());
     }
 
     public String getReminderReceiver(TgUser receiver) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_RECEIVER, new Object[]{UserUtils.userLink(receiver)});
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_RECEIVER, new Object[]{UserUtils.userLink(receiver)}, receiver.getLocale());
     }
 
-    public String getReminderCompleted(String reminderText) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_COMPLETED, new Object[]{reminderText});
+    public String getReminderCompleted(String reminderText, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_COMPLETED, new Object[]{reminderText}, locale);
     }
 
-    public String getReminderSkipped(String reminderText) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_SKIPPED, new Object[]{reminderText});
+    public String getReminderSkipped(String reminderText, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_SKIPPED, new Object[]{reminderText}, locale);
     }
 
-    public String getReminderReturned(String reminderText) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_RETURNED, new Object[]{reminderText});
+    public String getReminderReturned(String reminderText, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_RETURNED, new Object[]{reminderText}, locale);
     }
 
-    public String getReminderStopped(String reminderText) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_STOPPED, new Object[]{reminderText});
+    public String getReminderStopped(String reminderText, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_STOPPED, new Object[]{reminderText}, locale);
     }
 
-    public String getNextReminderNotificationAt(ZonedDateTime remindAt) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_NEXT_REMINDER_NOTIFICATION_AT, new Object[]{timeBuilder.time(remindAt, null)});
+    public String getNextReminderNotificationAt(ZonedDateTime remindAt, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_NEXT_REMINDER_NOTIFICATION_AT, new Object[]{timeBuilder.time(remindAt, locale)}, locale);
     }
 
-    public String getNote(String note) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{note});
+    public String getNote(String note, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTE, new Object[]{note}, locale);
     }
 
-    public String getNewReminder(String reminderText) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_NEW_REMINDER, new Object[]{reminderText});
+    public String getNewReminder(String reminderText, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_NEW_REMINDER, new Object[]{reminderText}, locale);
     }
 
     public String getReminderPostponed(String text, DateTime remindAt, Locale locale) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED, new Object[]{text, timeBuilder.time(remindAt, locale)});
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_POSTPONED, new Object[]{text, timeBuilder.time(remindAt, locale)}, locale);
     }
 
-    public String getReminderNoteEditedReceiver(TgUser creator, String text, String note) {
+    public String getReminderNoteEditedReceiver(TgUser creator, String text, String note, Locale locale) {
         return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTE_EDITED_RECEIVER, new Object[]{
                 UserUtils.userLink(creator),
                 text,
                 note
-        });
+        }, locale);
     }
 
-    public String getReminderTextEdited(String oldText, String newText) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TEXT_EDITED, new Object[]{oldText, newText});
+    public String getReminderTextEdited(String oldText, String newText, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TEXT_EDITED, new Object[]{oldText, newText}, locale);
     }
 
-    public String getReminderNoteEdited(String newNote) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTE_EDITED, new Object[]{newNote});
+    public String getReminderNoteEdited(String newNote, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTE_EDITED, new Object[]{newNote}, locale);
     }
 
     public String getReminderTimeEdited(DateTime oldRemindAt, DateTime newRemindAt, Locale locale) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, new Object[]{timeBuilder.time(oldRemindAt, locale), timeBuilder.time(newRemindAt, locale)});
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, new Object[]{timeBuilder.time(oldRemindAt, locale), timeBuilder.time(newRemindAt, locale)}, locale);
     }
 
     public String getReminderTimeEdited(DateTime oldRemindAt, List<RepeatTime> newRemindAt, Locale locale) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, new Object[]{timeBuilder.time(oldRemindAt, locale), timeBuilder.time(newRemindAt, locale)});
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, new Object[]{timeBuilder.time(oldRemindAt, locale), timeBuilder.time(newRemindAt, locale)}, locale);
     }
 
     public String getReminderTimeEdited(List<RepeatTime> oldRemindAt, DateTime newRemindAt, Locale locale) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, new Object[]{timeBuilder.time(oldRemindAt, locale), timeBuilder.time(newRemindAt, locale)});
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, new Object[]{timeBuilder.time(oldRemindAt, locale), timeBuilder.time(newRemindAt, locale)}, locale);
     }
 
     public String getReminderTimeEdited(List<RepeatTime> oldRemindAt, List<RepeatTime> newRemindAt, Locale locale) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, new Object[]{timeBuilder.time(oldRemindAt, locale), timeBuilder.time(newRemindAt, locale)});
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TIME_EDITED, new Object[]{timeBuilder.time(oldRemindAt, locale), timeBuilder.time(newRemindAt, locale)}, locale);
     }
 
-    public String getReminderNoteDeletedReceiver(TgUser creator, String text) {
+    public String getReminderNoteDeletedReceiver(TgUser creator, String text, Locale receiverLocale) {
         return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTE_DELETED_RECEIVER, new Object[]{
                 UserUtils.userLink(creator),
                 text
-        });
+        }, receiverLocale);
     }
 
-    public String getReminderNoteDeleted() {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTE_DELETED);
+    public String getReminderNoteDeleted(Locale receiverLocale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTE_DELETED, receiverLocale);
     }
 
-    public String getReminderTextEditedReceiver(String oldText, String newText, TgUser creator) {
+    public String getReminderTextEditedReceiver(String oldText, String newText, TgUser creator, Locale receiverLocale) {
         return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TEXT_EDITED_RECEIVER, new Object[]{
                 UserUtils.userLink(creator),
                 oldText,
                 newText
-        });
+        }, receiverLocale);
     }
 
-    public String getCustomRemindCreated(ZonedDateTime remindAt) {
+    public String getCustomRemindCreated(ZonedDateTime remindAt, Locale locale) {
         return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND_CREATED, new Object[]{
-                timeBuilder.time(remindAt, null)
-        });
+                timeBuilder.time(remindAt, locale)
+        }, locale);
     }
 
     public String getCustomRemindCreated(List<RepeatTime> repeatTimes, Locale locale) {
         return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND_CREATED, new Object[]{
                 timeBuilder.time(repeatTimes, locale)
-        });
+        }, locale);
     }
 
     public String getNextRemindAt(DateTime remindAt, Locale locale) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_NEXT_REMINDER_NOTIFICATION_AT, new Object[]{timeBuilder.time(remindAt, locale)});
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_NEXT_REMINDER_NOTIFICATION_AT, new Object[]{timeBuilder.time(remindAt, locale)}, locale);
     }
 
     public String getCompletedAt(ZonedDateTime completedAt, Locale locale) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_COMPLETED_AT, new Object[]{timeBuilder.time(completedAt, locale)});
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_COMPLETED_AT, new Object[]{timeBuilder.time(completedAt, locale)}, locale);
     }
 
-    public String getReminderNotification(String reminderText) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND, new Object[]{reminderText});
+    public String getReminderNotification(String reminderText, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND, new Object[]{reminderText}, locale);
     }
 
-    public String getItsTimeReminderNotification(String reminderText) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_ITS_TIME, new Object[]{reminderText});
+    public String getItsTimeReminderNotification(String reminderText, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_ITS_TIME, new Object[]{reminderText}, locale);
     }
 
-    public String getReminderCanceled(String text) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_CANCELED, new Object[]{text});
+    public String getReminderCanceled(String text, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_CANCELED, new Object[]{text}, locale);
     }
 
-    public String getReminderDeleted(String text) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_DELETED, new Object[]{text});
+    public String getReminderDeleted(String text, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_DELETED, new Object[]{text}, locale);
     }
 
-    public String getCurrentSeries(int currentSeries) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CURRENT_SERIES, new Object[]{currentSeries});
+    public String getCurrentSeries(int currentSeries, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CURRENT_SERIES, new Object[]{currentSeries}, locale);
     }
 
-    public String getMaxSeries(int maxSeries) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_MAX_SERIES, new Object[]{maxSeries});
+    public String getMaxSeries(int maxSeries, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_MAX_SERIES, new Object[]{maxSeries}, locale);
     }
 
-    public String getTotalSeries(int totalSeries) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TOTAL_SERIES, new Object[] {totalSeries});
+    public String getTotalSeries(int totalSeries, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TOTAL_SERIES, new Object[] {totalSeries}, locale);
     }
 
-    public String getReminderDeactivated(String text) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_DEACTIVATED_RECEIVER, new Object[]{text});
+    public String getReminderDeactivated(String text, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_DEACTIVATED_RECEIVER, new Object[]{text}, locale);
     }
 
-    public String getReminderActivated(String text) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_ACTIVATED_RECEIVER, new Object[]{text});
+    public String getReminderActivated(String text, Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_ACTIVATED_RECEIVER, new Object[]{text}, locale);
     }
 
-    public String getReminderRead() {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_READ_REMINDER_STATUS, new Object[] {localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_READ)});
+    public String getReminderRead(Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_READ_REMINDER_STATUS, new Object[] {localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_READ, locale)}, locale);
     }
 
-    public String getReminderUnread() {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_READ_REMINDER_STATUS, new Object[] {localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_UNREAD)});
+    public String getReminderUnread(Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_READ_REMINDER_STATUS, new Object[] {localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_UNREAD, locale)}, locale);
     }
 
-    public String getReadReminderCreator(TgUser receiver, String text) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_READ_REMINDER_CREATOR, new Object[] {UserUtils.userLink(receiver), text});
+    public String getReadReminderCreator(TgUser receiver, String text, Locale creatorLocale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_READ_REMINDER_CREATOR, new Object[] {UserUtils.userLink(receiver), text}, creatorLocale);
     }
 
     public String getReminderCreatedAt(ZonedDateTime createdAt, Locale locale) {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_AT, new Object[] {timeBuilder.fixedDay(createdAt, locale)});
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_AT, new Object[] {timeBuilder.fixedDay(createdAt, locale)}, locale);
     }
 }

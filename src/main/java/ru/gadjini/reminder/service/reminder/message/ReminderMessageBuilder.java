@@ -47,13 +47,13 @@ public class ReminderMessageBuilder {
     }
 
     public String getMySelfReminderEdited(Reminder reminder) {
-        return messageBuilder.getReminderEdited(reminder.getText());
+        return messageBuilder.getReminderEdited(reminder.getText(), reminder.getReceiver().getLocale());
     }
 
     public String getReminderEditedCreator(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderEdited(reminder.getText()))
+        message.append(messageBuilder.getReminderEdited(reminder.getText(), reminder.getCreator().getLocale()))
                 .append("\n")
                 .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
 
@@ -65,8 +65,9 @@ public class ReminderMessageBuilder {
         String text = reminder.getText();
         String note = reminder.getNote();
 
+        Locale locale = config.receiverId == reminder.getCreatorId() ? reminder.getCreator().getLocale() : reminder.getReceiver().getLocale();
         if (reminder.isSuppressNotifications() && config.receiverId == reminder.getReceiverId()) {
-            result.append(localisationService.getCurrentLocaleMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI)).append(" ");
+            result.append(localisationService.getCurrentLocaleMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI, locale)).append(" ");
         }
         result.append(text).append(" ");
 
@@ -75,21 +76,21 @@ public class ReminderMessageBuilder {
         } else {
             if (reminder.isRepeatable()) {
                 result
-                        .append(timeBuilder.time(reminder.getRepeatRemindAtsInReceiverZone(timeCreator), reminder.getReceiver().getLocale())).append("\n")
-                        .append(messageBuilder.getNextRemindAt(config.nextRemindAt == null ? reminder.getRemindAtInReceiverZone() : config.nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId()), reminder.getReceiver().getLocale()));
+                        .append(timeBuilder.time(reminder.getRepeatRemindAtsInReceiverZone(timeCreator), locale)).append("\n")
+                        .append(messageBuilder.getNextRemindAt(config.nextRemindAt == null ? reminder.getRemindAtInReceiverZone() : config.nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId()), locale));
             } else {
-                result.append(timeBuilder.time(reminder.getRemindAtInReceiverZone(), reminder.getReceiver().getLocale()));
+                result.append(timeBuilder.time(reminder.getRemindAtInReceiverZone(), locale));
             }
         }
 
         if (!config.remindNotification) {
             result.append("\n")
-                    .append(messageBuilder.getReminderCreatedAt(reminder.getCreatedAtInReceiverZone(), reminder.getReceiver().getLocale()));
+                    .append(messageBuilder.getReminderCreatedAt(reminder.getCreatedAtInReceiverZone(), locale));
         }
 
         if (reminder.isNotMySelf()) {
             result.append("\n")
-                    .append(reminder.isRead() ? messageBuilder.getReminderRead() : messageBuilder.getReminderUnread());
+                    .append(reminder.isRead() ? messageBuilder.getReminderRead(locale) : messageBuilder.getReminderUnread(locale));
 
             if (config.receiverId == reminder.getCreatorId()) {
                 result
@@ -105,13 +106,13 @@ public class ReminderMessageBuilder {
         if (reminder.isRepeatable() && reminder.isCountSeries()) {
             result
                     .append("\n\n")
-                    .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries())).append("\n")
-                    .append(messageBuilder.getMaxSeries(reminder.getMaxSeries())).append("\n")
-                    .append(messageBuilder.getTotalSeries(reminder.getTotalSeries()));
+                    .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries(), locale)).append("\n")
+                    .append(messageBuilder.getMaxSeries(reminder.getMaxSeries(), locale)).append("\n")
+                    .append(messageBuilder.getTotalSeries(reminder.getTotalSeries(), locale));
         }
 
         if (StringUtils.isNotBlank(note)) {
-            result.append("\n").append(messageBuilder.getNote(reminder.getNote()));
+            result.append("\n").append(messageBuilder.getNote(reminder.getNote(), locale));
         }
 
         return result.toString();
@@ -121,7 +122,7 @@ public class ReminderMessageBuilder {
         StringBuilder message = new StringBuilder();
 
         message
-                .append(messageBuilder.getReminderCompleted(reminder.getText())).append("\n")
+                .append(messageBuilder.getReminderCompleted(reminder.getText(), reminder.getReceiver().getLocale())).append("\n")
                 .append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
         return message.toString();
@@ -131,21 +132,21 @@ public class ReminderMessageBuilder {
         StringBuilder message = new StringBuilder();
 
         message
-                .append(messageBuilder.getReminderCompleted(reminder.getText())).append("\n")
+                .append(messageBuilder.getReminderCompleted(reminder.getText(), reminder.getCreator().getLocale())).append("\n")
                 .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
 
         return message.toString();
     }
 
     public String getMySelfReminderCompleted(Reminder reminder) {
-        return messageBuilder.getReminderCompleted(reminder.getText());
+        return messageBuilder.getReminderCompleted(reminder.getText(), reminder.getReceiver().getLocale());
     }
 
     public String getMySelfRepeatReminderCompleted(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderCompleted(reminder.getText())).append("\n");
-        appendRepeatReminderCommonValues(message, reminder);
+        message.append(messageBuilder.getReminderCompleted(reminder.getText(), reminder.getReceiver().getLocale())).append("\n");
+        appendRepeatReminderCommonValues(message, reminder, reminder.getReceiver().getLocale());
 
         return message.toString();
     }
@@ -153,8 +154,8 @@ public class ReminderMessageBuilder {
     public String getRepeatReminderCompletedForCreator(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderCompleted(reminder.getText())).append("\n");
-        appendRepeatReminderCommonValues(message, reminder);
+        message.append(messageBuilder.getReminderCompleted(reminder.getText(), reminder.getCreator().getLocale())).append("\n");
+        appendRepeatReminderCommonValues(message, reminder, reminder.getCreator().getLocale());
         message.append("\n").append(messageBuilder.getReminderReceiver(reminder.getReceiver())).append("\n");
 
         return message.toString();
@@ -163,8 +164,8 @@ public class ReminderMessageBuilder {
     public String getRepeatReminderCompletedForReceiver(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderCompleted(reminder.getText())).append("\n");
-        appendRepeatReminderCommonValues(message, reminder);
+        message.append(messageBuilder.getReminderCompleted(reminder.getText(), reminder.getReceiver().getLocale())).append("\n");
+        appendRepeatReminderCommonValues(message, reminder, reminder.getReceiver().getLocale());
         message.append("\n").append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
         return message.toString();
@@ -173,8 +174,8 @@ public class ReminderMessageBuilder {
     public String getMySelfRepeatReminderSkipped(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderSkipped(reminder.getText())).append("\n");
-        appendRepeatReminderCommonValues(message, reminder);
+        message.append(messageBuilder.getReminderSkipped(reminder.getText(), reminder.getReceiver().getLocale())).append("\n");
+        appendRepeatReminderCommonValues(message, reminder, reminder.getReceiver().getLocale());
 
         return message.toString();
     }
@@ -183,21 +184,21 @@ public class ReminderMessageBuilder {
         StringBuilder message = new StringBuilder();
 
         message
-                .append(messageBuilder.getReminderDeleted(reminder.getText())).append("\n")
+                .append(messageBuilder.getReminderDeleted(reminder.getText(), reminder.getReceiver().getLocale())).append("\n")
                 .append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
         return message.toString();
     }
 
     public String getReminderDeletedForCreator(Reminder reminder) {
-        return messageBuilder.getReminderDeleted(reminder.getText());
+        return messageBuilder.getReminderDeleted(reminder.getText(), reminder.getReceiver().getLocale());
     }
 
     public String getRepeatReminderStoppedForReceiver(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderStopped(reminder.getText())).append("\n");
-        appendRepeatReminderCommonValues(message, reminder);
+        message.append(messageBuilder.getReminderStopped(reminder.getText(), reminder.getReceiver().getLocale())).append("\n");
+        appendRepeatReminderCommonValues(message, reminder, reminder.getReceiver().getLocale());
         message.append("\n").append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
         return message.toString();
@@ -206,8 +207,8 @@ public class ReminderMessageBuilder {
     public String getRepeatReminderStoppedForCreator(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderStopped(reminder.getText())).append("\n");
-        appendRepeatReminderCommonValues(message, reminder);
+        message.append(messageBuilder.getReminderStopped(reminder.getText(), reminder.getCreator().getLocale())).append("\n");
+        appendRepeatReminderCommonValues(message, reminder, reminder.getCreator().getLocale());
         message.append("\n").append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
 
         return message.toString();
@@ -216,8 +217,8 @@ public class ReminderMessageBuilder {
     public String getMySelfRepeatReminderStopped(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderStopped(reminder.getText())).append("\n");
-        appendRepeatReminderCommonValues(message, reminder);
+        message.append(messageBuilder.getReminderStopped(reminder.getText(), reminder.getReceiver().getLocale())).append("\n");
+        appendRepeatReminderCommonValues(message, reminder, reminder.getReceiver().getLocale());
 
         return message.toString();
     }
@@ -225,8 +226,8 @@ public class ReminderMessageBuilder {
     public String getRepeatReminderSkippedForReceiver(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderSkipped(reminder.getText())).append("\n");
-        appendRepeatReminderCommonValues(message, reminder);
+        message.append(messageBuilder.getReminderSkipped(reminder.getText(), reminder.getReceiver().getLocale())).append("\n");
+        appendRepeatReminderCommonValues(message, reminder, reminder.getReceiver().getLocale());
         message.append("\n").append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
 
         return message.toString();
@@ -235,8 +236,8 @@ public class ReminderMessageBuilder {
     public String getRepeatReminderReturnedForCreator(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderReturned(reminder.getText())).append("\n");
-        appendRepeatReminderCommonValues(message, reminder);
+        message.append(messageBuilder.getReminderReturned(reminder.getText(), reminder.getCreator().getLocale())).append("\n");
+        appendRepeatReminderCommonValues(message, reminder, reminder.getCreator().getLocale());
         message.append("\n").append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
 
         return message.toString();
@@ -245,15 +246,15 @@ public class ReminderMessageBuilder {
     public String getRepeatReminderSkippedForCreator(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderSkipped(reminder.getText())).append("\n");
-        appendRepeatReminderCommonValues(message, reminder);
+        message.append(messageBuilder.getReminderSkipped(reminder.getText(), reminder.getCreator().getLocale())).append("\n");
+        appendRepeatReminderCommonValues(message, reminder, reminder.getCreator().getLocale());
         message.append("\n").append(messageBuilder.getReminderReceiver(reminder.getCreator()));
 
         return message.toString();
     }
 
     public String getNewReminder(Reminder reminder, int messageReceiverId) {
-        return messageBuilder.getNewReminder(getReminderMessage(reminder, new Config().receiverId(messageReceiverId)));
+        return messageBuilder.getNewReminder(getReminderMessage(reminder, new Config().receiverId(messageReceiverId)), messageReceiverId == reminder.getReceiverId() ? reminder.getReceiver().getLocale() : reminder.getCreator().getLocale());
     }
 
     public String getCompletedRemindersList(int requesterId, List<Reminder> reminders) {
@@ -283,7 +284,7 @@ public class ReminderMessageBuilder {
         StringBuilder text = new StringBuilder();
 
         if (StringUtils.isNotBlank(header)) {
-            text.append(localisationService.getCurrentLocaleMessage(header)).append("\n\n");
+            text.append(localisationService.getCurrentLocaleMessage(header, null)).append("\n\n");
         }
 
         int i = 1;
@@ -292,7 +293,7 @@ public class ReminderMessageBuilder {
             text.append(number);
 
             if (reminder.isSuppressNotifications() && requesterId == reminder.getReceiverId()) {
-                text.append(localisationService.getCurrentLocaleMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI)).append(" ");
+                text.append(localisationService.getCurrentLocaleMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI, null)).append(" ");
             }
             text.append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder)).append(")\n");
 
@@ -328,8 +329,8 @@ public class ReminderMessageBuilder {
         return messageBuilder.getReminderTimeEditedReceiver(oldReminder.getCreator(), oldReminder.getText(), oldReminder.getRemindAtInReceiverZone(), newReminder.getRemindAtInReceiverZone(), oldReminder.getReceiver().getLocale());
     }
 
-    public String getReminderNoteChangedForReceiver(String text, String note, TgUser creator) {
-        return messageBuilder.getReminderNoteEditedReceiver(creator, text, note);
+    public String getReminderNoteChangedForReceiver(String text, String note, TgUser creator, Locale receiverLocale) {
+        return messageBuilder.getReminderNoteEditedReceiver(creator, text, note, receiverLocale);
     }
 
     public String getReminderPostponedForCreator(String text, TgUser receiver, DateTime remindAt, String reason, Locale creatorLocale) {
@@ -364,37 +365,37 @@ public class ReminderMessageBuilder {
         return messageBuilder.getReminderPostponed(text, remindAt, locale);
     }
 
-    public String getReminderNoteChangedReceiver(TgUser creator, String text, String note) {
-        return messageBuilder.getReminderNoteEditedReceiver(creator, text, note);
+    public String getReminderNoteChangedReceiver(TgUser creator, String text, String note, Locale receiverLocale) {
+        return messageBuilder.getReminderNoteEditedReceiver(creator, text, note, receiverLocale);
     }
 
     public String getCustomRemindText(CustomRemindResult customRemindResult) {
         ZoneId receiverZoneId = customRemindResult.getReceiverZoneId();
 
         if (customRemindResult.isStandard()) {
-            return messageBuilder.getCustomRemindCreated(customRemindResult.getZonedDateTime().withZoneSameInstant(receiverZoneId));
+            return messageBuilder.getCustomRemindCreated(customRemindResult.getZonedDateTime().withZoneSameInstant(receiverZoneId), customRemindResult.getReminder().getReceiver().getLocale());
         } else {
             return messageBuilder.getCustomRemindCreated(timeCreator.withZone(customRemindResult.getRepeatTimes(), receiverZoneId), customRemindResult.getReminder().getReceiver().getLocale());
         }
     }
 
-    public String getReminderNoteDeletedReceiver(TgUser creator, String text) {
-        return messageBuilder.getReminderNoteDeletedReceiver(creator, text);
+    public String getReminderNoteDeletedReceiver(Reminder reminder) {
+        return messageBuilder.getReminderNoteDeletedReceiver(reminder.getCreator(), reminder.getText(), reminder.getReceiver().getLocale());
     }
 
-    public String getReminderTextChanged(String oldText, String newText, TgUser creator) {
-        return messageBuilder.getReminderTextEditedReceiver(oldText, newText, creator);
+    public String getReminderTextChanged(String oldText, String newText, TgUser creator, Locale receiverLocale) {
+        return messageBuilder.getReminderTextEditedReceiver(oldText, newText, creator, receiverLocale);
     }
 
     public String getMySelfReminderCanceled(Reminder reminder) {
-        return messageBuilder.getReminderCanceled(reminder.getText());
+        return messageBuilder.getReminderCanceled(reminder.getText(), reminder.getReceiver().getLocale());
     }
 
     public String getReminderCanceledForReceiver(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
         message
-                .append(messageBuilder.getReminderCanceled(reminder.getText())).append("\n")
+                .append(messageBuilder.getReminderCanceled(reminder.getText(), reminder.getReceiver().getLocale())).append("\n")
                 .append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
         return message.toString();
@@ -404,7 +405,7 @@ public class ReminderMessageBuilder {
         StringBuilder message = new StringBuilder();
 
         message
-                .append(messageBuilder.getReminderCanceled(reminder.getText())).append("\n")
+                .append(messageBuilder.getReminderCanceled(reminder.getText(), reminder.getCreator().getLocale())).append("\n")
                 .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
 
         return message.toString();
@@ -413,7 +414,7 @@ public class ReminderMessageBuilder {
     public String getReminderDeactivatedReceiver(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderDeactivated(reminder.getText())).append("\n")
+        message.append(messageBuilder.getReminderDeactivated(reminder.getText(), reminder.getReceiver().getLocale())).append("\n")
                 .append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
         return message.toString();
@@ -422,14 +423,14 @@ public class ReminderMessageBuilder {
     public String getReminderActivatedReceiver(Reminder reminder) {
         StringBuilder message = new StringBuilder();
 
-        message.append(messageBuilder.getReminderActivated(reminder.getText())).append("\n")
+        message.append(messageBuilder.getReminderActivated(reminder.getText(), reminder.getReceiver().getLocale())).append("\n")
                 .append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
         return message.toString();
     }
 
     public String getReadReminderCreator(Reminder reminder) {
-        return messageBuilder.getReadReminderCreator(reminder.getReceiver(), reminder.getText());
+        return messageBuilder.getReadReminderCreator(reminder.getReceiver(), reminder.getText(), reminder.getCreator().getLocale());
     }
 
     public String getFullyUpdateMessageForReceiver(Reminder oldReminder, Reminder newReminder) {
@@ -437,13 +438,13 @@ public class ReminderMessageBuilder {
 
         if (diff.size() == 1) {
             if (diff.containsKey(ReminderTable.TABLE.TEXT)) {
-                return getReminderTextChanged(oldReminder.getText(), newReminder.getText(), oldReminder.getCreator());
+                return getReminderTextChanged(oldReminder.getText(), newReminder.getText(), oldReminder.getCreator(), oldReminder.getReceiver().getLocale());
             }
             if (diff.containsKey(ReminderTable.TABLE.NOTE)) {
                 if (diff.get(ReminderTable.TABLE.NOTE) == null) {
-                    return getReminderNoteDeletedReceiver(oldReminder.getCreator(), oldReminder.getText());
+                    return getReminderNoteDeletedReceiver(oldReminder);
                 } else {
-                    return getReminderNoteChangedReceiver(oldReminder.getCreator(), oldReminder.getText(), newReminder.getNote());
+                    return getReminderNoteChangedReceiver(oldReminder.getCreator(), oldReminder.getText(), newReminder.getNote(), oldReminder.getReceiver().getLocale());
                 }
             }
             if (diff.containsKey(ReminderTable.TABLE.REMIND_AT)) {
@@ -454,15 +455,15 @@ public class ReminderMessageBuilder {
             }
         } else {
             StringBuilder message = new StringBuilder();
-            message.append(messageBuilder.getReminderEditedReceiver(oldReminder.getCreator())).append("\n\n");
+            message.append(messageBuilder.getReminderEditedReceiver(oldReminder.getCreator(), oldReminder.getReceiver().getLocale())).append("\n\n");
             if (diff.containsKey(ReminderTable.TABLE.TEXT)) {
-                message.append(messageBuilder.getReminderTextEdited(oldReminder.getText(), newReminder.getText())).append("\n\n");
+                message.append(messageBuilder.getReminderTextEdited(oldReminder.getText(), newReminder.getText(), oldReminder.getReceiver().getLocale())).append("\n\n");
             }
             if (diff.containsKey(ReminderTable.TABLE.NOTE)) {
                 if (diff.get(ReminderTable.TABLE.NOTE) == null) {
-                    message.append(messageBuilder.getReminderNoteDeleted()).append("\n\n");
+                    message.append(messageBuilder.getReminderNoteDeleted(oldReminder.getReceiver().getLocale())).append("\n\n");
                 } else {
-                    message.append(messageBuilder.getReminderNoteEdited(newReminder.getNote())).append("\n\n");
+                    message.append(messageBuilder.getReminderNoteEdited(newReminder.getNote(), oldReminder.getReceiver().getLocale())).append("\n\n");
                 }
             }
             if (diff.containsKey(ReminderTable.TABLE.REMIND_AT)) {
@@ -491,15 +492,15 @@ public class ReminderMessageBuilder {
         return messageBuilder.getReminderTimeEdited(oldReminder.getRemindAtInReceiverZone(), newReminder.getRemindAtInReceiverZone(), oldReminder.getReceiver().getLocale());
     }
 
-    private void appendRepeatReminderCommonValues(StringBuilder message, Reminder reminder) {
+    private void appendRepeatReminderCommonValues(StringBuilder message, Reminder reminder, Locale locale) {
         message.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getReceiver().getLocale()));
 
         if (reminder.isCountSeries()) {
             message
                     .append("\n")
-                    .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries())).append("\n")
-                    .append(messageBuilder.getMaxSeries(reminder.getMaxSeries())).append("\n")
-                    .append(messageBuilder.getTotalSeries(reminder.getTotalSeries()));
+                    .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries(),  locale)).append("\n")
+                    .append(messageBuilder.getMaxSeries(reminder.getMaxSeries(), locale)).append("\n")
+                    .append(messageBuilder.getTotalSeries(reminder.getTotalSeries(), locale));
         }
     }
 

@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 
@@ -18,8 +19,11 @@ public class DeleteCompletedReminderCommand implements CallbackBotCommand {
 
     private ReminderMessageSender reminderMessageSender;
 
+    private LocalisationService localisationService;
+
     @Autowired
-    public DeleteCompletedReminderCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
+    public DeleteCompletedReminderCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender, LocalisationService localisationService) {
+        this.localisationService = localisationService;
         this.name = CommandNames.DELETE_COMPLETED_REMINDERS_COMMAND_NAME;
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
@@ -34,7 +38,7 @@ public class DeleteCompletedReminderCommand implements CallbackBotCommand {
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         reminderService.deleteMyCompletedReminders(callbackQuery.getFrom().getId());
 
-        reminderMessageSender.sendCompletedRemindersDeleted(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
+        reminderMessageSender.sendCompletedRemindersDeleted(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), localisationService.getCurrentLocale(callbackQuery.getFrom().getLanguageCode()));
 
         return null;
     }

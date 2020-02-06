@@ -13,6 +13,7 @@ import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -20,6 +21,8 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
+
+import java.util.Locale;
 
 @Component
 public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
@@ -38,19 +41,22 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableC
 
     private final LocalisationService localisationService;
 
+    private TgUserService userService;
+
     @Autowired
     public ChangeReminderNoteCommand(CommandStateService stateService,
                                      ReminderMessageSender reminderMessageSender,
                                      MessageService messageService,
                                      ReminderService reminderService,
                                      InlineKeyboardService inlineKeyboardService,
-                                     LocalisationService localisationService) {
+                                     LocalisationService localisationService, TgUserService userService) {
         this.stateService = stateService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.localisationService = localisationService;
         this.reminderMessageSender = reminderMessageSender;
         this.messageService = messageService;
         this.reminderService = reminderService;
+        this.userService = userService;
     }
 
     @Autowired
@@ -72,10 +78,11 @@ public class ChangeReminderNoteCommand implements CallbackBotCommand, NavigableC
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams, null));
 
+        Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_EDIT_NOTE))
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, requestParams))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_EDIT_NOTE, locale))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, requestParams, locale))
         );
 
         return MessagesProperties.MESSAGE_REMINDER_NOTE_ANSWER;

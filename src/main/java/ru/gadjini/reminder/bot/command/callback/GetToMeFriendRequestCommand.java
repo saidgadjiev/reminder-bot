@@ -9,6 +9,7 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -23,11 +24,14 @@ public class GetToMeFriendRequestCommand implements CallbackBotCommand {
 
     private InlineKeyboardService inlineKeyboardService;
 
+    private TgUserService userService;
+
     @Autowired
-    public GetToMeFriendRequestCommand(FriendshipService friendshipService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
+    public GetToMeFriendRequestCommand(FriendshipService friendshipService, MessageService messageService, InlineKeyboardService inlineKeyboardService, TgUserService userService) {
         this.friendshipService = friendshipService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
+        this.userService = userService;
     }
 
     @Override
@@ -43,7 +47,7 @@ public class GetToMeFriendRequestCommand implements CallbackBotCommand {
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(UserUtils.userLink(mayBeFriend))
-                        .replyKeyboard(inlineKeyboardService.getFriendRequestKeyboard(friendId))
+                        .replyKeyboard(inlineKeyboardService.getFriendRequestKeyboard(friendId, userService.getLocale(callbackQuery.getFrom().getId())))
         );
         return null;
     }

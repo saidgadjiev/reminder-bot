@@ -69,7 +69,7 @@ public class ReceiverReminderCommand implements CallbackBotCommand, NavigableCal
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(tgMessage.getChatId())
-                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_HOW_HELP))
+                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_HOW_HELP, localisationService.getCurrentLocale(tgMessage.getUser().getLanguageCode())))
                             .replyKeyboard(replyKeyboard)
             );
         }

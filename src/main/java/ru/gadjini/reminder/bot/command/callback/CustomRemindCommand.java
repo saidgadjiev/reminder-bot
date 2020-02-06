@@ -13,6 +13,7 @@ import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -40,19 +41,22 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
 
     private LocalisationService localisationService;
 
+    private TgUserService userService;
+
     @Autowired
     public CustomRemindCommand(CommandStateService stateService,
                                MessageService messageService,
                                InlineKeyboardService inlineKeyboardService,
                                ReminderRequestService reminderService,
                                ReminderNotificationMessageSender reminderMessageSender,
-                               LocalisationService localisationService) {
+                               LocalisationService localisationService, TgUserService userService) {
         this.stateService = stateService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
         this.localisationService = localisationService;
+        this.userService = userService;
     }
 
     @Autowired
@@ -78,8 +82,8 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
 
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND))
-                        .replyKeyboard(inlineKeyboardService.getCustomRemindKeyboard(prevHistoryName, requestParams))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND, localisationService.getCurrentLocale(callbackQuery.getFrom().getLanguageCode())))
+                        .replyKeyboard(inlineKeyboardService.getCustomRemindKeyboard(prevHistoryName, requestParams, userService.getLocale(callbackQuery.getFrom().getId())))
         );
 
         return MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION;

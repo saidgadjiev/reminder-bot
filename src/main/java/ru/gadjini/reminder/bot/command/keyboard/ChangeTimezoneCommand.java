@@ -85,7 +85,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                         .text(localisationService.getCurrentLocaleMessage(MessagesProperties.CURRENT_TIMEZONE, new Object[]{
                                 zoneId.getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale(message.getFrom().getLanguageCode())),
                                 DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(zoneId))
-                        })).replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
+                        }, localisationService.getCurrentLocale(message.getFrom().getLanguageCode()))).replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
         );
 
         return true;
@@ -114,7 +114,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                             .text(localisationService.getCurrentLocaleMessage(MessagesProperties.TIMEZONE_CHANGED, new Object[]{
                                     zoneId.getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale(message.getFrom().getLanguageCode())),
                                     DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(zoneId))
-                            })).replyKeyboard(replyKeyboardMarkup)
+                            }, localisationService.getCurrentLocale(message.getFrom().getLanguageCode()))).replyKeyboard(replyKeyboardMarkup)
             );
         });
     }

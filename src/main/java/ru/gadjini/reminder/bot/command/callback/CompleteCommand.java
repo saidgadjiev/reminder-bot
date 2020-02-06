@@ -51,7 +51,7 @@ public class CompleteCommand implements CallbackBotCommand {
 
     private String doCompleteFromList(Reminder reminder, long chatId, int messageId, InlineKeyboardMarkup inlineKeyboardMarkup) {
         if (reminder == null) {
-            reminderMessageSender.sendReminderCantBeCompletedFromList(chatId, messageId);
+            reminderMessageSender.sendReminderCantBeCompletedFromList((int) chatId, messageId);
 
             return MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED;
         } else {

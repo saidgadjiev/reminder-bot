@@ -99,7 +99,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     @Override
     public boolean processMessage(Message message, String text) {
-        FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(message.getFrom().getId(), text, message.hasVoice());
+        FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(message.getFrom().getId(), text, message.hasVoice(), null);
 
         if (StringUtils.isBlank(extractReceiverResult.getText())) {
             TgUser receiver = extractReceiverResult.getReceiver();
@@ -140,7 +140,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     @Override
     public void processEditedMessage(Message editedMessage, String text) {
-        FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(editedMessage.getFrom().getId(), text, editedMessage.hasVoice());
+        FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(editedMessage.getFrom().getId(), text, editedMessage.hasVoice(), localisationService.getCurrentLocale(editedMessage.getFrom().getLanguageCode()));
 
         if (StringUtils.isNotBlank(extractReceiverResult.getText())) {
             UpdateReminderResult updateReminderResult = reminderRequestService.updateReminder(editedMessage.getMessageId(), editedMessage.getFrom(), extractReceiverResult.getText());

@@ -35,7 +35,7 @@ public class GoBackCommand implements KeyboardBotCommand {
 
     @Override
     public boolean processMessage(Message message, String text) {
-        commandNavigator.pop(message.getChatId());
+        commandNavigator.pop(message);
 
         return false;
     }

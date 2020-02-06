@@ -76,7 +76,7 @@ public class ReminderNotificationMessageSender {
                         .text(text)
                         .replyKeyboard(inlineKeyboardService.getReminderTimesListKeyboard(
                                 customRemindResult.getReminderNotifications().stream().map(ReminderNotification::getId).collect(Collectors.toList()),
-                                customRemindResult.getReminder().getId())
+                                customRemindResult.getReminder().getId(), null)
                         )
         );
     }

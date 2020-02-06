@@ -12,6 +12,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -43,16 +44,19 @@ public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCo
 
     private ReminderMessageSender reminderMessageSender;
 
+    private TgUserService userService;
+
     @Autowired
     public CreateReminderCommand(LocalisationService localisationService, SavedQueryService savedQueryService,
                                  CurrReplyKeyboard replyKeyboardService, MessageService messageService,
-                                 ReminderRequestService reminderRequestService, ReminderMessageSender reminderMessageSender) {
+                                 ReminderRequestService reminderRequestService, ReminderMessageSender reminderMessageSender, TgUserService userService) {
         this.localisationService = localisationService;
         this.savedQueryService = savedQueryService;
         this.replyKeyboardService = replyKeyboardService;
         this.messageService = messageService;
         this.reminderRequestService = reminderRequestService;
         this.reminderMessageSender = reminderMessageSender;
+        this.userService = userService;
 
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.names.add(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME, locale));
@@ -77,7 +81,7 @@ public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCo
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CREATE_REMINDER))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CREATE_REMINDER, userService.getLocale(message.getFrom().getId())))
                         .replyKeyboard(savedQueriesKeyboard)
         );
 

@@ -54,8 +54,8 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
         TgUser friend = friendshipService.getFriend(callbackQuery.getFrom().getId(), friendUserId);
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(friendshipMessageBuilder.getFriendDetails(friend))
-                        .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendUserId))
+                        .text(friendshipMessageBuilder.getFriendDetails(friend, localisationService.getCurrentLocale(callbackQuery.getFrom().getLanguageCode())))
+                        .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendUserId, null))
         );
         return null;
     }
@@ -70,16 +70,16 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
                     new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(tgMessage.getChatId())
                             .messageId(tgMessage.getMessageId())
-                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_NOT_FOUND))
-                            .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendUserId))
+                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_NOT_FOUND, localisationService.getCurrentLocale(tgMessage.getUser().getLanguageCode())))
+                            .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendUserId, null))
             );
         } else {
             messageService.editMessageAsync(
                     new EditMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(tgMessage.getChatId())
                             .messageId(tgMessage.getMessageId())
-                            .text(friendshipMessageBuilder.getFriendDetails(friend))
-                            .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendUserId))
+                            .text(friendshipMessageBuilder.getFriendDetails(friend, localisationService.getCurrentLocale(tgMessage.getUser().getLanguageCode())))
+                            .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friendUserId, null))
             );
         }
     }

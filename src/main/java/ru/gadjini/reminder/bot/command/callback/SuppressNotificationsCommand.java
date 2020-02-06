@@ -77,7 +77,7 @@ public class SuppressNotificationsCommand implements CallbackBotCommand {
                             .chatId(callbackQuery.getMessage().getChatId())
                             .messageId(callbackQuery.getMessage().getMessageId())
                             .text(reminderNotificationMessageBuilder.getReminderNotifications(Collections.emptyList()))
-                            .replyKeyboard(inlineKeyboardService.getReminderTimesListKeyboard(Collections.emptyList(), reminderId))
+                            .replyKeyboard(inlineKeyboardService.getReminderTimesListKeyboard(Collections.emptyList(), reminderId, null))
             );
         }
 

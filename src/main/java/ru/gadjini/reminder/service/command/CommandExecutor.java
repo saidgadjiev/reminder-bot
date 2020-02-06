@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.*;
 import ru.gadjini.reminder.model.AnswerCallbackContext;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
@@ -33,12 +34,15 @@ public class CommandExecutor {
 
     private MessageService messageService;
 
+    private TgUserService userService;
+
     private LocalisationService localisationService;
 
     @Autowired
-    public CommandExecutor(CommandParser commandParser, MessageService messageService, LocalisationService localisationService) {
+    public CommandExecutor(CommandParser commandParser, MessageService messageService, TgUserService userService, LocalisationService localisationService) {
         this.commandParser = commandParser;
         this.messageService = messageService;
+        this.userService = userService;
         this.localisationService = localisationService;
     }
 
@@ -135,7 +139,7 @@ public class CommandExecutor {
         sendAction(callbackQuery.getMessage().getChatId(), botCommand);
         String callbackAnswer = botCommand.processMessage(callbackQuery, parseResult.getRequestParams());
         if (StringUtils.isNotBlank(callbackAnswer)) {
-            messageService.sendAnswerCallbackQuery(new AnswerCallbackContext().queryId(callbackQuery.getId()).text(localisationService.getCurrentLocaleMessage(callbackAnswer)));
+            messageService.sendAnswerCallbackQuery(new AnswerCallbackContext().queryId(callbackQuery.getId()).text(localisationService.getCurrentLocaleMessage(callbackAnswer, userService.getLocale(callbackQuery.getFrom().getId()))));
         }
 
         if (botCommand instanceof NavigableCallbackBotCommand) {

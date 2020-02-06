@@ -11,6 +11,8 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 
+import java.util.Locale;
+
 @Component
 public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
 
@@ -43,14 +45,14 @@ public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
 
                 return reminderRequest;
             } catch (ParseException ex) {
-                throw new UserException(getMessage(context.getText(), context.isVoice()));
+                throw new UserException(getMessage(context.getText(), context.isVoice(), receiver.getLocale()));
             }
         }
 
         return super.extract(context);
     }
 
-    private String getMessage(String text, boolean voice) {
-        return voice ? localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT_VOICE, new Object[] {text}) : localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT);
+    private String getMessage(String text, boolean voice, Locale locale) {
+        return voice ? localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT_VOICE, new Object[] {text}, locale) : localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, locale);
     }
 }

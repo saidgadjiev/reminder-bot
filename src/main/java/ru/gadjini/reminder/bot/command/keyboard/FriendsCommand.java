@@ -14,6 +14,7 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -37,15 +38,18 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
 
     private MessageService messageService;
 
+    private TgUserService userService;
+
     private Set<String> names = new HashSet<>();
 
     @Autowired
     public FriendsCommand(InlineKeyboardService inlineKeyboardService, FriendshipMessageBuilder friendshipMessageBuilder,
-                          FriendshipService friendshipService, MessageService messageService, LocalisationService localisationService) {
+                          FriendshipService friendshipService, MessageService messageService, LocalisationService localisationService, TgUserService userService) {
         this.inlineKeyboardService = inlineKeyboardService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
+        this.userService = userService;
 
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.names.add(localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME, locale));
@@ -64,7 +68,7 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null))
+                        .text(friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null, userService.getLocale(message.getFrom().getId())))
                         .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.FRIEND_DETAILS_COMMAND_NAME))
         );
 
@@ -84,7 +88,7 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
-                        .text(friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null))
+                        .text(friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null, userService.getLocale(tgMessage.getUser().getId())))
                         .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.FRIEND_DETAILS_COMMAND_NAME))
         );
     }

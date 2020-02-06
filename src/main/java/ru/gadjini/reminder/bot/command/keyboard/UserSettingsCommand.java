@@ -10,6 +10,7 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -30,11 +31,14 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
 
     private ReplyKeyboardService replyKeyboardService;
 
+    private TgUserService userService;
+
     @Autowired
-    public UserSettingsCommand(LocalisationService localisationService, MessageService messageService, CurrReplyKeyboard replyKeyboardService) {
+    public UserSettingsCommand(LocalisationService localisationService, MessageService messageService, CurrReplyKeyboard replyKeyboardService, TgUserService userService) {
         this.localisationService = localisationService;
         this.messageService = messageService;
         this.replyKeyboardService = replyKeyboardService;
+        this.userService = userService;
 
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.names.add(localisationService.getMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME, locale));
@@ -51,7 +55,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_SETTINGS))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_SETTINGS, userService.getLocale(message.getFrom().getId())))
                         .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(message.getChatId()))
         );
         return true;
@@ -63,12 +67,12 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
     }
 
     @Override
-    public void restore(long chatId) {
+    public void restore(Message message) {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
-                        .chatId(chatId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_SETTINGS))
-                        .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(chatId))
+                        .chatId(message.getChatId())
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_SETTINGS, userService.getLocale(message.getFrom().getId())))
+                        .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(message.getChatId()))
         );
     }
 

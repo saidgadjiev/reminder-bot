@@ -52,7 +52,7 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(reminderNotificationMessageBuilder.getReminderNotifications(reminderNotifications))
-                        .replyKeyboard(inlineKeyboardService.getReminderTimesListKeyboard(reminderNotifications.stream().map(ReminderNotification::getId).collect(Collectors.toList()), requestParams.getInt(Arg.REMINDER_ID.getKey())))
+                        .replyKeyboard(inlineKeyboardService.getReminderTimesListKeyboard(reminderNotifications.stream().map(ReminderNotification::getId).collect(Collectors.toList()), requestParams.getInt(Arg.REMINDER_ID.getKey()), null))
         );
         return null;
     }
@@ -66,7 +66,7 @@ public class ReminderTimeScheduleCommand implements CallbackBotCommand, Navigabl
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
                         .text(reminderNotificationMessageBuilder.getReminderNotifications(reminderNotifications))
-                        .replyKeyboard(inlineKeyboardService.getReminderTimesListKeyboard(reminderNotifications.stream().map(ReminderNotification::getId).collect(Collectors.toList()), requestParams.getInt(Arg.REMINDER_ID.getKey())))
+                        .replyKeyboard(inlineKeyboardService.getReminderTimesListKeyboard(reminderNotifications.stream().map(ReminderNotification::getId).collect(Collectors.toList()), requestParams.getInt(Arg.REMINDER_ID.getKey()), null))
         );
     }
 }

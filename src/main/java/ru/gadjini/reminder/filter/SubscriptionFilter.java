@@ -12,6 +12,7 @@ import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.properties.SubscriptionProperties;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.declension.TimeDeclensionProvider;
 import ru.gadjini.reminder.service.declension.TimeDeclensionService;
@@ -27,6 +28,7 @@ import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZoneId;
 import java.time.format.TextStyle;
+import java.util.Locale;
 
 //@Component
 public class SubscriptionFilter extends BaseBotFilter {
@@ -53,13 +55,15 @@ public class SubscriptionFilter extends BaseBotFilter {
 
     private TimeCreator timeCreator;
 
+    private TgUserService userService;
+
     @Autowired
     public SubscriptionFilter(MessageService messageService,
                               LocalisationService localisationService, SubscriptionService subscriptionService,
                               PlanService planService, CurrReplyKeyboard replyKeyboardService,
                               InlineKeyboardService inlineKeyboardService, PaymentMessageService paymentMessageService,
                               SubscriptionProperties subscriptionProperties, TimeDeclensionProvider timeDeclensionProvider,
-                              CommandNavigator commandNavigator, TimeCreator timeCreator) {
+                              CommandNavigator commandNavigator, TimeCreator timeCreator, TgUserService userService) {
         this.messageService = messageService;
         this.localisationService = localisationService;
         this.subscriptionService = subscriptionService;
@@ -71,6 +75,7 @@ public class SubscriptionFilter extends BaseBotFilter {
         this.timeDeclensionProvider = timeDeclensionProvider;
         this.commandNavigator = commandNavigator;
         this.timeCreator = timeCreator;
+        this.userService = userService;
     }
 
     @Override
@@ -115,16 +120,17 @@ public class SubscriptionFilter extends BaseBotFilter {
                                         new Object[]{
                                                 declensionService.day(subscriptionProperties.getTrialPeriod()),
                                                 ZoneId.of(ReminderConstants.DEFAULT_TIMEZONE).getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale(user.getLanguageCode()))
-                                        })
+                                        }, localisationService.getCurrentLocale(user.getLanguageCode()))
                         ).replyKeyboard(replyKeyboardService.getMainMenu(userId, userId))
         );
     }
 
     private void sendSubscriptionExpired(int userId) {
+        Locale locale = userService.getLocale(userId);
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_EXPIRED))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_EXPIRED, locale))
                         .replyKeyboard(replyKeyboardService.removeKeyboard(userId))
         );
 
@@ -137,13 +143,13 @@ public class SubscriptionFilter extends BaseBotFilter {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
-                        .text(getNeedPayMessage(plan.getDescription()))
+                        .text(getNeedPayMessage(plan.getDescription(), locale))
                         .replyKeyboard(inlineKeyboardService.getPaymentKeyboard(userId, plan.getId())),
                 message -> paymentMessageService.create(userId, message.getMessageId())
         );
     }
 
-    private String getNeedPayMessage(String planDesc) {
-        return planDesc + "\n\n" + localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CHOOSE_PAYMENT_TYPE);
+    private String getNeedPayMessage(String planDesc, Locale locale) {
+        return planDesc + "\n\n" + localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CHOOSE_PAYMENT_TYPE, locale);
     }
 }

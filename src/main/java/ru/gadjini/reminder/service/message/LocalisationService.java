@@ -3,9 +3,8 @@ package ru.gadjini.reminder.service.message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.User;
-import ru.gadjini.reminder.service.context.UserContextResolver;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Locale;
 
@@ -21,16 +20,16 @@ public class LocalisationService {
         this.messageSource = messageSource;
     }
 
-    public String getMessage(String messageCode, Locale locale) {
+    public String getMessage(String messageCode, @Nonnull Locale locale) {
         return messageSource.getMessage(messageCode, null, locale);
     }
 
-    public String getCurrentLocaleMessage(String messageCode) {
-        return getCurrentLocaleMessage(messageCode, null);
+    public String getCurrentLocaleMessage(String messageCode, @Nonnull Locale locale) {
+        return getCurrentLocaleMessage(messageCode, null, locale);
     }
 
-    public String getCurrentLocaleMessage(String messageCode, Object[] args) {
-        return messageSource.getMessage(messageCode, args, getCurrentLocale(null));
+    public String getCurrentLocaleMessage(String messageCode, Object[] args, @Nonnull Locale locale) {
+        return messageSource.getMessage(messageCode, args, locale);
     }
 
     public List<Locale> getSupportedLocales() {
@@ -41,7 +40,7 @@ public class LocalisationService {
         return Locale.getDefault();
     }
 
-    public Locale getCurrentLocale(String languageCode) {
+    public Locale getCurrentLocale(@Nonnull String languageCode) {
         for (Locale locale: getSupportedLocales()) {
             if (locale.getLanguage().equals(languageCode)) {
                 return locale;

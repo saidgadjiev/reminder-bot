@@ -19,6 +19,7 @@ import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.WebMoneyPayment;
 import ru.gadjini.reminder.properties.BotProperties;
 import ru.gadjini.reminder.properties.WebHookProperties;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
@@ -60,10 +61,12 @@ public class WebMoneyController {
 
     private CommandNavigator commandNavigator;
 
+    private TgUserService userService;
+
     @Autowired
     public WebMoneyController(CurrReplyKeyboard replyKeyboardService, PaymentService paymentService,
                               MessageService messageService, LocalisationService localisationService,
-                              BotProperties botProperties, WebHookProperties webHookProperties, CommandNavigator commandNavigator) {
+                              BotProperties botProperties, WebHookProperties webHookProperties, CommandNavigator commandNavigator, TgUserService userService) {
         this.replyKeyboardService = replyKeyboardService;
         this.paymentService = paymentService;
         this.messageService = messageService;
@@ -71,6 +74,7 @@ public class WebMoneyController {
         this.botProperties = botProperties;
         this.webHookProperties = webHookProperties;
         this.commandNavigator = commandNavigator;
+        this.userService = userService;
 
         LOGGER.debug("WebMoneyController initialized");
     }
@@ -83,8 +87,8 @@ public class WebMoneyController {
         return Map.of(
                 FAIL, fail,
                 TEMPLATE, "payment_result.ftl",
-                PAYMENT_RESULT, localisationService.getCurrentLocaleMessage(fail ? MessagesProperties.MESSAGE_PAYMENT_FAIL : MessagesProperties.MESSAGE_PAYMENT_SUCCESS),
-                REDIRECT, localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TELEGRAM_REDIRECT),
+                PAYMENT_RESULT, localisationService.getCurrentLocaleMessage(fail ? MessagesProperties.MESSAGE_PAYMENT_FAIL : MessagesProperties.MESSAGE_PAYMENT_SUCCESS, localisationService.getDefaultLocale()),
+                REDIRECT, localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TELEGRAM_REDIRECT, localisationService.getDefaultLocale()),
                 BOT_NAME, botProperties.getName()
         );
     }
@@ -100,7 +104,7 @@ public class WebMoneyController {
     @Path("/fail")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response fail(@FormParam("user_id") int userId) {
-        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(userId).text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_PAYMENT_FAIL)));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(userId).text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_PAYMENT_FAIL, localisationService.getDefaultLocale())));
 
         return Response.seeOther(URI.create(redirectUrl(true))).build();
     }
@@ -196,7 +200,7 @@ public class WebMoneyController {
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(userId)
-                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}))
+                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}, userService.getLocale(userId)))
                             .replyKeyboard(replyKeyboardService.getMainMenu(userId, userId))
             );
             commandNavigator.setCurrentCommand(userId, CommandNames.START_COMMAND_NAME);

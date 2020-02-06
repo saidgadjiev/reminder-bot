@@ -9,6 +9,7 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -27,13 +28,16 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
 
     private final LocalisationService localisationService;
 
+    private TgUserService userService;
+
     private Set<String> names = new HashSet<>();
 
     @Autowired
-    public FriendRequestsCommand(CurrReplyKeyboard replyKeyboardService, MessageService messageService, LocalisationService localisationService) {
+    public FriendRequestsCommand(CurrReplyKeyboard replyKeyboardService, MessageService messageService, LocalisationService localisationService, TgUserService userService) {
         this.replyKeyboardService = replyKeyboardService;
         this.messageService = messageService;
         this.localisationService = localisationService;
+        this.userService = userService;
 
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.names.add(localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME, locale));
@@ -50,7 +54,7 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_REQUESTS))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_REQUESTS, userService.getLocale(message.getFrom().getId())))
                         .replyKeyboard(replyKeyboardService.getFriendRequestsKeyboard(message.getChatId()))
         );
 
