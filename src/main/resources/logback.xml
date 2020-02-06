@@ -20,6 +20,11 @@
         </encoder>
     </appender>
 
+    <logger name="org.springframework.jdbc.core" level="TRACE">
+        <appender-ref ref="TIME_BASED_FILE" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+
     <logger name="ru" level="DEBUG">
         <appender-ref ref="TIME_BASED_FILE" />
         <appender-ref ref="STDOUT" />

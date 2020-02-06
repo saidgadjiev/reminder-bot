@@ -90,7 +90,7 @@ public class ReminderJob {
         LOGGER.debug("Move reminders finished at {}", LocalDateTime.now());
     }
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 10 * 1000)
     public void sendReminders() {
         List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now().minusSeconds(8), 30);
 
