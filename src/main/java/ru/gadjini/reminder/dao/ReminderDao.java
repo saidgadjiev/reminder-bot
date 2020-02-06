@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.jooq.FriendshipTable;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.jooq.TgUserTable;
@@ -176,11 +175,6 @@ public class ReminderDao {
                     reminder.getReminderNotifications().add(resultSetMapper.mapReminderTime(rs, "rt_"));
                 }
         );
-        reminders.forEach((integer, reminder) -> {
-            if (reminder.getReminderNotifications().stream().noneMatch(ReminderNotification::isCustom)) {
-                reminder.setSuppressNotifications(true);
-            }
-        });
 
         return new ArrayList<>(reminders.values());
     }

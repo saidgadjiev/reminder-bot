@@ -13,37 +13,37 @@ import java.util.Map;
 @Component
 public class TimeLexerConfig {
 
-    private Map<Locale, GroupPattern> timePatterns = new HashMap<>();
+    private Map<String, GroupPattern> timePatterns = new HashMap<>();
 
-    private final Map<Locale, GroupPattern> repeatTimePatterns = new HashMap<>();
+    private final Map<String, GroupPattern> repeatTimePatterns = new HashMap<>();
 
-    private final Map<Locale, GroupPattern> offsetTimePatterns = new HashMap<>();
+    private final Map<String, GroupPattern> offsetTimePatterns = new HashMap<>();
 
-    private final Map<Locale, GroupPattern> repeatWordPatterns = new HashMap<>();
+    private final Map<String, GroupPattern> repeatWordPatterns = new HashMap<>();
 
     @Autowired
     public TimeLexerConfig(LocalisationService localisationService, PatternBuilder patternBuilder) {
         for (Locale locale : localisationService.getSupportedLocales()) {
-            timePatterns.put(locale, patternBuilder.buildTimePattern(locale));
-            repeatTimePatterns.put(locale, patternBuilder.buildRepeatTimePattern(locale));
-            offsetTimePatterns.put(locale, patternBuilder.buildOffsetTimePattern(locale));
-            repeatWordPatterns.put(locale, patternBuilder.buildRepeatWordPattern(locale));
+            timePatterns.put(locale.getLanguage(), patternBuilder.buildTimePattern(locale));
+            repeatTimePatterns.put(locale.getLanguage(), patternBuilder.buildRepeatTimePattern(locale));
+            offsetTimePatterns.put(locale.getLanguage(), patternBuilder.buildOffsetTimePattern(locale));
+            repeatWordPatterns.put(locale.getLanguage(), patternBuilder.buildRepeatWordPattern(locale));
         }
     }
 
     public GroupPattern getTimePattern(Locale locale) {
-        return timePatterns.get(locale);
+        return timePatterns.get(locale.getLanguage());
     }
 
     public GroupPattern getRepeatTimePattern(Locale locale) {
-        return repeatTimePatterns.get(locale);
+        return repeatTimePatterns.get(locale.getLanguage());
     }
 
     public GroupPattern getOffsetTimePattern(Locale locale) {
-        return offsetTimePatterns.get(locale);
+        return offsetTimePatterns.get(locale.getLanguage());
     }
 
     public GroupPattern getRepeatWordPattern(Locale locale) {
-        return repeatWordPatterns.get(locale);
+        return repeatWordPatterns.get(locale.getLanguage());
     }
 }

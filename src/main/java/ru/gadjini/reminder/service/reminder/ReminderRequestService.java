@@ -178,7 +178,7 @@ public class ReminderRequestService {
                 .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME))));
 
         Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone(), oldReminder.getReceiver().getLocale());
-        validatorFactory.getValidator(ValidatorType.REMINDER_TIME_VALIDATOR).validate(new ValidationContext().time(newReminderTimeInReceiverZone));
+        validatorFactory.getValidator(ValidatorType.REMINDER_TIME_VALIDATOR).validate(new ValidationContext().time(newReminderTimeInReceiverZone).reminder(oldReminder));
 
         Reminder newReminder = new Reminder(oldReminder);
         Reminder changed;

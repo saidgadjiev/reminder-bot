@@ -234,7 +234,7 @@ public class InlineKeyboardService {
             inlineKeyboardMarkup.getKeyboard().add(row);
         }
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.getActiveRemindersButton(MessagesProperties.TODAY_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderDao.Filter.TODAY, locale), buttonFactory.getActiveRemindersButton(MessagesProperties.ALL_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderDao.Filter.ALL, locale)));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, null, locale)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, locale)));
 
         return inlineKeyboardMarkup;
     }
@@ -244,7 +244,7 @@ public class InlineKeyboardService {
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteCompletedRemindersButton(locale)));
         if (prevHistoryName != null) {
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, null, locale)));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, locale)));
         }
 
         return inlineKeyboardMarkup;
@@ -253,7 +253,7 @@ public class InlineKeyboardService {
     public InlineKeyboardMarkup getEmptyRemindersListKeyboard(String prevHistoryName, Locale locale) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, null, locale)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, locale)));
 
         return inlineKeyboardMarkup;
     }
@@ -262,7 +262,7 @@ public class InlineKeyboardService {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.getActiveRemindersButton(MessagesProperties.TODAY_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderDao.Filter.TODAY, locale), buttonFactory.getActiveRemindersButton(MessagesProperties.ALL_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderDao.Filter.ALL, locale)));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, null, locale)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, locale)));
 
         return inlineKeyboardMarkup;
     }
@@ -340,7 +340,7 @@ public class InlineKeyboardService {
         );
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.changeFriendNameButton(friendUserId, locale)));
         inlineKeyboardMarkup.getKeyboard().add(List.of(
-                buttonFactory.goBackCallbackButton(CommandNames.GET_FRIENDS_COMMAND_HISTORY_NAME, null, locale)
+                buttonFactory.goBackCallbackButton(CommandNames.GET_FRIENDS_COMMAND_HISTORY_NAME, locale)
         ));
 
         return inlineKeyboardMarkup;
@@ -353,7 +353,7 @@ public class InlineKeyboardService {
                 buttonFactory.acceptFriendRequestButton(friendUserId, locale),
                 buttonFactory.rejectFriendRequestButton(friendUserId, locale)
         ));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME, null, locale)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME, locale)));
 
         return inlineKeyboardMarkup;
     }
@@ -361,7 +361,7 @@ public class InlineKeyboardService {
     public InlineKeyboardMarkup goBackCallbackButton(String prevHistoryName, Locale locale) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, null, locale)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, locale)));
 
         return inlineKeyboardMarkup;
     }

@@ -38,7 +38,7 @@ public class CreateReminderValidator implements Validator {
         } else if (validationContext.reminderRequest().getReceiverId() != null) {
             checkFriendShip(validationContext.currentUser().getId(), validationContext.reminderRequest().getReceiverId(), validationContext.reminderRequest().getLocale());
         }
-        reminderTimeValidator.validate(new ValidationContext().time(validationContext.reminderRequest().getTime()));
+        reminderTimeValidator.validate(new ValidationContext().time(validationContext.reminderRequest().getTime()).locale(validationContext.reminderRequest().getLocale()));
     }
 
     private void checkFriendShip(int userId, String receiverName, Locale locale) {

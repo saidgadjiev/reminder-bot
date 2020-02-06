@@ -31,6 +31,15 @@ public class ButtonFactory {
         return button;
     }
 
+    public InlineKeyboardButton goBackCallbackButton(String prevHistoryName, Locale locale) {
+        Objects.requireNonNull(prevHistoryName);
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_CALLBACK_COMMAND_DESCRIPTION, locale));
+        button.setCallbackData(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams().add(Arg.PREV_HISTORY_NAME.getKey(), prevHistoryName).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
+
     public InlineKeyboardButton goBackCallbackButton(String prevHistoryName, RequestParams requestParams, Locale locale) {
         Objects.requireNonNull(prevHistoryName);
         requestParams.add(Arg.PREV_HISTORY_NAME.getKey(), prevHistoryName);

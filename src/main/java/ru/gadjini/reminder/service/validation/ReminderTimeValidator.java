@@ -34,7 +34,7 @@ public class ReminderTimeValidator implements Validator {
 
     @Override
     public void validate(ValidationContext validationContext) {
-        validate(validationContext.time(), validationContext.reminder().getReceiver().getLocale());
+        validate(validationContext.time(), validationContext.locale());
     }
 
     private void validate(Time time, Locale locale) {

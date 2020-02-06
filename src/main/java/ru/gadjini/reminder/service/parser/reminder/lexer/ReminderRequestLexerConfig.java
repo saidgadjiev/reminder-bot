@@ -17,16 +17,16 @@ public class ReminderRequestLexerConfig {
 
     private static final String DEFAULT_NOTE_START = ";";
 
-    private Map<Locale, String> textAndNoteBreakPatterns = new HashMap<>();
+    private Map<String, String> textAndNoteBreakPatterns = new HashMap<>();
 
     @Autowired
     public ReminderRequestLexerConfig(LocalisationService localisationService) {
         for (Locale locale: localisationService.getSupportedLocales()) {
-            textAndNoteBreakPatterns.put(locale, localisationService.getMessage(MessagesProperties.REGEXP_NOTE_START, locale) + "|" + DEFAULT_NOTE_START);
+            textAndNoteBreakPatterns.put(locale.getLanguage(), localisationService.getMessage(MessagesProperties.REGEXP_NOTE_START, locale) + "|" + DEFAULT_NOTE_START);
         }
     }
 
     public String getTextAndNoteBreakPattern(Locale locale) {
-        return textAndNoteBreakPatterns.get(locale);
+        return textAndNoteBreakPatterns.get(locale.getLanguage());
     }
 }

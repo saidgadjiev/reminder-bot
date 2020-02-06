@@ -14,7 +14,7 @@ public class DayOfWeekService {
 
     private final LocalisationService localisationService;
 
-    private Map<Locale, Map<String, Pattern>> patternsByLocale = new HashMap<>();
+    private Map<String, Map<String, Pattern>> patternsByLocale = new HashMap<>();
 
     @Autowired
     public DayOfWeekService(LocalisationService localisationService) {
@@ -25,7 +25,7 @@ public class DayOfWeekService {
                 String pattern = getFullDisplayNamePattern(locale, dayOfWeek);
                 patterns.put(pattern, Pattern.compile(pattern));
             }
-            patternsByLocale.put(locale, patterns);
+            patternsByLocale.put(locale.getLanguage(), patterns);
         }
     }
 
@@ -52,7 +52,7 @@ public class DayOfWeekService {
     }
 
     public boolean isThatDay(DayOfWeek dayOfWeek, String value, Locale locale) {
-        Pattern pattern = patternsByLocale.get(locale).get(getFullDisplayNamePattern(locale, dayOfWeek));
+        Pattern pattern = patternsByLocale.get(locale.getLanguage()).get(getFullDisplayNamePattern(locale, dayOfWeek));
 
         return pattern.matcher(value).matches()
                 || dayOfWeek.getDisplayName(TextStyle.SHORT, locale).equals(value);
