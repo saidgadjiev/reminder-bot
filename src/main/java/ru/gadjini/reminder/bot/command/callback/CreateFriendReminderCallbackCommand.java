@@ -9,6 +9,7 @@ import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
+import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.CallbackRequest;
 import ru.gadjini.reminder.model.EditMessageContext;
@@ -93,10 +94,13 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
     public void processNonCommandUpdate(Message message, String text) {
         CallbackRequest callbackRequest = stateService.getState(message.getChatId(), true);
         int receiverId = callbackRequest.getRequestParams().getInt(Arg.FRIEND_ID.getKey());
+
+        TgUser receiver = new TgUser();
+        receiver.setUserId(receiverId);
         Reminder reminder = reminderService.createReminder(
                 new ReminderRequestContext()
                         .setVoice(message.hasVoice())
-                        .setReceiverId(receiverId)
+                        .setReceiver(receiver)
                         .setText(text)
                         .setUser(message.getFrom())
                         .setMessageId(message.getMessageId()));

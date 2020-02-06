@@ -84,8 +84,13 @@ public class CreateForFriendReminderKeyboardCommand implements KeyboardBotComman
         if (!commandNavigator.isCurrentCommandThat(chatId, CommandNames.START_COMMAND_NAME)) {
             return false;
         }
+        if (command == null) {
+            return false;
+        }
 
-        return command != null && forFriendStart.stream().anyMatch(command::startsWith);
+        command = command.toLowerCase();
+
+        return forFriendStart.stream().anyMatch(command::startsWith);
     }
 
     @Override

@@ -14,8 +14,6 @@ public class ReminderRequestContext {
 
     private TgUser receiver;
 
-    private Integer receiverId;
-
     private int messageId;
 
     private User user;
@@ -39,12 +37,7 @@ public class ReminderRequestContext {
     }
 
     public Integer getReceiverId() {
-        return receiverId;
-    }
-
-    public ReminderRequestContext setReceiverId(Integer receiverId) {
-        this.receiverId = receiverId;
-        return this;
+        return receiver == null ? null : receiver.getUserId();
     }
 
     public ZoneId getReceiverZone() {
@@ -83,9 +76,5 @@ public class ReminderRequestContext {
         this.user = user;
 
         return this;
-    }
-
-    public String getReceiverName() {
-        return receiver.getName();
     }
 }

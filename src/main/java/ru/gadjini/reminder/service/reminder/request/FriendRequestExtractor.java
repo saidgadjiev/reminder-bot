@@ -41,7 +41,8 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
 
     @Override
     public ReminderRequest extract(ReminderRequestContext context) {
-        Optional<String> forFriendStart = forFriendStarts.stream().filter(f -> context.getText().startsWith(f)).findFirst();
+        String text = context.getText().toLowerCase();
+        Optional<String> forFriendStart = forFriendStarts.stream().filter(text::startsWith).findFirst();
         if (forFriendStart.isPresent()) {
             ExtractReceiverResult extractReceiverResult = extractReceiver(context.getUser().getId(), context.getText(), context.isVoice(), userService.getLocale(context.getUser().getId()));
 
@@ -60,7 +61,8 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
     }
 
     public ExtractReceiverResult extractReceiver(int userId, String text, boolean voice, Locale locale) {
-        String forFriendStart = forFriendStarts.stream().filter(text::startsWith).findFirst().orElseThrow();
+        String toMatch = text.toLowerCase();
+        String forFriendStart = forFriendStarts.stream().filter(toMatch::startsWith).findFirst().orElseThrow();
         String textWithoutForFriendStart = text.substring(forFriendStart.length()).trim();
         String[] words = textWithoutForFriendStart.split(" ");
         Collection<String> names = new ArrayList<>();

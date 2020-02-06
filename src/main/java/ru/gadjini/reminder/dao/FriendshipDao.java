@@ -215,7 +215,7 @@ public class FriendshipDao {
                         "      WHERE status = :status\n" +
                         "        AND (user_one_id = :user_id OR user_two_id = :user_id)) f\n" +
                         "         INNER JOIN tg_user tu ON f.user_id = tu.user_id\n" +
-                        "WHERE (max_sml).max_sim >= 0.5\n" +
+                        "WHERE (max_sml).max_sim >= 0.41\n" +
                         "ORDER BY (max_sml).max_sim DESC, length(f.name) DESC;",
                 new MapSqlParameterSource()
                         .addValue(USER_ID_PARAM, userId)
