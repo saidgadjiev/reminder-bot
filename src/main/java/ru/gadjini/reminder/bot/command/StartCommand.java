@@ -65,7 +65,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] args) {
-        sendMainMenu(user.getId(), localisationService.getCurrentLocale(user.getLanguageCode()));
+        sendMainMenu(user.getId(), userService.getLocale(user.getId()));
     }
 
     @Override
@@ -127,7 +127,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_START, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_START, locale))
                         .replyKeyboard(replyKeyboardService.getMainMenu(userId, locale)));
     }
 }

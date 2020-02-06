@@ -56,7 +56,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_SETTINGS, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_SETTINGS, locale))
                         .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(message.getChatId(), locale))
         );
         return true;
@@ -74,7 +74,7 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_SETTINGS, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_SETTINGS, locale))
                         .replyKeyboard(replyKeyboardService.getUserSettingsKeyboard(message.getChatId(), locale))
         );
     }

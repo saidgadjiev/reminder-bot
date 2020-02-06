@@ -82,10 +82,10 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.CURRENT_TIMEZONE, new Object[]{
+                        .text(localisationService.getMessage(MessagesProperties.CURRENT_TIMEZONE, new Object[]{
                                 zoneId.getDisplayName(TextStyle.FULL, locale),
                                 DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(zoneId))
-                        }, localisationService.getCurrentLocale(message.getFrom().getLanguageCode()))).replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId(), locale))
+                        }, locale)).replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId(), locale))
         );
 
         return true;
@@ -108,13 +108,14 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
             tgUserService.saveZoneId(message.getFrom().getId(), zoneId);
             ReplyKeyboardMarkup replyKeyboardMarkup = commandNavigator.silentPop(message.getChatId());
 
+            Locale locale = tgUserService.getLocale(message.getFrom().getId());
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(message.getChatId())
-                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.TIMEZONE_CHANGED, new Object[]{
-                                    zoneId.getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale(message.getFrom().getLanguageCode())),
+                            .text(localisationService.getMessage(MessagesProperties.TIMEZONE_CHANGED, new Object[]{
+                                    zoneId.getDisplayName(TextStyle.FULL, locale),
                                     DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(zoneId))
-                            }, localisationService.getCurrentLocale(message.getFrom().getLanguageCode()))).replyKeyboard(replyKeyboardMarkup)
+                            }, locale)).replyKeyboard(replyKeyboardMarkup)
             );
         });
     }

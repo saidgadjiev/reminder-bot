@@ -54,6 +54,6 @@ public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
     }
 
     private String getMessage(String text, boolean voice, Locale locale) {
-        return voice ? localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT_VOICE, new Object[] {text}, locale) : localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, locale);
+        return voice ? localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT_VOICE, new Object[] {text}, locale) : localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, locale);
     }
 }

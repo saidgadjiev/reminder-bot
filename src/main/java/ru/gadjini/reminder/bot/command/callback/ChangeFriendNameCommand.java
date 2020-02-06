@@ -81,7 +81,7 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableCal
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_NAME, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_NAME, locale))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.FRIEND_DETAILS_COMMAND_NAME, requestParams, locale))
         );
 
@@ -94,13 +94,14 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableCal
         RequestParams requestParams = callbackRequest.getRequestParams();
         TgUser friend = friendshipService.changeFriendName(message.getFrom().getId(), requestParams.getInt(Arg.FRIEND_ID.getKey()), text);
 
+        Locale locale = userService.getLocale(message.getFrom().getId());
         commandNavigator.silentPop(message.getChatId());
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .messageId(callbackRequest.getMessageId())
-                        .text(friendshipMessageBuilder.getFriendDetails(friend, localisationService.getCurrentLocale(message.getFrom().getLanguageCode())))
-                        .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friend.getUserId(), null))
+                        .text(friendshipMessageBuilder.getFriendDetails(friend, locale))
+                        .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friend.getUserId(), locale))
         );
     }
 

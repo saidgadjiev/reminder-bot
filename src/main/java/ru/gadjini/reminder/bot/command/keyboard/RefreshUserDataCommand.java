@@ -56,10 +56,10 @@ public class RefreshUserDataCommand implements KeyboardBotCommand {
     private String message(TgUser user) {
         StringBuilder message = new StringBuilder();
 
-        message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_DATA_REFRESHED, user.getLocale())).append("\n");
-        message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_DATA, new Object[]{
+        message.append(localisationService.getMessage(MessagesProperties.MESSAGE_USER_DATA_REFRESHED, user.getLocale())).append("\n");
+        message.append(localisationService.getMessage(MessagesProperties.MESSAGE_USER_DATA, new Object[]{
                 user.getName(),
-                StringUtils.isNotBlank(user.getUsername()) ? TgUser.USERNAME_START + user.getUsername() : localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USERNAME_NOT_EXISTS, user.getLocale()),
+                StringUtils.isNotBlank(user.getUsername()) ? TgUser.USERNAME_START + user.getUsername() : localisationService.getMessage(MessagesProperties.MESSAGE_USERNAME_NOT_EXISTS, user.getLocale()),
                 UserUtils.userLink(user.getUserId())
         }, user.getLocale()));
 

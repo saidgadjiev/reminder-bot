@@ -30,14 +30,14 @@ public class FriendshipMessageBuilder {
     }
 
     public String getFriendDetailsWithFooterCode(TgUser friend, String footerCode, Locale locale) {
-        return getFriendDetails(friend, localisationService.getCurrentLocaleMessage(footerCode, locale), locale);
+        return getFriendDetails(friend, localisationService.getMessage(footerCode, locale), locale);
     }
 
     public String getFriendDetails(TgUser friend, String footer, Locale locale) {
         StringBuilder message = new StringBuilder();
 
         message.append(UserUtils.userLink(friend)).append("\n\n");
-        message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.TIMEZONE, new Object[] {
+        message.append(localisationService.getMessage(MessagesProperties.TIMEZONE, new Object[] {
                 friend.getZone().getDisplayName(TextStyle.FULL, locale),
                 DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(friend.getZone()))
         }, locale));
@@ -51,7 +51,7 @@ public class FriendshipMessageBuilder {
 
     public String getFriendsList(List<TgUser> items, String emptyCode, String footer, Locale locale) {
         if (items.isEmpty()) {
-            return localisationService.getCurrentLocaleMessage(emptyCode, locale);
+            return localisationService.getMessage(emptyCode, locale);
         }
         StringBuilder message = new StringBuilder();
 
@@ -63,7 +63,7 @@ public class FriendshipMessageBuilder {
             message.append("<b>").append(i++).append("</b>) ").append(UserUtils.userLink(friend));
         }
         if (StringUtils.isNotBlank(footer)) {
-            message.append("\n\n").append(localisationService.getCurrentLocaleMessage(footer, locale));
+            message.append("\n\n").append(localisationService.getMessage(footer, locale));
         }
 
         return message.toString();

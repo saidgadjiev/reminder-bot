@@ -21,32 +21,14 @@ public class LocalisationService {
     }
 
     public String getMessage(String messageCode, @Nonnull Locale locale) {
-        return messageSource.getMessage(messageCode, null, locale);
+        return getMessage(messageCode, null, locale);
     }
 
-    public String getCurrentLocaleMessage(String messageCode, @Nonnull Locale locale) {
-        return getCurrentLocaleMessage(messageCode, null, locale);
-    }
-
-    public String getCurrentLocaleMessage(String messageCode, Object[] args, @Nonnull Locale locale) {
+    public String getMessage(String messageCode, Object[] args, @Nonnull Locale locale) {
         return messageSource.getMessage(messageCode, args, locale);
     }
 
     public List<Locale> getSupportedLocales() {
         return List.of(new Locale(RU_LOCALE));
-    }
-
-    public Locale getDefaultLocale() {
-        return Locale.getDefault();
-    }
-
-    public Locale getCurrentLocale(@Nonnull String languageCode) {
-        for (Locale locale: getSupportedLocales()) {
-            if (locale.getLanguage().equals(languageCode)) {
-                return locale;
-            }
-        }
-
-        return getDefaultLocale();
     }
 }

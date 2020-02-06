@@ -37,7 +37,7 @@ public class WithLoginRequestExtractor extends BaseRequestExtractor {
         if (text.startsWith(TgUser.USERNAME_START)) {
             Locale locale = tgUserService.getLocale(context.getUser().getId());
             if (text.indexOf(' ') == -1) {
-                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, locale));
+                throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, locale));
             }
             String username = text.substring(1, text.indexOf(' '));
             ZoneId zoneId = tgUserService.getTimeZone(username);
@@ -50,7 +50,7 @@ public class WithLoginRequestExtractor extends BaseRequestExtractor {
 
                 return reminderRequest;
             } catch (ParseException ex) {
-                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, locale));
+                throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, locale));
             }
         }
 

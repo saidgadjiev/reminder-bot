@@ -7,7 +7,6 @@ import org.glassfish.jersey.server.mvc.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.gadjini.reminder.common.CommandNames;
@@ -89,8 +88,8 @@ public class WebMoneyController {
         return Map.of(
                 FAIL, fail,
                 TEMPLATE, "payment_result.ftl",
-                PAYMENT_RESULT, localisationService.getCurrentLocaleMessage(fail ? MessagesProperties.MESSAGE_PAYMENT_FAIL : MessagesProperties.MESSAGE_PAYMENT_SUCCESS, localisationService.getDefaultLocale()),
-                REDIRECT, localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TELEGRAM_REDIRECT, localisationService.getDefaultLocale()),
+                PAYMENT_RESULT, localisationService.getMessage(fail ? MessagesProperties.MESSAGE_PAYMENT_FAIL : MessagesProperties.MESSAGE_PAYMENT_SUCCESS, Locale.getDefault()),
+                REDIRECT, localisationService.getMessage(MessagesProperties.MESSAGE_TELEGRAM_REDIRECT, Locale.getDefault()),
                 BOT_NAME, botProperties.getName()
         );
     }
@@ -106,7 +105,7 @@ public class WebMoneyController {
     @Path("/fail")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public Response fail(@FormParam("user_id") int userId) {
-        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(userId).text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_PAYMENT_FAIL, localisationService.getDefaultLocale())));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(userId).text(localisationService.getMessage(MessagesProperties.MESSAGE_PAYMENT_FAIL, Locale.getDefault())));
 
         return Response.seeOther(URI.create(redirectUrl(true))).build();
     }
@@ -204,7 +203,7 @@ public class WebMoneyController {
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(userId)
-                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}, locale))
+                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_RENEWED, new Object[]{subscriptionEnd}, locale))
                             .replyKeyboard(replyKeyboardService.getMainMenu(userId, locale))
             );
             commandNavigator.setCurrentCommand(userId, CommandNames.START_COMMAND_NAME);

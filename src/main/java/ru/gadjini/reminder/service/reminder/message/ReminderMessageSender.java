@@ -129,7 +129,7 @@ public class ReminderMessageSender {
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(chatId)
                         .messageId(messageId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_RETURNED, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_RETURNED, locale))
                         .replyKeyboard(inlineKeyboardMarkup)
         );
     }
@@ -375,12 +375,12 @@ public class ReminderMessageSender {
     }
 
     public void sendReminderNotFound(long chatId, int messageId, Locale locale) {
-        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(chatId).text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOT_FOUND, locale)));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(chatId).text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOT_FOUND, locale)));
         messageService.deleteMessage(chatId, messageId);
     }
 
     public void sendReminderCantBeCompleted(long chatId, int messageId, Locale locale) {
-        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(chatId).text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED, locale)));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(chatId).text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED, locale)));
         messageService.deleteMessage(chatId, messageId);
     }
 
@@ -391,7 +391,7 @@ public class ReminderMessageSender {
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(userId)
                         .messageId(messageId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED, locale))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME, locale))
         );
     }
@@ -522,7 +522,7 @@ public class ReminderMessageSender {
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(chatId)
                             .messageId(messageId)
-                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_COMPLETED_REMINDERS_EMPTY, locale))
+                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_COMPLETED_REMINDERS_EMPTY, locale))
                             .replyKeyboard(inlineKeyboardService.getEmptyRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME, locale))
             );
         } else {
@@ -539,13 +539,13 @@ public class ReminderMessageSender {
     public void sendActiveReminders(int userId, long chatId, int messageId, String currText, String header, RequestParams requestParams, List<Reminder> reminders) {
         Locale locale = userService.getLocale(userId);
         if (reminders.isEmpty()) {
-            String text = localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_ACTIVE_REMINDERS_EMPTY, locale);
+            String text = localisationService.getMessage(MessagesProperties.MESSAGE_ACTIVE_REMINDERS_EMPTY, locale);
             if (!Objects.equals(currText, text)) {
                 messageService.editMessageAsync(
                         new EditMessageContext(PriorityJob.Priority.HIGH)
                                 .chatId(chatId)
                                 .messageId(messageId)
-                                .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_ACTIVE_REMINDERS_EMPTY, locale))
+                                .text(localisationService.getMessage(MessagesProperties.MESSAGE_ACTIVE_REMINDERS_EMPTY, locale))
                                 .replyKeyboard(inlineKeyboardService.getEmptyActiveRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME, locale))
                 );
             }
@@ -590,7 +590,7 @@ public class ReminderMessageSender {
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(chatId)
                         .messageId(messageId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_COMPLETED_REMINDERS_EMPTY, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_COMPLETED_REMINDERS_EMPTY, locale))
                         .replyKeyboard(inlineKeyboardService.getEmptyRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME, null))
         );
     }
@@ -669,13 +669,13 @@ public class ReminderMessageSender {
             newKeyboard = new KeyboardCustomizer(inlineKeyboardMarkup).replaceButton(
                     CommandNames.ENABLE_COUNT_SERIES_COMMAND_NAME,
                     CommandNames.DISABLE_COUNT_SERIES_COMMAND_NAME,
-                    localisationService.getCurrentLocaleMessage(MessagesProperties.DISABLE_COUNT_SERIES_COMMAND_DESCRIPTION, reminder.getCreator().getLocale())
+                    localisationService.getMessage(MessagesProperties.DISABLE_COUNT_SERIES_COMMAND_DESCRIPTION, reminder.getCreator().getLocale())
             ).getKeyboardMarkup();
         } else {
             newKeyboard = new KeyboardCustomizer(inlineKeyboardMarkup).replaceButton(
                     CommandNames.DISABLE_COUNT_SERIES_COMMAND_NAME,
                     CommandNames.ENABLE_COUNT_SERIES_COMMAND_NAME,
-                    localisationService.getCurrentLocaleMessage(MessagesProperties.ENABLE_COUNT_SERIES_COMMAND_DESCRIPTION, reminder.getCreator().getLocale())
+                    localisationService.getMessage(MessagesProperties.ENABLE_COUNT_SERIES_COMMAND_DESCRIPTION, reminder.getCreator().getLocale())
             ).getKeyboardMarkup();
         }
         messageService.editMessageAsync(

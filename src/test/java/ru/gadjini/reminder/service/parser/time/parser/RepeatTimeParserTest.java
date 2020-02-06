@@ -36,6 +36,8 @@ import static ru.gadjini.reminder.service.parser.time.lexer.TimeToken.*;
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class RepeatTimeParserTest {
 
+    private static final Locale LOCALE = new Locale("ru");
+
     @SpyBean
     private LocalisationService localisationService;
 
@@ -51,8 +53,6 @@ class RepeatTimeParserTest {
 
         Mockito.when(timeCreator.dateTimeNow(TestConstants.TEST_ZONE)).thenReturn(DateTime.of(STATIC_TIME));
         Mockito.when(timeCreator.zonedDateTimeNow(TestConstants.TEST_ZONE)).thenReturn(STATIC_TIME);
-
-        Mockito.doReturn(new Locale("ru")).when(localisationService).getCurrentLocale("ru");
     }
 
     @Test
@@ -176,6 +176,6 @@ class RepeatTimeParserTest {
     }
 
     private TimeParser parser() {
-        return new TimeParser(localisationService, localisationService.getCurrentLocale("ru"), TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
+        return new TimeParser(localisationService, LOCALE, TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
     }
 }

@@ -23,7 +23,7 @@ public class ReminderRequestLexer {
     public ReminderRequestLexer(ReminderRequestLexerConfig lexerConfig, TimeLexerConfig timeLexerConfig, String str, Locale locale) {
         this.lexerConfig = lexerConfig;
         this.parts = breakToTextAndNote(str);
-        this.timeLexer = new TimeLexer(timeLexerConfig, parts[0]);
+        this.timeLexer = new TimeLexer(timeLexerConfig, parts[0], locale);
         this.locale = locale;
     }
 

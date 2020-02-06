@@ -85,7 +85,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME, new Object[]{Articles.USERNAME}, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_SEND_FRIEND_REQUEST_USERNAME, new Object[]{Articles.USERNAME}, locale))
                         .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId(), locale))
         );
         return true;
@@ -113,13 +113,13 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
         Locale uoLocale = userService.getLocale(message.getFrom().getId());
         switch (createFriendRequestResult.getState()) {
             case ALREADY_REQUESTED:
-                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(message.getChatId()).text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT, uoLocale)));
+                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT, uoLocale)));
                 break;
             case ALREADY_REQUESTED_TO_ME:
-                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(message.getChatId()).text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT_ME, uoLocale)));
+                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT_ME, uoLocale)));
                 break;
             case ALREADY_FRIEND:
-                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(message.getChatId()).text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_ALREADY_FRIEND, uoLocale)));
+                messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_ALREADY_FRIEND, uoLocale)));
                 break;
             case NONE:
                 Friendship friendship = createFriendRequestResult.getFriendship();
@@ -128,14 +128,14 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
                 messageService.sendMessageAsync(
                         new SendMessageContext(PriorityJob.Priority.HIGH)
                                 .chatId(message.getChatId())
-                                .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_SENT,
+                                .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_SENT,
                                         new Object[]{UserUtils.userLink(friendship.getUserTwo())}, uoLocale))
                                 .replyKeyboard(replyKeyboardMarkup)
                 );
                 messageService.sendMessageAsync(
                         new SendMessageContext(PriorityJob.Priority.MEDIUM)
                                 .chatId(friendship.getUserTwoId())
-                                .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_NEW_FRIEND_REQUEST, new Object[]{UserUtils.userLink(friendship.getUserOne())}, friendship.getUserTwo().getLocale()))
+                                .text(localisationService.getMessage(MessagesProperties.MESSAGE_NEW_FRIEND_REQUEST, new Object[]{UserUtils.userLink(friendship.getUserOne())}, friendship.getUserTwo().getLocale()))
                                 .replyKeyboard(inlineKeyboardService.getFriendRequestKeyboard(friendship.getUserOne().getUserId(), friendship.getUserTwo().getLocale()))
                 );
                 break;

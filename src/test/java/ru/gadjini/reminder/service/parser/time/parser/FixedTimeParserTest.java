@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.common.TestConstants;
@@ -37,9 +36,11 @@ import static ru.gadjini.reminder.service.parser.time.lexer.TimeToken.DAY;
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class FixedTimeParserTest {
 
+    private static final Locale LOCALE = new Locale("ru");
+
     private static final ZonedDateTime STATIC_TIME = ZonedDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.of(11, 0), TestConstants.TEST_ZONE);
 
-    @SpyBean
+    @Autowired
     private LocalisationService localisationService;
 
     @Autowired
@@ -52,8 +53,6 @@ class FixedTimeParserTest {
     void setup() {
         Mockito.when(timeCreator.dateTimeNow(TestConstants.TEST_ZONE)).thenReturn(DateTime.of(STATIC_TIME));
         Mockito.when(timeCreator.zonedDateTimeNow(TestConstants.TEST_ZONE)).thenReturn(STATIC_TIME);
-
-        Mockito.doReturn(new Locale("ru")).when(localisationService).getCurrentLocale("ru");
     }
 
     @Test
@@ -149,6 +148,6 @@ class FixedTimeParserTest {
     }
 
     private TimeParser parser() {
-        return new TimeParser(localisationService, localisationService.getCurrentLocale("ru"), TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
+        return new TimeParser(localisationService, LOCALE, TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
     }
 }

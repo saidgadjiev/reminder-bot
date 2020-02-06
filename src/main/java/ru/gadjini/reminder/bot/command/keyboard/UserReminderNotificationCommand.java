@@ -56,7 +56,7 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION, locale))
                         .replyKeyboard(replyKeyboardService.getUserReminderNotificationSettingsKeyboard(message.getChatId(), locale))
         );
         return true;
@@ -73,7 +73,7 @@ public class UserReminderNotificationCommand implements KeyboardBotCommand, Navi
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMINDER_NOTIFICATION, locale))
                         .replyKeyboard(replyKeyboardService.getUserReminderNotificationSettingsKeyboard(message.getChatId(), locale))
         );
     }

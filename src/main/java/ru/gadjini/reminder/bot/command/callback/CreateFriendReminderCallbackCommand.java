@@ -24,6 +24,8 @@ import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 
+import java.util.Locale;
+
 @Component
 public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
@@ -70,12 +72,13 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         stateService.setState(callbackQuery.getMessage().getChatId(), new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams, null));
+        Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         messageService.editMessage(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(callbackQuery.getMessage().getChatId())
                         .messageId(callbackQuery.getMessage().getMessageId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT, localisationService.getCurrentLocale(callbackQuery.getFrom().getLanguageCode())))
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.FRIEND_DETAILS_COMMAND_NAME, CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD, requestParams, userService.getLocale(callbackQuery.getFrom().getId())))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT, locale))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.FRIEND_DETAILS_COMMAND_NAME, CallbackCommandNavigator.RestoreKeyboard.RESTORE_KEYBOARD, requestParams, locale))
         );
 
         return MessagesProperties.MESSAGE_CREATE_REMINDER_CALLBACK_ANSWER;

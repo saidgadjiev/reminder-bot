@@ -7,6 +7,7 @@ import ru.gadjini.reminder.domain.Plan;
 import ru.gadjini.reminder.domain.Subscription;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
@@ -33,14 +34,17 @@ public class SubscriptionInfoCommand implements KeyboardBotCommand {
 
     private TimeBuilder timeBuilder;
 
+    private TgUserService userService;
+
     public SubscriptionInfoCommand(LocalisationService localisationService,
                                    SubscriptionService subscriptionService,
-                                   MessageService messageService, PlanService planService, TimeBuilder timeBuilder) {
+                                   MessageService messageService, PlanService planService, TimeBuilder timeBuilder, TgUserService userService) {
         this.localisationService = localisationService;
         this.subscriptionService = subscriptionService;
         this.messageService = messageService;
         this.planService = planService;
         this.timeBuilder = timeBuilder;
+        this.userService = userService;
 
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.names.add(localisationService.getMessage(MessagesProperties.SUBSCRIPTION_COMMAND_NAME, locale));
@@ -56,7 +60,12 @@ public class SubscriptionInfoCommand implements KeyboardBotCommand {
     public boolean processMessage(Message message, String text) {
         Subscription subscription = subscriptionService.getSubscription(message.getFrom().getId());
 
-        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(getSubscriptionInfo(subscription, localisationService.getCurrentLocale(message.getFrom().getLanguageCode()))));
+        Locale locale = userService.getLocale(message.getFrom().getId());
+        messageService.sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.MEDIUM)
+                        .chatId(message.getChatId())
+                        .text(getSubscriptionInfo(subscription, locale))
+        );
 
         return false;
     }
@@ -65,13 +74,13 @@ public class SubscriptionInfoCommand implements KeyboardBotCommand {
         Plan plan = planService.getActivePlan();
 
         if (subscription.getPlanId() == null) {
-            return localisationService.getCurrentLocaleMessage(
+            return localisationService.getMessage(
                     MessagesProperties.MESSAGE_TRIAL_SUBSCRIPTION_END_DATE,
                     new Object[]{DateTimeFormats.PAYMENT_PERIOD_PATTERN.format(subscription.getEndDate()), plan.getPrice(), timeBuilder.time(plan.getPeriod(), locale)},
                     locale);
         }
 
-        return localisationService.getCurrentLocaleMessage(
+        return localisationService.getMessage(
                 MessagesProperties.MESSAGE_SUBSCRIPTION_END_DATE,
                 new Object[]{DateTimeFormats.PAYMENT_PERIOD_PATTERN.format(subscription.getEndDate()), plan.getPrice(), timeBuilder.time(plan.getPeriod(), locale)},
                 locale);

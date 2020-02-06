@@ -100,7 +100,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(callbackQuery.getMessage().getChatId())
                         .messageId(callbackQuery.getMessage().getMessageId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_TIME, reminder.getReceiver().getLocale()))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_TIME, reminder.getReceiver().getLocale()))
                         .replyKeyboard(inlineKeyboardService.getPostponeKeyboard(reminder.getRemindAt().hasTime(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, requestParams, reminder.getReceiver().getLocale()))
         );
 
@@ -138,9 +138,9 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     private void processNonCommandUpdate(User from, String text, StateData stateData) {
         if (stateData.getState() == State.TIME) {
-            postponeTime(from.getId(), text, stateData, localisationService.getCurrentLocale(from.getLanguageCode()));
+            postponeTime(from.getId(), text, stateData, userService.getLocale(from.getId()));
         } else {
-            if (Objects.equals(text, localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON, localisationService.getCurrentLocale(from.getLanguageCode())))) {
+            if (Objects.equals(text, localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON, userService.getLocale(from.getId())))) {
                 postpone(from.getId(), null, stateData);
             } else {
                 postpone(from.getId(), text, stateData);
@@ -162,7 +162,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(userId)
                             .messageId(stateData.getCallbackRequest().getMessageId())
-                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_POSTPONE_REASON, locale))
+                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON, locale))
                             .replyKeyboard(inlineKeyboardService.getPostponeMessagesKeyboard(CommandNames.REMINDER_DETAILS_COMMAND_NAME, stateData.getCallbackRequest().getRequestParams(), locale)));
         } else {
             postpone(userId, null, stateData);

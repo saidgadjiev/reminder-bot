@@ -78,23 +78,23 @@ public class PaymentService {
 
     private void validate(Plan plan, Locale locale) {
         if (!plan.isActive()) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_INVALID_PLAN, locale));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_INVALID_PLAN, locale));
         }
     }
 
     private void validate(Plan plan, WebMoneyPayment webMoneyPayment) {
         if (!webMoneyProperties.getSecretKey().equals(webMoneyPayment.secretKey())) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST, webMoneyPayment.locale()));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST, webMoneyPayment.locale()));
         }
         validate(plan, webMoneyPayment.paymentAmount(), webMoneyPayment.locale());
         if (!webMoneyProperties.getPurse().equals(webMoneyPayment.payeePurse())) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST, webMoneyPayment.locale()));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST, webMoneyPayment.locale()));
         }
     }
 
     private void validate(Plan plan, double paymentAmount, Locale locale) {
         if (plan.getPrice() > paymentAmount) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST, locale));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST, locale));
         }
     }
 

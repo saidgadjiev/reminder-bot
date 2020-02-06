@@ -36,7 +36,7 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
         queries.forEach(s -> keyboard.add(keyboardRow(s)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.GO_BACK_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME, locale)));
 
         return replyKeyboardMarkup;
     }
@@ -46,9 +46,9 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.FROM_ME_FRIEND_REQUESTS_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.GO_BACK_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.TO_ME_FRIEND_REQUESTS_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.FROM_ME_FRIEND_REQUESTS_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME, locale)));
 
         return replyKeyboardMarkup;
     }
@@ -58,10 +58,10 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.REFRESH_USER_DATA_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.GO_BACK_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.CHANGE_TIMEZONE_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.REFRESH_USER_DATA_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME, locale)));
 
         return replyKeyboardMarkup;
     }
@@ -76,10 +76,10 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.GO_BACK_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.MAIN_MENU_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.MAIN_MENU_COMMAND_NAME, locale)));
 
         return replyKeyboardMarkup;
     }
@@ -89,16 +89,16 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.SAVED_QUERY_COMMAND_NAME, locale)));
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME, locale)));
-        //keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.SUBSCRIPTION_COMMAND_NAME)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.SAVED_QUERY_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.USER_SETTINGS_COMMAND_NAME, locale)));
+        //keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.SUBSCRIPTION_COMMAND_NAME)));
 
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.HELP_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.HELP_COMMAND_NAME, locale)));
 
         return replyKeyboardMarkup;
     }
@@ -108,7 +108,7 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
         ReplyKeyboardMarkup replyKeyboardMarkup = replyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = replyKeyboardMarkup.getKeyboard();
-        keyboard.add(keyboardRow(localisationService.getCurrentLocaleMessage(MessagesProperties.GO_BACK_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME, locale)));
 
         return replyKeyboardMarkup;
     }

@@ -79,7 +79,7 @@ public class FixedTimeLexer {
 
     private GroupMatcher matcher() {
         if (fullMatch) {
-            GroupMatcher matcher = lexerConfig.getTimePattern().matcher(StringUtils.reverseDelimited(str, ' '));
+            GroupMatcher matcher = lexerConfig.getTimePattern(locale).matcher(StringUtils.reverseDelimited(str, ' '));
 
             if (matcher.matches()) {
                 return matcher;
@@ -88,6 +88,6 @@ public class FixedTimeLexer {
             return null;
         }
 
-        return lexerConfig.getTimePattern().maxMatcher(str);
+        return lexerConfig.getTimePattern(locale).maxMatcher(str);
     }
 }

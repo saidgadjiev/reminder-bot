@@ -139,7 +139,7 @@ public class CommandExecutor {
         sendAction(callbackQuery.getMessage().getChatId(), botCommand);
         String callbackAnswer = botCommand.processMessage(callbackQuery, parseResult.getRequestParams());
         if (StringUtils.isNotBlank(callbackAnswer)) {
-            messageService.sendAnswerCallbackQuery(new AnswerCallbackContext().queryId(callbackQuery.getId()).text(localisationService.getCurrentLocaleMessage(callbackAnswer, userService.getLocale(callbackQuery.getFrom().getId()))));
+            messageService.sendAnswerCallbackQuery(new AnswerCallbackContext().queryId(callbackQuery.getId()).text(localisationService.getMessage(callbackAnswer, userService.getLocale(callbackQuery.getFrom().getId()))));
         }
 
         if (botCommand instanceof NavigableCallbackBotCommand) {

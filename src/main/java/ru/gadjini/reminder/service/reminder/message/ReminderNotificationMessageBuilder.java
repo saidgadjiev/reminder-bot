@@ -83,7 +83,7 @@ public class ReminderNotificationMessageBuilder {
 
     public String getReminderNotifications(List<ReminderNotification> reminderNotifications, Locale locale) {
         if (reminderNotifications.isEmpty()) {
-            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS, locale);
+            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS, locale);
         }
         StringBuilder message = new StringBuilder();
 
@@ -100,7 +100,7 @@ public class ReminderNotificationMessageBuilder {
 
     public String getUserReminderNotifications(List<UserReminderNotification> userReminderNotifications, Locale locale) {
         if (userReminderNotifications.isEmpty()) {
-            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS, locale);
+            return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS, locale);
         }
         StringBuilder message = new StringBuilder();
 

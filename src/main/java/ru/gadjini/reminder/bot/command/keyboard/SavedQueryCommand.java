@@ -92,7 +92,7 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SAVED_QUERY_INPUT, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_SAVED_QUERY_INPUT, locale))
                         .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId(), locale))
         );
 

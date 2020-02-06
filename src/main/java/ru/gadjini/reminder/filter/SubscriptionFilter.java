@@ -117,11 +117,11 @@ public class SubscriptionFilter extends BaseBotFilter {
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
                         .text(
-                                localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TRIAL_PERIOD_STARTED,
+                                localisationService.getMessage(MessagesProperties.MESSAGE_TRIAL_PERIOD_STARTED,
                                         new Object[]{
                                                 declensionService.day(subscriptionProperties.getTrialPeriod()),
                                                 ZoneId.of(ReminderConstants.DEFAULT_TIMEZONE).getDisplayName(TextStyle.FULL, locale)
-                                        }, localisationService.getCurrentLocale(user.getLanguageCode()))
+                                        }, locale)
                         ).replyKeyboard(replyKeyboardService.getMainMenu(userId, locale))
         );
     }
@@ -131,7 +131,7 @@ public class SubscriptionFilter extends BaseBotFilter {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_EXPIRED, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_SUBSCRIPTION_EXPIRED, locale))
                         .replyKeyboard(replyKeyboardService.removeKeyboard(userId))
         );
 
@@ -151,6 +151,6 @@ public class SubscriptionFilter extends BaseBotFilter {
     }
 
     private String getNeedPayMessage(String planDesc, Locale locale) {
-        return planDesc + "\n\n" + localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CHOOSE_PAYMENT_TYPE, locale);
+        return planDesc + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_CHOOSE_PAYMENT_TYPE, locale);
     }
 }

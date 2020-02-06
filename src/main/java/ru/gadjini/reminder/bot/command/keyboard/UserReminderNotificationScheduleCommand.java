@@ -88,7 +88,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_EDIT_USER_REMINDER_NOTIFICATION, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_EDIT_USER_REMINDER_NOTIFICATION, locale))
                         .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId(), locale))
         );
         return true;

@@ -13,7 +13,6 @@ import java.util.Map;
 @Component
 public class TimeLexerConfig {
 
-    private final LocalisationService localisationService;
     private Map<Locale, GroupPattern> timePatterns = new HashMap<>();
 
     private final Map<Locale, GroupPattern> repeatTimePatterns = new HashMap<>();
@@ -24,8 +23,6 @@ public class TimeLexerConfig {
 
     @Autowired
     public TimeLexerConfig(LocalisationService localisationService, PatternBuilder patternBuilder) {
-        this.localisationService = localisationService;
-
         for (Locale locale : localisationService.getSupportedLocales()) {
             timePatterns.put(locale, patternBuilder.buildTimePattern(locale));
             repeatTimePatterns.put(locale, patternBuilder.buildRepeatTimePattern(locale));
@@ -34,19 +31,19 @@ public class TimeLexerConfig {
         }
     }
 
-    public GroupPattern getTimePattern() {
-        return timePatterns.get(localisationService.getCurrentLocale("ru"));
+    public GroupPattern getTimePattern(Locale locale) {
+        return timePatterns.get(locale);
     }
 
-    public GroupPattern getRepeatTimePattern() {
-        return repeatTimePatterns.get(localisationService.getCurrentLocale("ru"));
+    public GroupPattern getRepeatTimePattern(Locale locale) {
+        return repeatTimePatterns.get(locale);
     }
 
-    public GroupPattern getOffsetTimePattern() {
-        return offsetTimePatterns.get(localisationService.getCurrentLocale("ru"));
+    public GroupPattern getOffsetTimePattern(Locale locale) {
+        return offsetTimePatterns.get(locale);
     }
 
-    public GroupPattern getRepeatWordPattern() {
-        return repeatWordPatterns.get(localisationService.getCurrentLocale("ru"));
+    public GroupPattern getRepeatWordPattern(Locale locale) {
+        return repeatWordPatterns.get(locale);
     }
 }

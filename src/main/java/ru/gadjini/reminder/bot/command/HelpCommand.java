@@ -12,6 +12,7 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
@@ -26,13 +27,16 @@ public class HelpCommand extends BotCommand implements KeyboardBotCommand {
 
     private LocalisationService localisationService;
 
+    private TgUserService userService;
+
     private Set<String> names = new HashSet<>();
 
     @Autowired
-    public HelpCommand(MessageService messageService, LocalisationService localisationService) {
+    public HelpCommand(MessageService messageService, LocalisationService localisationService, TgUserService userService) {
         super(CommandNames.HELP_COMMAND_NAME, "");
         this.messageService = messageService;
         this.localisationService = localisationService;
+        this.userService = userService;
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.names.add(localisationService.getMessage(MessagesProperties.HELP_COMMAND_NAME, locale));
         }
@@ -40,7 +44,7 @@ public class HelpCommand extends BotCommand implements KeyboardBotCommand {
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] strings) {
-        sendHelpMessage(user.getId(), localisationService.getCurrentLocale(user.getLanguageCode()));
+        sendHelpMessage(user.getId(), userService.getLocale(user.getId()));
     }
 
     @Override
@@ -50,7 +54,7 @@ public class HelpCommand extends BotCommand implements KeyboardBotCommand {
 
     @Override
     public boolean processMessage(Message message, String text) {
-        sendHelpMessage(message.getFrom().getId(), localisationService.getCurrentLocale(message.getFrom().getLanguageCode()));
+        sendHelpMessage(message.getFrom().getId(), userService.getLocale(message.getFrom().getId()));
 
         return false;
     }
@@ -59,6 +63,6 @@ public class HelpCommand extends BotCommand implements KeyboardBotCommand {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(userId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_HELP, locale)));
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_HELP, locale)));
     }
 }

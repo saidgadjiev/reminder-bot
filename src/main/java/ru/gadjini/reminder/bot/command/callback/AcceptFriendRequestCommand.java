@@ -20,8 +20,6 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
 
-import java.util.Locale;
-
 @Component
 public class AcceptFriendRequestCommand implements CallbackBotCommand {
 
@@ -64,7 +62,7 @@ public class AcceptFriendRequestCommand implements CallbackBotCommand {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(friendship.getUserOneId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ACCEPTED_INITIATOR, new Object[]{
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ACCEPTED_INITIATOR, new Object[]{
                                 UserUtils.userLink(friendship.getUserTwo())
                         }, friendship.getUserOne().getLocale()))
         );

@@ -101,7 +101,7 @@ public class OffsetTimeLexer {
 
     private GroupMatcher matcher() {
         if (fullMatch) {
-            GroupMatcher matcher = lexerConfig.getOffsetTimePattern().matcher(StringUtils.reverseDelimited(str, ' '));
+            GroupMatcher matcher = lexerConfig.getOffsetTimePattern(locale).matcher(StringUtils.reverseDelimited(str, ' '));
 
             if (matcher.matches()) {
                 return matcher;
@@ -110,6 +110,6 @@ public class OffsetTimeLexer {
             return null;
         }
 
-        return lexerConfig.getOffsetTimePattern().maxMatcher(str);
+        return lexerConfig.getOffsetTimePattern(locale).maxMatcher(str);
     }
 }

@@ -60,9 +60,9 @@ public class UserReminderNotificationService {
 
     public void create(User user, String text, UserReminderNotification.NotificationType notificationType) {
         ZoneId zoneId = userService.getTimeZone(user.getId());
-
-        Time time = parseCustomRemind(text, zoneId, localisationService.getCurrentLocale(user.getLanguageCode()));
-        validatorFactory.getValidator(ValidatorType.USER_REMINDER_NOTIFICATION).validate(new ValidationContext().time(time));
+        Locale locale = userService.getLocale(user.getId());
+        Time time = parseCustomRemind(text, zoneId, locale);
+        validatorFactory.getValidator(ValidatorType.USER_REMINDER_NOTIFICATION).validate(new ValidationContext().time(time).locale(locale));
 
         time.setOffsetTime(timeCreator.withZone(time.getOffsetTime(), ZoneOffset.UTC));
         UserReminderNotification userReminderNotification = new UserReminderNotification(ZoneOffset.UTC);
@@ -140,7 +140,7 @@ public class UserReminderNotificationService {
         try {
             return requestParser.parseTime(text, zoneId, locale);
         } catch (ParseException ex) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_REMIND, locale));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMIND, locale));
         }
     }
 }

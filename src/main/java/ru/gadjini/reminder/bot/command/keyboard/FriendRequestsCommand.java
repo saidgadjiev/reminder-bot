@@ -55,7 +55,7 @@ public class FriendRequestsCommand implements KeyboardBotCommand, NavigableBotCo
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_REQUESTS, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUESTS, locale))
                         .replyKeyboard(replyKeyboardService.getFriendRequestsKeyboard(message.getChatId(), locale))
         );
 

@@ -80,10 +80,11 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
 
         String prevHistoryName = requestParams.getString(Arg.PREV_HISTORY_NAME.getKey());
 
+        Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND, localisationService.getCurrentLocale(callbackQuery.getFrom().getLanguageCode())))
-                        .replyKeyboard(inlineKeyboardService.getCustomRemindKeyboard(prevHistoryName, requestParams, userService.getLocale(callbackQuery.getFrom().getId())))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND, locale))
+                        .replyKeyboard(inlineKeyboardService.getCustomRemindKeyboard(prevHistoryName, requestParams, locale))
         );
 
         return MessagesProperties.CUSTOM_REMINDER_TIME_COMMAND_DESCRIPTION;
@@ -91,12 +92,14 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
 
     @Override
     public void processNonCommandCallback(CallbackQuery callbackQuery, RequestParams requestParams) {
-        customRemind(callbackQuery.getMessage().getChatId(), requestParams.getString(Arg.CUSTOM_REMIND_TIME.getKey()), localisationService.getCurrentLocale(callbackQuery.getFrom().getLanguageCode()));
+        Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
+        customRemind(callbackQuery.getMessage().getChatId(), requestParams.getString(Arg.CUSTOM_REMIND_TIME.getKey()), locale);
     }
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        customRemind(message.getChatId(), text, localisationService.getCurrentLocale(message.getFrom().getLanguageCode()));
+        Locale locale = userService.getLocale(message.getFrom().getId());
+        customRemind(message.getChatId(), text, locale);
     }
 
     @Override

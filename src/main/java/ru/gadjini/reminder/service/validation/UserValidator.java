@@ -26,7 +26,7 @@ public class UserValidator {
         boolean exists = userService.isExists(username);
 
         if (!exists) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_NOT_EXISTS, locale));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_USER_NOT_EXISTS, locale));
         }
     }
 
@@ -34,7 +34,7 @@ public class UserValidator {
         boolean exists = userService.isExists(userId);
 
         if (!exists) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_NOT_EXISTS, locale));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_USER_NOT_EXISTS, locale));
         }
     }
 }

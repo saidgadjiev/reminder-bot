@@ -51,7 +51,7 @@ public class RequestParser {
     }
 
     public Time parseTime(String time, ZoneId zoneId, Locale locale) {
-        List<BaseLexem> lexems = new TimeLexer(timeLexerConfig, time, true).tokenizeThrowParseException();
+        List<BaseLexem> lexems = new TimeLexer(timeLexerConfig, time, true, locale).tokenizeThrowParseException();
 
         return new TimeParser(localisationService, locale, zoneId, dayOfWeekService, timeCreator).parseWithParseException(lexems);
     }

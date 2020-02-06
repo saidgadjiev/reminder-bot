@@ -5,6 +5,7 @@ import ru.gadjini.reminder.service.parser.api.BaseLexem;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 public class TimeLexer {
 
@@ -18,15 +19,15 @@ public class TimeLexer {
 
     private int end;
 
-    public TimeLexer(TimeLexerConfig timeLexerConfig, String str) {
-        this(timeLexerConfig, str, false);
+    public TimeLexer(TimeLexerConfig timeLexerConfig, String str, Locale locale) {
+        this(timeLexerConfig, str, false, locale);
     }
 
-    public TimeLexer(TimeLexerConfig timeLexerConfig, String str, boolean fullMatch) {
+    public TimeLexer(TimeLexerConfig timeLexerConfig, String str, boolean fullMatch, Locale locale) {
         this.str = str;
 
         str = str.toLowerCase();
-        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, str, fullMatch);
+        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, str, fullMatch, locale);
         this.fixedTimeLexer = new FixedTimeLexer(timeLexerConfig, str, fullMatch);
         this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, str, fullMatch);
     }

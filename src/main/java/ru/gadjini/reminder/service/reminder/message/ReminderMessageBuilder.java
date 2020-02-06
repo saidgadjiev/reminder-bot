@@ -9,7 +9,6 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.model.CustomRemindResult;
-import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.time.ReminderTimeBuilder;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
@@ -68,7 +67,7 @@ public class ReminderMessageBuilder {
 
         Locale locale = config.receiverId == reminder.getCreatorId() ? reminder.getCreator().getLocale() : reminder.getReceiver().getLocale();
         if (reminder.isSuppressNotifications() && config.receiverId == reminder.getReceiverId()) {
-            result.append(localisationService.getCurrentLocaleMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI, locale)).append(" ");
+            result.append(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI, locale)).append(" ");
         }
         result.append(text).append(" ");
 
@@ -285,7 +284,7 @@ public class ReminderMessageBuilder {
         StringBuilder text = new StringBuilder();
 
         if (StringUtils.isNotBlank(header)) {
-            text.append(localisationService.getCurrentLocaleMessage(header, locale)).append("\n\n");
+            text.append(localisationService.getMessage(header, locale)).append("\n\n");
         }
 
         int i = 1;
@@ -294,7 +293,7 @@ public class ReminderMessageBuilder {
             text.append(number);
 
             if (reminder.isSuppressNotifications() && requesterId == reminder.getReceiverId()) {
-                text.append(localisationService.getCurrentLocaleMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI, locale)).append(" ");
+                text.append(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI, locale)).append(" ");
             }
             text.append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder, locale)).append(")\n");
 

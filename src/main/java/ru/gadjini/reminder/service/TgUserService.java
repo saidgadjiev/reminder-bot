@@ -63,7 +63,7 @@ public class TgUserService {
         String zone = tgUserDao.getTimeZone(userId);
 
         if (zone == null) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TIMEZONE_NOT_EXISTS, getLocale(userId)));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_TIMEZONE_NOT_EXISTS, getLocale(userId)));
         }
 
         return ZoneId.of(zone);
@@ -73,7 +73,7 @@ public class TgUserService {
         String zone = tgUserDao.getTimeZone(username);
 
         if (zone == null) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TIMEZONE_NOT_EXISTS, getLocale(username)));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_TIMEZONE_NOT_EXISTS, getLocale(username)));
         }
 
         return ZoneId.of(zone);

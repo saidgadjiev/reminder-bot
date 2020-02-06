@@ -82,7 +82,7 @@ public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCo
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_CREATE_REMINDER, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_CREATE_REMINDER, locale))
                         .replyKeyboard(savedQueriesKeyboard)
         );
 

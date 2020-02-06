@@ -60,7 +60,7 @@ public class DeleteFriendCommand implements CallbackBotCommand {
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_DELETED, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_DELETED, locale))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_FRIENDS_COMMAND_HISTORY_NAME, locale))
         );
         if (deleteFriendResult.getReminders().size() > 0) {
@@ -88,7 +88,7 @@ public class DeleteFriendCommand implements CallbackBotCommand {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(friend.getUserId())
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIENDSHIP_INTERRUPTED, new Object[]{
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIENDSHIP_INTERRUPTED, new Object[]{
                                 UserUtils.userLink(friendship.getUser(userId))
                         }, friend.getLocale()))
         );

@@ -6,6 +6,7 @@ import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class RepeatTimeLexer {
@@ -16,12 +17,15 @@ public class RepeatTimeLexer {
 
     private boolean fullMatch;
 
+    private final Locale locale;
+
     private int matchEnd;
 
-    public RepeatTimeLexer(TimeLexerConfig lexerConfig, String str, boolean fullMatch) {
+    public RepeatTimeLexer(TimeLexerConfig lexerConfig, String str, boolean fullMatch, Locale locale) {
         this.lexerConfig = lexerConfig;
         this.str = str;
         this.fullMatch = fullMatch;
+        this.locale = locale;
     }
 
     public LinkedList<BaseLexem> tokenize() {
@@ -113,7 +117,7 @@ public class RepeatTimeLexer {
     private List<Map<String, String>> getValues() {
         LinkedList<Map<String, String>> values = new LinkedList<>();
         String tmp = str;
-        GroupMatcher matcher = lexerConfig.getRepeatTimePattern().maxMatcher(tmp);
+        GroupMatcher matcher = lexerConfig.getRepeatTimePattern(locale).maxMatcher(tmp);
 
         while (matcher != null) {
             values.addFirst(matcher.values());
@@ -128,16 +132,16 @@ public class RepeatTimeLexer {
                 break;
             }
 
-            matcher = lexerConfig.getRepeatTimePattern().maxMatcher(tmp);
+            matcher = lexerConfig.getRepeatTimePattern(locale).maxMatcher(tmp);
         }
         if (fullMatch) {
-            matcher = lexerConfig.getRepeatWordPattern().matcher(tmp);
+            matcher = lexerConfig.getRepeatWordPattern(locale).matcher(tmp);
 
             if (!matcher.matches()) {
                 return null;
             }
         } else {
-            matcher = lexerConfig.getRepeatWordPattern().maxMatcher(tmp);
+            matcher = lexerConfig.getRepeatWordPattern(locale).maxMatcher(tmp);
         }
 
         if (matcher != null) {

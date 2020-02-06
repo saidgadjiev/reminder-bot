@@ -81,7 +81,7 @@ public class ChangeReminderTimeCommand implements CallbackBotCommand, NavigableC
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TIME, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME, locale))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.EDIT_REMINDER_COMMAND_NAME, requestParams, locale))
         );
 

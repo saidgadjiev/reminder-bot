@@ -48,7 +48,7 @@ public class ReminderTimeValidator implements Validator {
     private void validate(DateTime dateTime, Locale locale) {
         if (!dateTime.hasTime()) {
             if (dateTime.date().isBefore(timeCreator.localDateNow(dateTime.getZoneId()))) {
-                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
+                throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
             }
         } else {
             validate(dateTime.toZonedDateTime(), locale);
@@ -57,19 +57,19 @@ public class ReminderTimeValidator implements Validator {
 
     private void validate(ZonedDateTime dateTime, Locale locale) {
         if (dateTime.isBefore(timeCreator.zonedDateTimeNow(dateTime.getZone()))) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
         }
     }
 
     private void validate(OffsetTime offsetTime, Locale locale) {
         if (offsetTime.getType() != OffsetTime.Type.AFTER) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
         }
     }
 
     private void validate(FixedTime fixedTime, Locale locale) {
         if (fixedTime.getType() != FixedTime.Type.AT) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
         }
 
         validate(fixedTime.getDateTime(), locale);

@@ -16,6 +16,8 @@ import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 
+import java.util.Locale;
+
 @Component
 public class ReminderTimeDetailsCommand implements CallbackBotCommand {
 
@@ -27,20 +29,17 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
 
     private InlineKeyboardService inlineKeyboardService;
 
-    private LocalisationService localisationService;
-
     private TgUserService userService;
 
     @Autowired
     public ReminderTimeDetailsCommand(ReminderNotificationService reminderNotificationService,
                                       ReminderNotificationMessageBuilder messageBuilder,
                                       MessageService messageService,
-                                      InlineKeyboardService inlineKeyboardService, LocalisationService localisationService, TgUserService userService) {
+                                      InlineKeyboardService inlineKeyboardService, TgUserService userService) {
         this.reminderNotificationService = reminderNotificationService;
         this.messageBuilder = messageBuilder;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
-        this.localisationService = localisationService;
         this.userService = userService;
     }
 
@@ -53,10 +52,11 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         ReminderNotification reminderNotification = reminderNotificationService.getReminderTime(requestParams.getInt(Arg.REMINDER_NOTIFICATION_ID.getKey()));
 
+        Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(messageBuilder.getReminderTimeMessage(reminderNotification, localisationService.getCurrentLocale(callbackQuery.getFrom().getLanguageCode())))
-                        .replyKeyboard(inlineKeyboardService.getReminderTimeKeyboard(requestParams.getInt(Arg.REMINDER_NOTIFICATION_ID.getKey()), reminderNotification.getReminderId(), userService.getLocale(callbackQuery.getFrom().getId())))
+                        .text(messageBuilder.getReminderTimeMessage(reminderNotification, locale))
+                        .replyKeyboard(inlineKeyboardService.getReminderTimeKeyboard(requestParams.getInt(Arg.REMINDER_NOTIFICATION_ID.getKey()), reminderNotification.getReminderId(), locale))
         );
         return null;
     }

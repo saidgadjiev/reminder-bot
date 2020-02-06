@@ -42,23 +42,23 @@ public class CustomRemindValidator implements Validator {
 
     private void validate(Reminder reminder, OffsetTime offsetTime) {
         if (offsetTime.getType() == OffsetTime.Type.FOR) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, reminder.getReceiver().getLocale()));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, reminder.getReceiver().getLocale()));
         }
         if (offsetTime.getType() == OffsetTime.Type.BEFORE && !reminder.getRemindAt().hasTime()) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, reminder.getReceiver().getLocale()));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, reminder.getReceiver().getLocale()));
         }
     }
 
     private void validate(FixedTime fixedTime, Locale locale) {
         if (fixedTime.getType() != FixedTime.Type.AT) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
         }
         if (!fixedTime.getDateTime().hasTime()) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
         }
         DateTime dateTime = fixedTime.getDateTime();
         if (dateTime.toZonedDateTime().isBefore(timeCreator.zonedDateTimeNow(dateTime.getZoneId()))) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
         }
     }
 }

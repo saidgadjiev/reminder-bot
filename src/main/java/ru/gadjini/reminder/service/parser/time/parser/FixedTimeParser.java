@@ -31,8 +31,6 @@ public class FixedTimeParser {
 
     private DayOfWeekService dayOfWeekService;
 
-    private final LocalisationService localisationService;
-
     private final Locale locale;
 
     private final LexemsConsumer lexemsConsumer;
@@ -41,11 +39,10 @@ public class FixedTimeParser {
 
     FixedTimeParser(LocalisationService localisationService, Locale locale, LexemsConsumer lexemsConsumer,
                     ZoneId zoneId, DayOfWeekService dayOfWeekService, TimeCreator timeCreator) {
-        this.tomorrow = localisationService.getCurrentLocaleMessage(MessagesProperties.TOMORROW, locale);
-        this.dayAfterTomorrow = localisationService.getCurrentLocaleMessage(MessagesProperties.DAY_AFTER_TOMORROW, locale);
-        this.typeUntil = localisationService.getCurrentLocaleMessage(MessagesProperties.FIXED_TIME_TYPE_UNTIL, locale);
-        this.typeAt = localisationService.getCurrentLocaleMessage(MessagesProperties.TIME_ARTICLE, locale);
-        this.localisationService = localisationService;
+        this.tomorrow = localisationService.getMessage(MessagesProperties.TOMORROW, locale);
+        this.dayAfterTomorrow = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW, locale);
+        this.typeUntil = localisationService.getMessage(MessagesProperties.FIXED_TIME_TYPE_UNTIL, locale);
+        this.typeAt = localisationService.getMessage(MessagesProperties.TIME_ARTICLE, locale);
         this.locale = locale;
         this.lexemsConsumer = lexemsConsumer;
         this.timeCreator = timeCreator;
@@ -151,7 +148,7 @@ public class FixedTimeParser {
     private void consumeMonthWord(List<BaseLexem> lexems) {
         String month = lexemsConsumer.consume(lexems, TimeToken.MONTH_WORD).getValue();
 
-        Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale("ru")).equals(month)).findFirst().orElseThrow(ParseException::new);
+        Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, locale).equals(month)).findFirst().orElseThrow(ParseException::new);
 
         fixedTime.month(m.getValue());
         if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {

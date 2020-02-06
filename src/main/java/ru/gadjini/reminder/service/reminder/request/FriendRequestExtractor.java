@@ -52,7 +52,7 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
 
                 return reminderRequest;
             } catch (ParseException ex) {
-                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, extractReceiverResult.receiver.getLocale()));
+                throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, extractReceiverResult.receiver.getLocale()));
             }
         }
 
@@ -80,9 +80,9 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
             StringBuilder message = new StringBuilder();
 
             if (voice) {
-                message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_VOICE_REQUEST, new Object[]{text}, locale)).append(" ");
+                message.append(localisationService.getMessage(MessagesProperties.MESSAGE_VOICE_REQUEST, new Object[]{text}, locale)).append(" ");
             }
-            message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_FRIEND_WITH_NAME_NOT_FOUND, locale));
+            message.append(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_WITH_NAME_NOT_FOUND, locale));
 
             throw new UserException(message.toString());
         }

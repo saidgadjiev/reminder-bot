@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.common.TestConstants;
@@ -39,7 +38,9 @@ import static ru.gadjini.reminder.service.parser.time.lexer.TimeToken.*;
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class OffsetTimeParserTest {
 
-    @SpyBean
+    private static final Locale LOCALE = new Locale("ru");
+
+    @Autowired
     private LocalisationService localisationService;
 
     @Autowired
@@ -54,8 +55,6 @@ class OffsetTimeParserTest {
 
         Mockito.when(timeCreator.dateTimeNow(TestConstants.TEST_ZONE)).thenReturn(DateTime.of(STATIC_TIME));
         Mockito.when(timeCreator.zonedDateTimeNow(TestConstants.TEST_ZONE)).thenReturn(STATIC_TIME);
-
-        Mockito.doReturn(new Locale("ru")).when(localisationService).getCurrentLocale("ru");
     }
 
     @Test
@@ -114,6 +113,6 @@ class OffsetTimeParserTest {
     }
 
     private TimeParser parser() {
-        return new TimeParser(localisationService, localisationService.getCurrentLocale("ru"), TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
+        return new TimeParser(localisationService, LOCALE, TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
     }
 }

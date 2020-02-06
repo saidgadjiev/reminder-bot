@@ -44,16 +44,16 @@ public class MySelfRequestExtractor extends BaseRequestExtractor {
         }
 
         try {
-            ReminderRequest reminderRequest = requestParser.parseRequest(context.getText(), zoneId, localisationService.getCurrentLocale(context.getUser().getLanguageCode()));
+            ReminderRequest reminderRequest = requestParser.parseRequest(context.getText(), zoneId, locale);
             reminderRequest.setLocale(locale);
 
             return reminderRequest;
         } catch (ParseException ex) {
-            throw new UserException(getMessage(context.getText(), context.isVoice(), localisationService.getCurrentLocale(context.getUser().getLanguageCode())));
+            throw new UserException(getMessage(context.getText(), context.isVoice(), locale));
         }
     }
 
     private String getMessage(String text, boolean voice, Locale locale) {
-        return voice ? localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT_VOICE, new Object[]{text}, locale) : localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, locale);
+        return voice ? localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT_VOICE, new Object[]{text}, locale) : localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, locale);
     }
 }

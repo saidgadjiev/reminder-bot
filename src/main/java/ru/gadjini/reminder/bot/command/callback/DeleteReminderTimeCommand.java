@@ -53,7 +53,7 @@ public class DeleteReminderTimeCommand implements CallbackBotCommand {
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_TIME_DELETED, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TIME_DELETED, locale))
                         .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.SCHEDULE_COMMAND_NAME, new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId), locale))
         );
 

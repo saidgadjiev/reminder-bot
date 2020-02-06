@@ -56,8 +56,6 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     private FriendshipMessageBuilder friendshipMessageBuilder;
 
-    private LocalisationService localisationService;
-
     private TgUserService userService;
 
     @Autowired
@@ -74,7 +72,6 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
         this.commandNavigator = commandNavigator;
         this.reminderMessageSender = reminderMessageSender;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
-        this.localisationService = localisationService;
         this.userService = userService;
 
         for (Locale locale : localisationService.getSupportedLocales()) {
@@ -145,7 +142,9 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     @Override
     public void processEditedMessage(Message editedMessage, String text) {
-        FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(editedMessage.getFrom().getId(), text, editedMessage.hasVoice(), localisationService.getCurrentLocale(editedMessage.getFrom().getLanguageCode()));
+        Locale locale = userService.getLocale(editedMessage.getFrom().getId());
+        FriendRequestExtractor.ExtractReceiverResult extractReceiverResult = friendRequestExtractor.extractReceiver(
+                editedMessage.getFrom().getId(), text, editedMessage.hasVoice(), locale);
 
         if (StringUtils.isNotBlank(extractReceiverResult.getText())) {
             UpdateReminderResult updateReminderResult = reminderRequestService.updateReminder(editedMessage.getMessageId(), editedMessage.getFrom(), extractReceiverResult.getText());

@@ -212,7 +212,7 @@ public class ReminderRequestService {
         try {
             return requestParser.parseTime(text, zoneId, locale);
         } catch (ParseException ex) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
         }
     }
 

@@ -15,11 +15,14 @@ import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageBuilder;
+
+import java.util.Locale;
 
 @Component
 public class CreatorReminderCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
@@ -34,14 +37,17 @@ public class CreatorReminderCommand implements CallbackBotCommand, NavigableCall
 
     private LocalisationService localisationService;
 
+    private TgUserService userService;
+
     @Autowired
     public CreatorReminderCommand(ReminderService reminderService, MessageService messageService,
-                                  ReminderMessageBuilder messageBuilder, InlineKeyboardService inlineKeyboardService, LocalisationService localisationService) {
+                                  ReminderMessageBuilder messageBuilder, InlineKeyboardService inlineKeyboardService, LocalisationService localisationService, TgUserService userService) {
         this.reminderService = reminderService;
         this.messageService = messageService;
         this.messageBuilder = messageBuilder;
         this.inlineKeyboardService = inlineKeyboardService;
         this.localisationService = localisationService;
+        this.userService = userService;
     }
 
     @Override
@@ -66,10 +72,11 @@ public class CreatorReminderCommand implements CallbackBotCommand, NavigableCall
                         .replyKeyboard(inlineKeyboardService.getCreatorReminderKeyboard(reminder))
         );
         if (replyKeyboard != null) {
+            Locale locale = userService.getLocale(tgMessage.getUser().getId());
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(tgMessage.getChatId())
-                            .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_HOW_HELP, localisationService.getCurrentLocale(tgMessage.getUser().getLanguageCode())))
+                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_HOW_HELP, locale))
                             .replyKeyboard(replyKeyboard)
             );
         }
