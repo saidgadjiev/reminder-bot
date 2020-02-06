@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.ReminderConstants;
 import ru.gadjini.reminder.dao.TgUserDao;
+import ru.gadjini.reminder.domain.CreateOrUpdateResult;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -46,17 +48,18 @@ public class TgUserService {
         return Locale.getDefault();
     }
 
-    public TgUser createOrUpdateUser(long chatId, User user) {
+    public CreateOrUpdateResult createOrUpdateUser(long chatId, User user) {
         TgUser tgUser = new TgUser();
 
         tgUser.setUserId(user.getId());
         tgUser.setChatId(chatId);
         tgUser.setUsername(user.getUserName());
         tgUser.setName(UserUtils.name(user));
+        tgUser.setZoneId(ReminderConstants.DEFAULT_TIMEZONE);
 
-        tgUserDao.createOrUpdate(tgUser);
+        String state = tgUserDao.createOrUpdate(tgUser);
 
-        return tgUser;
+        return new CreateOrUpdateResult(tgUser, CreateOrUpdateResult.State.fromDesc(state));
     }
 
     public ZoneId getTimeZone(int userId) {
@@ -82,4 +85,6 @@ public class TgUserService {
     public void saveZoneId(int userId, ZoneId zoneId) {
         tgUserDao.updateTimezone(userId, zoneId.getId());
     }
+
+
 }

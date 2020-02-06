@@ -2,11 +2,14 @@ package ru.gadjini.reminder.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 @Repository
 public class TgUserDao {
@@ -51,17 +54,24 @@ public class TgUserDao {
         );
     }
 
-    public void createOrUpdate(TgUser tgUser) {
+    public String createOrUpdate(TgUser tgUser) {
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
-                "INSERT INTO tg_user(user_id, username, name, chat_id) VALUES (?, ?, ?, ?) ON CONFLICT(chat_id) " +
-                        "DO UPDATE SET username = excluded.username, name = excluded.name",
-                preparedStatement -> {
+                connection -> {
+                    PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO tg_user(user_id, username, name, chat_id) VALUES (?, ?, ?, ?) ON CONFLICT(chat_id) " +
+                            "DO UPDATE SET username = excluded.username, name = excluded.name RETURNING CASE WHEN XMAX::text::int > 0 THEN 'updated' ELSE 'inserted' END AS state", Statement.RETURN_GENERATED_KEYS);
+
                     preparedStatement.setInt(1, tgUser.getUserId());
                     preparedStatement.setString(2, tgUser.getUsername());
                     preparedStatement.setString(3, tgUser.getName());
                     preparedStatement.setLong(4, tgUser.getChatId());
-                }
+
+                    return preparedStatement;
+                },
+                generatedKeyHolder
         );
+
+        return (String) generatedKeyHolder.getKeys().get("state");
     }
 
     public void updateTimezone(int userId, String zoneId) {

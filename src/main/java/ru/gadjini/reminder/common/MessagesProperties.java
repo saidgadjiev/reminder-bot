@@ -7,7 +7,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_HELP = "message.help";
 
-    public static final String MESSAGE_START = "message.start";
+    public static final String MESSAGE_MAIN_MENU = "message.main.menu";
 
     public static final String MESSAGE_NEW_REMINDER = "message.new.reminder";
 
@@ -450,6 +450,8 @@ public class MessagesProperties {
     public static final String MESSAGE_TRIAL_PERIOD_STARTED = "message.trial.period.started";
 
     public static final String REMINDER_DETAILS_COMMAND_DESCRIPTION = "reminder.details.command.description";
+
+    public static final String MESSAGE_START = "message.start";
 
     public static final String MESSAGE_POSTPONE_REASON = "message.postpone.reason";
 

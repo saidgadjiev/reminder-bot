@@ -47,7 +47,7 @@ public class RefreshUserDataCommand implements KeyboardBotCommand {
 
     @Override
     public boolean processMessage(Message message, String text) {
-        TgUser user = tgUserService.createOrUpdateUser(message.getChatId(), message.getFrom());
+        TgUser user = tgUserService.createOrUpdateUser(message.getChatId(), message.getFrom()).getUser();
         messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(message(user)));
 
         return false;

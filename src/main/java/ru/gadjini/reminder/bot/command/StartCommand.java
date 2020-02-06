@@ -127,7 +127,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_START, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_MAIN_MENU, locale))
                         .replyKeyboard(replyKeyboardService.getMainMenu(userId, locale)));
     }
 }
