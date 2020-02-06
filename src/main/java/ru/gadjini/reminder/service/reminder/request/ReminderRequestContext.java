@@ -1,8 +1,10 @@
 package ru.gadjini.reminder.service.reminder.request;
 
 import org.telegram.telegrambots.meta.api.objects.User;
+import ru.gadjini.reminder.domain.TgUser;
 
 import java.time.ZoneId;
+import java.util.Locale;
 
 public class ReminderRequestContext {
 
@@ -10,11 +12,9 @@ public class ReminderRequestContext {
 
     private String text;
 
-    private String receiverName;
+    private TgUser receiver;
 
     private Integer receiverId;
-
-    private ZoneId receiverZone;
 
     private int messageId;
 
@@ -48,11 +48,19 @@ public class ReminderRequestContext {
     }
 
     public ZoneId getReceiverZone() {
-        return receiverZone;
+        return receiver.getZone();
     }
 
-    public ReminderRequestContext setReceiverZone(ZoneId receiverZone) {
-        this.receiverZone = receiverZone;
+    public Locale getReceiverLocale() {
+        return receiver.getLocale();
+    }
+
+    public TgUser getReceiver() {
+        return this.receiver;
+    }
+
+    public ReminderRequestContext setReceiver(final TgUser receiver) {
+        this.receiver = receiver;
 
         return this;
     }
@@ -78,12 +86,6 @@ public class ReminderRequestContext {
     }
 
     public String getReceiverName() {
-        return receiverName;
-    }
-
-    public ReminderRequestContext setReceiverName(String receiverName) {
-        this.receiverName = receiverName;
-
-        return this;
+        return receiver.getName();
     }
 }

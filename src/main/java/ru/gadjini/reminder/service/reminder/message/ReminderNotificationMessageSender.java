@@ -14,6 +14,7 @@ import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.time.DateTime;
 
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,8 +66,8 @@ public class ReminderNotificationMessageSender {
         );
     }
 
-    public void sendCustomRemindCreatedFromReminderTimeDetails(long chatId, int messageId, CustomRemindResult customRemindResult) {
-        String text = reminderNotificationMessageBuilder.getReminderTimeMessage(customRemindResult.getReminderNotifications());
+    public void sendCustomRemindCreatedFromReminderTimeDetails(long chatId, int messageId, CustomRemindResult customRemindResult, Locale locale) {
+        String text = reminderNotificationMessageBuilder.getReminderTimeMessage(customRemindResult.getReminderNotifications(), locale);
 
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)

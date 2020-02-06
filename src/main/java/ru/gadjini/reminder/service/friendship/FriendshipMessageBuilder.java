@@ -1,6 +1,7 @@
 package ru.gadjini.reminder.service.friendship;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
@@ -11,6 +12,7 @@ import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class FriendshipMessageBuilder {
@@ -24,20 +26,20 @@ public class FriendshipMessageBuilder {
         this.timeCreator = timeCreator;
     }
 
-    public String getFriendDetails(TgUser friend) {
-        return getFriendDetails(friend, null);
+    public String getFriendDetails(TgUser friend, Locale locale) {
+        return getFriendDetails(friend, null, locale);
     }
 
-    public String getFriendDetailsWithFooterCode(TgUser friend, String footerCode) {
-        return getFriendDetails(friend, localisationService.getCurrentLocaleMessage(footerCode));
+    public String getFriendDetailsWithFooterCode(TgUser friend, String footerCode, Locale locale) {
+        return getFriendDetails(friend, localisationService.getCurrentLocaleMessage(footerCode), locale);
     }
 
-    public String getFriendDetails(TgUser friend, String footer) {
+    public String getFriendDetails(TgUser friend, String footer, Locale locale) {
         StringBuilder message = new StringBuilder();
 
         message.append(UserUtils.userLink(friend)).append("\n\n");
         message.append(localisationService.getCurrentLocaleMessage(MessagesProperties.TIMEZONE, new Object[] {
-                friend.getZone().getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale()),
+                friend.getZone().getDisplayName(TextStyle.FULL, locale),
                 DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(friend.getZone()))
         }));
 

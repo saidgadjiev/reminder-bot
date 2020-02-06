@@ -14,6 +14,7 @@ import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class ReminderNotificationMessageBuilder {
@@ -54,24 +55,24 @@ public class ReminderNotificationMessageBuilder {
         }
     }
 
-    public String getReminderTimeMessage(List<ReminderNotification> reminderNotifications) {
+    public String getReminderTimeMessage(List<ReminderNotification> reminderNotifications, Locale locale) {
         StringBuilder message = new StringBuilder();
 
         for (ReminderNotification notification : reminderNotifications) {
             if (message.length() > 0) {
                 message.append("\n");
             }
-            message.append(getReminderTimeMessage(notification));
+            message.append(getReminderTimeMessage(notification, locale));
         }
 
         return message.toString();
     }
 
-    public String getReminderTimeMessage(ReminderNotification reminderNotification) {
+    public String getReminderTimeMessage(ReminderNotification reminderNotification, Locale locale) {
         if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
-            return reminderNotificationTimeBuilder.time(reminderNotification);
+            return reminderNotificationTimeBuilder.time(reminderNotification, locale);
         } else {
-            StringBuilder message = new StringBuilder(reminderNotificationTimeBuilder.time(reminderNotification));
+            StringBuilder message = new StringBuilder(reminderNotificationTimeBuilder.time(reminderNotification, locale));
 
             ZonedDateTime nextRemindAt = JodaTimeUtils.plus(reminderNotification.getLastReminderAt().withZoneSameInstant(reminderNotification.getReminder().getReceiver().getZone()), reminderNotification.getDelayTime());
             message.append("\n").append(messageBuilder.getNextReminderNotificationAt(nextRemindAt));
@@ -91,7 +92,7 @@ public class ReminderNotificationMessageBuilder {
             if (message.length() > 0) {
                 message.append("\n");
             }
-            message.append(i++).append(") ").append(reminderNotificationTimeBuilder.time(reminderNotification));
+            message.append(i++).append(") ").append(reminderNotificationTimeBuilder.time(reminderNotification, null));
         }
 
         return message.toString();

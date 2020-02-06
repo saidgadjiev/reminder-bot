@@ -51,8 +51,7 @@ public class DayOfWeekService {
         throw new UnsupportedOperationException();
     }
 
-    public boolean isThatDay(DayOfWeek dayOfWeek, String value) {
-        Locale locale = localisationService.getCurrentLocale();
+    public boolean isThatDay(DayOfWeek dayOfWeek, String value, Locale locale) {
         Pattern pattern = patternsByLocale.get(locale).get(getFullDisplayNamePattern(locale, dayOfWeek));
 
         return pattern.matcher(value).matches()

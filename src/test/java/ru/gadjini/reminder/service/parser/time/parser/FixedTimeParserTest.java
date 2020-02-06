@@ -53,7 +53,7 @@ class FixedTimeParserTest {
         Mockito.when(timeCreator.dateTimeNow(TestConstants.TEST_ZONE)).thenReturn(DateTime.of(STATIC_TIME));
         Mockito.when(timeCreator.zonedDateTimeNow(TestConstants.TEST_ZONE)).thenReturn(STATIC_TIME);
 
-        Mockito.doReturn(new Locale("ru")).when(localisationService).getCurrentLocale();
+        Mockito.doReturn(new Locale("ru")).when(localisationService).getCurrentLocale("ru");
     }
 
     @Test
@@ -149,6 +149,6 @@ class FixedTimeParserTest {
     }
 
     private TimeParser parser() {
-        return new TimeParser(localisationService, TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
+        return new TimeParser(localisationService, localisationService.getCurrentLocale("ru"), TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
     }
 }

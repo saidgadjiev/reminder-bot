@@ -23,9 +23,9 @@ public class ReminderTimeBuilder {
             return "<b>" + timeBuilder.deactivated() + "</b>";
         }
         if (reminder.isRepeatable()) {
-            return timeBuilder.time(reminder.getRepeatRemindAtsInReceiverZone(timeCreator));
+            return timeBuilder.time(reminder.getRepeatRemindAtsInReceiverZone(timeCreator), reminder.getReceiver().getLocale());
         } else {
-            return timeBuilder.time(reminder.getRemindAtInReceiverZone());
+            return timeBuilder.time(reminder.getRemindAtInReceiverZone(), reminder.getReceiver().getLocale());
         }
     }
 

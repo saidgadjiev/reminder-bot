@@ -3,6 +3,7 @@ package ru.gadjini.reminder.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.dao.usernotification.UserReminderNotificationDao;
 import ru.gadjini.reminder.domain.UserReminderNotification;
@@ -20,6 +21,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class UserReminderNotificationService {
@@ -56,10 +58,10 @@ public class UserReminderNotificationService {
         this.userService = userService;
     }
 
-    public void create(int userId, String text, UserReminderNotification.NotificationType notificationType) {
-        ZoneId zoneId = userService.getTimeZone(userId);
+    public void create(User user, String text, UserReminderNotification.NotificationType notificationType) {
+        ZoneId zoneId = userService.getTimeZone(user.getId());
 
-        Time time = parseCustomRemind(text, zoneId);
+        Time time = parseCustomRemind(text, zoneId, localisationService.getCurrentLocale(user.getLanguageCode()));
         validatorFactory.getValidator(ValidatorType.USER_REMINDER_NOTIFICATION).validate(new ValidationContext().time(time));
 
         time.setOffsetTime(timeCreator.withZone(time.getOffsetTime(), ZoneOffset.UTC));
@@ -68,7 +70,7 @@ public class UserReminderNotificationService {
         userReminderNotification.setTime(time.getOffsetTime().getTime());
         userReminderNotification.setHours(time.getOffsetTime().getHours());
         userReminderNotification.setMinutes(time.getOffsetTime().getMinutes());
-        userReminderNotification.setUserId(userId);
+        userReminderNotification.setUserId(user.getId());
         userReminderNotification.setType(notificationType);
 
         dao.create(userReminderNotification);
@@ -134,9 +136,9 @@ public class UserReminderNotificationService {
         return notification;
     }
 
-    private Time parseCustomRemind(String text, ZoneId zoneId) {
+    private Time parseCustomRemind(String text, ZoneId zoneId, Locale locale) {
         try {
-            return requestParser.parseTime(text, zoneId);
+            return requestParser.parseTime(text, zoneId, locale);
         } catch (ParseException ex) {
             throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_USER_REMIND));
         }

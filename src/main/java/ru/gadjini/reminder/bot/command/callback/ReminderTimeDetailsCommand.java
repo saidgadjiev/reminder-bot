@@ -10,6 +10,7 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageBuilder;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
@@ -25,15 +26,18 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
 
     private InlineKeyboardService inlineKeyboardService;
 
+    private LocalisationService localisationService;
+
     @Autowired
     public ReminderTimeDetailsCommand(ReminderNotificationService reminderNotificationService,
                                       ReminderNotificationMessageBuilder messageBuilder,
                                       MessageService messageService,
-                                      InlineKeyboardService inlineKeyboardService) {
+                                      InlineKeyboardService inlineKeyboardService, LocalisationService localisationService) {
         this.reminderNotificationService = reminderNotificationService;
         this.messageBuilder = messageBuilder;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
+        this.localisationService = localisationService;
     }
 
     @Override
@@ -47,7 +51,7 @@ public class ReminderTimeDetailsCommand implements CallbackBotCommand {
 
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                        .text(messageBuilder.getReminderTimeMessage(reminderNotification))
+                        .text(messageBuilder.getReminderTimeMessage(reminderNotification, localisationService.getCurrentLocale(callbackQuery.getFrom().getLanguageCode())))
                         .replyKeyboard(inlineKeyboardService.getReminderTimeKeyboard(requestParams.getInt(Arg.REMINDER_NOTIFICATION_ID.getKey()), reminderNotification.getReminderId()))
         );
         return null;

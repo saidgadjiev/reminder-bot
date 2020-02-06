@@ -123,7 +123,7 @@ public class RepeatTimeParser {
     private void consumeDayOfWeek(List<BaseLexem> lexems) {
         String dayOfWeekValue = lexemsConsumer.consume(lexems, TimeToken.DAY_OF_WEEK).getValue();
         DayOfWeek dayOfWeek = Stream.of(DayOfWeek.values())
-                .filter(dow -> dayOfWeekService.isThatDay(dow, dayOfWeekValue))
+                .filter(dow -> dayOfWeekService.isThatDay(dow, dayOfWeekValue, locale))
                 .findFirst()
                 .orElseThrow();
 

@@ -145,7 +145,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     private void postponeTime(int userId, String text, StateData stateData) {
         Reminder reminder = ReminderData.to(stateData.getReminder());
-        Time parseTime = reminderRequestService.parseTime(text, reminder.getReceiver().getZone());
+        Time parseTime = reminderRequestService.parseTime(text, reminder.getReceiver().getZone(), reminder.getReceiver().getLocale());
 
         validatorFactory.getValidator(ValidatorType.POSTPONE).validate(new ValidationContext().time(parseTime).reminder(reminder));
 

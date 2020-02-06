@@ -4,6 +4,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.ZoneId;
+import java.util.Locale;
 
 public class TgUser {
 
@@ -79,6 +80,10 @@ public class TgUser {
 
     public void setZoneId(String zoneId) {
         this.zoneId = zoneId;
+    }
+
+    public Locale getLocale() {
+        return Locale.getDefault();
     }
 
     public void setFrom(User user) {

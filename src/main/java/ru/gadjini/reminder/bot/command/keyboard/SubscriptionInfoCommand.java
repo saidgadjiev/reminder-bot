@@ -56,24 +56,24 @@ public class SubscriptionInfoCommand implements KeyboardBotCommand {
     public boolean processMessage(Message message, String text) {
         Subscription subscription = subscriptionService.getSubscription(message.getFrom().getId());
 
-        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(getSubscriptionInfo(subscription)));
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(message.getChatId()).text(getSubscriptionInfo(subscription, localisationService.getCurrentLocale(message.getFrom().getLanguageCode()))));
 
         return false;
     }
 
-    private String getSubscriptionInfo(Subscription subscription) {
+    private String getSubscriptionInfo(Subscription subscription, Locale locale) {
         Plan plan = planService.getActivePlan();
 
         if (subscription.getPlanId() == null) {
             return localisationService.getCurrentLocaleMessage(
                     MessagesProperties.MESSAGE_TRIAL_SUBSCRIPTION_END_DATE,
-                    new Object[]{DateTimeFormats.PAYMENT_PERIOD_PATTERN.format(subscription.getEndDate()), plan.getPrice(), timeBuilder.time(plan.getPeriod())}
+                    new Object[]{DateTimeFormats.PAYMENT_PERIOD_PATTERN.format(subscription.getEndDate()), plan.getPrice(), timeBuilder.time(plan.getPeriod(), locale)}
             );
         }
 
         return localisationService.getCurrentLocaleMessage(
                 MessagesProperties.MESSAGE_SUBSCRIPTION_END_DATE,
-                new Object[]{DateTimeFormats.PAYMENT_PERIOD_PATTERN.format(subscription.getEndDate()), plan.getPrice(), timeBuilder.time(plan.getPeriod())}
+                new Object[]{DateTimeFormats.PAYMENT_PERIOD_PATTERN.format(subscription.getEndDate()), plan.getPrice(), timeBuilder.time(plan.getPeriod(), locale)}
         );
     }
 }

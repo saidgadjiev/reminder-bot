@@ -48,7 +48,7 @@ class ReminderRequestParserTest {
 
     @BeforeEach
     void setUp() {
-        Mockito.doReturn(new Locale("ru")).when(localisationService).getCurrentLocale();
+        Mockito.doReturn(new Locale("ru")).when(localisationService).getCurrentLocale("ru");
     }
 
     @Test

@@ -2,6 +2,7 @@ package ru.gadjini.reminder.filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.ReminderConstants;
@@ -74,20 +75,21 @@ public class SubscriptionFilter extends BaseBotFilter {
 
     @Override
     public void doFilter(Update update) {
-        int userId = TgMessage.getUserId(update);
-        boolean checkSubscriptionResult = checkSubscription(userId);
+        User user = TgMessage.getUser(update);
+        boolean checkSubscriptionResult = checkSubscription(user);
 
         if (checkSubscriptionResult) {
             super.doFilter(update);
         }
     }
 
-    private boolean checkSubscription(int userId) {
+    private boolean checkSubscription(User user) {
+        int userId = user.getId();
         Subscription subscription = subscriptionService.getSubscription(userId);
 
         if (subscription == null) {
             subscriptionService.createTrialSubscription(userId);
-            sendTrialSubscriptionStarted(userId);
+            sendTrialSubscriptionStarted(user);
             commandNavigator.setCurrentCommand(userId, CommandNames.START_COMMAND_NAME);
 
             return false;
@@ -101,9 +103,10 @@ public class SubscriptionFilter extends BaseBotFilter {
         return true;
     }
 
-    private void sendTrialSubscriptionStarted(int userId) {
-        TimeDeclensionService declensionService = timeDeclensionProvider.getService(localisationService.getCurrentLocale().getLanguage());
+    private void sendTrialSubscriptionStarted(User user) {
+        TimeDeclensionService declensionService = timeDeclensionProvider.getService(localisationService.getCurrentLocale(user.getLanguageCode()).getLanguage());
 
+        int userId = user.getId();
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
@@ -111,7 +114,7 @@ public class SubscriptionFilter extends BaseBotFilter {
                                 localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_TRIAL_PERIOD_STARTED,
                                         new Object[]{
                                                 declensionService.day(subscriptionProperties.getTrialPeriod()),
-                                                ZoneId.of(ReminderConstants.DEFAULT_TIMEZONE).getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale())
+                                                ZoneId.of(ReminderConstants.DEFAULT_TIMEZONE).getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale(user.getLanguageCode()))
                                         })
                         ).replyKeyboard(replyKeyboardService.getMainMenu(userId, userId))
         );

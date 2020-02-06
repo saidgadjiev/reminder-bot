@@ -17,6 +17,7 @@ import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class RequestParser {
@@ -43,15 +44,15 @@ public class RequestParser {
         this.timeCreator = timeCreator;
     }
 
-    public ReminderRequest parseRequest(String text, ZoneId zoneId) {
-        List<BaseLexem> lexems = new ReminderRequestLexer(reminderRequestLexerConfig, timeLexerConfig, text).tokenize();
+    public ReminderRequest parseRequest(String text, ZoneId zoneId, Locale locale) {
+        List<BaseLexem> lexems = new ReminderRequestLexer(reminderRequestLexerConfig, timeLexerConfig, text, locale).tokenize();
 
-        return new ReminderRequestParser(localisationService, zoneId, dayOfWeekService, timeCreator).parse(lexems);
+        return new ReminderRequestParser(localisationService, locale, zoneId, dayOfWeekService, timeCreator).parse(lexems);
     }
 
-    public Time parseTime(String time, ZoneId zoneId) {
+    public Time parseTime(String time, ZoneId zoneId, Locale locale) {
         List<BaseLexem> lexems = new TimeLexer(timeLexerConfig, time, true).tokenizeThrowParseException();
 
-        return new TimeParser(localisationService, zoneId, dayOfWeekService, timeCreator).parseWithParseException(lexems);
+        return new TimeParser(localisationService, locale, zoneId, dayOfWeekService, timeCreator).parseWithParseException(lexems);
     }
 }

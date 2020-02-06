@@ -81,7 +81,9 @@ public class ReminderJob {
 
         for (Reminder reminder : overdueReminders) {
             repeatReminderService.autoSkip(reminder);
-            messageService.deleteMessage(reminder.getReceiverId(), reminder.getReceiverMessageId());
+            if (reminder.getReceiverMessageId() != null) {
+                messageService.deleteMessage(reminder.getReceiverId(), reminder.getReceiverMessageId());
+            }
 
             LOGGER.debug("Overdue reminder with id {} moved not the next time", reminder.getId());
         }

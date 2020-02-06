@@ -9,4 +9,8 @@ public class UserContextResolver {
     public User getUser() {
         return UserContextHolder.get().getUser();
     }
+
+    public String getLanguage() {
+        return UserContextHolder.get().getLanguage();
+    }
 }

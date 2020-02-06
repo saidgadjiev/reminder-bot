@@ -21,6 +21,8 @@ import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageSender;
 
+import java.util.Locale;
+
 @Component
 public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbackBotCommand {
 
@@ -85,12 +87,12 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
 
     @Override
     public void processNonCommandCallback(CallbackQuery callbackQuery, RequestParams requestParams) {
-        customRemind(callbackQuery.getMessage().getChatId(), requestParams.getString(Arg.CUSTOM_REMIND_TIME.getKey()));
+        customRemind(callbackQuery.getMessage().getChatId(), requestParams.getString(Arg.CUSTOM_REMIND_TIME.getKey()), localisationService.getCurrentLocale(callbackQuery.getFrom().getLanguageCode()));
     }
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        customRemind(message.getChatId(), text);
+        customRemind(message.getChatId(), text, localisationService.getCurrentLocale(message.getFrom().getLanguageCode()));
     }
 
     @Override
@@ -98,14 +100,14 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
         stateService.deleteState(chatId);
     }
 
-    private void customRemind(long chatId, String text) {
+    private void customRemind(long chatId, String text, Locale locale) {
         CallbackRequest callbackRequest = stateService.getState(chatId, true);
         CustomRemindResult customRemindResult = reminderService.customRemind(callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), text);
         commandNavigator.silentPop(chatId);
 
         String prevHistoryName = callbackRequest.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
         if (prevHistoryName.equals(CommandNames.SCHEDULE_COMMAND_NAME)) {
-            reminderMessageSender.sendCustomRemindCreatedFromReminderTimeDetails(chatId, callbackRequest.getMessageId(), customRemindResult);
+            reminderMessageSender.sendCustomRemindCreatedFromReminderTimeDetails(chatId, callbackRequest.getMessageId(), customRemindResult, locale);
         } else {
             reminderMessageSender.sendCustomRemindCreated(chatId, callbackRequest.getMessageId(), callbackRequest.getReplyKeyboard(), customRemindResult);
         }

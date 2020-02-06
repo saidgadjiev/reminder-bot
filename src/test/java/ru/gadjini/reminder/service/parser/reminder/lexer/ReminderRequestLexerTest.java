@@ -45,13 +45,13 @@ class ReminderRequestLexerTest {
 
     @BeforeEach
     void setUp() {
-        Mockito.doReturn(new Locale("ru")).when(localisationService).getCurrentLocale();
+        Mockito.doReturn(new Locale("ru")).when(localisationService).getCurrentLocale("ru");
     }
 
     @Test
     void fixedTime() {
         String str = "Тест 25 января 19:30";
-        ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str);
+        ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str, localisationService.getCurrentLocale("ru"));
         List<BaseLexem> lexems = lexer.tokenize();
         Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
     }
@@ -59,7 +59,7 @@ class ReminderRequestLexerTest {
     @Test
     void repeatTime() {
         String str = "Тест каждое 25 января 19:30";
-        ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str);
+        ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str, localisationService.getCurrentLocale("ru"));
         List<BaseLexem> lexems = lexer.tokenize();
         Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
     }
@@ -67,7 +67,7 @@ class ReminderRequestLexerTest {
     @Test
     void repeatTimes() {
         String str = "Тест каждое 25 января 19:30 среду 19:30";
-        ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str);
+        ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str, localisationService.getCurrentLocale("ru"));
         List<BaseLexem> lexems = lexer.tokenize();
         Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30"), new TimeLexem(TimeToken.DAY_OF_WEEK, "среду"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
     }
@@ -75,7 +75,7 @@ class ReminderRequestLexerTest {
     @Test
     void offsetTime() {
         String str = "Тест через 2 года 2 месяца 2 дня в 19:30";
-        ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str);
+        ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str, localisationService.getCurrentLocale("ru"));
         List<BaseLexem> lexems = lexer.tokenize();
         Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.OFFSET, ""), new TimeLexem(TimeToken.TYPE, "через"), new TimeLexem(TimeToken.YEARS, "2"), new TimeLexem(TimeToken.MONTHS, "2"), new TimeLexem(TimeToken.DAYS, "2"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
     }

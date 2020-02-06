@@ -42,7 +42,7 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
             ExtractReceiverResult extractReceiverResult = extractReceiver(context.getUser().getId(), context.getText(), context.isVoice());
 
             try {
-                ReminderRequest reminderRequest = requestParser.parseRequest(extractReceiverResult.text, extractReceiverResult.receiver.getZone());
+                ReminderRequest reminderRequest = requestParser.parseRequest(extractReceiverResult.text, extractReceiverResult.receiver.getZone(), extractReceiverResult.receiver.getLocale());
                 reminderRequest.setReceiverId(extractReceiverResult.receiver.getUserId());
 
                 return reminderRequest;

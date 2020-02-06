@@ -90,7 +90,7 @@ public class UserReminderNotificationScheduleCommand implements KeyboardBotComma
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
-        userReminderNotificationService.create(message.getFrom().getId(), text, notificationType);
+        userReminderNotificationService.create(message.getFrom(), text, notificationType);
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getNonCachedList(message.getFrom().getId(), notificationType);
         int messageId = stateService.getState(message.getChatId(), true);
 

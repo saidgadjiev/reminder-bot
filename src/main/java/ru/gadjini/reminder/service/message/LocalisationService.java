@@ -14,14 +14,11 @@ public class LocalisationService {
 
     private MessageSource messageSource;
 
-    private UserContextResolver userContextResolver;
-
     private static final String RU_LOCALE = "ru";
 
     @Autowired
-    public LocalisationService(MessageSource messageSource, UserContextResolver userContextResolver) {
+    public LocalisationService(MessageSource messageSource) {
         this.messageSource = messageSource;
-        this.userContextResolver = userContextResolver;
     }
 
     public String getMessage(String messageCode, Locale locale) {
@@ -33,7 +30,7 @@ public class LocalisationService {
     }
 
     public String getCurrentLocaleMessage(String messageCode, Object[] args) {
-        return messageSource.getMessage(messageCode, args, getCurrentLocale());
+        return messageSource.getMessage(messageCode, args, getCurrentLocale(null));
     }
 
     public List<Locale> getSupportedLocales() {
@@ -44,10 +41,9 @@ public class LocalisationService {
         return Locale.getDefault();
     }
 
-    public Locale getCurrentLocale() {
-        User user = userContextResolver.getUser();
+    public Locale getCurrentLocale(String languageCode) {
         for (Locale locale: getSupportedLocales()) {
-            if (locale.getLanguage().equals(user.getLanguageCode())) {
+            if (locale.getLanguage().equals(languageCode)) {
                 return locale;
             }
         }

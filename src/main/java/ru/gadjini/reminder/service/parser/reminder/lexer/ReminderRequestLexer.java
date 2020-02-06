@@ -8,6 +8,7 @@ import ru.gadjini.reminder.util.TextUtils;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 public class ReminderRequestLexer {
 
@@ -15,12 +16,15 @@ public class ReminderRequestLexer {
 
     private TimeLexer timeLexer;
 
+    private final Locale locale;
+
     private String[] parts;
 
-    public ReminderRequestLexer(ReminderRequestLexerConfig lexerConfig, TimeLexerConfig timeLexerConfig, String str) {
+    public ReminderRequestLexer(ReminderRequestLexerConfig lexerConfig, TimeLexerConfig timeLexerConfig, String str, Locale locale) {
         this.lexerConfig = lexerConfig;
         this.parts = breakToTextAndNote(str);
         this.timeLexer = new TimeLexer(timeLexerConfig, parts[0]);
+        this.locale = locale;
     }
 
     public List<BaseLexem> tokenize() {
@@ -46,7 +50,7 @@ public class ReminderRequestLexer {
     }
 
     private String[] breakToTextAndNote(String str) {
-        String[] parts = str.split(lexerConfig.getTextAndNoteBreakPattern());
+        String[] parts = str.split(lexerConfig.getTextAndNoteBreakPattern(locale));
 
         for (int i = 0; i < parts.length; ++i) {
             parts[i] = parts[i].trim();

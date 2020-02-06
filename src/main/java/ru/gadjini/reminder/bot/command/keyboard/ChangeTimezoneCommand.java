@@ -83,7 +83,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .text(localisationService.getCurrentLocaleMessage(MessagesProperties.CURRENT_TIMEZONE, new Object[]{
-                                zoneId.getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale()),
+                                zoneId.getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale(message.getFrom().getLanguageCode())),
                                 DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(zoneId))
                         })).replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
         );
@@ -112,7 +112,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(message.getChatId())
                             .text(localisationService.getCurrentLocaleMessage(MessagesProperties.TIMEZONE_CHANGED, new Object[]{
-                                    zoneId.getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale()),
+                                    zoneId.getDisplayName(TextStyle.FULL, localisationService.getCurrentLocale(message.getFrom().getLanguageCode())),
                                     DateTimeFormats.TIMEZONE_LOCAL_TIME_FORMATTER.format(timeCreator.zonedDateTimeNow(zoneId))
                             })).replyKeyboard(replyKeyboardMarkup)
             );

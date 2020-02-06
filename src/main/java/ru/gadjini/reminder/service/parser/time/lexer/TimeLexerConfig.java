@@ -35,18 +35,18 @@ public class TimeLexerConfig {
     }
 
     public GroupPattern getTimePattern() {
-        return timePatterns.get(localisationService.getCurrentLocale());
+        return timePatterns.get(localisationService.getCurrentLocale("ru"));
     }
 
     public GroupPattern getRepeatTimePattern() {
-        return repeatTimePatterns.get(localisationService.getCurrentLocale());
+        return repeatTimePatterns.get(localisationService.getCurrentLocale("ru"));
     }
 
     public GroupPattern getOffsetTimePattern() {
-        return offsetTimePatterns.get(localisationService.getCurrentLocale());
+        return offsetTimePatterns.get(localisationService.getCurrentLocale("ru"));
     }
 
     public GroupPattern getRepeatWordPattern() {
-        return repeatWordPatterns.get(localisationService.getCurrentLocale());
+        return repeatWordPatterns.get(localisationService.getCurrentLocale("ru"));
     }
 }

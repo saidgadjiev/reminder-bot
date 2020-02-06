@@ -327,25 +327,25 @@ public class ReminderMessageSender {
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(oldReminder.getReceiverId())
                             .messageId(messageId)
-                            .text(reminderMessageBuilder.getMySelfReminderPostponed(oldReminder.getText(), newReminder.getRemindAtInReceiverZone()))
+                            .text(reminderMessageBuilder.getMySelfReminderPostponed(oldReminder.getText(), newReminder.getRemindAtInReceiverZone(), oldReminder.getReceiver().getLocale()))
                             .replyKeyboard(inlineKeyboardMarkup)
             );
-            tryEditRemindMessage(messageId, updateReminderResult.getOldReminder(), reminderMessageBuilder.getMySelfReminderPostponed(oldReminder.getText(), newReminder.getRemindAtInReceiverZone()));
+            tryEditRemindMessage(messageId, updateReminderResult.getOldReminder(), reminderMessageBuilder.getMySelfReminderPostponed(oldReminder.getText(), newReminder.getRemindAtInReceiverZone(), oldReminder.getReceiver().getLocale()));
         } else {
             messageService.editMessage(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(oldReminder.getReceiverId())
                             .messageId(messageId)
-                            .text(reminderMessageBuilder.getReminderPostponedForReceiver(oldReminder.getText(), oldReminder.getCreator(), newReminder.getRemindAtInReceiverZone(), reason))
+                            .text(reminderMessageBuilder.getReminderPostponedForReceiver(oldReminder.getText(), oldReminder.getCreator(), newReminder.getRemindAtInReceiverZone(), reason, oldReminder.getReceiver().getLocale()))
                             .replyKeyboard(inlineKeyboardMarkup)
             );
             tryEditRemindMessage(messageId, updateReminderResult.getOldReminder(), reminderMessageBuilder.getReminderPostponedForReceiver(oldReminder.getText(), oldReminder.getReceiver(),
-                    newReminder.getRemindAtInReceiverZone(), reason));
+                    newReminder.getRemindAtInReceiverZone(), reason, oldReminder.getReceiver().getLocale()));
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(oldReminder.getCreatorId())
                             .text(reminderMessageBuilder.getReminderPostponedForCreator(oldReminder.getText(), oldReminder.getReceiver(),
-                                    newReminder.getRemindAtInReceiverZone(), reason))
+                                    newReminder.getRemindAtInReceiverZone(), reason, oldReminder.getCreator().getLocale()))
                             .replyKeyboard(inlineKeyboardService.getOpenDetailsKeyboard(oldReminder.getId()))
             );
         }

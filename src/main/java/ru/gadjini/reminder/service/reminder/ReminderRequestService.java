@@ -38,6 +38,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -101,7 +102,7 @@ public class ReminderRequestService {
         }
         ReminderRequestContext context = new ReminderRequestContext()
                 .setUser(user)
-                .setReceiverZone(oldReminder.getReceiverZoneId())
+                .setReceiver(oldReminder.getReceiver())
                 .setText(text);
 
         ReminderRequest reminderRequest = requestExtractor.extract(context);
@@ -137,7 +138,7 @@ public class ReminderRequestService {
                 .setReceiverMapping(new Mapping())
         );
 
-        Time customRemind = parseTime(text, reminder.getReceiver().getZone());
+        Time customRemind = parseTime(text, reminder.getReceiver().getZone(), reminder.getReceiver().getLocale());
         validatorFactory.getValidator(ValidatorType.CUSTOM_REMIND).validate(new ValidationContext().time(customRemind).reminder(reminder));
 
         CustomRemindResult customRemindResult = new CustomRemindResult();
@@ -176,7 +177,7 @@ public class ReminderRequestService {
                 .setCreatorMapping(new Mapping())
                 .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME))));
 
-        Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone());
+        Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone(), oldReminder.getReceiver().getLocale());
         validatorFactory.getValidator(ValidatorType.REMINDER_TIME_VALIDATOR).validate(new ValidationContext().time(newReminderTimeInReceiverZone));
 
         Reminder newReminder = new Reminder(oldReminder);
@@ -207,9 +208,9 @@ public class ReminderRequestService {
         );
     }
 
-    public Time parseTime(String text, ZoneId zoneId) {
+    public Time parseTime(String text, ZoneId zoneId, Locale locale) {
         try {
-            return requestParser.parseTime(text, zoneId);
+            return requestParser.parseTime(text, zoneId, locale);
         } catch (ParseException ex) {
             throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT));
         }

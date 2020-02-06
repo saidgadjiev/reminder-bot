@@ -37,7 +37,7 @@ public class MySelfRequestExtractor extends BaseRequestExtractor {
         }
 
         try {
-            return requestParser.parseRequest(context.getText(), zoneId);
+            return requestParser.parseRequest(context.getText(), zoneId, localisationService.getCurrentLocale(context.getUser().getLanguageCode()));
         } catch (ParseException ex) {
             throw new UserException(getMessage(context.getText(), context.isVoice()));
         }

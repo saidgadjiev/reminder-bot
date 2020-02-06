@@ -55,6 +55,8 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
 
     private FriendshipMessageBuilder friendshipMessageBuilder;
 
+    private LocalisationService localisationService;
+
     @Autowired
     public CreateReminderKeyboardCommand(CommandStateService stateService, LocalisationService localisationService,
                                          FriendRequestExtractor friendRequestExtractor,
@@ -69,6 +71,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
         this.commandNavigator = commandNavigator;
         this.reminderMessageSender = reminderMessageSender;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
+        this.localisationService = localisationService;
 
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.forFriendStart.add(localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START, locale).toLowerCase());
@@ -104,7 +107,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(message.getChatId())
-                            .text(friendshipMessageBuilder.getFriendDetailsWithFooterCode(receiver, MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT))
+                            .text(friendshipMessageBuilder.getFriendDetailsWithFooterCode(receiver, MessagesProperties.MESSAGE_CREATE_REMINDER_TEXT, localisationService.getCurrentLocale(message.getFrom().getLanguageCode())))
                             .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
             );
             return true;
@@ -113,9 +116,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
             try {
                 Reminder reminder = reminderRequestService.createReminder(new ReminderRequestContext()
                         .setText(extractReceiverResult.getText())
-                        .setReceiverId(receiver.getUserId())
-                        .setReceiverZone(receiver.getZone())
-                        .setReceiverName(receiver.getName())
+                        .setReceiver(receiver)
                         .setVoice(message.hasVoice())
                         .setUser(message.getFrom())
                         .setMessageId(message.getMessageId()));
@@ -128,7 +129,7 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
                 messageService.sendMessageAsync(
                         new SendMessageContext(PriorityJob.Priority.MEDIUM)
                                 .chatId(message.getChatId())
-                                .text(friendshipMessageBuilder.getFriendDetails(receiver, ex.getMessage()))
+                                .text(friendshipMessageBuilder.getFriendDetails(receiver, ex.getMessage(), localisationService.getCurrentLocale(message.getFrom().getLanguageCode())))
                                 .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId()))
                 );
 
@@ -152,11 +153,9 @@ public class CreateReminderKeyboardCommand implements KeyboardBotCommand, Naviga
         TgUser receiver = stateService.getState(message.getChatId(), true);
         Reminder reminder = reminderRequestService.createReminder(new ReminderRequestContext()
                 .setText(text)
-                .setReceiverId(receiver.getUserId())
-                .setReceiverZone(receiver.getZone())
+                .setReceiver(receiver)
                 .setVoice(message.hasVoice())
                 .setUser(message.getFrom())
-                .setReceiverName(receiver.getName())
                 .setMessageId(message.getMessageId()));
         reminderMessageSender.sendReminderCreated(reminder);
     }
