@@ -13,11 +13,13 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.FriendshipTable;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
 import ru.gadjini.reminder.model.TgMessage;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.validation.UserValidator;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 @Service
@@ -29,10 +31,13 @@ public class FriendshipService {
 
     private ReminderService reminderService;
 
+    private TgUserService userService;
+
     @Autowired
-    public FriendshipService(FriendshipDao friendshipDao, UserValidator userValidator) {
+    public FriendshipService(FriendshipDao friendshipDao, UserValidator userValidator, TgUserService userService) {
         this.friendshipDao = friendshipDao;
         this.userValidator = userValidator;
+        this.userService = userService;
     }
 
     @Autowired
@@ -53,11 +58,12 @@ public class FriendshipService {
         User user = tgMessage.getUser();
         Friendship friendship;
 
+        Locale locale = userService.getLocale(tgMessage.getUser().getId());
         if (StringUtils.isNotBlank(friendUsername)) {
-            userValidator.checkExists(friendUsername);
+            userValidator.checkExists(friendUsername, locale);
             friendship = getFriendship(user.getId(), friendUsername);
         } else {
-            userValidator.checkExists(friendUserId);
+            userValidator.checkExists(friendUserId, locale);
             friendship = getFriendship(user.getId(), friendUserId);
         }
 

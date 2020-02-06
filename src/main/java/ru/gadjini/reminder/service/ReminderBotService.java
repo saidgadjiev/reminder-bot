@@ -27,6 +27,8 @@ import ru.gadjini.reminder.service.message.MessageTextExtractor;
 import ru.gadjini.reminder.service.metric.LatencyMeter;
 import ru.gadjini.reminder.service.metric.LatencyMeterFactory;
 
+import java.util.Locale;
+
 @Component
 public class ReminderBotService {
 
@@ -111,7 +113,8 @@ public class ReminderBotService {
             messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.MEDIUM).chatId(TgMessage.getChatId(update)).text(ex.getMessage()));
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
-            messageService.sendErrorMessage(TgMessage.getChatId(update));
+            TgMessage tgMessage = TgMessage.from(update);
+            messageService.sendErrorMessage(tgMessage.getChatId(), userService.getLocale(tgMessage.getUser().getId()));
         }
     }
 
@@ -155,7 +158,8 @@ public class ReminderBotService {
         }
         if (commandNavigator.isEmpty(chatId)) {
             commandNavigator.zeroRestore(chatId, (NavigableBotCommand) commandExecutor.getBotCommand(CommandNames.START_COMMAND_NAME));
-            messageService.sendBotRestartedMessage(chatId, replyKeyboardService.getMainMenu(chatId, userService.getLocale((int) chatId)));
+            Locale locale = userService.getLocale((int) chatId);
+            messageService.sendBotRestartedMessage(chatId, replyKeyboardService.getMainMenu(chatId, locale), locale);
 
             return true;
         }

@@ -114,13 +114,13 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getPaymentKeyboard(int userId, int planId) {
+    public InlineKeyboardMarkup getPaymentKeyboard(int userId, int planId, Locale locale) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
-        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getCurrentLocaleMessage(MessagesProperties.PAYMENT_BEELINE_COMMAND_DESCRIPTION, null), buildPayUrl(userId, planId, PaymentType.BEELINE))));
-        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getCurrentLocaleMessage(MessagesProperties.PAYMENT_CARD_COMMAND_DESCRIPTION, null), buildPayUrl(userId, planId, PaymentType.CARD))));
-        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getCurrentLocaleMessage(MessagesProperties.PAYMENT_WEB_MONEY_DESCRIPTION, null), buildPayUrl(userId, planId, PaymentType.WEB_MONEY))));
+        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getCurrentLocaleMessage(MessagesProperties.PAYMENT_BEELINE_COMMAND_DESCRIPTION, locale), buildPayUrl(userId, planId, PaymentType.BEELINE))));
+        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getCurrentLocaleMessage(MessagesProperties.PAYMENT_CARD_COMMAND_DESCRIPTION, locale), buildPayUrl(userId, planId, PaymentType.CARD))));
+        keyboard.add(List.of(buttonFactory.paymentButton(localisationService.getCurrentLocaleMessage(MessagesProperties.PAYMENT_WEB_MONEY_DESCRIPTION, locale), buildPayUrl(userId, planId, PaymentType.WEB_MONEY))));
 
         return keyboardMarkup;
     }

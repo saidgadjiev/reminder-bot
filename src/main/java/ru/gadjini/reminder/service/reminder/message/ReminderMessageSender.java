@@ -124,12 +124,12 @@ public class ReminderMessageSender {
         tryDeleteRemindMessage(messageId, reminder);
     }
 
-    public void sendRepeatReminderCantBeReturnedFromList(long chatId, int messageId, InlineKeyboardMarkup inlineKeyboardMarkup) {
+    public void sendRepeatReminderCantBeReturnedFromList(long chatId, int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, Locale locale) {
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(chatId)
                         .messageId(messageId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_RETURNED, null))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_RETURNED, locale))
                         .replyKeyboard(inlineKeyboardMarkup)
         );
     }
@@ -374,13 +374,13 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendReminderNotFound(long chatId, int messageId) {
-        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(chatId).text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOT_FOUND, null)));
+    public void sendReminderNotFound(long chatId, int messageId, Locale locale) {
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(chatId).text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOT_FOUND, locale)));
         messageService.deleteMessage(chatId, messageId);
     }
 
-    public void sendReminderCantBeCompleted(long chatId, int messageId) {
-        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(chatId).text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED, null)));
+    public void sendReminderCantBeCompleted(long chatId, int messageId, Locale locale) {
+        messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(chatId).text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED, locale)));
         messageService.deleteMessage(chatId, messageId);
     }
 
@@ -530,7 +530,7 @@ public class ReminderMessageSender {
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(chatId)
                             .messageId(messageId)
-                            .text(reminderMessageBuilder.getCompletedRemindersList(userId, reminders))
+                            .text(reminderMessageBuilder.getCompletedRemindersList(userId, reminders, locale))
                             .replyKeyboard(inlineKeyboardService.getCompletedRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME, locale))
             );
         }
@@ -550,7 +550,7 @@ public class ReminderMessageSender {
                 );
             }
         } else {
-            String text = reminderMessageBuilder.getActiveRemindersList(userId, reminders, header);
+            String text = reminderMessageBuilder.getActiveRemindersList(userId, reminders, header, locale);
             if (!Objects.equals(TextUtils.removeHtmlTags(text), currText)) {
                 messageService.editMessageAsync(
                         new EditMessageContext(PriorityJob.Priority.HIGH)
@@ -669,13 +669,13 @@ public class ReminderMessageSender {
             newKeyboard = new KeyboardCustomizer(inlineKeyboardMarkup).replaceButton(
                     CommandNames.ENABLE_COUNT_SERIES_COMMAND_NAME,
                     CommandNames.DISABLE_COUNT_SERIES_COMMAND_NAME,
-                    localisationService.getCurrentLocaleMessage(MessagesProperties.DISABLE_COUNT_SERIES_COMMAND_DESCRIPTION, null)
+                    localisationService.getCurrentLocaleMessage(MessagesProperties.DISABLE_COUNT_SERIES_COMMAND_DESCRIPTION, reminder.getCreator().getLocale())
             ).getKeyboardMarkup();
         } else {
             newKeyboard = new KeyboardCustomizer(inlineKeyboardMarkup).replaceButton(
                     CommandNames.DISABLE_COUNT_SERIES_COMMAND_NAME,
                     CommandNames.ENABLE_COUNT_SERIES_COMMAND_NAME,
-                    localisationService.getCurrentLocaleMessage(MessagesProperties.ENABLE_COUNT_SERIES_COMMAND_DESCRIPTION, null)
+                    localisationService.getCurrentLocaleMessage(MessagesProperties.ENABLE_COUNT_SERIES_COMMAND_DESCRIPTION, reminder.getCreator().getLocale())
             ).getKeyboardMarkup();
         }
         messageService.editMessageAsync(

@@ -10,6 +10,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.util.KeyboardCustomizer;
@@ -19,13 +20,16 @@ public class CompleteCommand implements CallbackBotCommand {
 
     private ReminderService reminderService;
 
+    private TgUserService userService;
+
     private ReminderMessageSender reminderMessageSender;
 
     private String name;
 
     @Autowired
-    public CompleteCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
+    public CompleteCommand(ReminderService reminderService, TgUserService userService, ReminderMessageSender reminderMessageSender) {
         this.reminderService = reminderService;
+        this.userService = userService;
         this.reminderMessageSender = reminderMessageSender;
         this.name = CommandNames.COMPLETE_REMINDER_COMMAND_NAME;
     }
@@ -63,7 +67,7 @@ public class CompleteCommand implements CallbackBotCommand {
 
     private String doComplete(Reminder reminder, long chatId, int messageId) {
         if (reminder == null) {
-            reminderMessageSender.sendReminderCantBeCompleted(chatId, messageId);
+            reminderMessageSender.sendReminderCantBeCompleted(chatId, messageId, userService.getLocale((int) chatId));
 
             return MessagesProperties.MESSAGE_REMINDER_CANT_BE_COMPLETED;
         } else {

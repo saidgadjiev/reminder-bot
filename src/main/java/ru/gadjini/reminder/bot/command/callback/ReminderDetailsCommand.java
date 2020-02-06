@@ -14,6 +14,7 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
@@ -33,15 +34,18 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
 
     private ReminderMessageBuilder messageBuilder;
 
+    private TgUserService userService;
+
     @Autowired
     public ReminderDetailsCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender,
                                   InlineKeyboardService inlineKeyboardService, MessageService messageService,
-                                  ReminderMessageBuilder messageBuilder) {
+                                  ReminderMessageBuilder messageBuilder, TgUserService userService) {
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
         this.inlineKeyboardService = inlineKeyboardService;
         this.messageService = messageService;
         this.messageBuilder = messageBuilder;
+        this.userService = userService;
     }
 
     @Override
@@ -54,7 +58,7 @@ public class ReminderDetailsCommand implements CallbackBotCommand, NavigableCall
         Reminder reminder = reminderService.getReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         if (reminder == null) {
-            reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
+            reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), userService.getLocale(callbackQuery.getFrom().getId()));
         } else {
             reminderMessageSender.sendReminderDetails(
                     callbackQuery.getMessage().getChatId(),

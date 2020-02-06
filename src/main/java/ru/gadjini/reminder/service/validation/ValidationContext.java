@@ -6,6 +6,7 @@ import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 
 import java.time.ZonedDateTime;
+import java.util.Locale;
 
 public class ValidationContext {
 
@@ -18,6 +19,8 @@ public class ValidationContext {
     private ReminderRequest reminderRequest;
 
     private ZonedDateTime dateTime;
+
+    private Locale locale;
 
     public Reminder reminder() {
         return this.reminder;
@@ -63,4 +66,14 @@ public class ValidationContext {
         this.dateTime = dateTime;
         return this;
     }
+
+    public Locale locale() {
+        return this.locale;
+    }
+
+    public ValidationContext locale(final Locale locale) {
+        this.locale = locale;
+        return this;
+    }
+
 }

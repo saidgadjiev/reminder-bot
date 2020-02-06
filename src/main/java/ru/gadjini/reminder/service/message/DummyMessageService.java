@@ -13,6 +13,7 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 @Service
@@ -75,17 +76,17 @@ public class DummyMessageService implements MessageService {
     }
 
     @Override
-    public void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard) {
+    public void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale) {
 
     }
 
     @Override
-    public void sendErrorMessage(long chatId) {
+    public void sendErrorMessage(long chatId, Locale locale) {
 
     }
 
     @Override
-    public void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard) {
+    public void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale) {
 
     }
 }

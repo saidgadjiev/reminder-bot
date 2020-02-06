@@ -9,6 +9,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.util.KeyboardCustomizer;
@@ -22,8 +23,11 @@ public class CancelReminderCommand implements CallbackBotCommand {
 
     private ReminderMessageSender reminderMessageSender;
 
+    private TgUserService userService;
+
     @Autowired
-    public CancelReminderCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
+    public CancelReminderCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender, TgUserService userService) {
+        this.userService = userService;
         this.name = CommandNames.CANCEL_REMINDER_COMMAND_NAME;
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
@@ -43,7 +47,7 @@ public class CancelReminderCommand implements CallbackBotCommand {
         boolean isCalledFromReminderDetails = new KeyboardCustomizer(callbackQuery.getMessage().getReplyMarkup()).hasButton(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME);
         if (isCalledFromReminderDetails) {
             if (reminder == null) {
-                reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
+                reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), userService.getLocale(callbackQuery.getFrom().getId()));
 
                 return MessagesProperties.MESSAGE_REMINDER_NOT_FOUND;
             } else {
@@ -53,7 +57,7 @@ public class CancelReminderCommand implements CallbackBotCommand {
             }
         } else {
             if (reminder == null) {
-                reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
+                reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), userService.getLocale(callbackQuery.getFrom().getId()));
 
                 return MessagesProperties.MESSAGE_REMINDER_NOT_FOUND;
             } else {

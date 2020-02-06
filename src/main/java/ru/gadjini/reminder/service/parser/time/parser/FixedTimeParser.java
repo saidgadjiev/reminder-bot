@@ -41,10 +41,10 @@ public class FixedTimeParser {
 
     FixedTimeParser(LocalisationService localisationService, Locale locale, LexemsConsumer lexemsConsumer,
                     ZoneId zoneId, DayOfWeekService dayOfWeekService, TimeCreator timeCreator) {
-        this.tomorrow = localisationService.getCurrentLocaleMessage(MessagesProperties.TOMORROW, null);
-        this.dayAfterTomorrow = localisationService.getCurrentLocaleMessage(MessagesProperties.DAY_AFTER_TOMORROW, null);
-        this.typeUntil = localisationService.getCurrentLocaleMessage(MessagesProperties.FIXED_TIME_TYPE_UNTIL, null);
-        this.typeAt = localisationService.getCurrentLocaleMessage(MessagesProperties.TIME_ARTICLE, null);
+        this.tomorrow = localisationService.getCurrentLocaleMessage(MessagesProperties.TOMORROW, locale);
+        this.dayAfterTomorrow = localisationService.getCurrentLocaleMessage(MessagesProperties.DAY_AFTER_TOMORROW, locale);
+        this.typeUntil = localisationService.getCurrentLocaleMessage(MessagesProperties.FIXED_TIME_TYPE_UNTIL, locale);
+        this.typeAt = localisationService.getCurrentLocaleMessage(MessagesProperties.TIME_ARTICLE, locale);
         this.localisationService = localisationService;
         this.locale = locale;
         this.lexemsConsumer = lexemsConsumer;

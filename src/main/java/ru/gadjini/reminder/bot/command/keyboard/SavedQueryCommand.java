@@ -81,15 +81,14 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
     @Override
     public boolean processMessage(Message message, String text) {
         List<SavedQuery> queries = savedQueryService.getQueries(message.getFrom().getId());
+        Locale locale = userService.getLocale(message.getFrom().getId());
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(message.getChatId())
-                        .text(messageBuilder.getMessage(queries))
+                        .text(messageBuilder.getMessage(queries, locale))
                         .replyKeyboard(inlineKeyboardService.getSavedQueriesKeyboard(queries.stream().map(SavedQuery::getId).collect(Collectors.toList()))),
                 msg -> stateService.setState(msg.getChatId(), msg.getMessageId())
         );
-
-        Locale locale = userService.getLocale(message.getFrom().getId());
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(message.getChatId())
@@ -111,11 +110,12 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
 
         List<SavedQuery> queries = savedQueryService.getQueries(message.getFrom().getId());
         int messageId = stateService.getState(message.getChatId(), true);
+        Locale locale = userService.getLocale(message.getFrom().getId());
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .messageId(messageId)
-                        .text(messageBuilder.getMessage(queries))
+                        .text(messageBuilder.getMessage(queries, locale))
                         .replyKeyboard(inlineKeyboardService.getSavedQueriesKeyboard(queries.stream().map(SavedQuery::getId).collect(Collectors.toList())))
         );
         messageService.deleteMessage(message.getChatId(), message.getMessageId());

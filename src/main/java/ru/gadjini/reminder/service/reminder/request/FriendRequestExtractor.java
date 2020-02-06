@@ -6,6 +6,7 @@ import ru.gadjini.reminder.domain.FriendSearchResult;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
@@ -25,10 +26,13 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
 
     private RequestParser requestParser;
 
-    public FriendRequestExtractor(LocalisationService localisationService, FriendshipService friendshipService, RequestParser requestParser) {
+    private TgUserService userService;
+
+    public FriendRequestExtractor(LocalisationService localisationService, FriendshipService friendshipService, RequestParser requestParser, TgUserService userService) {
         this.friendshipService = friendshipService;
         this.localisationService = localisationService;
         this.requestParser = requestParser;
+        this.userService = userService;
 
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.forFriendStarts.add(localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START, locale).toLowerCase());
@@ -39,11 +43,12 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
     public ReminderRequest extract(ReminderRequestContext context) {
         Optional<String> forFriendStart = forFriendStarts.stream().filter(f -> context.getText().startsWith(f)).findFirst();
         if (forFriendStart.isPresent()) {
-            ExtractReceiverResult extractReceiverResult = extractReceiver(context.getUser().getId(), context.getText(), context.isVoice(), localisationService.getCurrentLocale(context.getUser().getLanguageCode()));
+            ExtractReceiverResult extractReceiverResult = extractReceiver(context.getUser().getId(), context.getText(), context.isVoice(), userService.getLocale(context.getUser().getId()));
 
             try {
                 ReminderRequest reminderRequest = requestParser.parseRequest(extractReceiverResult.text, extractReceiverResult.receiver.getZone(), extractReceiverResult.receiver.getLocale());
                 reminderRequest.setReceiverId(extractReceiverResult.receiver.getUserId());
+                reminderRequest.setLocale(extractReceiverResult.receiver.getLocale());
 
                 return reminderRequest;
             } catch (ParseException ex) {

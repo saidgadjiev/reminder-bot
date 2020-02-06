@@ -7,6 +7,7 @@ import ru.gadjini.reminder.domain.SavedQuery;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class SavedQueryMessageBuilder {
@@ -18,9 +19,9 @@ public class SavedQueryMessageBuilder {
         this.localisationService = localisationService;
     }
 
-    public String getMessage(List<SavedQuery> queries) {
+    public String getMessage(List<SavedQuery> queries, Locale locale) {
         if (queries.isEmpty()) {
-            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SAVED_QUERY_EMPTY, null);
+            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_SAVED_QUERY_EMPTY, locale);
         }
 
         StringBuilder message = new StringBuilder();

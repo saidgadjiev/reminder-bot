@@ -10,6 +10,7 @@ import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.savedquery.SavedQueryMessageBuilder;
@@ -29,12 +30,15 @@ public class DeleteSavedQueryCommand implements CallbackBotCommand {
 
     private InlineKeyboardService inlineKeyboardService;
 
+    private TgUserService userService;
+
     @Autowired
-    public DeleteSavedQueryCommand(SavedQueryService savedQueryService, MessageService messageService, SavedQueryMessageBuilder messageBuilder, InlineKeyboardService inlineKeyboardService) {
+    public DeleteSavedQueryCommand(SavedQueryService savedQueryService, MessageService messageService, SavedQueryMessageBuilder messageBuilder, InlineKeyboardService inlineKeyboardService, TgUserService userService) {
         this.savedQueryService = savedQueryService;
         this.messageService = messageService;
         this.messageBuilder = messageBuilder;
         this.inlineKeyboardService = inlineKeyboardService;
+        this.userService = userService;
     }
 
     @Override
@@ -52,7 +56,7 @@ public class DeleteSavedQueryCommand implements CallbackBotCommand {
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(callbackQuery.getMessage().getChatId())
                         .messageId(callbackQuery.getMessage().getMessageId())
-                        .text(messageBuilder.getMessage(queries))
+                        .text(messageBuilder.getMessage(queries, userService.getLocale(callbackQuery.getFrom().getId())))
                         .replyKeyboard(inlineKeyboardService.getSavedQueriesKeyboard(queries.stream().map(SavedQuery::getId).collect(Collectors.toList())))
         );
 

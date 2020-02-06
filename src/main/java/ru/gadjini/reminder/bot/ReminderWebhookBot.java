@@ -46,7 +46,7 @@ public class ReminderWebhookBot extends TelegramWebhookBot {
             botFilter.doFilter(update);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
-            messageService.sendErrorMessage(TgMessage.getChatId(update));
+            messageService.sendErrorMessage(TgMessage.getChatId(update), locale);
         } finally {
             UserContextHolder.remove();
         }

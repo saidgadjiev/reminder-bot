@@ -12,6 +12,7 @@ import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 
 import java.time.ZoneId;
+import java.util.Locale;
 
 @Component
 public class WithLoginRequestExtractor extends BaseRequestExtractor {
@@ -34,20 +35,22 @@ public class WithLoginRequestExtractor extends BaseRequestExtractor {
         String text = context.getText();
 
         if (text.startsWith(TgUser.USERNAME_START)) {
+            Locale locale = tgUserService.getLocale(context.getUser().getId());
             if (text.indexOf(' ') == -1) {
-                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, null));
+                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, locale));
             }
             String username = text.substring(1, text.indexOf(' '));
             ZoneId zoneId = tgUserService.getTimeZone(username);
             text = text.substring(username.length() + 2);
 
             try {
-                ReminderRequest reminderRequest = requestParser.parseRequest(text, zoneId);
+                ReminderRequest reminderRequest = requestParser.parseRequest(text, zoneId, locale);
                 reminderRequest.setReceiverName(username);
+                reminderRequest.setLocale(locale);
 
                 return reminderRequest;
             } catch (ParseException ex) {
-                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, null));
+                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, locale));
             }
         }
 

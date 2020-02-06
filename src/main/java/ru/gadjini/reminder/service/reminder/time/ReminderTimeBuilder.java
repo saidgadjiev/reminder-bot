@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.util.TimeCreator;
 
+import java.util.Locale;
+
 @Service
 public class ReminderTimeBuilder {
 
@@ -18,14 +20,14 @@ public class ReminderTimeBuilder {
         this.timeCreator = timeCreator;
     }
 
-    public String time(Reminder reminder) {
+    public String time(Reminder reminder, Locale locale) {
         if (reminder.isInactive()) {
-            return "<b>" + timeBuilder.deactivated() + "</b>";
+            return "<b>" + timeBuilder.deactivated(locale) + "</b>";
         }
         if (reminder.isRepeatable()) {
-            return timeBuilder.time(reminder.getRepeatRemindAtsInReceiverZone(timeCreator), reminder.getReceiver().getLocale());
+            return timeBuilder.time(reminder.getRepeatRemindAtsInReceiverZone(timeCreator), locale);
         } else {
-            return timeBuilder.time(reminder.getRemindAtInReceiverZone(), reminder.getReceiver().getLocale());
+            return timeBuilder.time(reminder.getRemindAtInReceiverZone(), locale);
         }
     }
 

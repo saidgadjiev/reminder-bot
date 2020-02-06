@@ -8,6 +8,8 @@ import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 
+import java.util.Locale;
+
 @Service
 public class CreateReminderValidator implements Validator {
 
@@ -32,22 +34,22 @@ public class CreateReminderValidator implements Validator {
     @Override
     public void validate(ValidationContext validationContext) {
         if (validationContext.reminderRequest().getReceiverName() != null) {
-            checkFriendShip(validationContext.currentUser().getId(), validationContext.reminderRequest().getReceiverName());
+            checkFriendShip(validationContext.currentUser().getId(), validationContext.reminderRequest().getReceiverName(), validationContext.reminderRequest().getLocale());
         } else if (validationContext.reminderRequest().getReceiverId() != null) {
-            checkFriendShip(validationContext.currentUser().getId(), validationContext.reminderRequest().getReceiverId());
+            checkFriendShip(validationContext.currentUser().getId(), validationContext.reminderRequest().getReceiverId(), validationContext.reminderRequest().getLocale());
         }
         reminderTimeValidator.validate(new ValidationContext().time(validationContext.reminderRequest().getTime()));
     }
 
-    private void checkFriendShip(int userId, String receiverName) {
+    private void checkFriendShip(int userId, String receiverName, Locale locale) {
         if (!friendshipService.existFriendship(userId, receiverName, Friendship.Status.ACCEPTED)) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND, null), null));
+            throw new UserException(localisationService.getCurrentLocaleMessage(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND, locale), locale));
         }
     }
 
-    private void checkFriendShip(int userId, int receiverId) {
+    private void checkFriendShip(int userId, int receiverId, Locale locale) {
         if (!friendshipService.existFriendship(userId, receiverId, Friendship.Status.ACCEPTED)) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND, null), null));
+            throw new UserException(localisationService.getCurrentLocaleMessage(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMIND_NOT_FRIEND, locale), locale));
         }
     }
 }

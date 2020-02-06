@@ -18,6 +18,7 @@ import ru.gadjini.reminder.service.subscription.SubscriptionService;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -48,7 +49,7 @@ public class PaymentService {
 
     public PaymentProcessResult processPayment(WebMoneyPayment webMoneyPayment) {
         Plan plan = planService.getPlan(webMoneyPayment.planId());
-        validate(plan);
+        validate(plan, webMoneyPayment.locale());
         validate(plan, webMoneyPayment);
 
         LocalDate localDate = subscriptionService.renewSubscription(plan, webMoneyPayment.userId());
@@ -62,9 +63,9 @@ public class PaymentService {
         return new PaymentProcessResult(localDate, paymentMessageId);
     }
 
-    public Map<String, Object> processPaymentRequest(int planId, int userId, PaymentType paymentType) {
+    public Map<String, Object> processPaymentRequest(int planId, int userId, PaymentType paymentType, Locale locale) {
         Plan plan = planService.getPlan(planId);
-        validate(plan);
+        validate(plan, locale);
 
         return Map.of(
                 "planId", planId,
@@ -75,25 +76,25 @@ public class PaymentService {
                 "payeePurse", webMoneyProperties.getPurse());
     }
 
-    private void validate(Plan plan) {
+    private void validate(Plan plan, Locale locale) {
         if (!plan.isActive()) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_INVALID_PLAN, null));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_INVALID_PLAN, locale));
         }
     }
 
     private void validate(Plan plan, WebMoneyPayment webMoneyPayment) {
         if (!webMoneyProperties.getSecretKey().equals(webMoneyPayment.secretKey())) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST, null));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST, webMoneyPayment.locale()));
         }
-        validate(plan, webMoneyPayment.paymentAmount());
+        validate(plan, webMoneyPayment.paymentAmount(), webMoneyPayment.locale());
         if (!webMoneyProperties.getPurse().equals(webMoneyPayment.payeePurse())) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST, null));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST, webMoneyPayment.locale()));
         }
     }
 
-    private void validate(Plan plan, double paymentAmount) {
+    private void validate(Plan plan, double paymentAmount, Locale locale) {
         if (plan.getPrice() > paymentAmount) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST, null));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BAD_PAYMENT_REQUEST, locale));
         }
     }
 

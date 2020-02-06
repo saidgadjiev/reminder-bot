@@ -42,6 +42,7 @@ public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
             try {
                 ReminderRequest reminderRequest = requestParser.parseRequest(context.getText(), receiver.getZone(), receiver.getLocale());
                 reminderRequest.setReceiverId(receiverId);
+                reminderRequest.setLocale(receiver.getLocale());
 
                 return reminderRequest;
             } catch (ParseException ex) {

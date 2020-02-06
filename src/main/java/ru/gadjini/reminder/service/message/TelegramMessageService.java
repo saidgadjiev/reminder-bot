@@ -26,6 +26,7 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.TelegramService;
 
+import java.util.Locale;
 import java.util.function.Consumer;
 
 @Service
@@ -179,26 +180,26 @@ public class TelegramMessageService implements MessageService {
     }
 
     @Override
-    public void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard) {
+    public void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale) {
         sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_ERROR, null))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_ERROR, locale))
                         .replyKeyboard(replyKeyboard)
         );
     }
 
     @Override
-    public void sendErrorMessage(long chatId) {
-        sendErrorMessage(chatId, null);
+    public void sendErrorMessage(long chatId, Locale locale) {
+        sendErrorMessage(chatId, null, locale);
     }
 
     @Override
-    public void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard) {
+    public void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale) {
         sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
-                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BOT_RESTARTED, null))
+                        .text(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_BOT_RESTARTED, locale))
                         .replyKeyboard(replyKeyboard)
         );
     }

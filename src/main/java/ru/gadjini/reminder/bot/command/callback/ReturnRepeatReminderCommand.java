@@ -37,7 +37,8 @@ public class ReturnRepeatReminderCommand implements CallbackBotCommand {
             messageSender.sendRepeatReminderCantBeReturnedFromList(
                     callbackQuery.getMessage().getChatId(),
                     callbackQuery.getMessage().getMessageId(),
-                    callbackQuery.getMessage().getReplyMarkup()
+                    callbackQuery.getMessage().getReplyMarkup(),
+                    returnReminderResult.getReminder().getReceiver().getLocale()
             );
 
             return MessagesProperties.MESSAGE_REMINDER_CANT_BE_RETURNED_ANSWER;

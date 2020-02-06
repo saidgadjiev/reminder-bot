@@ -8,6 +8,7 @@ import ru.gadjini.reminder.model.AnswerCallbackContext;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 
+import java.util.Locale;
 import java.util.function.Consumer;
 
 public interface MessageService {
@@ -30,9 +31,9 @@ public interface MessageService {
 
     void editReplyKeyboard(long chatId, int messageId, InlineKeyboardMarkup replyKeyboard);
 
-    void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard);
+    void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale);
 
-    void sendErrorMessage(long chatId);
+    void sendErrorMessage(long chatId, Locale locale);
 
-    void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard);
+    void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale);
 }

@@ -17,6 +17,7 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -50,13 +51,15 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     private ValidatorFactory validatorFactory;
 
+    private TgUserService userService;
+
     @Autowired
     public PostponeReminderCommand(CommandStateService stateService,
                                    MessageService messageService,
                                    InlineKeyboardService inlineKeyboardService,
                                    ReminderRequestService reminderRequestService,
                                    ReminderMessageSender reminderMessageSender,
-                                   LocalisationService localisationService, ValidatorFactory validatorFactory) {
+                                   LocalisationService localisationService, ValidatorFactory validatorFactory, TgUserService userService) {
         this.stateService = stateService;
         this.localisationService = localisationService;
         this.messageService = messageService;
@@ -64,6 +67,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         this.reminderRequestService = reminderRequestService;
         this.reminderMessageSender = reminderMessageSender;
         this.validatorFactory = validatorFactory;
+        this.userService = userService;
     }
 
     @Autowired
@@ -85,7 +89,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
         Reminder reminder = reminderRequestService.getReminderForPostpone(requestParams.getInt(Arg.REMINDER_ID.getKey()));
         if (reminder == null) {
-            reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
+            reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), userService.getLocale(callbackQuery.getFrom().getId()));
             return null;
         }
 

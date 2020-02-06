@@ -6,6 +6,7 @@ import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.time.ZoneId;
+import java.util.Locale;
 
 public class ReminderRequest {
 
@@ -20,6 +21,8 @@ public class ReminderRequest {
     private Time time;
 
     private int messageId;
+
+    private Locale locale;
 
     public Integer getReceiverId() {
         return receiverId;
@@ -99,5 +102,13 @@ public class ReminderRequest {
 
     public void setMessageId(int messageId) {
         this.messageId = messageId;
+    }
+
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 }

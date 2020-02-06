@@ -39,8 +39,8 @@ public class TimeBuilder {
         this.timeCreator = timeCreator;
     }
 
-    public String deactivated() {
-        return localisationService.getCurrentLocaleMessage(MessagesProperties.DEACTIVATED_TIME, null);
+    public String deactivated(Locale locale) {
+        return localisationService.getCurrentLocaleMessage(MessagesProperties.DEACTIVATED_TIME, locale);
     }
 
     public String time(OffsetTime offsetTime, Locale locale) {

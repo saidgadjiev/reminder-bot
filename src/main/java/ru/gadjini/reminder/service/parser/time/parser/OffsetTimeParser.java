@@ -10,6 +10,7 @@ import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Locale;
 
 @SuppressWarnings("CPD-START")
 public class OffsetTimeParser {
@@ -26,11 +27,11 @@ public class OffsetTimeParser {
 
     private LexemsConsumer lexemsConsumer;
 
-    public OffsetTimeParser(LocalisationService localisationService, ZoneId zoneId, LexemsConsumer lexemsConsumer) {
-        this.typeBefore = localisationService.getCurrentLocaleMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE, null);
-        this.typeAfter = localisationService.getCurrentLocaleMessage(MessagesProperties.OFFSET_TIME_TYPE_AFTER, null);
-        this.typeOn = localisationService.getCurrentLocaleMessage(MessagesProperties.OFFSET_TIME_TYPE_FOR, null);
-        this.eve = localisationService.getCurrentLocaleMessage(MessagesProperties.EVE, null);
+    public OffsetTimeParser(LocalisationService localisationService, Locale locale, ZoneId zoneId, LexemsConsumer lexemsConsumer) {
+        this.typeBefore = localisationService.getCurrentLocaleMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE, locale);
+        this.typeAfter = localisationService.getCurrentLocaleMessage(MessagesProperties.OFFSET_TIME_TYPE_AFTER, locale);
+        this.typeOn = localisationService.getCurrentLocaleMessage(MessagesProperties.OFFSET_TIME_TYPE_FOR, locale);
+        this.eve = localisationService.getCurrentLocaleMessage(MessagesProperties.EVE, locale);
         this.lexemsConsumer = lexemsConsumer;
         this.offsetTime = new OffsetTime(zoneId);
     }

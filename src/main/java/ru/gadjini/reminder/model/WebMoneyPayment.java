@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.model;
 
+import java.util.Locale;
+
 public class WebMoneyPayment {
 
     private String payeePurse;
@@ -11,6 +13,8 @@ public class WebMoneyPayment {
     private int userId;
 
     private int planId;
+
+    private Locale locale;
 
     public String payeePurse() {
         return this.payeePurse;
@@ -54,6 +58,15 @@ public class WebMoneyPayment {
 
     public WebMoneyPayment planId(final int planId) {
         this.planId = planId;
+        return this;
+    }
+
+    public Locale locale() {
+        return this.locale;
+    }
+
+    public WebMoneyPayment locale(final Locale locale) {
+        this.locale = locale;
         return this;
     }
 }

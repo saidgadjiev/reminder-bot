@@ -10,6 +10,7 @@ import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -29,15 +30,18 @@ public class DeleteUserReminderNotificationCommand implements CallbackBotCommand
 
     private UserReminderNotificationService userReminderNotificationService;
 
+    private TgUserService userService;
+
     @Autowired
     public DeleteUserReminderNotificationCommand(ReminderNotificationMessageBuilder reminderNotificationMessageBuilder,
                                                  InlineKeyboardService inlineKeyboardService,
                                                  MessageService messageService,
-                                                 UserReminderNotificationService userReminderNotificationService) {
+                                                 UserReminderNotificationService userReminderNotificationService, TgUserService userService) {
         this.reminderNotificationMessageBuilder = reminderNotificationMessageBuilder;
         this.inlineKeyboardService = inlineKeyboardService;
         this.messageService = messageService;
         this.userReminderNotificationService = userReminderNotificationService;
+        this.userService = userService;
     }
 
     @Override
@@ -53,7 +57,7 @@ public class DeleteUserReminderNotificationCommand implements CallbackBotCommand
 
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
-                .text(reminderNotificationMessageBuilder.getUserReminderNotifications(userReminderNotifications))
+                .text(reminderNotificationMessageBuilder.getUserReminderNotifications(userReminderNotifications, userService.getLocale(callbackQuery.getFrom().getId())))
                 .replyKeyboard(inlineKeyboardService.getUserReminderNotificationInlineKeyboard(userReminderNotifications.stream().map(UserReminderNotification::getId).collect(Collectors.toList()), notificationType))
         );
 

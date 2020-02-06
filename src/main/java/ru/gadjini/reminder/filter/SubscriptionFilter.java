@@ -145,7 +145,7 @@ public class SubscriptionFilter extends BaseBotFilter {
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
                         .text(getNeedPayMessage(plan.getDescription(), locale))
-                        .replyKeyboard(inlineKeyboardService.getPaymentKeyboard(userId, plan.getId())),
+                        .replyKeyboard(inlineKeyboardService.getPaymentKeyboard(userId, plan.getId(), locale)),
                 message -> paymentMessageService.create(userId, message.getMessageId())
         );
     }

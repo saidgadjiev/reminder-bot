@@ -12,6 +12,7 @@ import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZonedDateTime;
+import java.util.Locale;
 
 @Service
 public class ReminderTimeValidator implements Validator {
@@ -33,44 +34,44 @@ public class ReminderTimeValidator implements Validator {
 
     @Override
     public void validate(ValidationContext validationContext) {
-        validate(validationContext.time());
+        validate(validationContext.time(), validationContext.reminder().getReceiver().getLocale());
     }
 
-    private void validate(Time time) {
+    private void validate(Time time, Locale locale) {
         if (time.isFixedTime()) {
-            validate(time.getFixedTime());
+            validate(time.getFixedTime(), locale);
         } else if (time.isOffsetTime()) {
-            validate(time.getOffsetTime());
+            validate(time.getOffsetTime(), locale);
         }
     }
 
-    private void validate(DateTime dateTime) {
+    private void validate(DateTime dateTime, Locale locale) {
         if (!dateTime.hasTime()) {
             if (dateTime.date().isBefore(timeCreator.localDateNow(dateTime.getZoneId()))) {
-                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, null));
+                throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
             }
         } else {
-            validate(dateTime.toZonedDateTime());
+            validate(dateTime.toZonedDateTime(), locale);
         }
     }
 
-    private void validate(ZonedDateTime dateTime) {
+    private void validate(ZonedDateTime dateTime, Locale locale) {
         if (dateTime.isBefore(timeCreator.zonedDateTimeNow(dateTime.getZone()))) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, null));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
         }
     }
 
-    private void validate(OffsetTime offsetTime) {
+    private void validate(OffsetTime offsetTime, Locale locale) {
         if (offsetTime.getType() != OffsetTime.Type.AFTER) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, null));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
         }
     }
 
-    private void validate(FixedTime fixedTime) {
+    private void validate(FixedTime fixedTime, Locale locale) {
         if (fixedTime.getType() != FixedTime.Type.AT) {
-            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, null));
+            throw new UserException(localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
         }
 
-        validate(fixedTime.getDateTime());
+        validate(fixedTime.getDateTime(), locale);
     }
 }

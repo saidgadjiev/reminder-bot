@@ -81,9 +81,9 @@ public class ReminderNotificationMessageBuilder {
         }
     }
 
-    public String getReminderNotifications(List<ReminderNotification> reminderNotifications) {
+    public String getReminderNotifications(List<ReminderNotification> reminderNotifications, Locale locale) {
         if (reminderNotifications.isEmpty()) {
-            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS, null);
+            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS, locale);
         }
         StringBuilder message = new StringBuilder();
 
@@ -92,15 +92,15 @@ public class ReminderNotificationMessageBuilder {
             if (message.length() > 0) {
                 message.append("\n");
             }
-            message.append(i++).append(") ").append(reminderNotificationTimeBuilder.time(reminderNotification, null));
+            message.append(i++).append(") ").append(reminderNotificationTimeBuilder.time(reminderNotification, locale));
         }
 
         return message.toString();
     }
 
-    public String getUserReminderNotifications(List<UserReminderNotification> userReminderNotifications) {
+    public String getUserReminderNotifications(List<UserReminderNotification> userReminderNotifications, Locale locale) {
         if (userReminderNotifications.isEmpty()) {
-            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS, null);
+            return localisationService.getCurrentLocaleMessage(MessagesProperties.MESSAGE_REMINDER_NOTIFICATION_NOT_EXISTS, locale);
         }
         StringBuilder message = new StringBuilder();
 

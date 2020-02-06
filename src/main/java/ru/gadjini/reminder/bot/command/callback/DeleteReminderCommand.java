@@ -9,6 +9,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 
@@ -21,8 +22,11 @@ public class DeleteReminderCommand implements CallbackBotCommand {
 
     private ReminderMessageSender reminderMessageSender;
 
+    private TgUserService userService;
+
     @Autowired
-    public DeleteReminderCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender) {
+    public DeleteReminderCommand(ReminderService reminderService, ReminderMessageSender reminderMessageSender, TgUserService userService) {
+        this.userService = userService;
         this.name = CommandNames.DELETE_REMINDER_COMMAND_NAME;
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
@@ -39,7 +43,7 @@ public class DeleteReminderCommand implements CallbackBotCommand {
 
         Reminder reminder = reminderService.delete(reminderId);
         if (reminder == null) {
-            reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
+            reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), userService.getLocale(callbackQuery.getFrom().getId()));
 
             return MessagesProperties.MESSAGE_REMINDER_NOT_FOUND;
         } else {

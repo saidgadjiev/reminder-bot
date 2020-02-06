@@ -150,7 +150,7 @@ public class ReminderRequestService {
                     reminder.getRemindAtInReceiverZone().hasTime() ? reminder.getRemindAtInReceiverZone().toZonedDateTime() : null
             ).withZoneSameInstant(ZoneOffset.UTC);
 
-            validatorFactory.getValidator(ValidatorType.PAST_TIME_VALIDATOR).validate(new ValidationContext().dateTime(remindTime));
+            validatorFactory.getValidator(ValidatorType.PAST_TIME_VALIDATOR).validate(new ValidationContext().dateTime(remindTime).locale(reminder.getReceiver().getLocale()));
 
             reminderNotifications.add(reminderService.customRemind(reminderId, remindTime));
             customRemindResult.setZonedDateTime(remindTime);
@@ -161,7 +161,7 @@ public class ReminderRequestService {
         } else {
             ZonedDateTime remindTime = customRemind.getFixedDateTime().toZonedDateTime().withZoneSameInstant(ZoneOffset.UTC);
 
-            validatorFactory.getValidator(ValidatorType.PAST_TIME_VALIDATOR).validate(new ValidationContext().dateTime(remindTime));
+            validatorFactory.getValidator(ValidatorType.PAST_TIME_VALIDATOR).validate(new ValidationContext().dateTime(remindTime).locale(reminder.getReceiver().getLocale()));
 
             reminderNotifications.add(reminderService.customRemind(reminderId, remindTime));
             customRemindResult.setZonedDateTime(remindTime);

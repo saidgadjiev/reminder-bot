@@ -37,8 +37,17 @@ public class MySelfRequestExtractor extends BaseRequestExtractor {
             zoneId = tgUserService.getTimeZone(context.getUser().getId());
         }
 
+        Locale locale = context.getReceiverLocale();
+
+        if (locale == null) {
+            locale = tgUserService.getLocale(context.getUser().getId());
+        }
+
         try {
-            return requestParser.parseRequest(context.getText(), zoneId, localisationService.getCurrentLocale(context.getUser().getLanguageCode()));
+            ReminderRequest reminderRequest = requestParser.parseRequest(context.getText(), zoneId, localisationService.getCurrentLocale(context.getUser().getLanguageCode()));
+            reminderRequest.setLocale(locale);
+
+            return reminderRequest;
         } catch (ParseException ex) {
             throw new UserException(getMessage(context.getText(), context.isVoice(), localisationService.getCurrentLocale(context.getUser().getLanguageCode())));
         }

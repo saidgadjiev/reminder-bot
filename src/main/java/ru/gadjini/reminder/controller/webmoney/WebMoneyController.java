@@ -7,6 +7,7 @@ import org.glassfish.jersey.server.mvc.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.gadjini.reminder.common.CommandNames;
@@ -116,7 +117,7 @@ public class WebMoneyController {
     @Produces(MediaType.TEXT_HTML)
     public Map<String, Object> paymentRequest(@QueryParam("planId") int planId, @QueryParam("userId") int userId, @QueryParam("paymentType") int paymentType) {
         try {
-            return paymentService.processPaymentRequest(planId, userId, PaymentType.fromType(paymentType));
+            return paymentService.processPaymentRequest(planId, userId, PaymentType.fromType(paymentType), userService.getLocale(userId));
         } catch (UserException ex) {
             LOGGER.error(ex.getMessage());
             throw new WebApplicationException(ex.getMessage(), Response.status(Response.Status.BAD_REQUEST).build());
@@ -152,12 +153,14 @@ public class WebMoneyController {
 
     private Response processPayment(MultivaluedMap<String, String> formData) {
         try {
+            int userId = NumberUtils.toInt(formData.getFirst("user_id"));
             WebMoneyPayment webMoneyPayment = new WebMoneyPayment()
                     .payeePurse(formData.getFirst(WebMoneyConstants.LMI_PAYEE_PURSE))
                     .paymentAmount(NumberUtils.toDouble(formData.getFirst(WebMoneyConstants.LMI_PAYMENT_AMOUNT)))
                     .secretKey(formData.getFirst(WebMoneyConstants.LMI_SECRET_KEY))
-                    .userId(NumberUtils.toInt(formData.getFirst("user_id")))
-                    .planId(NumberUtils.toInt(formData.getFirst("plan_id")));
+                    .userId(userId)
+                    .planId(NumberUtils.toInt(formData.getFirst("plan_id")))
+                    .locale(userService.getLocale(userId));
 
             validate(webMoneyPayment);
 
@@ -174,7 +177,7 @@ public class WebMoneyController {
         if (paymentProcessResult.getPaymentMessageId() != null) {
             deletePaymentMessage(webMoneyPayment.userId(), paymentProcessResult.getPaymentMessageId());
         }
-        sendSubscriptionRenewed(webMoneyPayment.userId(), paymentProcessResult.getSubscriptionEnd());
+        sendSubscriptionRenewed(webMoneyPayment.userId(), paymentProcessResult.getSubscriptionEnd(), webMoneyPayment.locale());
 
         return Response.ok().build();
     }
@@ -196,9 +199,8 @@ public class WebMoneyController {
         }
     }
 
-    private void sendSubscriptionRenewed(int userId, LocalDate subscriptionEnd) {
+    private void sendSubscriptionRenewed(int userId, LocalDate subscriptionEnd, Locale locale) {
         try {
-            Locale locale = userService.getLocale(userId);
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(userId)

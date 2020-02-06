@@ -9,6 +9,7 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.model.CustomRemindResult;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.time.ReminderTimeBuilder;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
@@ -72,7 +73,7 @@ public class ReminderMessageBuilder {
         result.append(text).append(" ");
 
         if (reminder.isInactive()) {
-            result.append("(<b>").append(timeBuilder.deactivated()).append("</b>)");
+            result.append("(<b>").append(timeBuilder.deactivated(locale)).append("</b>)");
         } else {
             if (reminder.isRepeatable()) {
                 result
@@ -257,13 +258,13 @@ public class ReminderMessageBuilder {
         return messageBuilder.getNewReminder(getReminderMessage(reminder, new Config().receiverId(messageReceiverId)), messageReceiverId == reminder.getReceiverId() ? reminder.getReceiver().getLocale() : reminder.getCreator().getLocale());
     }
 
-    public String getCompletedRemindersList(int requesterId, List<Reminder> reminders) {
+    public String getCompletedRemindersList(int requesterId, List<Reminder> reminders, Locale locale) {
         StringBuilder text = new StringBuilder();
 
         int i = 1;
         for (Reminder reminder : reminders) {
             String number = i++ + ") ";
-            text.append(number).append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder)).append(")\n");
+            text.append(number).append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder, locale)).append(")\n");
 
             text.append(messageBuilder.getCompletedAt(reminder.getCompletedAtInReceiverZone(), reminder.getReceiver().getLocale())).append("\n");
 
@@ -280,11 +281,11 @@ public class ReminderMessageBuilder {
         return text.toString();
     }
 
-    public String getActiveRemindersList(int requesterId, List<Reminder> reminders, String header) {
+    public String getActiveRemindersList(int requesterId, List<Reminder> reminders, String header, Locale locale) {
         StringBuilder text = new StringBuilder();
 
         if (StringUtils.isNotBlank(header)) {
-            text.append(localisationService.getCurrentLocaleMessage(header, null)).append("\n\n");
+            text.append(localisationService.getCurrentLocaleMessage(header, locale)).append("\n\n");
         }
 
         int i = 1;
@@ -293,9 +294,9 @@ public class ReminderMessageBuilder {
             text.append(number);
 
             if (reminder.isSuppressNotifications() && requesterId == reminder.getReceiverId()) {
-                text.append(localisationService.getCurrentLocaleMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI, null)).append(" ");
+                text.append(localisationService.getCurrentLocaleMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI, locale)).append(" ");
             }
-            text.append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder)).append(")\n");
+            text.append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder, locale)).append(")\n");
 
             if (!reminder.isInactive() && reminder.isRepeatable()) {
                 text.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getReceiver().getLocale())).append("\n");
