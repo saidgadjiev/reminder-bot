@@ -68,6 +68,11 @@ public class ReminderJob {
         moveReminders();
     }
 
+    @Scheduled(cron = "* * * * * *")
+    public void test() {
+        LOGGER.info("Test");
+    }
+
     @Scheduled(cron = "0 0 0 * * *")
     public void deleteCompletedReminders() {
         int deleted = reminderService.deleteCompletedReminders(timeCreator.localDateTimeNow());
