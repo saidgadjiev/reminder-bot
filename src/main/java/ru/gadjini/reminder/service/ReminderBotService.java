@@ -77,9 +77,6 @@ public class ReminderBotService {
 
     public void handleUpdate(Update update) {
         try {
-            if (true) {
-                throw new NullPointerException("test");
-            }
             if (update.hasMessage()) {
                 if (restoreCommand(
                         update.getMessage().getChatId(),
