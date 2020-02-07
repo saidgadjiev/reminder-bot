@@ -45,7 +45,7 @@ public class ReminderWebhookBot extends TelegramWebhookBot {
             LOGGER.error(ex.getMessage(), ex);
 
             TgMessage tgMessage = TgMessage.from(update);
-            messageService.sendErrorMessage(TgMessage.getChatId(update), userService.getLocale(tgMessage.getUser().getId()));
+            messageService.sendErrorMessage(TgMessage.getChatId(update), userService.getLocale(tgMessage.getUser().getId()), ex);
         }
 
         return null;

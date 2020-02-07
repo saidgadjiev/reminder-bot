@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.message;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.common.ReminderConstants;
+import ru.gadjini.reminder.common.TgConstants;
 import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.job.MessageSenderJob;
 import ru.gadjini.reminder.job.PriorityJob;
@@ -180,18 +183,24 @@ public class TelegramMessageService implements MessageService {
     }
 
     @Override
-    public void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale) {
+    public void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale, Throwable ex) {
         sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(chatId)
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_ERROR, locale))
                         .replyKeyboard(replyKeyboard)
         );
+
+        sendMessageAsync(
+                new SendMessageContext(PriorityJob.Priority.LOW)
+                .chatId(ReminderConstants.REPORT_CHAT)
+                .text(buildErrorMessage(ex))
+        );
     }
 
     @Override
-    public void sendErrorMessage(long chatId, Locale locale) {
-        sendErrorMessage(chatId, null, locale);
+    public void sendErrorMessage(long chatId, Locale locale, Throwable ex) {
+        sendErrorMessage(chatId, null, locale, ex);
     }
 
     @Override
@@ -202,5 +211,13 @@ public class TelegramMessageService implements MessageService {
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_BOT_RESTARTED, locale))
                         .replyKeyboard(replyKeyboard)
         );
+    }
+
+    private String buildErrorMessage(Throwable ex) {
+        StringBuilder message = new StringBuilder();
+
+        message.append("<b>Message</b>: ").append(ex.getMessage()).append("\n\n").append("<b>Stacktrace</b>: ").append(ExceptionUtils.getStackTrace(ex), 0, TgConstants.MAX_MESSAGE_SIZE);
+
+        return message.toString();
     }
 }

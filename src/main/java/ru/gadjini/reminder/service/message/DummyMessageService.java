@@ -76,12 +76,12 @@ public class DummyMessageService implements MessageService {
     }
 
     @Override
-    public void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale) {
+    public void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale, Throwable ex) {
 
     }
 
     @Override
-    public void sendErrorMessage(long chatId, Locale locale) {
+    public void sendErrorMessage(long chatId, Locale locale, Throwable ex) {
 
     }
 

@@ -31,9 +31,9 @@ public interface MessageService {
 
     void editReplyKeyboard(long chatId, int messageId, InlineKeyboardMarkup replyKeyboard);
 
-    void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale);
+    void sendErrorMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale, Throwable ex);
 
-    void sendErrorMessage(long chatId, Locale locale);
+    void sendErrorMessage(long chatId, Locale locale, Throwable ex);
 
     void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale);
 }

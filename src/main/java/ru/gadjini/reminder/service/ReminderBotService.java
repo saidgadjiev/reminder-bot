@@ -77,6 +77,9 @@ public class ReminderBotService {
 
     public void handleUpdate(Update update) {
         try {
+            if (true) {
+                throw new NullPointerException("test");
+            }
             if (update.hasMessage()) {
                 if (restoreCommand(
                         update.getMessage().getChatId(),
@@ -122,7 +125,7 @@ public class ReminderBotService {
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             TgMessage tgMessage = TgMessage.from(update);
-            messageService.sendErrorMessage(tgMessage.getChatId(), userService.getLocale(tgMessage.getUser().getId()));
+            messageService.sendErrorMessage(tgMessage.getChatId(), userService.getLocale(tgMessage.getUser().getId()), ex);
         }
     }
 
