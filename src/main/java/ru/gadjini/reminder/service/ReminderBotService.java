@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.methods.ActionType;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -18,6 +19,7 @@ import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
+import ru.gadjini.reminder.service.ai.MessageSenderAI;
 import ru.gadjini.reminder.service.command.CommandExecutor;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
@@ -28,6 +30,7 @@ import ru.gadjini.reminder.service.metric.LatencyMeter;
 import ru.gadjini.reminder.service.metric.LatencyMeterFactory;
 
 import java.util.Locale;
+import java.util.concurrent.Callable;
 
 @Component
 public class ReminderBotService {
@@ -50,6 +53,8 @@ public class ReminderBotService {
 
     private TgUserService userService;
 
+    private MessageSenderAI messageSenderAI;
+
     @Autowired
     public ReminderBotService(CommandExecutor commandExecutor,
                               CommandNavigator commandNavigator,
@@ -58,7 +63,7 @@ public class ReminderBotService {
                               MessageTextExtractor messageTextExtractor,
                               LatencyMeterFactory latencyMeterFactory,
                               LocalisationService localisationService,
-                              TgUserService userService) {
+                              TgUserService userService, MessageSenderAI messageSenderAI) {
         this.commandExecutor = commandExecutor;
         this.commandNavigator = commandNavigator;
         this.messageService = messageService;
@@ -67,6 +72,7 @@ public class ReminderBotService {
         this.latencyMeterFactory = latencyMeterFactory;
         this.localisationService = localisationService;
         this.userService = userService;
+        this.messageSenderAI = messageSenderAI;
     }
 
     public void handleUpdate(Update update) {
@@ -82,14 +88,15 @@ public class ReminderBotService {
                 LatencyMeter latencyMeter = latencyMeterFactory.getMeter();
                 latencyMeter.start();
 
-                String text = messageTextExtractor.extract(update.getMessage());
-                handleMessage(update.getMessage(), text);
+                messageTextExtractor.extract(update.getMessage(), text -> {
+                    handleMessage(update.getMessage(), text);
 
-                if (update.getMessage().hasVoice()) {
-                    latencyMeter.stop("Latency on voice request: {}", text);
-                } else {
-                    latencyMeter.stop("Latency on request: {}", text);
-                }
+                    if (update.getMessage().hasVoice()) {
+                        latencyMeter.stop("Latency on voice request: {}", text);
+                    } else {
+                        latencyMeter.stop("Latency on request: {}", text);
+                    }
+                }, new Waiting(update.getMessage()));
             } else if (update.hasCallbackQuery()) {
                 StopWatch stopWatch = new StopWatch();
                 stopWatch.start();
@@ -102,11 +109,12 @@ public class ReminderBotService {
                 StopWatch stopWatch = new StopWatch();
                 stopWatch.start();
 
-                String text = messageTextExtractor.extract(update.getEditedMessage());
-                handleEditedMessage(update.getEditedMessage(), text);
+                messageTextExtractor.extract(update.getEditedMessage(), text -> {
+                    handleEditedMessage(update.getEditedMessage(), text);
 
-                stopWatch.stop();
-                LOGGER.debug("Latency on edit message request: {} = {}", text, stopWatch.getTime());
+                    stopWatch.stop();
+                    LOGGER.debug("Latency on edit message request: {} = {}", text, stopWatch.getTime());
+                }, new Waiting(update.getEditedMessage()));
             }
         } catch (UserException ex) {
             LOGGER.error(ex.getMessage());
@@ -181,5 +189,23 @@ public class ReminderBotService {
         }
 
         return false;
+    }
+
+    private class Waiting implements Callable<Void> {
+
+        private final Message message;
+
+        private Waiting(Message message) {
+            this.message = message;
+        }
+
+        @Override
+        public Void call() {
+            if (messageSenderAI.isNeedSendAction(new MessageSenderAI.ExecutionContext().update(message), ActionType.TYPING)) {
+                messageService.sendAction(message.getChatId(), ActionType.TYPING);
+            }
+
+            return null;
+        }
     }
 }

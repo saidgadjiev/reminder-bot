@@ -16,7 +16,7 @@ import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
-import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationAI;
+import ru.gadjini.reminder.service.ai.ReminderNotificationAI;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;

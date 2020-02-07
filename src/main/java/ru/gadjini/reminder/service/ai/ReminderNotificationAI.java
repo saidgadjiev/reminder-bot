@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service.reminder.notification;
+package ru.gadjini.reminder.service.ai;
 
 import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;

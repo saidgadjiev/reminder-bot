@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.bot.command.api.*;
 import ru.gadjini.reminder.model.AnswerCallbackContext;
 import ru.gadjini.reminder.service.TgUserService;
+import ru.gadjini.reminder.service.ai.MessageSenderAI;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
@@ -38,12 +39,16 @@ public class CommandExecutor {
 
     private LocalisationService localisationService;
 
+    private MessageSenderAI messageSenderAI;
+
     @Autowired
-    public CommandExecutor(CommandParser commandParser, MessageService messageService, TgUserService userService, LocalisationService localisationService) {
+    public CommandExecutor(CommandParser commandParser, MessageService messageService, TgUserService userService,
+                           LocalisationService localisationService, MessageSenderAI messageSenderAI) {
         this.commandParser = commandParser;
         this.messageService = messageService;
         this.userService = userService;
         this.localisationService = localisationService;
+        this.messageSenderAI = messageSenderAI;
     }
 
     @Autowired
@@ -109,7 +114,7 @@ public class CommandExecutor {
         NavigableBotCommand navigableBotCommand = commandNavigator.getCurrentCommand(message.getChatId());
 
         if (navigableBotCommand != null && navigableBotCommand.accept(message)) {
-            sendNonCommandUpdateAction(message.getChatId(), navigableBotCommand);
+            sendNonCommandUpdateAction(message, navigableBotCommand);
             navigableBotCommand.processNonCommandUpdate(message, text);
         }
     }
@@ -197,11 +202,11 @@ public class CommandExecutor {
         }
     }
 
-    private void sendNonCommandUpdateAction(long chatId, MyBotCommand botCommand) {
+    private void sendNonCommandUpdateAction(Message message, MyBotCommand botCommand) {
         ActionType action = botCommand.getNonCommandUpdateAction();
 
-        if (action != null) {
-            messageService.sendAction(chatId, action);
+        if (messageSenderAI.isNeedSendAction(new MessageSenderAI.ExecutionContext().command(true).update(message), action)) {
+            messageService.sendAction(message.getChatId(), action);
         }
     }
 
