@@ -32,13 +32,10 @@ public class MySelfRequestExtractor extends BaseRequestExtractor {
     @Override
     public ReminderRequest extract(ReminderRequestContext context) {
         ZoneId zoneId = context.receiverZoneId();
-
         if (zoneId == null) {
             zoneId = tgUserService.getTimeZone(context.user().getId());
         }
-
         Locale locale = context.locale();
-
         if (locale == null) {
             locale = tgUserService.getLocale(context.user().getId());
         }

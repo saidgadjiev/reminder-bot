@@ -36,10 +36,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ReminderRequestService {
@@ -102,12 +99,13 @@ public class ReminderRequestService {
         }
         ReminderRequestContext context = new ReminderRequestContext()
                 .user(user)
-                .receiverId(oldReminder.getReceiver().getUserId())
                 .receiverZoneId(oldReminder.getReceiver().getZone())
                 .text(text);
 
         if (oldReminder.isMySelf()) {
             context.locale(oldReminder.getReceiver().getLocale());
+        } else {
+            context.receiverId(oldReminder.getReceiver().getUserId());
         }
 
         ReminderRequest reminderRequest = requestExtractor.extract(context);

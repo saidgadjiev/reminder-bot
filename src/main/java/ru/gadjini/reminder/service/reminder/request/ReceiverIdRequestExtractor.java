@@ -38,6 +38,7 @@ public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
             if (zoneId == null) {
                 zoneId = tgUserService.getTimeZone(receiverId);
             }
+
             Locale locale = context.locale();
             if (locale == null) {
                 locale = tgUserService.getLocale(context.user().getId());

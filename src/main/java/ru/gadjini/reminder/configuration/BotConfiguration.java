@@ -103,9 +103,9 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
                                                      ReceiverIdRequestExtractor receiverIdRequestExtractor,
                                                      WithLoginRequestExtractor withLoginRequestExtractor,
                                                      FriendRequestExtractor friendRequestExtractor) {
-        receiverIdRequestExtractor.setNext(withLoginRequestExtractor).setNext(friendRequestExtractor).setNext(mySelfRequestExtractor);
+        friendRequestExtractor.setNext(withLoginRequestExtractor).setNext(receiverIdRequestExtractor).setNext(mySelfRequestExtractor);
 
-        return receiverIdRequestExtractor;
+        return friendRequestExtractor;
     }
 
     @Override
