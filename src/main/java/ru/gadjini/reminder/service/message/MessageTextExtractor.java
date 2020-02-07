@@ -6,8 +6,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import ru.gadjini.reminder.common.MessagesProperties;
+import ru.gadjini.reminder.job.PriorityJob;
+import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.speech.GoogleVoiceRecognitionService;
 
+import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
@@ -19,9 +24,18 @@ public class MessageTextExtractor {
 
     private GoogleVoiceRecognitionService voiceRecognitionService;
 
+    private MessageService messageService;
+
+    private LocalisationService localisationService;
+
+    private TgUserService userService;
+
     @Autowired
-    public MessageTextExtractor(GoogleVoiceRecognitionService voiceRecognitionService) {
+    public MessageTextExtractor(GoogleVoiceRecognitionService voiceRecognitionService, MessageService messageService, LocalisationService localisationService, TgUserService userService) {
         this.voiceRecognitionService = voiceRecognitionService;
+        this.messageService = messageService;
+        this.localisationService = localisationService;
+        this.userService = userService;
     }
 
     public void extract(Message message, Consumer<String> callback, Callable<Void> waiting) {
@@ -38,6 +52,12 @@ public class MessageTextExtractor {
                 String voiceText = voiceRecognitionService.recognize(message.getFrom(), message.getVoice());
 
                 if (StringUtils.isBlank(voiceText)) {
+                    Locale locale = userService.getLocale(message.getFrom().getId());
+                    messageService.sendMessageAsync(
+                            new SendMessageContext(PriorityJob.Priority.HIGH)
+                                    .chatId(message.getChatId())
+                                    .text(localisationService.getMessage(MessagesProperties.MESSAGE_VOICE_NOT_RECOGNIZED, locale))
+                    );
                     LOGGER.debug("Voice not recognized");
                 } else {
                     callback.accept(voiceText);
