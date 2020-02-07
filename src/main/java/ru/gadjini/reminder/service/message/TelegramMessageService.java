@@ -28,6 +28,7 @@ import ru.gadjini.reminder.model.AnswerCallbackContext;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.TelegramService;
+import ru.gadjini.reminder.util.TextUtils;
 
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -216,7 +217,9 @@ public class TelegramMessageService implements MessageService {
     private String buildErrorMessage(Throwable ex) {
         StringBuilder message = new StringBuilder();
 
-        message.append("<b>Message</b>: ").append(ex.getMessage()).append("\n\n").append("<b>Stacktrace</b>: ").append(ExceptionUtils.getStackTrace(ex), 0, TgConstants.MAX_MESSAGE_SIZE);
+        message.append("<b>Message</b>: ").append(ex.getMessage()).append("\n\n")
+                .append("<b>Stacktrace</b>: ")
+                .append(TextUtils.removeHtmlTags(ExceptionUtils.getStackTrace(ex).substring(0, TgConstants.MAX_MESSAGE_SIZE)));
 
         return message.toString();
     }
