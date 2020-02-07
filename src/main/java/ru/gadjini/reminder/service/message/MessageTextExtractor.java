@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.message;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,11 @@ public class MessageTextExtractor {
             ForkJoinPool.commonPool().execute(() -> {
                 String voiceText = voiceRecognitionService.recognize(message.getFrom(), message.getVoice());
 
-                callback.accept(voiceText);
+                if (StringUtils.isBlank(voiceText)) {
+                    LOGGER.debug("Voice not recognized");
+                } else {
+                    callback.accept(voiceText);
+                }
             });
         }
     }
