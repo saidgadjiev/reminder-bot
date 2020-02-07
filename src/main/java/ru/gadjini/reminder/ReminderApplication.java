@@ -2,11 +2,8 @@ package ru.gadjini.reminder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -26,7 +23,7 @@ import java.util.concurrent.ForkJoinPool;
         WebMoneyProperties.class
 })
 @EnableScheduling
-public class ReminderApplication implements CommandLineRunner {
+public class ReminderApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReminderApplication.class);
 
@@ -51,15 +48,5 @@ public class ReminderApplication implements CommandLineRunner {
         LOGGER.info("CPU Core: " + Runtime.getRuntime().availableProcessors());
         LOGGER.info("CommonPool Parallelism: " + ForkJoinPool.commonPool().getParallelism());
         LOGGER.info("CommonPool Common Parallelism: " + ForkJoinPool.getCommonPoolParallelism());
-    }
-
-    @Autowired
-    private DataSourceProperties dataSourceProperties;
-
-    @Override
-    public void run(String... args) {
-        LOGGER.info("Url: " + dataSourceProperties.getUrl());
-        LOGGER.info("User: " + dataSourceProperties.getUsername());
-        LOGGER.info("Password: " + dataSourceProperties.getPassword());
     }
 }
