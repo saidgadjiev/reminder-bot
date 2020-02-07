@@ -195,7 +195,7 @@ public class TelegramMessageService implements MessageService {
         sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.LOW)
                 .chatId(ReminderConstants.REPORT_CHAT)
-                .text(buildErrorMessage(ex))
+                .text(buildErrorMessage(chatId, ex))
         );
     }
 
@@ -214,10 +214,10 @@ public class TelegramMessageService implements MessageService {
         );
     }
 
-    private String buildErrorMessage(Throwable ex) {
+    private String buildErrorMessage(long chatId, Throwable ex) {
         StringBuilder message = new StringBuilder();
 
-        message.append("<b>Message</b>: ").append(ex.getMessage()).append("\n\n")
+        message.append("<b>Message(").append(chatId).append(")</b>: ").append(ex.getMessage()).append("\n\n")
                 .append("<b>Stacktrace</b>: ")
                 .append(TextUtils.removeHtmlTags(ExceptionUtils.getStackTrace(ex).substring(0, TgConstants.MAX_MESSAGE_SIZE)));
 
