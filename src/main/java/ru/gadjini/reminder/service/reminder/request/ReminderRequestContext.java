@@ -15,11 +15,11 @@ public class ReminderRequestContext {
 
     private ZoneId receiverZoneId;
 
-    private Locale locale;
+    private Locale creatorLocale;
 
     private int messageId;
 
-    private User user;
+    private User creator;
 
     public boolean voice() {
         return this.voice;
@@ -37,16 +37,16 @@ public class ReminderRequestContext {
         return this.receiverZoneId;
     }
 
-    public Locale locale() {
-        return this.locale;
+    public Locale creatorLocale() {
+        return this.creatorLocale;
     }
 
     public int messageId() {
         return this.messageId;
     }
 
-    public User user() {
-        return this.user;
+    public User creator() {
+        return this.creator;
     }
 
     public ReminderRequestContext voice(final boolean voice) {
@@ -69,8 +69,8 @@ public class ReminderRequestContext {
         return this;
     }
 
-    public ReminderRequestContext locale(final Locale locale) {
-        this.locale = locale;
+    public ReminderRequestContext creatorLocale(final Locale locale) {
+        this.creatorLocale = locale;
         return this;
     }
 
@@ -79,8 +79,8 @@ public class ReminderRequestContext {
         return this;
     }
 
-    public ReminderRequestContext user(final User user) {
-        this.user = user;
+    public ReminderRequestContext creator(final User user) {
+        this.creator = user;
         return this;
     }
 }

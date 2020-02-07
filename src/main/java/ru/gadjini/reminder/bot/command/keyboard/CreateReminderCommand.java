@@ -95,7 +95,7 @@ public class CreateReminderCommand implements KeyboardBotCommand, NavigableBotCo
                 new ReminderRequestContext()
                         .text(text)
                         .voice(message.hasVoice())
-                        .user(message.getFrom())
+                        .creator(message.getFrom())
                         .messageId(message.getMessageId()));
         reminderMessageSender.sendReminderCreated(reminder);
     }

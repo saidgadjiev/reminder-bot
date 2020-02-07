@@ -99,7 +99,7 @@ public class CreateFriendReminderCallbackCommand implements CallbackBotCommand, 
                         .voice(message.hasVoice())
                         .receiverId(receiverId)
                         .text(text)
-                        .user(message.getFrom())
+                        .creator(message.getFrom())
                         .messageId(message.getMessageId()));
 
         reminderMessageSender.sendReminderCreated(reminder);

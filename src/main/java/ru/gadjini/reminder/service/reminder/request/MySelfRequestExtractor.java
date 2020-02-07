@@ -33,15 +33,16 @@ public class MySelfRequestExtractor extends BaseRequestExtractor {
     public ReminderRequest extract(ReminderRequestContext context) {
         ZoneId zoneId = context.receiverZoneId();
         if (zoneId == null) {
-            zoneId = tgUserService.getTimeZone(context.user().getId());
+            zoneId = tgUserService.getTimeZone(context.creator().getId());
         }
-        Locale locale = context.locale();
+        Locale locale = context.creatorLocale();
         if (locale == null) {
-            locale = tgUserService.getLocale(context.user().getId());
+            locale = tgUserService.getLocale(context.creator().getId());
         }
 
         try {
             ReminderRequest reminderRequest = requestParser.parseRequest(context.text(), zoneId, locale);
+            reminderRequest.setReceiverId(context.creator().getId());
             reminderRequest.setLocale(locale);
 
             return reminderRequest;

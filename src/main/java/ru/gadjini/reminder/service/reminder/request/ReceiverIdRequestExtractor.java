@@ -12,6 +12,7 @@ import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 
 import java.time.ZoneId;
 import java.util.Locale;
+import java.util.Objects;
 
 @Component
 public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
@@ -33,15 +34,15 @@ public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
     public ReminderRequest extract(ReminderRequestContext context) {
         Integer receiverId = context.receiverId();
 
-        if (receiverId != null) {
+        if (receiverId != null && !Objects.equals(receiverId, context.creator().getId())) {
             ZoneId zoneId = context.receiverZoneId();
             if (zoneId == null) {
                 zoneId = tgUserService.getTimeZone(receiverId);
             }
 
-            Locale locale = context.locale();
+            Locale locale = context.creatorLocale();
             if (locale == null) {
-                locale = tgUserService.getLocale(context.user().getId());
+                locale = tgUserService.getLocale(context.creator().getId());
             }
 
             try {

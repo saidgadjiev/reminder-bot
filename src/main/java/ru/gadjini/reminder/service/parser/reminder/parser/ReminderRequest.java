@@ -14,6 +14,8 @@ public class ReminderRequest {
 
     private Integer receiverId;
 
+    private Integer creatorId;
+
     private String text;
 
     private String note;
@@ -110,5 +112,13 @@ public class ReminderRequest {
 
     public void setLocale(Locale locale) {
         this.locale = locale;
+    }
+
+    public Integer getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Integer creatorId) {
+        this.creatorId = creatorId;
     }
 }

@@ -130,7 +130,7 @@ public class CreateForFriendReminderKeyboardCommand implements KeyboardBotComman
                         .receiverId(receiver.getUserId())
                         .receiverZoneId(receiver.getZone())
                         .voice(message.hasVoice())
-                        .user(message.getFrom())
+                        .creator(message.getFrom())
                         .messageId(message.getMessageId()));
                 reminderMessageSender.sendReminderCreated(reminder);
 
@@ -170,7 +170,7 @@ public class CreateForFriendReminderKeyboardCommand implements KeyboardBotComman
                 .receiverId(receiver.getUserId())
                 .receiverZoneId(receiver.getZone())
                 .voice(message.hasVoice())
-                .user(message.getFrom())
+                .creator(message.getFrom())
                 .messageId(message.getMessageId()));
         reminderMessageSender.sendReminderCreated(reminder);
     }

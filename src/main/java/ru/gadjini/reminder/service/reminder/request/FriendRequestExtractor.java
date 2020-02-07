@@ -44,11 +44,11 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
         String text = context.text().toLowerCase();
         Optional<String> forFriendStart = forFriendStarts.stream().filter(text::startsWith).findFirst();
         if (forFriendStart.isPresent()) {
-            Locale locale = context.locale();
+            Locale locale = context.creatorLocale();
             if (locale == null) {
-                locale = userService.getLocale(context.user().getId());
+                locale = userService.getLocale(context.creator().getId());
             }
-            ExtractReceiverResult extractReceiverResult = extractReceiver(context.user().getId(), context.text(), context.voice(), locale);
+            ExtractReceiverResult extractReceiverResult = extractReceiver(context.creator().getId(), context.text(), context.voice(), locale);
 
             try {
                 ReminderRequest reminderRequest = requestParser.parseRequest(extractReceiverResult.text, extractReceiverResult.receiver.getZone(), locale);

@@ -79,11 +79,12 @@ public class ReminderRequestService {
 
     public Reminder createReminder(ReminderRequestContext context) {
         ReminderRequest reminderRequest = requestExtractor.extract(context);
+        reminderRequest.setCreatorId(context.creator().getId());
         reminderRequest.setMessageId(context.messageId());
 
-        validatorFactory.getValidator(ValidatorType.CREATE_REMINDER).validate(new ValidationContext().currentUser(context.user()).reminderRequest(reminderRequest));
+        validatorFactory.getValidator(ValidatorType.CREATE_REMINDER).validate(new ValidationContext().currentUser(context.creator()).reminderRequest(reminderRequest));
 
-        return createReminder(context.user(), reminderRequest);
+        return createReminder(context.creator(), reminderRequest);
     }
 
     @Transactional
@@ -98,12 +99,12 @@ public class ReminderRequestService {
             return null;
         }
         ReminderRequestContext context = new ReminderRequestContext()
-                .user(user)
+                .creator(user)
                 .receiverZoneId(oldReminder.getReceiver().getZone())
                 .text(text);
 
         if (oldReminder.isMySelf()) {
-            context.locale(oldReminder.getReceiver().getLocale());
+            context.creatorLocale(oldReminder.getReceiver().getLocale());
         } else {
             context.receiverId(oldReminder.getReceiver().getUserId());
         }
@@ -122,15 +123,13 @@ public class ReminderRequestService {
         reminderService.updateReminder(oldReminder.getId(), values);
 
         boolean needUpdateNotifications = isNeedUpdateNotifications(values);
-        List<ReminderNotification> notifications = new ArrayList<>();
         if (needUpdateNotifications) {
             if (newReminder.isRepeatable()) {
-                notifications = repeatReminderService.updateReminderNotifications(oldReminder.getId(), oldReminder.getReceiverId(), newReminder.getRepeatRemindAtsInReceiverZone(timeCreator));
+                repeatReminderService.updateReminderNotifications(oldReminder.getId(), oldReminder.getReceiverId(), newReminder.getRepeatRemindAtsInReceiverZone(timeCreator));
             } else {
-                notifications = reminderService.updateReminderNotifications(oldReminder.getId(), oldReminder.getReceiverId(), newReminder.getRemindAt());
+                reminderService.updateReminderNotifications(oldReminder.getId(), oldReminder.getReceiverId(), newReminder.getRemindAt());
             }
         }
-        newReminder.setSuppressNotifications(notifications.size() == 0);
 
         return new UpdateReminderResult(oldReminder, newReminder);
     }
@@ -331,7 +330,7 @@ public class ReminderRequestService {
             receiver.setUsername(reminderRequest.getReceiverName());
             reminder.setReceiver(receiver);
             reminder.setRead(false);
-        } else if (reminderRequest.getReceiverId() != null) {
+        } else if (!Objects.equals(reminderRequest.getReceiverId(), reminderRequest.getCreatorId())) {
             TgUser receiver = new TgUser();
             receiver.setUserId(reminderRequest.getReceiverId());
             reminder.setReceiver(receiver);

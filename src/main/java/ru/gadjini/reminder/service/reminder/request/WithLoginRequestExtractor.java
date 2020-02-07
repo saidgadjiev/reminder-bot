@@ -35,7 +35,7 @@ public class WithLoginRequestExtractor extends BaseRequestExtractor {
         String text = context.text();
 
         if (text.startsWith(TgUser.USERNAME_START)) {
-            Locale locale = tgUserService.getLocale(context.user().getId());
+            Locale locale = tgUserService.getLocale(context.creator().getId());
             if (text.indexOf(' ') == -1) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, locale));
             }

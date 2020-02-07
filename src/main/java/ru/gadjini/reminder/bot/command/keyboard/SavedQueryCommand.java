@@ -104,7 +104,7 @@ public class SavedQueryCommand implements KeyboardBotCommand, NavigableBotComman
         reminderRequestExtractor.extract(
                 new ReminderRequestContext()
                         .text(text)
-                        .user(message.getFrom())
+                        .creator(message.getFrom())
         );
         savedQueryService.saveQuery(message.getFrom().getId(), text);
 
