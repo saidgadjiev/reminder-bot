@@ -11,6 +11,7 @@ import ru.gadjini.reminder.bot.api.ApiContextInitializer;
 import ru.gadjini.reminder.properties.*;
 
 import java.util.Locale;
+import java.util.concurrent.ForkJoinPool;
 
 
 @SpringBootApplication
@@ -27,9 +28,7 @@ public class ReminderApplication {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReminderApplication.class);
 
     public static void main(String[] args) {
-        LOGGER.info("Server timezone: " + System.getProperty("user.timezone"));
-        LOGGER.info("Server default locale: " + Locale.getDefault().getLanguage());
-
+        startLogs();
         ApiContextInitializer.init();
         try {
             SpringApplication application = new SpringApplication(ReminderApplication.class);
@@ -40,5 +39,14 @@ public class ReminderApplication {
             LOGGER.error(ex.getMessage(), ex);
             throw ex;
         }
+    }
+
+    private static void startLogs() {
+        LOGGER.info("Server timezone: " + System.getProperty("user.timezone"));
+        LOGGER.info("Server default locale: " + Locale.getDefault().getLanguage());
+
+        LOGGER.info("CPU Core: " + Runtime.getRuntime().availableProcessors());
+        LOGGER.info("CommonPool Parallelism: " + ForkJoinPool.commonPool().getParallelism());
+        LOGGER.info("CommonPool Common Parallelism: " + ForkJoinPool.getCommonPoolParallelism());
     }
 }
