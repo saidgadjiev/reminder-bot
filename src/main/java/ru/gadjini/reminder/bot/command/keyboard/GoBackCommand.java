@@ -20,12 +20,15 @@ public class GoBackCommand implements KeyboardBotCommand {
     private Set<String> names = new HashSet<>();
 
     @Autowired
-    public GoBackCommand(LocalisationService localisationService, CommandNavigator commandNavigator) {
-        this.commandNavigator = commandNavigator;
-
+    public GoBackCommand(LocalisationService localisationService) {
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.names.add(localisationService.getMessage(MessagesProperties.GO_BACK_COMMAND_NAME, locale));
         }
+    }
+
+    @Autowired
+    public void setCommandNavigator(CommandNavigator commandNavigator) {
+        this.commandNavigator = commandNavigator;
     }
 
     @Override

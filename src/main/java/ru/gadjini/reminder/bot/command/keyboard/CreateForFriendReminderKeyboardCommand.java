@@ -62,14 +62,13 @@ public class CreateForFriendReminderKeyboardCommand implements KeyboardBotComman
     public CreateForFriendReminderKeyboardCommand(CommandStateService stateService, LocalisationService localisationService,
                                                   FriendRequestExtractor friendRequestExtractor,
                                                   ReminderRequestService reminderRequestService, MessageService messageService,
-                                                  CurrReplyKeyboard replyKeyboardService, CommandNavigator commandNavigator,
+                                                  CurrReplyKeyboard replyKeyboardService,
                                                   ReminderMessageSender reminderMessageSender, FriendshipMessageBuilder friendshipMessageBuilder, TgUserService userService) {
         this.stateService = stateService;
         this.friendRequestExtractor = friendRequestExtractor;
         this.reminderRequestService = reminderRequestService;
         this.messageService = messageService;
         this.replyKeyboardService = replyKeyboardService;
-        this.commandNavigator = commandNavigator;
         this.reminderMessageSender = reminderMessageSender;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.userService = userService;
@@ -77,6 +76,11 @@ public class CreateForFriendReminderKeyboardCommand implements KeyboardBotComman
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.forFriendStart.add(localisationService.getMessage(MessagesProperties.FOR_FRIEND_REMINDER_START, locale).toLowerCase());
         }
+    }
+
+    @Autowired
+    public void setCommandNavigator(CommandNavigator commandNavigator) {
+        this.commandNavigator = commandNavigator;
     }
 
     @Override

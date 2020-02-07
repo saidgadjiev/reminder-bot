@@ -55,18 +55,22 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
                                     MessageService messageService,
                                     InlineKeyboardService inlineKeyboardService,
                                     CurrReplyKeyboard replyKeyboardService,
-                                    CommandNavigator commandNavigator, TgUserService userService) {
+                                    TgUserService userService) {
         this.localisationService = localisationService;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.replyKeyboardService = replyKeyboardService;
-        this.commandNavigator = commandNavigator;
         this.userService = userService;
 
         for (Locale locale : localisationService.getSupportedLocales()) {
             this.names.add(localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME, locale));
         }
+    }
+
+    @Autowired
+    public void setCommandNavigator(CommandNavigator commandNavigator) {
+        this.commandNavigator = commandNavigator;
     }
 
     @Override
