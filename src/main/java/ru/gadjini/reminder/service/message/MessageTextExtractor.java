@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -14,7 +15,6 @@ import ru.gadjini.reminder.service.speech.GoogleVoiceRecognitionService;
 
 import java.util.Locale;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 
 @Service
@@ -30,12 +30,16 @@ public class MessageTextExtractor {
 
     private TgUserService userService;
 
+    private TaskExecutor taskExecutor;
+
     @Autowired
-    public MessageTextExtractor(GoogleVoiceRecognitionService voiceRecognitionService, MessageService messageService, LocalisationService localisationService, TgUserService userService) {
+    public MessageTextExtractor(GoogleVoiceRecognitionService voiceRecognitionService, MessageService messageService,
+                                LocalisationService localisationService, TgUserService userService, TaskExecutor taskExecutor) {
         this.voiceRecognitionService = voiceRecognitionService;
         this.messageService = messageService;
         this.localisationService = localisationService;
         this.userService = userService;
+        this.taskExecutor = taskExecutor;
     }
 
     public void extract(Message message, Consumer<String> callback, Callable<Void> waiting) {
@@ -48,7 +52,7 @@ public class MessageTextExtractor {
             } catch (Exception e) {
                 LOGGER.error(e.getMessage());
             }
-            ForkJoinPool.commonPool().execute(() -> {
+            taskExecutor.execute(() -> {
                 String voiceText = voiceRecognitionService.recognize(message.getFrom(), message.getVoice());
 
                 if (StringUtils.isBlank(voiceText)) {

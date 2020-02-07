@@ -1,7 +1,6 @@
 package ru.gadjini.reminder.service.reminder.request;
 
 import org.telegram.telegrambots.meta.api.objects.User;
-import ru.gadjini.reminder.domain.TgUser;
 
 import java.time.ZoneId;
 import java.util.Locale;
@@ -12,69 +11,76 @@ public class ReminderRequestContext {
 
     private String text;
 
-    private TgUser receiver;
+    private Integer receiverId;
+
+    private ZoneId receiverZoneId;
+
+    private Locale locale;
 
     private int messageId;
 
     private User user;
 
-    public boolean isVoice() {
-        return voice;
+    public boolean voice() {
+        return this.voice;
     }
 
-    public ReminderRequestContext setVoice(boolean voice) {
+    public String text() {
+        return this.text;
+    }
+
+    public Integer receiverId() {
+        return this.receiverId;
+    }
+
+    public ZoneId receiverZoneId() {
+        return this.receiverZoneId;
+    }
+
+    public Locale locale() {
+        return this.locale;
+    }
+
+    public int messageId() {
+        return this.messageId;
+    }
+
+    public User user() {
+        return this.user;
+    }
+
+    public ReminderRequestContext voice(final boolean voice) {
         this.voice = voice;
         return this;
     }
 
-    public String getText() {
-        return text;
-    }
-
-    public ReminderRequestContext setText(String text) {
+    public ReminderRequestContext text(final String text) {
         this.text = text;
         return this;
     }
 
-    public Integer getReceiverId() {
-        return receiver == null ? null : receiver.getUserId();
-    }
-
-    public ZoneId getReceiverZone() {
-        return receiver == null ? null : receiver.getZone();
-    }
-
-    public Locale getReceiverLocale() {
-        return receiver == null ? null : receiver.getLocale();
-    }
-
-    public TgUser getReceiver() {
-        return this.receiver;
-    }
-
-    public ReminderRequestContext setReceiver(final TgUser receiver) {
-        this.receiver = receiver;
-
+    public ReminderRequestContext receiverId(final Integer receiverId) {
+        this.receiverId = receiverId;
         return this;
     }
 
-    public int getMessageId() {
-        return messageId;
+    public ReminderRequestContext receiverZoneId(final ZoneId zoneId) {
+        this.receiverZoneId = zoneId;
+        return this;
     }
 
-    public ReminderRequestContext setMessageId(int messageId) {
+    public ReminderRequestContext locale(final Locale locale) {
+        this.locale = locale;
+        return this;
+    }
+
+    public ReminderRequestContext messageId(final int messageId) {
         this.messageId = messageId;
-
         return this;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public ReminderRequestContext setUser(User user) {
+    public ReminderRequestContext user(final User user) {
         this.user = user;
-
         return this;
     }
 }

@@ -3,7 +3,6 @@ package ru.gadjini.reminder.service.reminder.request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.TgUserService;
@@ -11,6 +10,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 
+import java.time.ZoneId;
 import java.util.Locale;
 
 @Component
@@ -31,22 +31,26 @@ public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
 
     @Override
     public ReminderRequest extract(ReminderRequestContext context) {
-        Integer receiverId = context.getReceiverId();
+        Integer receiverId = context.receiverId();
 
         if (receiverId != null) {
-            TgUser receiver = context.getReceiver();
-            if (receiver == null) {
-                receiver = tgUserService.getByUserId(receiverId);
+            ZoneId zoneId = context.receiverZoneId();
+            if (zoneId == null) {
+                zoneId = tgUserService.getTimeZone(receiverId);
+            }
+            Locale locale = context.locale();
+            if (locale == null) {
+                locale = tgUserService.getLocale(context.user().getId());
             }
 
             try {
-                ReminderRequest reminderRequest = requestParser.parseRequest(context.getText(), receiver.getZone(), receiver.getLocale());
+                ReminderRequest reminderRequest = requestParser.parseRequest(context.text(), zoneId, locale);
                 reminderRequest.setReceiverId(receiverId);
-                reminderRequest.setLocale(receiver.getLocale());
+                reminderRequest.setLocale(locale);
 
                 return reminderRequest;
             } catch (ParseException ex) {
-                throw new UserException(getMessage(context.getText(), context.isVoice(), receiver.getLocale()));
+                throw new UserException(getMessage(context.text(), context.voice(), locale));
             }
         }
 

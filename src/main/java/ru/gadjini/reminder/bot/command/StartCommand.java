@@ -94,10 +94,10 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
     public void processNonCommandUpdate(Message message, String reminderText) {
         Reminder reminder = reminderRequestService.createReminder(
                 new ReminderRequestContext()
-                        .setText(reminderText)
-                        .setVoice(message.hasVoice())
-                        .setUser(message.getFrom())
-                        .setMessageId(message.getMessageId()));
+                        .text(reminderText)
+                        .voice(message.hasVoice())
+                        .user(message.getFrom())
+                        .messageId(message.getMessageId()));
         reminderMessageSender.sendReminderCreated(reminder);
     }
 

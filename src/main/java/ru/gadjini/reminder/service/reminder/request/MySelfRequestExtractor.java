@@ -31,25 +31,25 @@ public class MySelfRequestExtractor extends BaseRequestExtractor {
 
     @Override
     public ReminderRequest extract(ReminderRequestContext context) {
-        ZoneId zoneId = context.getReceiverZone();
+        ZoneId zoneId = context.receiverZoneId();
 
         if (zoneId == null) {
-            zoneId = tgUserService.getTimeZone(context.getUser().getId());
+            zoneId = tgUserService.getTimeZone(context.user().getId());
         }
 
-        Locale locale = context.getReceiverLocale();
+        Locale locale = context.locale();
 
         if (locale == null) {
-            locale = tgUserService.getLocale(context.getUser().getId());
+            locale = tgUserService.getLocale(context.user().getId());
         }
 
         try {
-            ReminderRequest reminderRequest = requestParser.parseRequest(context.getText(), zoneId, locale);
+            ReminderRequest reminderRequest = requestParser.parseRequest(context.text(), zoneId, locale);
             reminderRequest.setLocale(locale);
 
             return reminderRequest;
         } catch (ParseException ex) {
-            throw new UserException(getMessage(context.getText(), context.isVoice(), locale));
+            throw new UserException(getMessage(context.text(), context.voice(), locale));
         }
     }
 

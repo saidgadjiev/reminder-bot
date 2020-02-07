@@ -67,7 +67,7 @@ public class TgUser {
     }
 
     public ZoneId getZone() {
-        return ZoneId.of(zoneId);
+        return zoneId == null ? null : ZoneId.of(zoneId);
     }
 
     public void setZone(ZoneId zone) {

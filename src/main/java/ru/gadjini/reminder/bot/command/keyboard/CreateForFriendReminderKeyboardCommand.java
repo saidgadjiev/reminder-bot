@@ -126,11 +126,12 @@ public class CreateForFriendReminderKeyboardCommand implements KeyboardBotComman
             TgUser receiver = extractReceiverResult.getReceiver();
             try {
                 Reminder reminder = reminderRequestService.createReminder(new ReminderRequestContext()
-                        .setText(extractReceiverResult.getText())
-                        .setReceiver(receiver)
-                        .setVoice(message.hasVoice())
-                        .setUser(message.getFrom())
-                        .setMessageId(message.getMessageId()));
+                        .text(extractReceiverResult.getText())
+                        .receiverId(receiver.getUserId())
+                        .receiverZoneId(receiver.getZone())
+                        .voice(message.hasVoice())
+                        .user(message.getFrom())
+                        .messageId(message.getMessageId()));
                 reminderMessageSender.sendReminderCreated(reminder);
 
                 return false;
@@ -165,11 +166,12 @@ public class CreateForFriendReminderKeyboardCommand implements KeyboardBotComman
     public void processNonCommandUpdate(Message message, String text) {
         TgUser receiver = stateService.getState(message.getChatId(), true);
         Reminder reminder = reminderRequestService.createReminder(new ReminderRequestContext()
-                .setText(text)
-                .setReceiver(receiver)
-                .setVoice(message.hasVoice())
-                .setUser(message.getFrom())
-                .setMessageId(message.getMessageId()));
+                .text(text)
+                .receiverId(receiver.getUserId())
+                .receiverZoneId(receiver.getZone())
+                .voice(message.hasVoice())
+                .user(message.getFrom())
+                .messageId(message.getMessageId()));
         reminderMessageSender.sendReminderCreated(reminder);
     }
 

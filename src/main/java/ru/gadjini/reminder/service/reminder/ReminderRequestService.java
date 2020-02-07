@@ -82,11 +82,11 @@ public class ReminderRequestService {
 
     public Reminder createReminder(ReminderRequestContext context) {
         ReminderRequest reminderRequest = requestExtractor.extract(context);
-        reminderRequest.setMessageId(context.getMessageId());
+        reminderRequest.setMessageId(context.messageId());
 
-        validatorFactory.getValidator(ValidatorType.CREATE_REMINDER).validate(new ValidationContext().currentUser(context.getUser()).reminderRequest(reminderRequest));
+        validatorFactory.getValidator(ValidatorType.CREATE_REMINDER).validate(new ValidationContext().currentUser(context.user()).reminderRequest(reminderRequest));
 
-        return createReminder(context.getUser(), reminderRequest);
+        return createReminder(context.user(), reminderRequest);
     }
 
     @Transactional
@@ -101,9 +101,14 @@ public class ReminderRequestService {
             return null;
         }
         ReminderRequestContext context = new ReminderRequestContext()
-                .setUser(user)
-                .setReceiver(oldReminder.getReceiver())
-                .setText(text);
+                .user(user)
+                .receiverId(oldReminder.getReceiver().getUserId())
+                .receiverZoneId(oldReminder.getReceiver().getZone())
+                .text(text);
+
+        if (oldReminder.isMySelf()) {
+            context.locale(oldReminder.getReceiver().getLocale());
+        }
 
         ReminderRequest reminderRequest = requestExtractor.extract(context);
 

@@ -41,10 +41,10 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
 
     @Override
     public ReminderRequest extract(ReminderRequestContext context) {
-        String text = context.getText().toLowerCase();
+        String text = context.text().toLowerCase();
         Optional<String> forFriendStart = forFriendStarts.stream().filter(text::startsWith).findFirst();
         if (forFriendStart.isPresent()) {
-            ExtractReceiverResult extractReceiverResult = extractReceiver(context.getUser().getId(), context.getText(), context.isVoice(), userService.getLocale(context.getUser().getId()));
+            ExtractReceiverResult extractReceiverResult = extractReceiver(context.user().getId(), context.text(), context.voice(), userService.getLocale(context.user().getId()));
 
             try {
                 ReminderRequest reminderRequest = requestParser.parseRequest(extractReceiverResult.text, extractReceiverResult.receiver.getZone(), extractReceiverResult.receiver.getLocale());

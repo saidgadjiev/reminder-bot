@@ -32,10 +32,10 @@ public class WithLoginRequestExtractor extends BaseRequestExtractor {
 
     @Override
     public ReminderRequest extract(ReminderRequestContext context) {
-        String text = context.getText();
+        String text = context.text();
 
         if (text.startsWith(TgUser.USERNAME_START)) {
-            Locale locale = tgUserService.getLocale(context.getUser().getId());
+            Locale locale = tgUserService.getLocale(context.user().getId());
             if (text.indexOf(' ') == -1) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_FORMAT, locale));
             }
