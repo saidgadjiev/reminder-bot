@@ -13,6 +13,8 @@ public class SendMessageContext {
 
     private PriorityJob.Priority priority;
 
+    private boolean html = true;
+
     public SendMessageContext(PriorityJob.Priority priority) {
         this.priority = priority;
     }
@@ -50,5 +52,14 @@ public class SendMessageContext {
 
     public boolean hasKeyboard() {
         return replyKeyboard != null;
+    }
+
+    public boolean html() {
+        return this.html;
+    }
+
+    public SendMessageContext html(final boolean html) {
+        this.html = html;
+        return this;
     }
 }

@@ -102,7 +102,7 @@ public class TelegramMessageService implements MessageService {
         SendMessage sendMessage = new SendMessage();
 
         sendMessage.setChatId(messageContext.chatId());
-        sendMessage.enableHtml(true);
+        sendMessage.enableHtml(messageContext.html());
         sendMessage.setText(messageContext.text());
         sendMessage.disableWebPagePreview();
 
@@ -117,7 +117,7 @@ public class TelegramMessageService implements MessageService {
                 callback.accept(msg);
             }
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new RuntimeException(ex.getMessage() + "(" + messageContext.chatId() + ")", ex);
         }
     }
 
@@ -194,8 +194,9 @@ public class TelegramMessageService implements MessageService {
 
         sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.LOW)
-                .chatId(ReminderConstants.REPORT_CHAT)
-                .text(buildErrorMessage(chatId, ex))
+                        .chatId(ReminderConstants.REPORT_CHAT)
+                        .html(false)
+                        .text(buildErrorMessage(chatId, ex))
         );
     }
 
@@ -217,9 +218,9 @@ public class TelegramMessageService implements MessageService {
     private String buildErrorMessage(long chatId, Throwable ex) {
         StringBuilder message = new StringBuilder();
 
-        message.append("<b>Message(").append(chatId).append(")</b>: ").append(ex.getMessage()).append("\n\n")
-                .append("<b>Stacktrace</b>: ")
-                .append(TextUtils.removeHtmlTags(ExceptionUtils.getStackTrace(ex).substring(0, TgConstants.MAX_MESSAGE_SIZE)));
+        message.append("Message(").append(chatId).append("): ").append(ex.getMessage()).append("\n\n")
+                .append("Stacktrace: ")
+                .append(ExceptionUtils.getStackTrace(ex), 0, TgConstants.MAX_MESSAGE_SIZE);
 
         return message.toString();
     }
