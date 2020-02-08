@@ -28,7 +28,6 @@ import ru.gadjini.reminder.model.AnswerCallbackContext;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.TelegramService;
-import ru.gadjini.reminder.util.TextUtils;
 
 import java.util.Locale;
 import java.util.function.Consumer;
