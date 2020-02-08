@@ -1,0 +1,29 @@
+@SmartReminderBot
+Technologies: Java, Spring boot, PostgreSql
+
+Build app:
+docker run -it --rm --name my-maven-project -v "$PWD":/usr/src/app  -v "$HOME"/.m2:/root/.m2
+-w /usr/src/app maven:3.6.3-jdk-11 mvn clean install -DskipTests=true
+
+Migration:
+docker run --rm --network="host" -v "$HOME"/data/flyway/conf:/flyway/conf -v "$PWD"/env/migration:/flyway/sql flyway/flyway migrate
+
+flyway.conf:
+flyway.url=jdbc:postgresql://localhost:5432/test
+flyway.user=test
+flyway.password=test
+
+env file:
+BOT_TOKEN=token
+TZ_KEY=time zone db key
+WEBMONEY_PURSE=purse
+WEBMONEY_SECRETKEY=secret
+BOT_NAME=bot name
+WEBHOOK_EXTERNALURL=webhook
+WEBHOOK_INTERNALURL=internal url #0.0.0.0:port
+SPRING_DATASOURCE_URL=db url
+SPRING_DATASOURCE_USERNAME=db user
+SPRING_DATASOURCE_PASSWORD=db password
+SPRING_REDIS_HOST=redis host
+SUBSCRIPTION_TRIAL_PERIOD=14
+GOOGLE_APPLICATION_CREDENTIALS=google speach api json credentials
