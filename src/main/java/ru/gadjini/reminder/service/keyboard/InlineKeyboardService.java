@@ -270,9 +270,7 @@ public class InlineKeyboardService {
     public InlineKeyboardMarkup getRemindKeyboard(Reminder reminder) {
         InlineKeyboardMarkup inlineKeyboardMarkup = getReceiverReminderKeyboard(reminder);
 
-        if (!reminder.getRemindAt().hasTime()) {
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.okButton(reminder.getId(), reminder.getReceiver().getLocale())));
-        }
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.okButton(reminder.getId(), reminder.getReceiver().getLocale())));
 
         return inlineKeyboardMarkup;
     }
@@ -289,24 +287,24 @@ public class InlineKeyboardService {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         if (reminder.isRepeatable()) {
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminder.getId(), reminder.getReceiver().getLocale()), buttonFactory.cancelReminderButton(reminder.getId(),  reminder.getReceiver().getLocale())));
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.skipRepeatReminderButton(reminder.getId(),  reminder.getReceiver().getLocale()), buttonFactory.stopRepeatReminderButton(reminder.getId(),  reminder.getReceiver().getLocale())));
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME,  reminder.getReceiver().getLocale())));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminder.getId(), reminder.getReceiver().getLocale()), buttonFactory.cancelReminderButton(reminder.getId(), reminder.getReceiver().getLocale())));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.skipRepeatReminderButton(reminder.getId(), reminder.getReceiver().getLocale()), buttonFactory.stopRepeatReminderButton(reminder.getId(), reminder.getReceiver().getLocale())));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, reminder.getReceiver().getLocale())));
         } else {
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminder.getId(),  reminder.getReceiver().getLocale()), buttonFactory.cancelReminderButton(reminder.getId(),  reminder.getReceiver().getLocale())));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminder.getId(), reminder.getReceiver().getLocale()), buttonFactory.cancelReminderButton(reminder.getId(), reminder.getReceiver().getLocale())));
             List<InlineKeyboardButton> keyboardButtons = new ArrayList<>();
-            keyboardButtons.add(buttonFactory.customReminderTimeButton(reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME,  reminder.getReceiver().getLocale()));
-            keyboardButtons.add(buttonFactory.postponeReminderButton(reminder.getId(),  reminder.getReceiver().getLocale()));
+            keyboardButtons.add(buttonFactory.customReminderTimeButton(reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, reminder.getReceiver().getLocale()));
+            keyboardButtons.add(buttonFactory.postponeReminderButton(reminder.getId(), reminder.getReceiver().getLocale()));
 
             inlineKeyboardMarkup.getKeyboard().add(keyboardButtons);
         }
         if (!reminder.isSuppressNotifications()) {
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.suppressNotifications(reminder.getId(),  reminder.getReceiver().getLocale())));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.suppressNotifications(reminder.getId(), reminder.getReceiver().getLocale())));
         }
         if (reminder.isNotMySelf() && reminder.isUnread()) {
-            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.readButton(reminder.getId(),  reminder.getReceiver().getLocale())));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.readButton(reminder.getId(), reminder.getReceiver().getLocale())));
         }
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderDetails(reminder.getId(),  reminder.getReceiver().getLocale())));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderDetails(reminder.getId(), reminder.getReceiver().getLocale())));
 
         return inlineKeyboardMarkup;
     }
