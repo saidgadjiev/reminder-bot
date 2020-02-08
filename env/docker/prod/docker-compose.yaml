@@ -50,5 +50,10 @@ services:
     container_name: redis
     image: redis:alpine
     restart: always
+    command:
+      - 'redis-server'
+      - '--save 900 1'
+      - '--save 300 10'
+      - '--save 60 10000'
     volumes:
       - ${HOME}/data/redis:/data
