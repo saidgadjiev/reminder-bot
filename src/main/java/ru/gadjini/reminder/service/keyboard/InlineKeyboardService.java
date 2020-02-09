@@ -50,14 +50,34 @@ public class InlineKeyboardService {
         return keyboardMarkup;
     }
 
+    public InlineKeyboardMarkup getCancelMessagesKeyboard(String prevCommand, RequestParams requestParams, Locale locale) {
+        InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
+
+        List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
+
+        keyboard.add(List.of(
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_CANCEL_REMINDER_NO_TIME, locale), CommandNames.CANCEL_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.REASON.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_CANCEL_REMINDER_NO_TIME, locale)))
+        ));
+        keyboard.add(List.of(
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_CANCEL_REMINDER_MEETING, locale), CommandNames.CANCEL_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.REASON.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_CANCEL_REMINDER_MEETING, locale)))
+        ));
+        keyboard.add(List.of(
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.CANCEL_REMINDER_COMMAND_DESCRIPTION, locale), CommandNames.CANCEL_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.REASON.getKey(), localisationService.getMessage(MessagesProperties.CANCEL_REMINDER_COMMAND_DESCRIPTION, locale)))
+        ));
+
+        keyboard.add(List.of(buttonFactory.goBackCallbackButton(prevCommand, requestParams, locale)));
+
+        return keyboardMarkup;
+    }
+
     public InlineKeyboardMarkup getPostponeMessagesKeyboard(String prevCommand, RequestParams requestParams, Locale locale) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
 
         keyboard.add(List.of(
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING, locale), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_REASON.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING, locale))),
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON, locale), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.POSTPONE_REASON.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON, locale)))
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING, locale), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.REASON.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING, locale))),
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION, locale), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.REASON.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON, locale)))
         ));
 
         keyboard.add(List.of(buttonFactory.goBackCallbackButton(prevCommand, requestParams, locale)));

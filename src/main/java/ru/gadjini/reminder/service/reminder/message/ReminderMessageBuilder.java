@@ -391,22 +391,30 @@ public class ReminderMessageBuilder {
         return messageBuilder.getReminderCanceled(reminder.getText(), reminder.getReceiver().getLocale());
     }
 
-    public String getReminderCanceledForReceiver(Reminder reminder) {
+    public String getReminderCanceledForReceiver(Reminder reminder, String reason) {
         StringBuilder message = new StringBuilder();
 
         message
                 .append(messageBuilder.getReminderCanceled(reminder.getText(), reminder.getReceiver().getLocale())).append("\n")
                 .append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
+        if (StringUtils.isNotBlank(reason)) {
+            message.append("\n\n").append(reason);
+        }
+
         return message.toString();
     }
 
-    public String getReminderCanceledForCreator(Reminder reminder) {
+    public String getReminderCanceledForCreator(Reminder reminder, String reason) {
         StringBuilder message = new StringBuilder();
 
         message
                 .append(messageBuilder.getReminderCanceled(reminder.getText(), reminder.getCreator().getLocale())).append("\n")
                 .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
+
+        if (StringUtils.isNotBlank(reason)) {
+            message.append("\n\n").append(reason);
+        }
 
         return message.toString();
     }

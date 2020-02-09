@@ -7,6 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
+import ru.gadjini.reminder.bot.command.callback.state.ReminderData;
+import ru.gadjini.reminder.bot.command.callback.state.TimeData;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
@@ -84,7 +86,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         CallbackRequest request = new CallbackRequest(callbackQuery.getMessage().getMessageId(), requestParams, callbackQuery.getMessage().getReplyMarkup());
         StateData state = new StateData();
-        state.setState(State.TIME);
+        state.setState(StateData.State.TIME);
         state.setCallbackRequest(request);
 
         Reminder reminder = reminderRequestService.getReminderForPostpone(requestParams.getInt(Arg.REMINDER_ID.getKey()));
@@ -115,11 +117,11 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
     @Override
     public void processNonCommandCallback(CallbackQuery callbackQuery, RequestParams requestParams) {
         StateData state = stateService.getState(callbackQuery.getMessage().getChatId(), true);
-        if (state.getState() == State.TIME) {
+        if (state.getState() == StateData.State.TIME) {
             String postponeTime = requestParams.getString(Arg.POSTPONE_TIME.getKey());
             processNonCommandUpdate(callbackQuery.getFrom(), postponeTime, state);
         } else {
-            String postponeReason = requestParams.getString(Arg.POSTPONE_REASON.getKey());
+            String postponeReason = requestParams.getString(Arg.REASON.getKey());
             processNonCommandUpdate(callbackQuery.getFrom(), postponeReason, state);
         }
     }
@@ -137,10 +139,10 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
     }
 
     private void processNonCommandUpdate(User from, String text, StateData stateData) {
-        if (stateData.getState() == State.TIME) {
+        if (stateData.getState() == StateData.State.TIME) {
             postponeTime(from.getId(), text, stateData, userService.getLocale(from.getId()));
         } else {
-            if (Objects.equals(text, localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON, userService.getLocale(from.getId())))) {
+            if (Objects.equals(text, localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION, userService.getLocale(from.getId())))) {
                 postpone(from.getId(), null, stateData);
             } else {
                 postpone(from.getId(), text, stateData);
@@ -157,7 +159,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         stateData.setPostponeTime(TimeData.from(parseTime));
 
         if (reminder.getReceiverId() != reminder.getCreatorId()) {
-            stateData.setState(State.REASON);
+            stateData.setState(StateData.State.REASON);
             messageService.editMessageAsync(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(userId)
@@ -174,12 +176,5 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(ReminderData.to(stateData.getReminder()), TimeData.to(stateData.getPostponeTime()));
         commandNavigator.silentPop(userId);
         reminderMessageSender.sendReminderPostponed(stateData.getCallbackRequest().getMessageId(), stateData.getCallbackRequest().getReplyKeyboard(), updateReminderResult, reason);
-    }
-
-    public enum State {
-
-        TIME,
-
-        REASON
     }
 }

@@ -64,7 +64,7 @@ public class MessageTextExtractor {
                     );
                     LOGGER.debug("Voice not recognized");
                 } else {
-                    callback.accept(voiceText);
+                    callback.accept(voiceText.trim());
                 }
             });
         }

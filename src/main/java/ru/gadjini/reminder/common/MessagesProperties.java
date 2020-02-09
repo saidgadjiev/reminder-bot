@@ -105,6 +105,12 @@ public class MessagesProperties {
 
     public static final String CANCEL_REMINDER_COMMAND_DESCRIPTION = "cancel.reminder.command.description";
 
+    public static final String MESSAGE_CANCEL_REMINDER_NO_TIME = "message.cancel.reminder.no.time";
+
+    public static final String MESSAGE_CANCEL_REMINDER_MEETING = "message.cancel.reminder.meeting";
+
+    public static final String MESSAGE_CANCEL_REMINDER_REASON = "message.cancel.reminder.reason";
+
     public static final String MESSAGE_REMINDER_CANCELED = "message.reminder.canceled";
 
     public static final String MESSAGE_REMINDER_CANCELED_ANSWER = "message.reminder.canceled.answer";
@@ -201,8 +207,6 @@ public class MessagesProperties {
 
     public static final String REGEXP_REPEAT = "regexp.repeat";
 
-    public static final String MESSAGE_POSTPONE_MESSAGE = "message.postpone.message";
-
     public static final String MESSAGE_POSTPONE_15_MIN = "message.postpone.15min";
 
     public static final String MESSAGE_POSTPONE_30_MIN = "message.postpone.30min";
@@ -260,8 +264,6 @@ public class MessagesProperties {
     public static final String DELETE_REMINDER_TIME_COMMAND_DESCRIPTION = "delete.reminder.time.command.description";
 
     public static final String MESSAGE_REMINDER_TIME_DELETED = "message.reminder.time.deleted";
-
-    public static final String CREATE_REMIND_TIME_COMMAND_DESCRIPTION = "create.remind.time.command.description";
 
     public static final String USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME = "user.reminder.notification.with.time.command.name";
 

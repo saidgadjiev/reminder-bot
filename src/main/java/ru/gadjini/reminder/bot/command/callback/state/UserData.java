@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.bot.command.callback.postpone;
+package ru.gadjini.reminder.bot.command.callback.state;
 
 import ru.gadjini.reminder.domain.TgUser;
 

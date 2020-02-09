@@ -464,7 +464,7 @@ public class ReminderMessageSender {
         tryDeleteRemindMessage(messageId, reminder);
     }
 
-    public void sendReminderCanceled(Reminder reminder) {
+    public void sendReminderCanceled(Reminder reminder, String reason) {
         if (reminder.isMySelf()) {
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.HIGH)
@@ -475,12 +475,12 @@ public class ReminderMessageSender {
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(reminder.getReceiverId())
-                            .text(reminderMessageBuilder.getReminderCanceledForReceiver(reminder))
+                            .text(reminderMessageBuilder.getReminderCanceledForReceiver(reminder, reason))
             );
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getCreatorId())
-                            .text(reminderMessageBuilder.getReminderCanceledForCreator(reminder))
+                            .text(reminderMessageBuilder.getReminderCanceledForCreator(reminder, reason))
             );
         }
         if (reminder.hasReceiverMessage()) {
@@ -489,7 +489,7 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendReminderCanceledFromList(int messageId, Reminder reminder) {
+    public void sendReminderCanceledFromList(int messageId, Reminder reminder, String reason) {
         if (reminder.isMySelf()) {
             messageService.editMessageAsync(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
@@ -503,13 +503,13 @@ public class ReminderMessageSender {
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(reminder.getReceiverId())
                             .messageId(messageId)
-                            .text(reminderMessageBuilder.getReminderCanceledForReceiver(reminder))
+                            .text(reminderMessageBuilder.getReminderCanceledForReceiver(reminder, reason))
                             .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME, reminder.getReceiver().getLocale()))
             );
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
                             .chatId(reminder.getCreatorId())
-                            .text(reminderMessageBuilder.getReminderCanceledForCreator(reminder))
+                            .text(reminderMessageBuilder.getReminderCanceledForCreator(reminder, reason))
             );
         }
         tryDeleteRemindMessage(messageId, reminder);
