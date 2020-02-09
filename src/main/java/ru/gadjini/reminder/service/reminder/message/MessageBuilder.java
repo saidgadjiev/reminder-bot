@@ -234,4 +234,8 @@ public class MessageBuilder {
     public String getReminderCreatedAt(ZonedDateTime createdAt, Locale locale) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_AT, new Object[] {timeBuilder.fixedDay(createdAt, locale)}, locale);
     }
+
+    public String getReason(String reason, Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REASON, new Object[] {reason}, locale);
+    }
 }

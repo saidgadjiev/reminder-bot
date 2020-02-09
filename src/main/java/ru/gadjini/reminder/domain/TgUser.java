@@ -86,6 +86,14 @@ public class TgUser {
         return Locale.getDefault();
     }
 
+    public String getLanguageCode() {
+        return Locale.getDefault().getLanguage();
+    }
+
+    public void setLanguageCode(String languageCode) {
+
+    }
+
     public void setFrom(User user) {
         this.userId = user.getId();
         this.name = UserUtils.name(user);

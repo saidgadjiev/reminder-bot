@@ -10,6 +10,8 @@ public class UserData {
 
     private String zoneId;
 
+    private String languageCode;
+
     public String getName() {
         return name;
     }
@@ -34,6 +36,14 @@ public class UserData {
         this.zoneId = zoneId;
     }
 
+    public String getLanguageCode() {
+        return languageCode;
+    }
+
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
+
     public static TgUser to(UserData userData) {
         TgUser user = new TgUser();
 
@@ -41,6 +51,7 @@ public class UserData {
         user.setUserId(userData.getUserId());
         user.setName(userData.getName());
         user.setZoneId(userData.getZoneId());
+        user.setLanguageCode(userData.getLanguageCode());
 
         return user;
     }
@@ -51,6 +62,7 @@ public class UserData {
         userData.setName(user.getName());
         userData.setUserId(user.getUserId());
         userData.setZoneId(user.getZoneId());
+        userData.setLanguageCode(user.getLanguageCode());
 
         return userData;
     }

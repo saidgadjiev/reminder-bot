@@ -76,16 +76,17 @@ public class CancelReminderCommand implements CallbackBotCommand, NavigableCallb
             reminderMessageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), userService.getLocale(callbackQuery.getFrom().getId()));
             return null;
         }
+
         stateData.setReminder(ReminderData.from(reminder));
+
         if (reminder.isMySelf()) {
-            doCancel(null, stateData);
+            doCancel(callbackQuery.getMessage().getChatId(), null, stateData);
             return MessagesProperties.MESSAGE_REMINDER_CANCELED_ANSWER;
         }
 
         commandStateService.setState(callbackQuery.getMessage().getChatId(), stateData);
 
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
-
         messageService.editMessage(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(callbackQuery.getMessage().getChatId())
@@ -100,14 +101,14 @@ public class CancelReminderCommand implements CallbackBotCommand, NavigableCallb
     @Override
     public void processNonCommandUpdate(Message message, String text) {
         StateData stateData = commandStateService.getState(message.getChatId(), true);
-        doCancel(text, stateData);
+        doCancel(message.getChatId(), text, stateData);
     }
 
     @Override
     public void processNonCommandCallback(CallbackQuery callbackQuery, RequestParams requestParams) {
         String reason = requestParams.getString(Arg.REASON.getKey());
         StateData stateData = commandStateService.getState(callbackQuery.getMessage().getChatId(), true);
-        doCancel(reason, stateData);
+        doCancel(callbackQuery.getMessage().getChatId(), reason, stateData);
     }
 
     @Override
@@ -120,9 +121,15 @@ public class CancelReminderCommand implements CallbackBotCommand, NavigableCallb
         return true;
     }
 
-    private void doCancel(String reason, StateData stateData) {
+    private void doCancel(long chatId, String reason, StateData stateData) {
         CallbackRequest callbackRequest = stateData.getCallbackRequest();
-        Reminder reminder = ReminderData.to(stateData.getReminder());
+        Locale locale = new Locale(stateData.getReminder().getReceiver().getLanguageCode());
+
+        Reminder reminder = reminderService.cancel(stateData.getReminder().getId());
+        if (reminder == null) {
+            reminderMessageSender.sendReminderNotFound(chatId, callbackRequest.getMessageId(), locale);
+            return;
+        }
 
         if (reason != null && reason.equals(localisationService.getMessage(MessagesProperties.CANCEL_REMINDER_COMMAND_DESCRIPTION, reminder.getCreator().getLocale()))) {
             reason = null;

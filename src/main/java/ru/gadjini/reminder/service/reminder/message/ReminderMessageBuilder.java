@@ -341,7 +341,7 @@ public class ReminderMessageBuilder {
                 .append("\n").append(messageBuilder.getReminderReceiver(receiver));
 
         if (StringUtils.isNotBlank(reason)) {
-            message.append("\n\n").append(reason);
+            message.append("\n\n").append(messageBuilder.getReason(reason, creatorLocale));
         }
 
         return message.toString();
@@ -354,7 +354,7 @@ public class ReminderMessageBuilder {
                 .append("\n").append(messageBuilder.getReminderCreator(creator));
 
         if (StringUtils.isNotBlank(reason)) {
-            message.append("\n\n").append(reason);
+            message.append("\n\n").append(messageBuilder.getReason(reason, receiverLocale));
         }
 
         return message.toString();
@@ -399,7 +399,7 @@ public class ReminderMessageBuilder {
                 .append(messageBuilder.getReminderCreator(reminder.getCreator()));
 
         if (StringUtils.isNotBlank(reason)) {
-            message.append("\n\n").append(reason);
+            message.append("\n\n").append(messageBuilder.getReason(reason, reminder.getReceiver().getLocale()));
         }
 
         return message.toString();
@@ -413,7 +413,7 @@ public class ReminderMessageBuilder {
                 .append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
 
         if (StringUtils.isNotBlank(reason)) {
-            message.append("\n\n").append(reason);
+            message.append("\n\n").append(messageBuilder.getReason(reason, reminder.getCreator().getLocale()));
         }
 
         return message.toString();
