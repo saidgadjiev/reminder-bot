@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS user_reminder_notification
     minutes  INT NOT NULL DEFAULT 0,
     time    TIME,
     type    INT NOT NULL,
-    user_id INT NOT NULL REFERENCES tg_user (user_id)
+    user_id INT NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE
 );
