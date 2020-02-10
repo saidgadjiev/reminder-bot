@@ -115,7 +115,9 @@ public class TelegramMessageService implements MessageService {
             if (callback != null) {
                 callback.accept(msg);
             }
-        } catch (Exception ex) {
+        } catch (TelegramApiRequestException ex) {
+            throw new RuntimeException(ex.getApiResponse() + "(" + messageContext.chatId() + ")", ex);
+        } catch (TelegramApiException ex) {
             throw new RuntimeException(ex.getMessage() + "(" + messageContext.chatId() + ")", ex);
         }
     }
