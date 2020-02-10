@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
-import ru.gadjini.reminder.util.TextUtils;
 
 import java.util.LinkedList;
 import java.util.List;
