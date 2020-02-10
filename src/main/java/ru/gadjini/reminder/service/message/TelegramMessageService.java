@@ -221,8 +221,8 @@ public class TelegramMessageService implements MessageService {
 
         message.append("Message(").append(chatId).append("): ").append(ex.getMessage()).append("\n\n")
                 .append("Stacktrace: ")
-                .append(ExceptionUtils.getStackTrace(ex), 0, TgConstants.MAX_MESSAGE_SIZE);
+                .append(ExceptionUtils.getStackTrace(ex));
 
-        return message.toString();
+        return message.toString().substring(0, TgConstants.MAX_MESSAGE_SIZE);
     }
 }
