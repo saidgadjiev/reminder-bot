@@ -221,8 +221,6 @@ public class MessagesProperties {
 
     public static final String MESSAGE_POSTPONE_REASON_MEETING = "message.postpone.reason.meeting";
 
-    public static final String MESSAGE_POSTPONE_WITHOUT_REASON = "message.postpone.without.reason";
-
     public static final String MESSAGE_REMIND_AFTER_30_MIN = "message.remind.after.30min";
 
     public static final String MESSAGE_REMIND_BEFORE_15_MIN = "message.remind.before.15min";

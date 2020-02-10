@@ -77,7 +77,7 @@ public class InlineKeyboardService {
 
         keyboard.add(List.of(
                 buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING, locale), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.REASON.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_REASON_MEETING, locale))),
-                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION, locale), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.REASON.getKey(), localisationService.getMessage(MessagesProperties.MESSAGE_POSTPONE_WITHOUT_REASON, locale)))
+                buttonFactory.delegateButton(localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION, locale), CommandNames.POSTPONE_REMINDER_COMMAND_NAME, new RequestParams().add(Arg.REASON.getKey(), localisationService.getMessage(MessagesProperties.POSTPONE_REMINDER_COMMAND_DESCRIPTION, locale)))
         ));
 
         keyboard.add(List.of(buttonFactory.goBackCallbackButton(prevCommand, requestParams, locale)));
