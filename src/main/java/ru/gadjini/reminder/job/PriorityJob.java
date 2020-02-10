@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.job;
 
-import org.apache.commons.lang3.time.StopWatch;
 
 public abstract class PriorityJob implements Runnable {
 
@@ -8,12 +7,12 @@ public abstract class PriorityJob implements Runnable {
 
     private final Priority priority;
 
-    private StopWatch queueWatch = new StopWatch();
+    private long queuedAt;
 
     public PriorityJob(Priority priority) {
         this.priority = priority;
         this.stackTraceElements = Thread.currentThread().getStackTrace();
-        queueWatch.start();
+        queuedAt = System.currentTimeMillis();
     }
 
     public Priority getPriority() {
@@ -24,8 +23,8 @@ public abstract class PriorityJob implements Runnable {
         return stackTraceElements;
     }
 
-    public StopWatch getQueueWatch() {
-        return queueWatch;
+    public long getQueuedAt() {
+        return queuedAt;
     }
 
     public enum Priority {

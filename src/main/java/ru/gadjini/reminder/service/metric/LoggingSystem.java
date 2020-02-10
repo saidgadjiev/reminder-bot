@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.service.metric;
 
-import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +37,8 @@ public class LoggingSystem {
 
     public void logPriorityJob(PriorityJob priorityJob) {
         if (loggingProperties.getMessageTimeLogLevel() != null) {
-            StopWatch stopWatch = priorityJob.getQueueWatch();
-            stopWatch.stop();
-            long time = stopWatch.getTime();
+            long queuedAt = priorityJob.getQueuedAt();
+            long time = System.currentTimeMillis() - queuedAt;
 
             if (time > loggingProperties.getMessageTimeLogLevel()) {
                 LOGGER.warn("Priority job({}) latency: {}", priorityJob.getPriority(), time);
