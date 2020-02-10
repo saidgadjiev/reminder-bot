@@ -26,8 +26,8 @@ import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.message.MessageTextExtractor;
-import ru.gadjini.reminder.service.metric.LatencyMeter;
-import ru.gadjini.reminder.service.metric.LatencyMeterFactory;
+import ru.gadjini.reminder.service.metric.LatencyMeterLogger;
+import ru.gadjini.reminder.service.metric.LoggingSystem;
 
 import java.util.Locale;
 import java.util.concurrent.Callable;
@@ -47,7 +47,7 @@ public class ReminderBotService {
 
     private MessageTextExtractor messageTextExtractor;
 
-    private LatencyMeterFactory latencyMeterFactory;
+    private LoggingSystem latencyMeterFactory;
 
     private LocalisationService localisationService;
 
@@ -61,7 +61,7 @@ public class ReminderBotService {
                               MessageService messageService,
                               CurrReplyKeyboard replyKeyboardService,
                               MessageTextExtractor messageTextExtractor,
-                              LatencyMeterFactory latencyMeterFactory,
+                              LoggingSystem latencyMeterFactory,
                               LocalisationService localisationService,
                               TgUserService userService, MessageSenderAI messageSenderAI) {
         this.commandExecutor = commandExecutor;
@@ -85,7 +85,7 @@ public class ReminderBotService {
                     return;
                 }
 
-                LatencyMeter latencyMeter = latencyMeterFactory.getMeter();
+                LatencyMeterLogger latencyMeter = latencyMeterFactory.getLatencyMeterLogger();
                 latencyMeter.start();
 
                 messageTextExtractor.extract(update.getMessage(), text -> {

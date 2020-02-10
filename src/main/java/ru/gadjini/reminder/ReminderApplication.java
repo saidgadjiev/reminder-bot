@@ -19,7 +19,8 @@ import java.util.Locale;
         WebHookProperties.class,
         TimeZoneDbProperties.class,
         SubscriptionProperties.class,
-        WebMoneyProperties.class
+        WebMoneyProperties.class,
+        LoggingProperties.class
 })
 @EnableScheduling
 public class ReminderApplication {

@@ -1,6 +1,6 @@
 package ru.gadjini.reminder.service.metric;
 
-public interface LatencyMeter {
+public interface LatencyMeterLogger {
 
     void start();
 

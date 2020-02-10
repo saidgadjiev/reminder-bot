@@ -1,6 +1,6 @@
 package ru.gadjini.reminder.service.metric;
 
-public class DummyLatencyMeter implements LatencyMeter {
+public class DummyLatencyMeterLogger implements LatencyMeterLogger {
 
     @Override
     public void start() {

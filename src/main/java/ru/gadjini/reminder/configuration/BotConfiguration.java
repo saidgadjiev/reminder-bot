@@ -122,10 +122,10 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DefaultBotOptions botOptions() {
+    public DefaultBotOptions botOptions(WebHookProperties webHookProperties) {
         DefaultBotOptions defaultBotOptions = ApiContext.getInstance(DefaultBotOptions.class);
 
-        defaultBotOptions.setMaxWebhookConnections(300);
+        defaultBotOptions.setMaxWebhookConnections(webHookProperties.getMaxConnections());
 
         return defaultBotOptions;
     }
