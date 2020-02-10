@@ -12,6 +12,7 @@ import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.speech.GoogleVoiceRecognitionService;
+import ru.gadjini.reminder.util.TextUtils;
 
 import java.util.Locale;
 import java.util.concurrent.Callable;
@@ -44,7 +45,8 @@ public class MessageTextExtractor {
 
     public void extract(Message message, Consumer<String> callback, Callable<Void> waiting) {
         if (message.hasText()) {
-            callback.accept(message.getText().trim());
+            String text = message.getText().trim();
+            callback.accept(TextUtils.removeHtmlTags(text));
         }
         if (message.hasVoice()) {
             try {
@@ -64,7 +66,7 @@ public class MessageTextExtractor {
                     );
                     LOGGER.debug("Voice not recognized");
                 } else {
-                    callback.accept(voiceText.trim());
+                    callback.accept(TextUtils.removeHtmlTags(voiceText.trim()));
                 }
             });
         }

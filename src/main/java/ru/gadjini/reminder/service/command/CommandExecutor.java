@@ -142,13 +142,20 @@ public class CommandExecutor {
         CallbackBotCommand botCommand = callbackBotCommandMap.get(parseResult.getCommandName());
 
         sendAction(callbackQuery.getMessage().getChatId(), botCommand);
-        String callbackAnswer = botCommand.processMessage(callbackQuery, parseResult.getRequestParams());
-        if (StringUtils.isNotBlank(callbackAnswer)) {
-            messageService.sendAnswerCallbackQuery(new AnswerCallbackContext().queryId(callbackQuery.getId()).text(localisationService.getMessage(callbackAnswer, userService.getLocale(callbackQuery.getFrom().getId()))));
-        }
 
-        if (botCommand instanceof NavigableCallbackBotCommand) {
-            callbackCommandNavigator.push(callbackQuery.getMessage().getChatId(), (NavigableCallbackBotCommand) botCommand);
+        try {
+            if (botCommand instanceof NavigableCallbackBotCommand) {
+                callbackCommandNavigator.push(callbackQuery.getMessage().getChatId(), (NavigableCallbackBotCommand) botCommand);
+            }
+            String callbackAnswer = botCommand.processMessage(callbackQuery, parseResult.getRequestParams());
+            if (StringUtils.isNotBlank(callbackAnswer)) {
+                messageService.sendAnswerCallbackQuery(new AnswerCallbackContext().queryId(callbackQuery.getId()).text(localisationService.getMessage(callbackAnswer, userService.getLocale(callbackQuery.getFrom().getId()))));
+            }
+        } catch (Exception ex) {
+            if (botCommand instanceof NavigableCallbackBotCommand) {
+                callbackCommandNavigator.silentPop(callbackQuery.getMessage().getChatId());
+            }
+            throw ex;
         }
     }
 

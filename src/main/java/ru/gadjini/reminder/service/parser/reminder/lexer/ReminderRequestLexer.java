@@ -40,7 +40,7 @@ public class ReminderRequestLexer {
     }
 
     private LinkedList<BaseLexem> tokenizeReminderTextAndNote(String tokenizeStr, LinkedList<BaseLexem> lexems) {
-        lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, StringUtils.capitalize(TextUtils.removeHtmlTags(tokenizeStr).trim())));
+        lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, StringUtils.capitalize(tokenizeStr.trim())));
 
         if (parts.length > 1) {
             lexems.add(new ReminderLexem(ReminderToken.NOTE, parts[1]));

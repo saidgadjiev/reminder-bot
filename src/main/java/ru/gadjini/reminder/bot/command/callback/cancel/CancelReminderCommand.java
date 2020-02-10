@@ -16,6 +16,7 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.TgUserService;
+import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -45,6 +46,8 @@ public class CancelReminderCommand implements CallbackBotCommand, NavigableCallb
 
     private InlineKeyboardService inlineKeyboardService;
 
+    private CallbackCommandNavigator callbackCommandNavigator;
+
     @Autowired
     public CancelReminderCommand(CommandStateService commandStateService, ReminderService reminderService,
                                  ReminderMessageSender reminderMessageSender, TgUserService userService,
@@ -62,6 +65,11 @@ public class CancelReminderCommand implements CallbackBotCommand, NavigableCallb
     @Override
     public String getName() {
         return name;
+    }
+
+    @Autowired
+    public void setCallbackCommandNavigator(CallbackCommandNavigator callbackCommandNavigator) {
+        this.callbackCommandNavigator = callbackCommandNavigator;
     }
 
     @Override
@@ -126,6 +134,7 @@ public class CancelReminderCommand implements CallbackBotCommand, NavigableCallb
         Locale locale = new Locale(stateData.getReminder().getReceiver().getLanguageCode());
 
         Reminder reminder = reminderService.cancel(stateData.getReminder().getId());
+        callbackCommandNavigator.silentPop(chatId);
         if (reminder == null) {
             reminderMessageSender.sendReminderNotFound(chatId, callbackRequest.getMessageId(), locale);
             return;
