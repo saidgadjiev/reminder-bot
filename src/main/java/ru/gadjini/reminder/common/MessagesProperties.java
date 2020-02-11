@@ -251,6 +251,8 @@ public class MessagesProperties {
 
     public static final String EVE = "eve";
 
+    public static final String MONTH_DAY_PREFIX = "month.day.prefix";
+
     public static final String DAY_AFTER_TOMORROW = "day.after.tomorrow";
 
     public static final String TIME_ARTICLE = "time.article";

@@ -233,7 +233,7 @@ public class TimeBuilder {
             }
         } else if (repeatTime.getInterval().getMonths() != 0) {
             time.append(getPeriodView(repeatTime.getInterval(), locale)).append(" ");
-            time.append(repeatTime.getDay()).append(" ").append(localisationService.getMessage(MessagesProperties.REGEXP_MONTH_DAY_PREFIX, locale));
+            time.append(repeatTime.getDay()).append(" ").append(localisationService.getMessage(MessagesProperties.MONTH_DAY_PREFIX, locale));
             if (repeatTime.getTime() != null) {
                 time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
             }
