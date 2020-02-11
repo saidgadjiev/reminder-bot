@@ -484,4 +484,6 @@ public class MessagesProperties {
     public static final String MESSAGE_VOICE_NOT_RECOGNIZED = "message.voice.not.recognized";
 
     public static final String MESSAGE_REASON = "message.reason";
+
+    public static final String MESSAGE_CONTACT_ID_EMPTY = "message.contact.id.empty";
 }

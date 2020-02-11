@@ -47,8 +47,7 @@ public class MessageTextExtractor {
         if (message.hasText()) {
             String text = message.getText().trim();
             callback.accept(TextUtils.removeHtmlTags(text));
-        }
-        if (message.hasVoice()) {
+        } else if (message.hasVoice()) {
             try {
                 waiting.call();
             } catch (Exception e) {
@@ -69,6 +68,8 @@ public class MessageTextExtractor {
                     callback.accept(TextUtils.removeHtmlTags(voiceText.trim()));
                 }
             });
+        } else {
+            callback.accept("");
         }
     }
 }

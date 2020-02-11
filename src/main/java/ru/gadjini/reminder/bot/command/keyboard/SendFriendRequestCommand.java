@@ -104,9 +104,19 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
     public void processNonCommandUpdate(Message message, String text) {
         CreateFriendRequestResult createFriendRequestResult;
 
+        Locale uoLocale = userService.getLocale(message.getFrom().getId());
         if (message.hasContact()) {
             Contact contact = message.getContact();
 
+            if (contact.getUserID() == null) {
+                messageService.sendMessageAsync(
+                        new SendMessageContext(PriorityJob.Priority.HIGH)
+                                .chatId(message.getChatId())
+                                .text(localisationService.getMessage(MessagesProperties.MESSAGE_CONTACT_ID_EMPTY, uoLocale))
+                );
+
+                return;
+            }
             createFriendRequestResult = friendshipService.createFriendRequest(TgMessage.from(message), contact.getUserID(), null);
         } else {
             String receiverName = removeUsernameStart(text);
@@ -114,7 +124,6 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
             createFriendRequestResult = friendshipService.createFriendRequest(TgMessage.from(message), null, receiverName);
         }
 
-        Locale uoLocale = userService.getLocale(message.getFrom().getId());
         switch (createFriendRequestResult.getState()) {
             case ALREADY_REQUESTED:
                 messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH).chatId(message.getChatId()).text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_ALREADY_SENT, uoLocale)));
