@@ -3,6 +3,8 @@ package ru.gadjini.reminder.configuration;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
@@ -41,6 +43,8 @@ import java.util.Set;
 
 @Configuration
 public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BotConfiguration.class);
 
     public static final String PROFILE_TEST = "test";
 
@@ -147,6 +151,8 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
         defaultBotOptions.setProxyType(DefaultBotOptions.ProxyType.HTTP);
         defaultBotOptions.setProxyHost(proxyProperties.getHost());
         defaultBotOptions.setProxyPort(proxyProperties.getPort());
+
+        LOGGER.debug("Proxy host: " + proxyProperties.getHost() + " port: " + proxyProperties.getPort());
 
         return defaultBotOptions;
     }
