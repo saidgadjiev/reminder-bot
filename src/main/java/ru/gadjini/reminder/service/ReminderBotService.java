@@ -1,7 +1,6 @@
 package ru.gadjini.reminder.service;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,22 +97,20 @@ public class ReminderBotService {
                     }
                 }, new Waiting(update.getMessage()));
             } else if (update.hasCallbackQuery()) {
-                StopWatch stopWatch = new StopWatch();
-                stopWatch.start();
+                LatencyMeterLogger latencyMeter = latencyMeterFactory.getLatencyMeterLogger();
+                latencyMeter.start();
 
                 commandExecutor.executeCallbackCommand(update.getCallbackQuery());
 
-                stopWatch.stop();
-                LOGGER.debug("Latency on callback request: {} = {}", update.getCallbackQuery().getData(), stopWatch.getTime());
+                latencyMeter.stop("Latency on callback request: {}", update.getCallbackQuery().getData());
             } else if (update.hasEditedMessage()) {
-                StopWatch stopWatch = new StopWatch();
-                stopWatch.start();
+                LatencyMeterLogger latencyMeter = latencyMeterFactory.getLatencyMeterLogger();
+                latencyMeter.start();
 
                 messageTextExtractor.extract(update.getEditedMessage(), text -> {
                     handleEditedMessage(update.getEditedMessage(), text);
 
-                    stopWatch.stop();
-                    LOGGER.debug("Latency on edit message request: {} = {}", text, stopWatch.getTime());
+                    latencyMeter.stop("Latency on callback request: {}", update.getCallbackQuery().getData());
                 }, new Waiting(update.getEditedMessage()));
             }
         } catch (UserException ex) {
