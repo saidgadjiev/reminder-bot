@@ -328,7 +328,7 @@ public class FriendshipDao {
                         "                                                                                            FROM tg_user uo,\n" +
                         "                                                                                                 tg_user ut\n" +
                         "                                                                                            WHERE uo.user_id = :uo_id\n" +
-                        "                                                                                              AND ut.user_id = :ut_id RETURNING id, user_one_id, user_two_id, status\n" +
+                        "                                                                                              AND ut.user_id = :ut_id RETURNING user_one_id, user_two_id, status\n" +
                         ")\n" +
                         "SELECT ut.name AS ut_name\n" +
                         "FROM f\n" +
@@ -351,7 +351,7 @@ public class FriendshipDao {
                         "                                                                                            FROM tg_user uo,\n" +
                         "                                                                                                 tg_user ut\n" +
                         "                                                                                            WHERE ut.username = :username\n" +
-                        "                                                                                              AND uo.user_id = :uo_id RETURNING id, user_one_id, user_two_id, status\n" +
+                        "                                                                                              AND uo.user_id = :uo_id RETURNING user_one_id, user_two_id, status\n" +
                         ")\n" +
                         "SELECT f.user_two_id,\n" +
                         "       ut.name    AS ut_name\n" +
