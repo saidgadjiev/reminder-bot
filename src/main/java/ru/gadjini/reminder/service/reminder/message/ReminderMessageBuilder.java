@@ -286,6 +286,11 @@ public class ReminderMessageBuilder {
         if (StringUtils.isNotBlank(header)) {
             text.append(localisationService.getMessage(header, locale)).append("\n\n");
         }
+        if (reminders.isEmpty()) {
+            text.append(localisationService.getMessage(MessagesProperties.MESSAGE_ACTIVE_REMINDERS_EMPTY, locale));
+
+            return text.toString();
+        }
 
         int i = 1;
         for (Reminder reminder : reminders) {

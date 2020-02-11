@@ -489,14 +489,14 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendReminderCanceledFromList(int messageId, Reminder reminder, String reason) {
+    public void sendReminderCanceledFromList(int messageId, InlineKeyboardMarkup keyboardMarkup, Reminder reminder, String reason) {
         if (reminder.isMySelf()) {
             messageService.editMessageAsync(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(reminder.getReceiverId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getMySelfReminderCanceled(reminder))
-                            .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME, reminder.getReceiver().getLocale()))
+                            .replyKeyboard(new KeyboardCustomizer(keyboardMarkup).removeExclude(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME).getKeyboardMarkup())
             );
         } else {
             messageService.editMessageAsync(
@@ -504,7 +504,7 @@ public class ReminderMessageSender {
                             .chatId(reminder.getReceiverId())
                             .messageId(messageId)
                             .text(reminderMessageBuilder.getReminderCanceledForReceiver(reminder, reason))
-                            .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME, reminder.getReceiver().getLocale()))
+                            .replyKeyboard(new KeyboardCustomizer(keyboardMarkup).removeExclude(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME).getKeyboardMarkup())
             );
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.MEDIUM)
@@ -538,32 +538,23 @@ public class ReminderMessageSender {
 
     public void sendActiveReminders(int userId, long chatId, int messageId, String currText, String header, RequestParams requestParams, List<Reminder> reminders) {
         Locale locale = userService.getLocale(userId);
-        if (reminders.isEmpty()) {
-            String text = localisationService.getMessage(MessagesProperties.MESSAGE_ACTIVE_REMINDERS_EMPTY, locale);
-            if (!Objects.equals(currText, text)) {
-                messageService.editMessageAsync(
-                        new EditMessageContext(PriorityJob.Priority.HIGH)
-                                .chatId(chatId)
-                                .messageId(messageId)
-                                .text(localisationService.getMessage(MessagesProperties.MESSAGE_ACTIVE_REMINDERS_EMPTY, locale))
-                                .replyKeyboard(inlineKeyboardService.getEmptyActiveRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME, locale))
-                );
-            }
-        } else {
-            String text = reminderMessageBuilder.getActiveRemindersList(userId, reminders, header, locale);
-            if (!Objects.equals(TextUtils.removeHtmlTags(text), currText)) {
-                messageService.editMessageAsync(
-                        new EditMessageContext(PriorityJob.Priority.HIGH)
-                                .chatId(chatId)
-                                .messageId(messageId)
-                                .text(text)
-                                .replyKeyboard(inlineKeyboardService.getActiveRemindersListKeyboard(
-                                        reminders.stream().map(Reminder::getId).collect(Collectors.toList()),
-                                        CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME,
-                                        requestParams,
-                                        locale))
-                );
-            }
+        String text = reminderMessageBuilder.getActiveRemindersList(userId, reminders, header, locale);
+        if (!Objects.equals(TextUtils.removeHtmlTags(text), currText)) {
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.HIGH)
+                            .chatId(chatId)
+                            .messageId(messageId)
+                            .text(text)
+                            .replyKeyboard(
+                                    reminders.isEmpty()
+                                            ? inlineKeyboardService.getEmptyActiveRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME, locale)
+                                            : inlineKeyboardService.getActiveRemindersListKeyboard(
+                                            reminders.stream().map(Reminder::getId).collect(Collectors.toList()),
+                                            CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME,
+                                            requestParams,
+                                            locale)
+                            )
+            );
         }
     }
 

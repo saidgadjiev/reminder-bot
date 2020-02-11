@@ -146,7 +146,7 @@ public class CancelReminderCommand implements CallbackBotCommand, NavigableCallb
 
         boolean isCalledFromReminderDetails = new KeyboardCustomizer(callbackRequest.getReplyKeyboard()).hasButton(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME);
         if (isCalledFromReminderDetails) {
-            reminderMessageSender.sendReminderCanceledFromList(callbackRequest.getMessageId(), reminder, reason);
+            reminderMessageSender.sendReminderCanceledFromList(callbackRequest.getMessageId(), callbackRequest.getReplyKeyboard(), reminder, reason);
         } else {
             reminderMessageSender.sendReminderCanceled(reminder, reason);
         }
