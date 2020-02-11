@@ -374,9 +374,7 @@ public class ReminderService {
         ReminderNotification intervalNotification = intervalReminderTime(remindAt, new Period().withMinutes(20));
         intervalNotification.setCustom(true);
         reminderNotifications.add(intervalNotification);
-        if (reminderNotificationAI.isNeedCreateItsTimeNotification(remindAt)) {
-            fixedReminderTime(remindAt.toLocalDate(), remindAt.toLocalTime(), reminderNotifications).setItsTime(true);
-        }
+        fixedReminderTime(remindAt.toLocalDate(), remindAt.toLocalTime(), reminderNotifications).setItsTime(true);
 
         return reminderNotifications;
     }

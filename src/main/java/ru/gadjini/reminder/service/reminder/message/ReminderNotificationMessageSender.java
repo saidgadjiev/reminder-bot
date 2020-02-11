@@ -60,7 +60,7 @@ public class ReminderNotificationMessageSender {
             message = reminderNotificationMessageBuilder.getReminderNotificationForReceiver(reminder, itsTime, nextRemindAt);
         }
 
-        InlineKeyboardMarkup keyboard = inlineKeyboardService.getRemindKeyboard(reminder);
+        InlineKeyboardMarkup keyboard = inlineKeyboardService.getReceiverReminderKeyboard(reminder);
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH).chatId(reminder.getReceiverId()).text(message).replyKeyboard(keyboard),
                 msg -> reminderService.setReceiverMessage(reminder.getId(), msg.getMessageId())

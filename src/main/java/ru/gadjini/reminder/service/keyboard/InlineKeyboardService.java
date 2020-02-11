@@ -287,14 +287,6 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getRemindKeyboard(Reminder reminder) {
-        InlineKeyboardMarkup inlineKeyboardMarkup = getReceiverReminderKeyboard(reminder);
-
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.okButton(reminder.getId(), reminder.getReceiver().getLocale())));
-
-        return inlineKeyboardMarkup;
-    }
-
     public InlineKeyboardMarkup getCreatorReminderKeyboard(Reminder reminder) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
@@ -325,6 +317,7 @@ public class InlineKeyboardService {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.readButton(reminder.getId(), reminder.getReceiver().getLocale())));
         }
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderDetails(reminder.getId(), reminder.getReceiver().getLocale())));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.okButton(reminder.getId(), reminder.getReceiver().getLocale())));
 
         return inlineKeyboardMarkup;
     }
