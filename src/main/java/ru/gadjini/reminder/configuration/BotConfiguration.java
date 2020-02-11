@@ -23,6 +23,7 @@ import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.filter.BotFilter;
 import ru.gadjini.reminder.filter.ReminderBotFilter;
 import ru.gadjini.reminder.filter.StartCommandFilter;
+import ru.gadjini.reminder.properties.ProxyProperties;
 import ru.gadjini.reminder.properties.WebHookProperties;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
@@ -42,6 +43,10 @@ import java.util.Set;
 public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
 
     public static final String PROFILE_TEST = "test";
+
+    public static final String PROFILE_DEV = "dev";
+
+    public static final String PROFILE_PROD = "prod";
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -122,10 +127,26 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DefaultBotOptions botOptions(WebHookProperties webHookProperties) {
+    @Profile(PROFILE_PROD)
+    public DefaultBotOptions prodBotOptions(WebHookProperties webHookProperties) {
         DefaultBotOptions defaultBotOptions = ApiContext.getInstance(DefaultBotOptions.class);
 
         defaultBotOptions.setMaxWebhookConnections(webHookProperties.getMaxConnections());
+
+        return defaultBotOptions;
+    }
+
+    @Bean
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    @Profile(PROFILE_DEV)
+    public DefaultBotOptions botOptions(WebHookProperties webHookProperties, ProxyProperties proxyProperties) {
+        DefaultBotOptions defaultBotOptions = ApiContext.getInstance(DefaultBotOptions.class);
+
+        defaultBotOptions.setMaxWebhookConnections(webHookProperties.getMaxConnections());
+
+        defaultBotOptions.setProxyType(DefaultBotOptions.ProxyType.HTTP);
+        defaultBotOptions.setProxyHost(proxyProperties.getHost());
+        defaultBotOptions.setProxyPort(proxyProperties.getPort());
 
         return defaultBotOptions;
     }

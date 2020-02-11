@@ -20,7 +20,8 @@ import java.util.Locale;
         TimeZoneDbProperties.class,
         SubscriptionProperties.class,
         WebMoneyProperties.class,
-        LoggingProperties.class
+        LoggingProperties.class,
+        ProxyProperties.class
 })
 @EnableScheduling
 public class ReminderApplication {
