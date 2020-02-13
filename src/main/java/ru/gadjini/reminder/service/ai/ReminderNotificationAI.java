@@ -20,6 +20,12 @@ public class ReminderNotificationAI {
         this.timeCreator = timeCreator;
     }
 
+    public boolean isNeedCreateItsTimeNotification(ZonedDateTime remindAt) {
+        ZonedDateTime now = timeCreator.zonedDateTimeNow(remindAt.getZone());
+
+        return now.isBefore(remindAt);
+    }
+
     public boolean isNeedCreateReminderNotification(Period period, UserReminderNotification offsetTime) {
         return period.toStandardMinutes().getMinutes() > offsetTime.getHours() * 60 + offsetTime.getMinutes() + MINUTE_DIFF;
     }
