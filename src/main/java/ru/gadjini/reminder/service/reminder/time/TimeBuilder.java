@@ -263,6 +263,9 @@ public class TimeBuilder {
         if (period.getMonths() != 0) {
             time.append(declensionService.months(period.getMonths())).append(" ");
         }
+        if (period.getWeeks() != 0) {
+            time.append(declensionService.weeks(period.getWeeks())).append(" ");
+        }
         if (period.getDays() != 0) {
             time.append(declensionService.day(period.getDays())).append(" ");
         }

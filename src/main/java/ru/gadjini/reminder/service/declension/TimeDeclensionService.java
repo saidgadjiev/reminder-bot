@@ -23,4 +23,6 @@ public interface TimeDeclensionService {
     String months(int months);
 
     String year(int years);
+
+    String weeks(int weeks);
 }
