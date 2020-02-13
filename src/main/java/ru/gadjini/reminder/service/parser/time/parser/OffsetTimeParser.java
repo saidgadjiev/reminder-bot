@@ -69,7 +69,24 @@ public class OffsetTimeParser {
             consumeYears(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.MONTHS)) {
             consumeMonths(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.WEEKS)) {
+            consumeWeeks(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
+            consumeDays(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
+            consumeHours(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
+            consumeMinutes(lexems);
+        }
+    }
+
+    private void consumeWeeks(List<BaseLexem> lexems) {
+        int weeks = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.WEEKS).getValue());
+        offsetTime.setWeeks(weeks);
+
+        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            offsetTime.setTime(consumeTime(lexems));
+        }  else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
             consumeDays(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
             consumeHours(lexems);
@@ -99,6 +116,8 @@ public class OffsetTimeParser {
             offsetTime.setTime(consumeTime(lexems));
         } else if (lexemsConsumer.check(lexems, TimeToken.MONTHS)) {
             consumeMonths(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.WEEKS)) {
+            consumeWeeks(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
             consumeDays(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
@@ -114,6 +133,8 @@ public class OffsetTimeParser {
 
         if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             offsetTime.setTime(consumeTime(lexems));
+        }  else if (lexemsConsumer.check(lexems, TimeToken.WEEKS)) {
+            consumeWeeks(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
             consumeDays(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {

@@ -50,6 +50,8 @@ public class RepeatTimeParser {
         } else if (lexemsConsumer.check(lexems, TimeToken.DAY)) {
             repeatTime.setInterval(repeatTime.getInterval().withYears(1));
             consumeDay(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.WEEKS)) {
+            consumeWeeks(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
             consumeDays(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
@@ -66,10 +68,37 @@ public class RepeatTimeParser {
         return parse(lexems);
     }
 
+    private void consumeWeeks(List<BaseLexem> lexems) {
+        repeatTime.setInterval(repeatTime.getInterval().withWeeks(Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.WEEKS).getValue())));
+
+        if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
+            consumeDays(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
+            consumeHours(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
+            consumeMinutes(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            repeatTime.setTime(consumeTime(lexems));
+        }
+    }
+
     private void consumeMonths(List<BaseLexem> lexems) {
         int months = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MONTHS).getValue());
         repeatTime.setInterval(repeatTime.getInterval().withMonths(months));
-        consumeDay(lexems);
+
+        if (lexemsConsumer.check(lexems, TimeToken.WEEKS)) {
+            consumeWeeks(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
+            consumeDays(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.DAY)) {
+            consumeDay(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
+            consumeHours(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
+            consumeMinutes(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            repeatTime.setTime(consumeTime(lexems));
+        }
     }
 
     private void consumeYears(List<BaseLexem> lexems) {

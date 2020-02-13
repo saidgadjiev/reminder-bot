@@ -134,6 +134,18 @@ public class RuTimeDeclensionService implements TimeDeclensionService {
         return years + " лет";
     }
 
+    @Override
+    public String weeks(int weeks) {
+        if (weeks == 1) {
+            return "неделю";
+        }
+        if (weeks >= 2 && weeks <= 4) {
+            return weeks + " недели";
+        }
+
+        return weeks + " недель";
+    }
+
     private String getRepeatWordByDaysOrHoursOrMonthOrYears(int daysOrHoursOrMonthsOrYears) {
         if (daysOrHoursOrMonthsOrYears == 1) {
             return "каждый";

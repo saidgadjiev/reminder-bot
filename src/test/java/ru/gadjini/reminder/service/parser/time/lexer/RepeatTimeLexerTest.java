@@ -148,10 +148,25 @@ class RepeatTimeLexerTest {
 
     @Test
     void everyMonthsDaysHoursMinutes() {
-        String str = "Тест каждые 2 дня 2 часа 20 минут";
+        String str = "Тест каждые 2 месяца 2 дня 2 часа 20 минут";
         TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
         LinkedList<BaseLexem> lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(DAYS, "2"), new TimeLexem(HOURS, "2"), new TimeLexem(MINUTES, "20")), lexems);
+        Assert.assertEquals(expected(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(MONTHS, "2"), new TimeLexem(DAYS, "2"), new TimeLexem(HOURS, "2"), new TimeLexem(MINUTES, "20")), lexems);
+        Assert.assertEquals("Тест", timeLexer.eraseTime());
+    }
+
+    @Test
+    void afterWeeks() {
+        String str = "Тест каждую неделю";
+        TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
+        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new TimeLexem(REPEAT, ""), new TimeLexem(WEEKS, "1")), lexems);
+        Assert.assertEquals("Тест", timeLexer.eraseTime());
+
+        str = "Тест каждые 2 недели в 19:30";
+        timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
+        lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new TimeLexem(REPEAT, ""), new TimeLexem(WEEKS, "2"), new TimeLexem(HOUR, "19"), new TimeLexem(MINUTE, "30")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
     }
 

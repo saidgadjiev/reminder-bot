@@ -13,11 +13,13 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.common.TestConstants;
+import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
+import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
@@ -155,6 +157,20 @@ class RepeatTimeParserTest {
         Assert.assertEquals(2, parse.getRepeatTimes().get(0).getInterval().getDays());
         Assert.assertEquals(2, parse.getRepeatTimes().get(0).getInterval().getHours());
         Assert.assertEquals(20, parse.getRepeatTimes().get(0).getInterval().getMinutes());
+    }
+
+    @Test
+    void afterWeeks() {
+        TimeParser timeParser = parser();
+        Time time = timeParser.parse(lexems(new TimeLexem(REPEAT, ""), new TimeLexem(WEEKS, "1")));
+        Assert.assertTrue(time.isRepeatTime());
+        Assert.assertEquals(time.getRepeatTimes().get(0).getInterval().getWeeks(), 1);
+
+        timeParser = parser();
+        time = timeParser.parse(lexems(new TimeLexem(REPEAT, ""), new TimeLexem(WEEKS, "2"), new TimeLexem(HOUR, "19"), new TimeLexem(MINUTE, "30")));
+        Assert.assertTrue(time.isRepeatTime());
+        Assert.assertEquals(time.getRepeatTimes().get(0).getInterval().getWeeks(), 2);
+        Assert.assertEquals(LocalTime.of(19, 30), time.getRepeatTimes().get(0).getTime());
     }
 
     @Test

@@ -35,6 +35,10 @@ public class OffsetTime {
         period = period.withDays(days);
     }
 
+    public void setWeeks(int weeks) {
+        period = period.withWeeks(weeks);
+    }
+
     public void setMonths(int months) {
         period = period.withMonths(months);
     }

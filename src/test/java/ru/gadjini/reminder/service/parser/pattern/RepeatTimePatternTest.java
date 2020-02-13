@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.gadjini.reminder.service.parser.pattern.PatternBuilder.*;
-import static ru.gadjini.reminder.service.parser.pattern.Patterns.repeatTimeMatch;
+import static ru.gadjini.reminder.service.parser.pattern.Patterns.*;
 
 
 class RepeatTimePatternTest {
@@ -129,16 +129,16 @@ class RepeatTimePatternTest {
     @Test
     void matchEveryMonthDay() {
         String str = "каждый месяц 20 числа";
-        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_MONTH, "месяц"), Map.entry(EVERY_MONTH_DAY, "20"))));
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_MONTH, "месяц"), Map.entry(PREFIX_DAY_OF_MONTH, "20"))));
     }
 
     @Test
     void matchEveryMonthDayTime() {
         String str = "каждый месяц 20 числа в 19:00";
-        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_MONTH, "месяц"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00"))));
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_MONTH, "месяц"), Map.entry(PREFIX_DAY_OF_MONTH, "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00"))));
 
         str = "каждый месяц 20 числа в 19";
-        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_MONTH, "месяц"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19"))));
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_MONTH, "месяц"), Map.entry(PREFIX_DAY_OF_MONTH, "20"), Map.entry(HOUR, "19"))));
     }
 
     @Test
@@ -169,27 +169,63 @@ class RepeatTimePatternTest {
 
         str = "каждый год 20 сентября в 19";
         repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_YEAR, "год"), Map.entry(MONTH_WORD, "сентября"), Map.entry(PatternBuilder.DAY, "20"), Map.entry(HOUR, "19"))));
+
+        str = "каждое 20 сентября в 19";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(MONTH_WORD, "сентября"), Map.entry(PatternBuilder.DAY, "20"), Map.entry(HOUR, "19"))));
     }
 
     @Test
     void matchMonthsDay() {
         String str = "каждые 20 месяцев 20 числа";
-        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_MONTHS, "20"), Map.entry(EVERY_MONTH_DAY, "20"))));
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_MONTHS, "20"), Map.entry(PREFIX_DAY_OF_MONTH, "20"))));
 
         str = "каждые 2месяца 20 числа";
-        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SUFFIX_MONTHS, "2"), Map.entry(EVERY_MONTH_DAY, "20"))));
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SUFFIX_MONTHS, "2"), Map.entry(PREFIX_DAY_OF_MONTH, "20"))));
 
         str = "каждые 2месяца 20числа";
-        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SUFFIX_MONTHS, "2"), Map.entry(EVERY_MONTH_DAY, "20"))));
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SUFFIX_MONTHS, "2"), Map.entry(SUFFIX_DAY_OF_MONTH, "20"))));
+    }
+
+    @Test
+    void matchMonths() {
+        String str = "каждые 20 месяцев";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_MONTHS, "20"))));
+
+        str = "каждые 20м";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SUFFIX_MONTHS, "20"))));
     }
 
     @Test
     void matchMonthsDayTime() {
         String str = "каждые 2 месяца 20 числа в 19:00";
-        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_MONTHS, "2"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00"))));
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_MONTHS, "2"), Map.entry(PREFIX_DAY_OF_MONTH, "20"), Map.entry(HOUR, "19"), Map.entry(MINUTE, "00"))));
 
         str = "каждые 2 месяца 20 числа 19";
-        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_MONTHS, "2"), Map.entry(EVERY_MONTH_DAY, "20"), Map.entry(HOUR, "19"))));
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_MONTHS, "2"), Map.entry(PREFIX_DAY_OF_MONTH, "20"), Map.entry(HOUR, "19"))));
+    }
+
+    @Test
+    void matchWeeks() {
+        String str = "каждые 2 недели";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_WEEKS, "2"))));
+
+        str = "каждые 2н";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SUFFIX_WEEKS, "2"))));
+    }
+
+    @Test
+    void matchMonthsDaysHoursMinutes() {
+        String str = "каждые 20 месяцев 20 недель 20 дней 20 часов 20 минут";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_MONTHS, "20"), Map.entry(PREFIX_WEEKS, "20"), Map.entry(PREFIX_DAYS, "20"), Map.entry(PREFIX_HOURS, "20"), Map.entry(PREFIX_MINUTES, "20"))));
+
+        str = "каждые 20м 20н 20д 20ч 20мин";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SUFFIX_MONTHS, "20"), Map.entry(SUFFIX_WEEKS, "20"), Map.entry(SUFFIX_DAYS, "20"), Map.entry(SUFFIX_HOURS, "20"), Map.entry(SUFFIX_MINUTES, "20"))));
+    }
+
+    @Test
+    void matchEveryWeek() {
+        String str = "каждую неделю";
+        match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(ONE_WEEK, "неделю")));
     }
 
     @Test
