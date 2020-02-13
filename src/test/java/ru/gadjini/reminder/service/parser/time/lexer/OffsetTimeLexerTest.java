@@ -46,6 +46,21 @@ class OffsetTimeLexerTest {
     }
 
     @Test
+    void afterWeeks() {
+        String str = "Тест через неделю";
+        TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
+        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new TimeLexem(OFFSET, ""), new TimeLexem(TYPE, "через"), new TimeLexem(WEEKS, "1")), lexems);
+        Assert.assertEquals("Тест", timeLexer.eraseTime());
+
+        str = "Тест через 2 недели в 19:30";
+        timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
+        lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new TimeLexem(OFFSET, ""), new TimeLexem(TYPE, "через"), new TimeLexem(WEEKS, "2"), new TimeLexem(HOUR, "19"), new TimeLexem(MINUTE, "30")), lexems);
+        Assert.assertEquals("Тест", timeLexer.eraseTime());
+    }
+
+    @Test
     void afterMinutes() {
         String str = "Тест через 10 минут";
         TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);

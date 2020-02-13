@@ -34,54 +34,58 @@ public class RepeatTimeLexer {
         List<Map<String, String>> valuesList = getValues();
 
         if (valuesList != null) {
-            for (Map<String, String> values: valuesList) {
+            for (Map<String, String> values : valuesList) {
                 if (values.containsKey(PatternBuilder.SUFFIX_YEARS)) {
                     lexems.add(new TimeLexem(TimeToken.YEARS, values.get(PatternBuilder.SUFFIX_YEARS)));
-                }
-                if (values.containsKey(PatternBuilder.PREFIX_YEARS)) {
+                } else if (values.containsKey(PatternBuilder.PREFIX_YEARS)) {
                     lexems.add(new TimeLexem(TimeToken.YEARS, values.get(PatternBuilder.PREFIX_YEARS)));
-                }
-                if (values.containsKey(PatternBuilder.ONE_YEAR)) {
+                } else if (values.containsKey(PatternBuilder.ONE_YEAR)) {
                     lexems.add(new TimeLexem(TimeToken.YEARS, "1"));
                 }
 
                 if (values.containsKey(PatternBuilder.SUFFIX_MONTHS)) {
                     lexems.add(new TimeLexem(TimeToken.MONTHS, values.get(PatternBuilder.SUFFIX_MONTHS)));
-                }
-                if (values.containsKey(PatternBuilder.PREFIX_MONTHS)) {
+                } else if (values.containsKey(PatternBuilder.PREFIX_MONTHS)) {
                     lexems.add(new TimeLexem(TimeToken.MONTHS, values.get(PatternBuilder.PREFIX_MONTHS)));
-                }
-                if (values.containsKey(PatternBuilder.ONE_MONTH)) {
+                } else if (values.containsKey(PatternBuilder.ONE_MONTH)) {
                     lexems.add(new TimeLexem(TimeToken.MONTHS, "1"));
+                }
+
+                if (values.containsKey(PatternBuilder.PREFIX_DAY_OF_MONTH)) {
+                    lexems.add(new TimeLexem(TimeToken.DAY, values.get(PatternBuilder.PREFIX_DAY_OF_MONTH)));
+                } else if (values.containsKey(PatternBuilder.SUFFIX_DAY_OF_MONTH)) {
+                    lexems.add(new TimeLexem(TimeToken.DAY, values.get(PatternBuilder.SUFFIX_DAY_OF_MONTH)));
+                }
+
+                if (values.containsKey(PatternBuilder.SUFFIX_WEEKS)) {
+                    lexems.add(new TimeLexem(TimeToken.WEEKS, values.get(PatternBuilder.SUFFIX_WEEKS)));
+                } else if (values.containsKey(PatternBuilder.PREFIX_WEEKS)) {
+                    lexems.add(new TimeLexem(TimeToken.WEEKS, values.get(PatternBuilder.PREFIX_WEEKS)));
+                } else if (values.containsKey(PatternBuilder.ONE_WEEK)) {
+                    lexems.add(new TimeLexem(TimeToken.WEEKS, "1"));
                 }
 
                 if (values.containsKey(PatternBuilder.SUFFIX_DAYS)) {
                     lexems.add(new TimeLexem(TimeToken.DAYS, values.get(PatternBuilder.SUFFIX_DAYS)));
-                }
-                if (values.containsKey(PatternBuilder.PREFIX_DAYS)) {
+                } else if (values.containsKey(PatternBuilder.PREFIX_DAYS)) {
                     lexems.add(new TimeLexem(TimeToken.DAYS, values.get(PatternBuilder.PREFIX_DAYS)));
-                }
-                if (values.containsKey(PatternBuilder.ONE_DAY)) {
+                } else if (values.containsKey(PatternBuilder.ONE_DAY)) {
                     lexems.add(new TimeLexem(TimeToken.DAYS, "1"));
                 }
 
                 if (values.containsKey(PatternBuilder.SUFFIX_HOURS)) {
                     lexems.add(new TimeLexem(TimeToken.HOURS, values.get(PatternBuilder.SUFFIX_HOURS)));
-                }
-                if (values.containsKey(PatternBuilder.PREFIX_HOURS)) {
+                } else if (values.containsKey(PatternBuilder.PREFIX_HOURS)) {
                     lexems.add(new TimeLexem(TimeToken.HOURS, values.get(PatternBuilder.PREFIX_HOURS)));
-                }
-                if (values.containsKey(PatternBuilder.ONE_HOUR)) {
+                } else if (values.containsKey(PatternBuilder.ONE_HOUR)) {
                     lexems.add(new TimeLexem(TimeToken.HOURS, "1"));
                 }
 
                 if (values.containsKey(PatternBuilder.SUFFIX_MINUTES)) {
                     lexems.add(new TimeLexem(TimeToken.MINUTES, values.get(PatternBuilder.SUFFIX_MINUTES)));
-                }
-                if (values.containsKey(PatternBuilder.PREFIX_MINUTES)) {
+                } else if (values.containsKey(PatternBuilder.PREFIX_MINUTES)) {
                     lexems.add(new TimeLexem(TimeToken.MINUTES, values.get(PatternBuilder.PREFIX_MINUTES)));
-                }
-                if (values.containsKey(PatternBuilder.ONE_MINUTE)) {
+                } else if (values.containsKey(PatternBuilder.ONE_MINUTE)) {
                     lexems.add(new TimeLexem(TimeToken.MINUTES, "1"));
                 }
 
@@ -93,9 +97,6 @@ public class RepeatTimeLexer {
                 }
                 if (values.containsKey(PatternBuilder.MONTH_WORD)) {
                     lexems.add(new TimeLexem(TimeToken.MONTH_WORD, values.get(PatternBuilder.MONTH_WORD)));
-                }
-                if (values.containsKey(PatternBuilder.EVERY_MONTH_DAY)) {
-                    lexems.add(new TimeLexem(TimeToken.DAY, values.get(PatternBuilder.EVERY_MONTH_DAY)));
                 }
 
                 if (values.containsKey(PatternBuilder.HOUR)) {

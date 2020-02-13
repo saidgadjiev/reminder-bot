@@ -131,7 +131,11 @@ public class MessagesProperties {
 
     public static final String REGEXP_MONTH_DAY_PREFIX = "regexp.month.day.prefix";
 
+    public static final String REGEXP_ONE_WEEK_PREFIX = "regexp.one.week.prefix";
+
     public static final String REGEXP_MONTH_PREFIX = "regex.month.prefix";
+
+    public static final String REGEX_WEEK_PREFIX = "regex.week.prefix";
 
     public static final String REGEXP_YEAR_PREFIX = "regex.year.prefix";
 

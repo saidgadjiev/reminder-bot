@@ -19,6 +19,7 @@ import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
+import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
 
@@ -105,6 +106,22 @@ class OffsetTimeParserTest {
 
         Assert.assertEquals(parse.getOffsetTime().getType(), OffsetTime.Type.AFTER);
         Assert.assertEquals(new Period().withYears(2).withMonths(2).withDays(2).withHours(2), parse.getOffsetTime().getPeriod());
+    }
+
+    @Test
+    void afterWeeks() {
+        TimeParser parser = parser();
+        Time time = parser.parse(lexems(new TimeLexem(OFFSET, ""), new TimeLexem(TYPE, "через"), new TimeLexem(WEEKS, "1")));
+        Assert.assertTrue(time.isOffsetTime());
+        Assert.assertEquals(time.getOffsetTime().getType(), OffsetTime.Type.AFTER);
+        Assert.assertEquals(time.getOffsetTime().getPeriod().getWeeks(), 1);
+
+        parser = parser();
+        time = parser.parse(lexems(new TimeLexem(OFFSET, ""), new TimeLexem(TYPE, "через"), new TimeLexem(WEEKS, "2"), new TimeLexem(HOUR, "19"), new TimeLexem(MINUTE, "30")));
+        Assert.assertTrue(time.isOffsetTime());
+        Assert.assertEquals(time.getOffsetTime().getType(), OffsetTime.Type.AFTER);
+        Assert.assertEquals(time.getOffsetTime().getPeriod().getWeeks(), 2);
+        Assert.assertEquals(time.getOffsetTime().getTime(), LocalTime.of(19, 30));
     }
 
     private List<BaseLexem> lexems(BaseLexem... lexems) {

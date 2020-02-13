@@ -33,6 +33,12 @@ public class PatternBuilder {
 
     public static final String PREFIX_DAYS = "prefixdays";
 
+    public static final String SUFFIX_WEEKS = "suffixweeks";
+
+    public static final String PREFIX_WEEKS = "prefixweeks";
+
+    public static final String ONE_WEEK = "oneweek";
+
     public static final String SUFFIX_MONTHS = "suffixmonths";
 
     public static final String PREFIX_MONTHS = "prefixmonths";
@@ -73,7 +79,9 @@ public class PatternBuilder {
 
     public static final String TYPE = "type";
 
-    public static final String EVERY_MONTH_DAY = "everymonthday";
+    public static final String PREFIX_DAY_OF_MONTH = "prefixdayofmonth";
+
+    public static final String SUFFIX_DAY_OF_MONTH = "suffixdayofmonth";
 
     public static final List<String> FIXED_TIME_PATTERN_GROUPS = List.of(TYPE, YEAR, MONTH, DAY, DAY_WORD, MONTH_WORD, NEXT_WEEK, DAY_OF_WEEK_WORD, HOUR, MINUTE);
 
@@ -81,7 +89,8 @@ public class PatternBuilder {
             PREFIX_HOURS, SUFFIX_HOURS, ONE_HOUR,
             PREFIX_MINUTES, SUFFIX_MINUTES, ONE_MINUTE,
             ONE_YEAR, DAY, MONTH_WORD, SUFFIX_MONTHS,
-            PREFIX_MONTHS, ONE_MONTH, EVERY_MONTH_DAY,
+            PREFIX_MONTHS, ONE_MONTH, PREFIX_DAY_OF_MONTH, SUFFIX_DAY_OF_MONTH,
+            ONE_WEEK, PREFIX_WEEKS, SUFFIX_WEEKS,
             ONE_DAY, PREFIX_DAYS, SUFFIX_DAYS,
             DAY_OF_WEEK_WORD, HOUR, MINUTE
     );
@@ -89,7 +98,8 @@ public class PatternBuilder {
     public static final List<String> OFFSET_TIME_PATTERN_GROUPS = List.of(
             TYPE, SUFFIX_YEARS, PREFIX_YEARS,
             ONE_YEAR, SUFFIX_MONTHS, PREFIX_MONTHS,
-            ONE_MONTH, SUFFIX_DAYS, PREFIX_DAYS,
+            ONE_MONTH, ONE_WEEK, SUFFIX_WEEKS, PREFIX_WEEKS,
+            SUFFIX_DAYS, PREFIX_DAYS,
             ONE_DAY, SUFFIX_HOURS, PREFIX_HOURS,
             ONE_HOUR, SUFFIX_MINUTES, PREFIX_MINUTES,
             HOUR, MINUTE
@@ -125,20 +135,26 @@ public class PatternBuilder {
         String regexpEveryYear = localisationService.getMessage(MessagesProperties.REGEXP_YEAR, locale);
         String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX, locale);
         String monthPrefix = localisationService.getMessage(MessagesProperties.REGEXP_MONTH_PREFIX, locale);
+        String weekRegexp = localisationService.getMessage(MessagesProperties.REGEX_WEEK_PREFIX, locale);
+        String oneWeekRegexp = localisationService.getMessage(MessagesProperties.REGEXP_ONE_WEEK_PREFIX, locale);
 
         pattern.append("((\\b(?<").append(HOUR).append(">2[0-3]|[01]?[0-9])(:(?<").append(MINUTE).append(">[0-5]?[0-9]))?\\b ?)(")
-                .append(regexpTimeArticle).append(" ?)?)?(((((").append(minutePrefix).append(") )(?<").append(PREFIX_MINUTES).append(">\\d+)|(?<")
-                .append(SUFFIX_MINUTES).append(">\\d+)(").append(minutePrefix).append(")( )?)?(( )?(((").append(hourPrefix).append(") )(?<")
-                .append(PREFIX_HOURS).append(">\\d+)|(?<").append(SUFFIX_HOURS).append(">\\d+)(").append(hourPrefix).append(")( )?))?(( )?(((")
+                .append(regexpTimeArticle).append(" ?)?)?((?<" + ONE_MINUTE + ">").append(regexpEveryMinute).append(")|((((")
+                .append(minutePrefix).append(") )(?<").append(PREFIX_MINUTES).append(">\\d+)|(?<")
+                .append(SUFFIX_MINUTES).append(">\\d+)(").append(minutePrefix).append(")( )?)?(( )?((?<" + ONE_HOUR + ">")
+                .append(regexpEveryHour).append(")|((").append(hourPrefix).append(") )(?<")
+                .append(PREFIX_HOURS).append(">\\d+)|(?<").append(SUFFIX_HOURS).append(">\\d+)(").append(hourPrefix)
+                .append(")( )?))?(( )?((?<" + ONE_DAY + ">").append(regexpEveryDay).append(")|((")
                 .append(dayPrefix).append(") )(?<").append(PREFIX_DAYS).append(">\\d+)|(?<").append(SUFFIX_DAYS).append(">\\d+)(")
-                .append(dayPrefix).append(")))?)|(?<").append(ONE_HOUR).append(">").append(regexpEveryHour)
-                .append(")|(?<").append(ONE_DAY).append(">").append(regexpEveryDay).append(")|(((").append(regexpEveryMonthDayPrefix)
-                .append(" )?(?<").append(EVERY_MONTH_DAY).append(">\\d+)(").append(regexpEveryMonthDayPrefix).append(")?) ((?<")
-                .append(ONE_MONTH).append(">").append(regexpEveryMonth).append(")|(((").append(monthPrefix).append(") )(?<")
-                .append(PREFIX_MONTHS).append(">\\d+)|(?<").append(SUFFIX_MONTHS).append(">\\d+)(").append(monthPrefix).append("))))|((?<").append(MONTH_WORD).append(">")
+                .append(dayPrefix).append(")))?(( )?((?<" + ONE_WEEK + ">").append(oneWeekRegexp).append(")|((")
+                .append(weekRegexp).append(") )(?<").append(PREFIX_WEEKS).append(">\\d+)|(?<").append(SUFFIX_WEEKS)
+                .append(">\\d+)(").append(weekRegexp).append(")))?(((").append(regexpEveryMonthDayPrefix).append(" )(?<")
+                .append(PREFIX_DAY_OF_MONTH).append(">\\d+)|(?<").append(SUFFIX_DAY_OF_MONTH).append(">\\d+)(")
+                .append(regexpEveryMonthDayPrefix).append("))?(( )?((?<").append(ONE_MONTH).append(">").append(regexpEveryMonth)
+                .append(")|(((").append(monthPrefix).append(") )(?<").append(PREFIX_MONTHS).append(">\\d+)|(?<")
+                .append(SUFFIX_MONTHS).append(">\\d+)(").append(monthPrefix).append(")))))?)|((?<").append(MONTH_WORD).append(">")
                 .append(Stream.of(Month.values()).map(month -> month.getDisplayName(TextStyle.FULL, locale)).collect(Collectors.joining("|")))
-                .append(") (?<").append(DAY).append(">\\d+)( (?<").append(ONE_YEAR).append(">").append(regexpEveryYear).append("))?)|(?<")
-                .append(ONE_MINUTE).append(">").append(regexpEveryMinute).append(")|(?<").append(DAY_OF_WEEK_WORD)
+                .append(") (?<").append(DAY).append(">\\d+)( (?<").append(ONE_YEAR).append(">").append(regexpEveryYear).append("))?)|(?<").append(DAY_OF_WEEK_WORD)
                 .append(">").append(getDayOfWeekPattern(locale)).append("))");
 
         return new GroupPattern(Pattern.compile(pattern.toString()), REPEAT_TIME_PATTERN_GROUPS);
@@ -185,14 +201,20 @@ public class PatternBuilder {
         String year = localisationService.getMessage(MessagesProperties.REGEXP_YEAR, locale);
         String month = localisationService.getMessage(MessagesProperties.REGEXP_MONTH, locale);
         String monthPrefix = localisationService.getMessage(MessagesProperties.REGEXP_MONTH_PREFIX, locale);
+        String minute = localisationService.getMessage(MessagesProperties.REGEXP_MINUTE, locale);
+        String weekRegexp = localisationService.getMessage(MessagesProperties.REGEX_WEEK_PREFIX, locale);
+        String oneWeekRegexp = localisationService.getMessage(MessagesProperties.REGEXP_ONE_WEEK_PREFIX, locale);
 
         patternBuilder.append("((\\b(?<").append(HOUR).append(">2[0-3]|[01]?[0-9])(:(?<").append(MINUTE).append(">[0-5]?[0-9]))?\\b ?)(")
-                .append(timeArticle).append(" ?)?)?((((").append(minutePrefix).append(") )(?<").append(PREFIX_MINUTES).append(">\\d+)|(?<")
+                .append(timeArticle).append(" ?)?)?((?<").append(ONE_MINUTE).append(">").append(minute).append(")|(((")
+                .append(minutePrefix).append(") )(?<").append(PREFIX_MINUTES).append(">\\d+)|(?<")
                 .append(SUFFIX_MINUTES).append(">\\d+)(").append(minutePrefix).append(")( )?)?(( )?((?<").append(ONE_HOUR)
                 .append(">").append(hour).append(")|((").append(hourPrefix).append(") )(?<").append(PREFIX_HOURS).append(">\\d+)|(?<")
                 .append(SUFFIX_HOURS).append(">\\d+)(").append(hourPrefix).append(")( )?))?(( )?((?<").append(ONE_DAY).append(">")
                 .append(day).append(")|((").append(dayPrefix).append(") )(?<").append(PREFIX_DAYS).append(">\\d+)|(?<").append(SUFFIX_DAYS)
-                .append(">\\d+)(").append(dayPrefix).append(")))?(( )?((?<" + ONE_MONTH + ">").append(month).append(")|((")
+                .append(">\\d+)(").append(dayPrefix).append(")))?(( )?((?<" + ONE_WEEK + ">").append(oneWeekRegexp).append(")|((")
+                .append(weekRegexp).append(") )(?<").append(PREFIX_WEEKS).append(">\\d+)|(?<").append(SUFFIX_WEEKS).append(">\\d+)(")
+                .append(weekRegexp).append(")))?(( )?((?<").append(ONE_MONTH).append(">").append(month).append(")|((")
                 .append(monthPrefix).append(") )(?<").append(PREFIX_MONTHS).append(">\\d+)|(?<").append(SUFFIX_MONTHS).append(">\\d+)(")
                 .append(monthPrefix).append(")))?(( )?((?<").append(ONE_YEAR).append(">").append(year).append(")|((").append(yearPrefix)
                 .append(") )(?<").append(PREFIX_YEARS).append(">\\d+)|(?<").append(SUFFIX_YEARS).append(">\\d+)(").append(yearPrefix)

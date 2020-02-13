@@ -139,15 +139,6 @@ class OffsetTimePatternTest {
     }
 
     @Test
-    void matchMonthsDaysHours() {
-        String str = "на 2м 2 дня 2ч";
-        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(SUFFIX_MONTHS, "2"), Map.entry(PREFIX_DAYS, "2"), Map.entry(SUFFIX_HOURS, "2")));
-
-        str = "на 2 месяца 2 дня 5 часов";
-        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(PREFIX_MONTHS, "2"), Map.entry(PREFIX_DAYS, "2"), Map.entry(PREFIX_HOURS, "5")));
-    }
-
-    @Test
     void matchYears() {
         String str = "на 2г";
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(SUFFIX_YEARS, "2")));
@@ -163,5 +154,41 @@ class OffsetTimePatternTest {
 
         str = "на 5 лет 10м";
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(PREFIX_YEARS, "5"), Map.entry(SUFFIX_MONTHS, "10")));
+    }
+
+    @Test
+    void matchWeeks() {
+        String str = "на 2 недели";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(PREFIX_WEEKS, "2")));
+
+        str = "на 2недели";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(SUFFIX_WEEKS, "2")));
+
+        str = "на 2н";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(SUFFIX_WEEKS, "2")));
+
+        str = "через 2 н";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PREFIX_WEEKS, "2")));
+    }
+
+    @Test
+    void matchMonthsWeeksDaysHours() {
+        String str = "на 2м 2н 2 дня 2ч";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(SUFFIX_MONTHS, "2"), Map.entry(SUFFIX_WEEKS, "2"), Map.entry(PREFIX_DAYS, "2"), Map.entry(SUFFIX_HOURS, "2")));
+
+        str = "на 2 месяца 2 недели 2 дня 5 часов";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "на"), Map.entry(PREFIX_MONTHS, "2"), Map.entry(PREFIX_WEEKS, "2"), Map.entry(PREFIX_DAYS, "2"), Map.entry(PREFIX_HOURS, "5")));
+    }
+
+    @Test
+    void matchAfterMinute() {
+        String str = "через минуту";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(ONE_MINUTE, "минуту")));
+    }
+
+    @Test
+    void matchAfterWeek() {
+        String str = "через неделю";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(ONE_WEEK, "неделю")));
     }
 }
