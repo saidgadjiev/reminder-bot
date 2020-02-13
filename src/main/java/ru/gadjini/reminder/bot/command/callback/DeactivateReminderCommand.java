@@ -9,8 +9,11 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
+
+import java.util.Locale;
 
 @Component
 public class DeactivateReminderCommand implements CallbackBotCommand {
@@ -19,10 +22,13 @@ public class DeactivateReminderCommand implements CallbackBotCommand {
 
     private ReminderMessageSender messageSender;
 
+    private TgUserService userService;
+
     @Autowired
-    public DeactivateReminderCommand(ReminderService reminderService, ReminderMessageSender messageSender) {
+    public DeactivateReminderCommand(ReminderService reminderService, ReminderMessageSender messageSender, TgUserService userService) {
         this.reminderService = reminderService;
         this.messageSender = messageSender;
+        this.userService = userService;
     }
 
     @Override
@@ -33,6 +39,12 @@ public class DeactivateReminderCommand implements CallbackBotCommand {
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Reminder reminder = reminderService.deactivate(requestParams.getInt(Arg.REMINDER_ID.getKey()));
+
+        if (reminder == null) {
+            Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
+            messageSender.sendReminderNotFound(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), locale);
+            return null;
+        }
 
         messageSender.sendReminderDeactivated(callbackQuery.getMessage().getMessageId(), callbackQuery.getFrom().getId(), requestParams, reminder);
 

@@ -487,5 +487,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_REASON = "message.reason";
 
+    public static final String MESSAGE_NOT_FRIEND = "message.not.friend";
+
     public static final String MESSAGE_CONTACT_ID_EMPTY = "message.contact.id.empty";
 }

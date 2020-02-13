@@ -96,13 +96,23 @@ public class ChangeFriendNameCommand implements CallbackBotCommand, NavigableCal
 
         Locale locale = userService.getLocale(message.getFrom().getId());
         commandNavigator.silentPop(message.getChatId());
-        messageService.editMessageAsync(
-                new EditMessageContext(PriorityJob.Priority.MEDIUM)
-                        .chatId(message.getChatId())
-                        .messageId(callbackRequest.getMessageId())
-                        .text(friendshipMessageBuilder.getFriendDetails(friend, locale))
-                        .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friend.getUserId(), locale))
-        );
+
+        if (friend == null) {
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
+                            .chatId(message.getChatId())
+                            .messageId(callbackRequest.getMessageId())
+                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_NOT_FRIEND, locale))
+            );
+        } else {
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.MEDIUM)
+                            .chatId(message.getChatId())
+                            .messageId(callbackRequest.getMessageId())
+                            .text(friendshipMessageBuilder.getFriendDetails(friend, locale))
+                            .replyKeyboard(inlineKeyboardService.getFriendKeyboard(friend.getUserId(), locale))
+            );
+        }
     }
 
     @Override

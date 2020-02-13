@@ -20,6 +20,7 @@ import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
+import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageSender;
 
 import java.util.Locale;
@@ -37,6 +38,8 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
 
     private ReminderNotificationMessageSender reminderMessageSender;
 
+    private ReminderMessageSender messageSender;
+
     private CallbackCommandNavigator commandNavigator;
 
     private LocalisationService localisationService;
@@ -49,12 +52,13 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
                                InlineKeyboardService inlineKeyboardService,
                                ReminderRequestService reminderService,
                                ReminderNotificationMessageSender reminderMessageSender,
-                               LocalisationService localisationService, TgUserService userService) {
+                               ReminderMessageSender messageSender, LocalisationService localisationService, TgUserService userService) {
         this.stateService = stateService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.reminderService = reminderService;
         this.reminderMessageSender = reminderMessageSender;
+        this.messageSender = messageSender;
         this.localisationService = localisationService;
         this.userService = userService;
     }
@@ -93,13 +97,13 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
     @Override
     public void processNonCommandCallback(CallbackQuery callbackQuery, RequestParams requestParams) {
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
-        customRemind(callbackQuery.getMessage().getChatId(), requestParams.getString(Arg.CUSTOM_REMIND_TIME.getKey()), locale);
+        customRemind(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId(), requestParams.getString(Arg.CUSTOM_REMIND_TIME.getKey()), locale);
     }
 
     @Override
     public void processNonCommandUpdate(Message message, String text) {
         Locale locale = userService.getLocale(message.getFrom().getId());
-        customRemind(message.getChatId(), text, locale);
+        customRemind(message.getChatId(), message.getMessageId(), text, locale);
     }
 
     @Override
@@ -107,10 +111,15 @@ public class CustomRemindCommand implements CallbackBotCommand, NavigableCallbac
         stateService.deleteState(chatId);
     }
 
-    private void customRemind(long chatId, String text, Locale locale) {
+    private void customRemind(long chatId, int messageId, String text, Locale locale) {
         CallbackRequest callbackRequest = stateService.getState(chatId, true);
         CustomRemindResult customRemindResult = reminderService.customRemind(callbackRequest.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), text);
         commandNavigator.silentPop(chatId);
+
+        if (customRemindResult == null) {
+            messageSender.sendReminderNotFound(chatId, messageId, locale);
+            return;
+        }
 
         String prevHistoryName = callbackRequest.getRequestParams().getString(Arg.PREV_HISTORY_NAME.getKey());
         if (prevHistoryName.equals(CommandNames.SCHEDULE_COMMAND_NAME)) {

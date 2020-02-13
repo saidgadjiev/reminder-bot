@@ -140,6 +140,10 @@ public class ReminderRequestService {
                 .setReceiverMapping(new Mapping())
         );
 
+        if (reminder == null) {
+            return null;
+        }
+
         Time customRemind = parseTime(text, reminder.getReceiver().getZone(), reminder.getReceiver().getLocale());
         validatorFactory.getValidator(ValidatorType.CUSTOM_REMIND).validate(new ValidationContext().time(customRemind).reminder(reminder));
 
@@ -179,6 +183,10 @@ public class ReminderRequestService {
         Reminder oldReminder = reminderService.getReminder(reminderId, new ReminderMapping()
                 .setCreatorMapping(new Mapping())
                 .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME))));
+
+        if (oldReminder == null) {
+            return null;
+        }
 
         Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone(), oldReminder.getReceiver().getLocale());
         validatorFactory.getValidator(ValidatorType.REMINDER_TIME_VALIDATOR).validate(new ValidationContext().time(newReminderTimeInReceiverZone).reminder(oldReminder));

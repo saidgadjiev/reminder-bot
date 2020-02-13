@@ -97,6 +97,11 @@ public class ChangeReminderTextCommand implements CallbackBotCommand, NavigableC
         CallbackRequest request = stateService.getState(message.getChatId(), true);
         UpdateReminderResult updateReminderResult = reminderService.changeReminderText(request.getRequestParams().getInt(Arg.REMINDER_ID.getKey()), text);
 
+        if (updateReminderResult == null) {
+            reminderMessageSender.sendReminderNotFound(message.getChatId(), message.getMessageId(), userService.getLocale(message.getFrom().getId()));
+            return;
+        }
+
         commandNavigator.silentPop(message.getChatId());
         reminderMessageSender.sendReminderTextChanged(request.getMessageId(), updateReminderResult);
     }
