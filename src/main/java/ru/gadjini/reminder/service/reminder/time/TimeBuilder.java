@@ -47,21 +47,16 @@ public class TimeBuilder {
         StringBuilder builder = new StringBuilder();
 
         builder.append("<b>");
-        if (offsetTime.getDays() > 0 || offsetTime.getHours() > 0 || offsetTime.getMinutes() > 0) {
+        if (offsetTime.getWeeks() != 0
+                || offsetTime.getDays() != 0
+                || offsetTime.getHours() != 0
+                || offsetTime.getMinutes() != 0) {
             String typeBefore = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE, locale);
             builder.append(typeBefore).append(" ");
         }
-        TimeDeclensionService declensionService = timeDeclensionProvider.getService(locale.getLanguage());
 
-        if (offsetTime.getDays() != 0) {
-            builder.append(declensionService.day(offsetTime.getDays())).append(" ");
-        }
-        if (offsetTime.getHours() != 0) {
-            builder.append(declensionService.hour(offsetTime.getHours())).append(" ");
-        }
-        if (offsetTime.getMinutes() != 0) {
-            builder.append(declensionService.minute(offsetTime.getMinutes())).append(" ");
-        }
+        builder.append(getPeriodView(offsetTime.getPeriod(), locale));
+
         if (offsetTime.getTime() != null) {
             String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE, locale);
             builder.append(timeArticle).append(" ").append(DATE_TIME_FORMATTER.format(offsetTime.getTime()));

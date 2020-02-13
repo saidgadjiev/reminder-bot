@@ -31,7 +31,8 @@ public class ReminderNotificationTimeBuilder {
         if (reminderNotification.getDelayTime().getDays() == 7) {
             repeatTime.setDayOfWeek(lastRemindAt.getDayOfWeek());
             repeatTime.setTime(lastRemindAt.toLocalTime());
-        } else if (reminderNotification.getDelayTime().getDays() != 0) {
+        } else if (reminderNotification.getDelayTime().getDays() != 0
+                || reminderNotification.getDelayTime().getWeeks() != 0) {
             repeatTime.setInterval(reminderNotification.getDelayTime());
             repeatTime.setTime(lastRemindAt.toLocalTime());
         } else if (reminderNotification.getDelayTime().getMonths() != 0) {

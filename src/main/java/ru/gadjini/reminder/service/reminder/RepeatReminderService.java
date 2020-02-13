@@ -93,6 +93,7 @@ public class RepeatReminderService {
     public boolean isNeedUpdateNextRemindAt(Reminder reminder, ReminderNotification reminderNotification) {
         if (reminder.getRepeatRemindAt().hasTime() ||
                 reminder.getRepeatRemindAt().getDayOfWeek() != null ||
+                reminder.getRepeatRemindAt().getInterval().getWeeks() != 0 ||
                 reminder.getRepeatRemindAt().getInterval().getDays() != 0 ||
                 reminder.getRepeatRemindAt().getInterval().getYears() != 0 ||
                 reminder.getRepeatRemindAt().getInterval().getMonths() != 0
@@ -382,10 +383,11 @@ public class RepeatReminderService {
 
     private boolean isNotSentYet(Reminder reminder, ReminderNotification reminderNotification) {
         if (reminder.getRepeatRemindAt().getDayOfWeek() != null ||
-                reminder.getRepeatRemindAt().getInterval().getDays() > 0 ||
-                reminder.getRepeatRemindAt().getInterval().getMonths() > 0 ||
-                reminder.getRepeatRemindAt().getInterval().getYears() > 0) {
-            return isNotSentYetForDailyMonthlyYearlyTime(reminder, reminderNotification);
+                reminder.getRepeatRemindAt().getInterval().getWeeks() != 0 ||
+                reminder.getRepeatRemindAt().getInterval().getDays() != 0 ||
+                reminder.getRepeatRemindAt().getInterval().getMonths() != 0 ||
+                reminder.getRepeatRemindAt().getInterval().getYears() != 0) {
+            return isNotSentYetForWeeklyDailyMonthlyYearlyTime(reminder, reminderNotification);
         } else {
             return isNotSendYetForIntervalTime(reminder, reminderNotification);
         }
@@ -401,7 +403,7 @@ public class RepeatReminderService {
         return left.isEqual(reminderNotification.getLastReminderAt());
     }
 
-    private boolean isNotSentYetForDailyMonthlyYearlyTime(Reminder reminder, ReminderNotification reminderNotification) {
+    private boolean isNotSentYetForWeeklyDailyMonthlyYearlyTime(Reminder reminder, ReminderNotification reminderNotification) {
         LocalDate remindAt = reminder.getRemindAt().date();
 
         if (reminder.getRepeatRemindAt().getDayOfWeek() != null) {
@@ -423,7 +425,7 @@ public class RepeatReminderService {
         return DateTime.of(JodaTimeUtils.plus(now, repeatTime.getInterval()));
     }
 
-    private DateTime getWeeklyFirstRemindAt(RepeatTime repeatTime) {
+    private DateTime getDayOfWeekFirstRemindAt(RepeatTime repeatTime) {
         if (repeatTime.hasTime()) {
             ZonedDateTime now = timeCreator.zonedDateTimeNow(repeatTime.getZoneId()).with(repeatTime.getTime());
 
@@ -455,11 +457,11 @@ public class RepeatReminderService {
         return DateTime.of(nextDate, repeatTime.getTime(), zoneId);
     }
 
-    private DateTime getDailyFirstRemindAt(RepeatTime repeatTime) {
+    private DateTime getWeeklyDailyFirstRemindAt(RepeatTime repeatTime) {
         return DateTime.of(timeCreator.localDateNow(repeatTime.getZoneId()), repeatTime.getTime(), repeatTime.getZoneId());
     }
 
-    private DateTime getDailyMonthlyYearlyNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
+    private DateTime getWeeklyDailyMonthlyYearlyNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
         LocalDate now = timeCreator.localDateNow(remindAt.getZoneId());
         LocalDate nextRemindAt = JodaTimeUtils.plus(remindAt.date(), repeatTime.getInterval());
 
@@ -467,7 +469,7 @@ public class RepeatReminderService {
             nextRemindAt = JodaTimeUtils.plus(nextRemindAt, repeatTime.getInterval());
         }
 
-        return DateTime.of(nextRemindAt, null, remindAt.getZoneId());
+        return DateTime.of(nextRemindAt, repeatTime.getTime(), remindAt.getZoneId());
     }
 
     private DateTime getIntervalNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
@@ -542,8 +544,11 @@ public class RepeatReminderService {
 
         if (repeatTime.hasDayOfWeek()) {
             addWeeklyReminderNotificationsWithoutTime(repeatTime, receiverId, reminderNotifications);
-        } else if (repeatTime.getInterval().getDays() > 0 || repeatTime.getInterval().getYears() > 0 || repeatTime.getInterval().getMonths() > 0) {
-            addMonthlyOrYearlyOrDailyReminderNotificationsWithoutTime(repeatTime, receiverId, reminderNotifications);
+        } else if (repeatTime.getInterval().getWeeks() != 0
+                || repeatTime.getInterval().getDays() != 0
+                || repeatTime.getInterval().getYears() != 0
+                || repeatTime.getInterval().getMonths() != 0) {
+            addWeeklyMonthlyOrYearlyOrDailyReminderNotificationsWithoutTime(repeatTime, receiverId, reminderNotifications);
         } else {
             addIntervalReminderNotifications(repeatTime, receiverId, reminderNotifications);
         }
@@ -556,7 +561,10 @@ public class RepeatReminderService {
 
         if (repeatTime.getDayOfWeek() != null) {
             addWeeklyReminderNotifications(repeatTime, receiverId, reminderNotifications);
-        } else if (repeatTime.getInterval().getDays() > 0 || repeatTime.getInterval().getYears() > 0 || repeatTime.getInterval().getMonths() > 0) {
+        } else if (repeatTime.getInterval().getWeeks() != 0
+                || repeatTime.getInterval().getDays() != 0
+                || repeatTime.getInterval().getYears() != 0
+                || repeatTime.getInterval().getMonths() != 0) {
             addYearlyOrMonthlyOrDailyReminderNotifications(repeatTime, receiverId, reminderNotifications);
         }
 
@@ -583,14 +591,14 @@ public class RepeatReminderService {
         fixedReminderNotification(repeatReminder.toLocalDate(), repeatTime.getInterval(), repeatReminder.toLocalTime(), reminderNotifications).setItsTime(true);
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITH_TIME);
 
-        for (UserReminderNotification offsetTime : userReminderNotifications) {
-            if (repeatTime.getInterval().getDays() == 1 && offsetTime.getDays() != 0) {
+        for (UserReminderNotification userReminderNotification : userReminderNotifications) {
+            if (repeatTime.getInterval().getDays() == 1 && userReminderNotification.getDays() != 0) {
                 continue;
             }
             ReminderNotification reminderNotification = fixedReminderNotification(
-                    repeatReminder.toLocalDate().minusDays(offsetTime.getDays()),
+                    repeatReminder.toLocalDate().minusDays(userReminderNotification.getDays()),
                     repeatTime.getInterval(),
-                    offsetTime.getTime() == null ? repeatReminder.toLocalTime().minusHours(offsetTime.getHours()).minusMinutes(offsetTime.getMinutes()) : offsetTime.getTime(),
+                    userReminderNotification.getTime() == null ? repeatReminder.toLocalTime().minusHours(userReminderNotification.getHours()).minusMinutes(userReminderNotification.getMinutes()) : userReminderNotification.getTime(),
                     reminderNotifications
             );
             reminderNotification.setCustom(true);
@@ -614,7 +622,7 @@ public class RepeatReminderService {
         }
     }
 
-    private void addMonthlyOrYearlyOrDailyReminderNotificationsWithoutTime(RepeatTime repeatTimeInReceiverZone, int receiverId, List<ReminderNotification> reminderNotifications) {
+    private void addWeeklyMonthlyOrYearlyOrDailyReminderNotificationsWithoutTime(RepeatTime repeatTimeInReceiverZone, int receiverId, List<ReminderNotification> reminderNotifications) {
         LocalDate repeatReminder = getFirstRemindAt(repeatTimeInReceiverZone).date();
 
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITHOUT_TIME);
@@ -666,8 +674,11 @@ public class RepeatReminderService {
     private DateTime getNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
         if (repeatTime.getDayOfWeek() != null) {
             return getWeeklyNextRemindAt(remindAt, repeatTime);
-        } else if (repeatTime.getInterval().getDays() != 0 || repeatTime.getInterval().getYears() != 0 || repeatTime.getInterval().getMonths() != 0) {
-            return getDailyMonthlyYearlyNextRemindAt(remindAt, repeatTime);
+        } else if (repeatTime.getInterval().getDays() != 0
+                || repeatTime.getInterval().getYears() != 0
+                || repeatTime.getInterval().getMonths() != 0
+                || repeatTime.getInterval().getWeeks() != 0) {
+            return getWeeklyDailyMonthlyYearlyNextRemindAt(remindAt, repeatTime);
         } else {
             return getIntervalNextRemindAt(remindAt, repeatTime);
         }
@@ -675,9 +686,10 @@ public class RepeatReminderService {
 
     private DateTime getFirstRemindAt(RepeatTime repeatTime) {
         if (repeatTime.hasDayOfWeek()) {
-            return getWeeklyFirstRemindAt(repeatTime);
-        } else if (repeatTime.getInterval().getDays() != 0) {
-            return getDailyFirstRemindAt(repeatTime);
+            return getDayOfWeekFirstRemindAt(repeatTime);
+        } else if (repeatTime.getInterval().getDays() != 0
+                || repeatTime.getInterval().getWeeks() != 0) {
+            return getWeeklyDailyFirstRemindAt(repeatTime);
         } else if (repeatTime.getInterval().getMonths() != 0) {
             return getMonthlyFirstRemindAt(repeatTime);
         } else if (repeatTime.getInterval().getYears() != 0) {

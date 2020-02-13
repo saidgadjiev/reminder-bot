@@ -71,7 +71,7 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
     ) {
         Set<String> names = new HashSet<>();
         for (Locale locale : localisationService.getSupportedLocales()) {
-            names.add(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME, locale));
+            names.add(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITH_TIME_COMMAND_NAME, locale));
         }
 
         return new UserReminderNotificationScheduleCommand(
@@ -95,7 +95,7 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
     ) {
         Set<String> names = new HashSet<>();
         for (Locale locale : localisationService.getSupportedLocales()) {
-            names.add(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_COMMAND_NAME, locale));
+            names.add(localisationService.getMessage(MessagesProperties.USER_REMINDER_NOTIFICATION_WITHOUT_TIME_COMMAND_NAME, locale));
         }
 
         return new UserReminderNotificationScheduleCommand(

@@ -95,16 +95,14 @@ public class RuTimeDeclensionService implements TimeDeclensionService {
 
     @Override
     public String getRepeatWord(Period period) {
-        if (period.getYears() != 0) {
+        if (period.getYears() != 0
+                || period.getMonths() != 0
+                || period.getDays() != 0
+                || period.getHours() != 0
+                || period.getMinutes() != 0) {
             return getRepeatWordByDaysOrHoursOrMonthOrYears(period.getYears());
-        } else if (period.getMonths() != 0) {
-            return getRepeatWordByDaysOrHoursOrMonthOrYears(period.getMonths());
-        } else if (period.getDays() != 0) {
-            return getRepeatWordByDaysOrHoursOrMonthOrYears(period.getDays());
-        } else if (period.getHours() != 0) {
-            return getRepeatWordByDaysOrHoursOrMonthOrYears(period.getHours());
-        } else if (period.getMinutes() != 0) {
-            return getRepeatWordByMinutes(period.getMinutes());
+        } else if (period.getWeeks() != 0) {
+            return getRepeatWordByMinutesWeeks(period.getWeeks());
         }
 
         return "";
@@ -154,8 +152,8 @@ public class RuTimeDeclensionService implements TimeDeclensionService {
         return "каждые";
     }
 
-    private String getRepeatWordByMinutes(int minutes) {
-        if (minutes == 1) {
+    private String getRepeatWordByMinutesWeeks(int minutesOrWeeks) {
+        if (minutesOrWeeks == 1) {
             return "каждую";
         }
 
