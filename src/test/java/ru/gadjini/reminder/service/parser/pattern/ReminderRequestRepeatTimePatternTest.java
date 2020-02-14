@@ -159,7 +159,7 @@ class ReminderRequestRepeatTimePatternTest {
     @Test
     void matchEveryMonthDay() {
         String str = "День рожденье каждый месяц 20 числа";
-        int end = repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_MONTH, "месяц"), Map.entry("everymonthday", "20"))));
+        int end = repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_MONTH, "месяц"), Map.entry(PREFIX_DAY_OF_MONTH, "20"))));
         Assert.assertEquals("День рожденье", str.substring(0, end).trim());
     }
 
