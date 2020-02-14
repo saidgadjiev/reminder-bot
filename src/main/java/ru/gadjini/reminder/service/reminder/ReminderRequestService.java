@@ -36,6 +36,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 @Service
@@ -151,7 +152,7 @@ public class ReminderRequestService {
         List<ReminderNotification> reminderNotifications = new ArrayList<>();
 
         if (customRemind.isOffsetTime()) {
-            ZonedDateTime remindTime = buildRemindTime(
+            ZonedDateTime remindTime = buildTime(
                     customRemind.getOffsetTime(),
                     reminder.getRemindAtInReceiverZone().hasTime() ? reminder.getRemindAtInReceiverZone().toZonedDateTime() : null
             ).withZoneSameInstant(ZoneOffset.UTC);
@@ -196,7 +197,7 @@ public class ReminderRequestService {
         if (newReminderTimeInReceiverZone.isRepeatTime()) {
             changed = repeatReminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), newReminderTimeInReceiverZone.getRepeatTimes());
         } else if (newReminderTimeInReceiverZone.isOffsetTime()) {
-            ZonedDateTime remindAtInReceiverZone = buildRemindTime(newReminderTimeInReceiverZone.getOffsetTime(), null);
+            ZonedDateTime remindAtInReceiverZone = buildTime(newReminderTimeInReceiverZone.getOffsetTime(), null);
             changed = reminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), DateTime.of(remindAtInReceiverZone).withZoneSameInstant(ZoneOffset.UTC));
         } else {
             changed = reminderService.changeReminderTime(reminderId, oldReminder.getReceiverId(), newReminderTimeInReceiverZone.getFixedDateTime().withZoneSameInstant(ZoneOffset.UTC));
@@ -263,29 +264,35 @@ public class ReminderRequestService {
         }
     }
 
-    private ZonedDateTime buildRemindTime(OffsetTime offsetTime, ZonedDateTime remindAt) {
+    private ZonedDateTime buildTime(OffsetTime offsetTime, ZonedDateTime startAt) {
         ZoneId zoneId = offsetTime.getZoneId();
         switch (offsetTime.getType()) {
             case AFTER: {
-                ZonedDateTime dateTime = JodaTimeUtils.plus(timeCreator.zonedDateTimeNow(zoneId), offsetTime.getPeriod());
+                ZonedDateTime dateTime = timeCreator.zonedDateTimeNow(zoneId);
 
                 if (offsetTime.getTime() != null) {
                     dateTime = dateTime.with(offsetTime.getTime());
                 }
+                if (offsetTime.getDayOfWeek() != null) {
+                    dateTime = dateTime.with(TemporalAdjusters.nextOrSame(offsetTime.getDayOfWeek()));
+                }
 
-                return dateTime;
+                return JodaTimeUtils.plus(dateTime, offsetTime.getPeriod());
             }
             case FOR: {
                 return JodaTimeUtils.plus(timeCreator.zonedDateTimeNow(zoneId), offsetTime.getPeriod());
             }
             case BEFORE: {
-                ZonedDateTime offsetRemindAt = JodaTimeUtils.minus(remindAt, offsetTime.getPeriod());
+                ZonedDateTime offsetRemindAt = startAt;
 
                 if (offsetTime.getTime() != null) {
                     offsetRemindAt = offsetRemindAt.with(offsetTime.getTime());
                 }
+                if (offsetTime.getDayOfWeek() != null) {
+                    offsetRemindAt = offsetRemindAt.with(TemporalAdjusters.previousOrSame(offsetTime.getDayOfWeek()));
+                }
 
-                return offsetRemindAt;
+                return JodaTimeUtils.minus(offsetRemindAt, offsetTime.getPeriod());
             }
             default:
                 throw new UnsupportedOperationException();
@@ -297,6 +304,9 @@ public class ReminderRequestService {
 
         if (offsetTime.getTime() != null) {
             dateTime = dateTime.with(offsetTime.getTime());
+        }
+        if (offsetTime.getDayOfWeek() != null) {
+            dateTime = dateTime.with(TemporalAdjusters.nextOrSame(offsetTime.getDayOfWeek()));
         }
 
         return DateTime.of(JodaTimeUtils.plus(dateTime, offsetTime.getPeriod()));
