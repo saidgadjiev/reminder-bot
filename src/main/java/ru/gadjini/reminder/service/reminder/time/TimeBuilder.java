@@ -68,7 +68,7 @@ public class TimeBuilder {
 
         time.append("<b>");
         TimeDeclensionService declensionService = timeDeclensionProvider.getService(locale.getLanguage());
-        if (repeatTimes.get(0).getDayOfWeek() != null) {
+        if (repeatTimes.get(0).isEveryWeeklyTime()) {
             time.append(declensionService.getRepeatWord(repeatTimes.get(0).getDayOfWeek())).append(" ");
         } else {
             time.append(declensionService.getRepeatWord(repeatTimes.get(0).getInterval())).append(" ");
@@ -89,7 +89,7 @@ public class TimeBuilder {
 
         time.append("<b>");
         TimeDeclensionService declensionService = timeDeclensionProvider.getService(locale.getLanguage());
-        if (repeatTime.getDayOfWeek() != null) {
+        if (repeatTime.isEveryWeeklyTime()) {
             time.append(declensionService.getRepeatWord(repeatTime.getDayOfWeek())).append(" ");
         } else {
             time.append(declensionService.getRepeatWord(repeatTime.getInterval())).append(" ");
@@ -219,26 +219,29 @@ public class TimeBuilder {
         StringBuilder time = new StringBuilder();
 
         TimeDeclensionService declensionService = timeDeclensionProvider.getService(locale.getLanguage());
-        if (repeatTime.getDayOfWeek() != null) {
+        if (repeatTime.hasDayOfWeek()) {
+            if (repeatTime.hasInterval() && repeatTime.getInterval().getWeeks() > 1) {
+                time.append(declensionService.weeks(repeatTime.getInterval().getWeeks())).append(" ");
+            }
             time.append(declensionService.dayOfWeek(repeatTime.getDayOfWeek())).append(" ");
-            if (repeatTime.getTime() != null) {
+            if (repeatTime.hasTime()) {
                 time.append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
             }
         } else if (repeatTime.getInterval().getMonths() != 0) {
             time.append(getPeriodView(repeatTime.getInterval(), locale)).append(" ");
             time.append(repeatTime.getDay()).append(" ").append(localisationService.getMessage(MessagesProperties.MONTH_DAY_PREFIX, locale));
-            if (repeatTime.getTime() != null) {
+            if (repeatTime.hasTime()) {
                 time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
             }
         } else if (repeatTime.getInterval().getYears() != 0) {
             time.append(getPeriodView(repeatTime.getInterval(), locale)).append(" ");
             time.append(repeatTime.getDay()).append(" ").append(repeatTime.getMonth().getDisplayName(TextStyle.FULL, locale));
-            if (repeatTime.getTime() != null) {
+            if (repeatTime.hasTime()) {
                 time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
             }
         } else if (repeatTime.getInterval() != null) {
             time.append(getPeriodView(repeatTime.getInterval(), locale));
-            if (repeatTime.getTime() != null) {
+            if (repeatTime.hasTime()) {
                 time.append(" ").append(DATE_TIME_FORMATTER.format(repeatTime.getTime()));
             }
         }

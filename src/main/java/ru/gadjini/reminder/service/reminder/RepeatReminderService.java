@@ -93,7 +93,7 @@ public class RepeatReminderService {
 
     public boolean isNeedUpdateNextRemindAt(Reminder reminder, ReminderNotification reminderNotification) {
         if (reminder.getRepeatRemindAt().hasTime() ||
-                reminder.getRepeatRemindAt().getDayOfWeek() != null ||
+                reminder.getRepeatRemindAt().isEveryWeeklyTime() ||
                 TimeUtils.isBigInterval(reminder.getRepeatRemindAt().getInterval())
         ) {
             return false;
@@ -278,9 +278,9 @@ public class RepeatReminderService {
     private DateTime getPrevRemindAt(DateTime remindAt, RepeatTime repeatTime) {
         remindAt = remindAt.copy();
 
-        if (repeatTime.getDayOfWeek() != null) {
+        if (repeatTime.isEveryWeeklyTime()) {
             DateTime dateTime = remindAt.copy();
-            dateTime.date((LocalDate) TemporalAdjusters.previous(repeatTime.getDayOfWeek()).adjustInto(dateTime.date()));
+            dateTime.date(dateTime.date().with(TemporalAdjusters.previous(repeatTime.getDayOfWeek())));
 
             return dateTime;
         } else {
@@ -380,8 +380,7 @@ public class RepeatReminderService {
     }
 
     private boolean isNotSentYet(Reminder reminder, ReminderNotification reminderNotification) {
-        if (reminder.getRepeatRemindAt().getDayOfWeek() != null ||
-                TimeUtils.isBigInterval(reminder.getRepeatRemindAt().getInterval())) {
+        if (reminder.getRepeatRemindAt().isEveryWeeklyTime() || TimeUtils.isBigInterval(reminder.getRepeatRemindAt().getInterval())) {
             return isNotSentYetForWeeklyDailyMonthlyYearlyTime(reminder, reminderNotification);
         } else {
             return isNotSendYetForIntervalTime(reminder, reminderNotification);
@@ -401,7 +400,7 @@ public class RepeatReminderService {
     private boolean isNotSentYetForWeeklyDailyMonthlyYearlyTime(Reminder reminder, ReminderNotification reminderNotification) {
         LocalDate remindAt = reminder.getRemindAt().date();
 
-        if (reminder.getRepeatRemindAt().getDayOfWeek() != null) {
+        if (reminder.getRepeatRemindAt().isEveryWeeklyTime()) {
             remindAt = remindAt.minusDays(7);
         } else {
             remindAt = JodaTimeUtils.minus(remindAt, reminderNotification.getDelayTime());
@@ -422,31 +421,23 @@ public class RepeatReminderService {
 
     private DateTime getDayOfWeekFirstRemindAt(RepeatTime repeatTime) {
         if (repeatTime.hasTime()) {
-            ZonedDateTime now = timeCreator.zonedDateTimeNow(repeatTime.getZoneId()).with(repeatTime.getTime());
+            ZonedDateTime now = timeCreator.zonedDateTimeNow(repeatTime.getZoneId());
+            ZonedDateTime firstRemindAt = now.with(repeatTime.getTime()).with(TemporalAdjusters.nextOrSame(repeatTime.getDayOfWeek()));
 
-            if (!now.getDayOfWeek().equals(repeatTime.getDayOfWeek())) {
-                now = now.with(TemporalAdjusters.nextOrSame(repeatTime.getDayOfWeek()));
-            }
-
-            return DateTime.of(now);
+            return DateTime.of(firstRemindAt);
         }
-        LocalDate now = timeCreator.localDateNow(repeatTime.getZoneId());
+        LocalDate firstRemindAt = timeCreator.localDateNow(repeatTime.getZoneId()).with(TemporalAdjusters.nextOrSame(repeatTime.getDayOfWeek()));
 
-        if (now.getDayOfWeek().equals(repeatTime.getDayOfWeek())) {
-            DateTime.of(now, null, repeatTime.getZoneId());
-        }
-        now = (LocalDate) TemporalAdjusters.nextOrSame(repeatTime.getDayOfWeek()).adjustInto(now);
-
-        return DateTime.of(now, null, repeatTime.getZoneId());
+        return DateTime.of(firstRemindAt, null, repeatTime.getZoneId());
     }
 
     private DateTime getWeeklyNextRemindAt(DateTime reminderAt, RepeatTime repeatTime) {
         ZoneId zoneId = reminderAt.getZoneId();
-        LocalDate nextDate = (LocalDate) TemporalAdjusters.next(repeatTime.getDayOfWeek()).adjustInto(reminderAt.date());
+        LocalDate nextDate = reminderAt.date().with(TemporalAdjusters.next(repeatTime.getDayOfWeek()));
         LocalDate now = timeCreator.localDateNow(zoneId);
 
         while (now.isAfter(nextDate)) {
-            nextDate = (LocalDate) TemporalAdjusters.next(repeatTime.getDayOfWeek()).adjustInto(nextDate);
+            nextDate = nextDate.with(TemporalAdjusters.next(repeatTime.getDayOfWeek()));
         }
 
         return DateTime.of(nextDate, repeatTime.getTime(), zoneId);
@@ -537,7 +528,7 @@ public class RepeatReminderService {
     private List<ReminderNotification> getRepeatReminderNotificationsWithoutTime(RepeatTime repeatTime, int receiverId) {
         List<ReminderNotification> reminderNotifications = new ArrayList<>();
 
-        if (repeatTime.hasDayOfWeek()) {
+        if (repeatTime.isEveryWeeklyTime()) {
             addWeeklyReminderNotificationsWithoutTime(repeatTime, receiverId, reminderNotifications);
         } else if (TimeUtils.isBigInterval(repeatTime.getInterval())) {
             addWeeklyMonthlyOrYearlyOrDailyReminderNotificationsWithoutTime(repeatTime, receiverId, reminderNotifications);
@@ -551,7 +542,7 @@ public class RepeatReminderService {
     private List<ReminderNotification> getRepeatReminderNotificationsWithTime(RepeatTime repeatTime, int receiverId) {
         List<ReminderNotification> reminderNotifications = new ArrayList<>();
 
-        if (repeatTime.getDayOfWeek() != null) {
+        if (repeatTime.isEveryWeeklyTime()) {
             addWeeklyReminderNotifications(repeatTime, receiverId, reminderNotifications);
         } else if (TimeUtils.isBigInterval(repeatTime.getInterval())) {
             addYearlyOrMonthlyOrDailyReminderNotifications(repeatTime, receiverId, reminderNotifications);
@@ -661,7 +652,7 @@ public class RepeatReminderService {
     }
 
     private DateTime getNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
-        if (repeatTime.getDayOfWeek() != null) {
+        if (repeatTime.isEveryWeeklyTime()) {
             return getWeeklyNextRemindAt(remindAt, repeatTime);
         } else if (TimeUtils.isBigInterval(repeatTime.getInterval())) {
             return getWeeklyDailyMonthlyYearlyNextRemindAt(remindAt, repeatTime);

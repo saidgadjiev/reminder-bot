@@ -92,8 +92,16 @@ public class RepeatTime {
         return dayOfWeek != null;
     }
 
+    public boolean isEveryWeeklyTime() {
+        return dayOfWeek != null && (interval == null || (interval.getWeeks() < 2));
+    }
+
     public boolean hasTime() {
         return time != null;
+    }
+
+    public boolean hasInterval() {
+        return interval != null;
     }
 
     @Override
