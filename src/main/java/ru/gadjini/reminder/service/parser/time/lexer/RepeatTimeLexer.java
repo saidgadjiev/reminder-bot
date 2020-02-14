@@ -65,6 +65,10 @@ public class RepeatTimeLexer {
                     lexems.add(new TimeLexem(TimeToken.WEEKS, "1"));
                 }
 
+                if (values.containsKey(PatternBuilder.WEEKS_DAY_OF_WEEK_WORD)) {
+                    lexems.add(new TimeLexem(TimeToken.DAY_OF_WEEK, values.get(PatternBuilder.WEEKS_DAY_OF_WEEK_WORD)));
+                }
+
                 if (values.containsKey(PatternBuilder.SUFFIX_DAYS)) {
                     lexems.add(new TimeLexem(TimeToken.DAYS, values.get(PatternBuilder.SUFFIX_DAYS)));
                 } else if (values.containsKey(PatternBuilder.PREFIX_DAYS)) {

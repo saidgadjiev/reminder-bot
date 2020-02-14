@@ -209,7 +209,7 @@ class ReminderRequestRepeatTimePatternTest {
         Assert.assertEquals("Идти на работу", str.substring(0, end).trim());
 
         str = "Идти на работу каждые 2месяца 20числа";
-        end = repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SUFFIX_MONTHS, "2"), Map.entry(PREFIX_DAY_OF_MONTH, "20"))));
+        end = repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SUFFIX_MONTHS, "2"), Map.entry(SUFFIX_DAY_OF_MONTH, "20"))));
         Assert.assertEquals("Идти на работу", str.substring(0, end).trim());
     }
 
@@ -222,6 +222,17 @@ class ReminderRequestRepeatTimePatternTest {
         str = "Идти на работу каждые 2 месяца 20 числа в 19";
         end = repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_MONTHS, "2"), Map.entry(PREFIX_DAY_OF_MONTH, "20"), Map.entry(HOUR, "19"))));
         Assert.assertEquals("Идти на работу", str.substring(0, end).trim());
+    }
+
+    @Test
+    void matchWeeksDayOfWeek() {
+        String str = "Тест каждую неделю во вторник";
+        int end = repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_WEEK, "неделю"), Map.entry(WEEKS_DAY_OF_WEEK_WORD, "вторник"))));
+        Assert.assertEquals("Тест", str.substring(0, end).trim());
+
+        str = "Тест каждую 2 недели в субботу";
+        end = repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_WEEKS, "2"), Map.entry(WEEKS_DAY_OF_WEEK_WORD, "субботу"))));
+        Assert.assertEquals("Тест", str.substring(0, end).trim());
     }
 
     @Test

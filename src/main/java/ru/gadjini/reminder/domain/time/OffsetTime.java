@@ -2,6 +2,7 @@ package ru.gadjini.reminder.domain.time;
 
 import org.joda.time.Period;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneId;
 
@@ -14,6 +15,8 @@ public class OffsetTime {
     private LocalTime time;
 
     private ZoneId zoneId;
+
+    private DayOfWeek dayOfWeek;
 
     public OffsetTime(ZoneId zoneId) {
         this.zoneId = zoneId;
@@ -97,6 +100,14 @@ public class OffsetTime {
 
     public void setZoneId(ZoneId zoneId) {
         this.zoneId = zoneId;
+    }
+
+    public DayOfWeek getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(DayOfWeek dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 
     public enum Type {

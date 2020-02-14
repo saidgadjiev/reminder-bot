@@ -59,6 +59,7 @@ public class RepeatTimeParser {
         } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
             consumeMinutes(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAY_OF_WEEK)) {
+            repeatTime.setInterval(repeatTime.getInterval().withWeeks(1));
             consumeDayOfWeek(lexems);
         } else {
             return repeatTimes;
@@ -71,7 +72,9 @@ public class RepeatTimeParser {
     private void consumeWeeks(List<BaseLexem> lexems) {
         repeatTime.setInterval(repeatTime.getInterval().withWeeks(Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.WEEKS).getValue())));
 
-        if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
+        if (lexemsConsumer.check(lexems, TimeToken.DAY_OF_WEEK)) {
+            consumeDayOfWeek(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
             consumeDays(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
             consumeHours(lexems);

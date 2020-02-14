@@ -191,4 +191,13 @@ class OffsetTimePatternTest {
         String str = "через неделю";
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(ONE_WEEK, "неделю")));
     }
+
+    @Test
+    void matchWeeksDayOfWeek() {
+        String str = "через неделю в пятницу";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(ONE_WEEK, "неделю"), Map.entry(WEEKS_DAY_OF_WEEK_WORD, "пятницу")));
+
+        str = "через 2 недели во вторник";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PREFIX_WEEKS, "2"), Map.entry(WEEKS_DAY_OF_WEEK_WORD, "вторник")));
+    }
 }

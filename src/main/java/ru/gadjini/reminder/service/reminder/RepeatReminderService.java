@@ -23,6 +23,7 @@ import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationSer
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
@@ -93,10 +94,7 @@ public class RepeatReminderService {
     public boolean isNeedUpdateNextRemindAt(Reminder reminder, ReminderNotification reminderNotification) {
         if (reminder.getRepeatRemindAt().hasTime() ||
                 reminder.getRepeatRemindAt().getDayOfWeek() != null ||
-                reminder.getRepeatRemindAt().getInterval().getWeeks() != 0 ||
-                reminder.getRepeatRemindAt().getInterval().getDays() != 0 ||
-                reminder.getRepeatRemindAt().getInterval().getYears() != 0 ||
-                reminder.getRepeatRemindAt().getInterval().getMonths() != 0
+                TimeUtils.isBigInterval(reminder.getRepeatRemindAt().getInterval())
         ) {
             return false;
         }
@@ -383,10 +381,7 @@ public class RepeatReminderService {
 
     private boolean isNotSentYet(Reminder reminder, ReminderNotification reminderNotification) {
         if (reminder.getRepeatRemindAt().getDayOfWeek() != null ||
-                reminder.getRepeatRemindAt().getInterval().getWeeks() != 0 ||
-                reminder.getRepeatRemindAt().getInterval().getDays() != 0 ||
-                reminder.getRepeatRemindAt().getInterval().getMonths() != 0 ||
-                reminder.getRepeatRemindAt().getInterval().getYears() != 0) {
+                TimeUtils.isBigInterval(reminder.getRepeatRemindAt().getInterval())) {
             return isNotSentYetForWeeklyDailyMonthlyYearlyTime(reminder, reminderNotification);
         } else {
             return isNotSendYetForIntervalTime(reminder, reminderNotification);
@@ -544,10 +539,7 @@ public class RepeatReminderService {
 
         if (repeatTime.hasDayOfWeek()) {
             addWeeklyReminderNotificationsWithoutTime(repeatTime, receiverId, reminderNotifications);
-        } else if (repeatTime.getInterval().getWeeks() != 0
-                || repeatTime.getInterval().getDays() != 0
-                || repeatTime.getInterval().getYears() != 0
-                || repeatTime.getInterval().getMonths() != 0) {
+        } else if (TimeUtils.isBigInterval(repeatTime.getInterval())) {
             addWeeklyMonthlyOrYearlyOrDailyReminderNotificationsWithoutTime(repeatTime, receiverId, reminderNotifications);
         } else {
             addIntervalReminderNotifications(repeatTime, receiverId, reminderNotifications);
@@ -561,10 +553,7 @@ public class RepeatReminderService {
 
         if (repeatTime.getDayOfWeek() != null) {
             addWeeklyReminderNotifications(repeatTime, receiverId, reminderNotifications);
-        } else if (repeatTime.getInterval().getWeeks() != 0
-                || repeatTime.getInterval().getDays() != 0
-                || repeatTime.getInterval().getYears() != 0
-                || repeatTime.getInterval().getMonths() != 0) {
+        } else if (TimeUtils.isBigInterval(repeatTime.getInterval())) {
             addYearlyOrMonthlyOrDailyReminderNotifications(repeatTime, receiverId, reminderNotifications);
         }
 
@@ -674,10 +663,7 @@ public class RepeatReminderService {
     private DateTime getNextRemindAt(DateTime remindAt, RepeatTime repeatTime) {
         if (repeatTime.getDayOfWeek() != null) {
             return getWeeklyNextRemindAt(remindAt, repeatTime);
-        } else if (repeatTime.getInterval().getDays() != 0
-                || repeatTime.getInterval().getYears() != 0
-                || repeatTime.getInterval().getMonths() != 0
-                || repeatTime.getInterval().getWeeks() != 0) {
+        } else if (TimeUtils.isBigInterval(repeatTime.getInterval())) {
             return getWeeklyDailyMonthlyYearlyNextRemindAt(remindAt, repeatTime);
         } else {
             return getIntervalNextRemindAt(remindAt, repeatTime);

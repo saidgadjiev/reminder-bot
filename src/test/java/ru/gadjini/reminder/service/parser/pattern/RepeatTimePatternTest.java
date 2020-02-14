@@ -229,6 +229,15 @@ class RepeatTimePatternTest {
     }
 
     @Test
+    void matchWeeksDayOfWeek() {
+        String str = "каждую неделю во вторник";
+        match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(ONE_WEEK, "неделю"), Map.entry(WEEKS_DAY_OF_WEEK_WORD, "вторник")));
+
+        str = "каждую 2 недели в субботу";
+        match(REPEAT_TIME_PATTERN, str, Map.ofEntries(Map.entry(PREFIX_WEEKS, "2"), Map.entry(WEEKS_DAY_OF_WEEK_WORD, "субботу")));
+    }
+
+    @Test
     void matchRepeatRepeat() {
         String str = "каждый вторник 19:00 среду 20:00 пятницу";
         repeatTimeMatch(str, Arrays.asList(Map.of(DAY_OF_WEEK_WORD, "пятницу"), Map.of(DAY_OF_WEEK_WORD, "среду", HOUR, "20", MINUTE, "00"), Map.of(DAY_OF_WEEK_WORD, "вторник", HOUR, "19", MINUTE, "00")));

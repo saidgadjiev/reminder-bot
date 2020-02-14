@@ -171,6 +171,19 @@ class RepeatTimeLexerTest {
     }
 
     @Test
+    void matchWeeksDayOfWeek() {
+        String str = "Тест каждую неделю во вторник";
+        TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
+        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new TimeLexem(REPEAT, ""), new TimeLexem(WEEKS, "1"), new TimeLexem(DAY_OF_WEEK, "вторник")), lexems);
+
+        str = "Тест каждую 2 недели в субботу";
+        timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
+        lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new TimeLexem(REPEAT, ""), new TimeLexem(WEEKS, "2"), new TimeLexem(DAY_OF_WEEK, "субботу")), lexems);
+    }
+
+    @Test
     void repeatTimes() {
         String str = "Тест каждый вторник в 19:30 среду 20:00";
         TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);

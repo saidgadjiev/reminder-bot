@@ -29,7 +29,7 @@ public class TimeParser {
         this.lexemsConsumer = lexemsConsumer;
         this.fixedTimeParser = new FixedTimeParser(localisationService, locale, lexemsConsumer, zoneId, dayOfWeekService, timeCreator);
         this.repeatTimeParser = new RepeatTimeParser(lexemsConsumer, dayOfWeekService, locale, zoneId);
-        this.offsetTimeParser = new OffsetTimeParser(localisationService, locale, zoneId, lexemsConsumer);
+        this.offsetTimeParser = new OffsetTimeParser(localisationService, dayOfWeekService, locale, zoneId, lexemsConsumer);
         this.time = new Time(zoneId);
     }
 

@@ -11,6 +11,7 @@ import ru.gadjini.reminder.service.declension.TimeDeclensionService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -47,10 +48,7 @@ public class TimeBuilder {
         StringBuilder builder = new StringBuilder();
 
         builder.append("<b>");
-        if (offsetTime.getWeeks() != 0
-                || offsetTime.getDays() != 0
-                || offsetTime.getHours() != 0
-                || offsetTime.getMinutes() != 0) {
+        if (TimeUtils.isBigInterval(offsetTime.getPeriod())) {
             String typeBefore = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE, locale);
             builder.append(typeBefore).append(" ");
         }

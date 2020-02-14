@@ -109,6 +109,21 @@ class OffsetTimeLexerTest {
     }
 
     @Test
+    void matchWeeksDayOfWeek() {
+        String str = "Тест через неделю в пятницу";
+        TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
+        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new TimeLexem(OFFSET, ""), new TimeLexem(TYPE, "через"), new TimeLexem(WEEKS, "1"), new TimeLexem(DAY_OF_WEEK, "пятницу")), lexems);
+        Assert.assertEquals("Тест", timeLexer.eraseTime());
+
+        str = "Тест через 2 недели во вторник";
+        timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
+        lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new TimeLexem(OFFSET, ""), new TimeLexem(TYPE, "через"), new TimeLexem(WEEKS, "2"), new TimeLexem(DAY_OF_WEEK, "вторник")), lexems);
+        Assert.assertEquals("Тест", timeLexer.eraseTime());
+    }
+
+    @Test
     void afterYears() {
         String str = "Тест через 2 года 2 месяца 2 дня 2 часа";
         TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);

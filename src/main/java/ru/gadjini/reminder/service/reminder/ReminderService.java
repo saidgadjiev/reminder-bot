@@ -21,6 +21,7 @@ import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationSer
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
@@ -312,10 +313,7 @@ public class ReminderService {
             if (repeatTime.getDayOfWeek() != null) {
                 ZonedDateTime repeatReminder = now.with(TemporalAdjusters.nextOrSame(repeatTime.getDayOfWeek())).with(repeatTime.getTime());
                 reminderNotification = intervalReminderTime(repeatReminder.toLocalDate(), new Period().withWeeks(1), repeatTime.getTime());
-            } else if (repeatTime.getInterval().getDays() != 0
-                    || repeatTime.getInterval().getWeeks() != 0
-                    || repeatTime.getInterval().getMonths() != 0
-                    || repeatTime.getInterval().getYears() != 0) {
+            } else if (TimeUtils.isBigInterval(repeatTime.getInterval())) {
                 ZonedDateTime repeatReminder = now.with(repeatTime.getTime());
 
                 if (repeatReminder.isBefore(now)) {

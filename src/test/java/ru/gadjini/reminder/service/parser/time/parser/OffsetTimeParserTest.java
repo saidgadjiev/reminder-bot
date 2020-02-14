@@ -23,6 +23,7 @@ import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -106,6 +107,21 @@ class OffsetTimeParserTest {
 
         Assert.assertEquals(parse.getOffsetTime().getType(), OffsetTime.Type.AFTER);
         Assert.assertEquals(new Period().withYears(2).withMonths(2).withDays(2).withHours(2), parse.getOffsetTime().getPeriod());
+    }
+
+    @Test
+    void matchWeeksDayOfWeek() {
+        TimeParser timeParser = parser();
+        Time time = timeParser.parse(lexems(new TimeLexem(OFFSET, ""), new TimeLexem(TYPE, "через"), new TimeLexem(WEEKS, "1"), new TimeLexem(DAY_OF_WEEK, "пятницу")));
+        Assert.assertTrue(time.isOffsetTime());
+        Assert.assertEquals(time.getOffsetTime().getPeriod(), new Period().withWeeks(1));
+        Assert.assertEquals(time.getOffsetTime().getDayOfWeek(), DayOfWeek.FRIDAY);
+
+        timeParser = parser();
+        time = timeParser.parse(lexems(new TimeLexem(OFFSET, ""), new TimeLexem(TYPE, "через"), new TimeLexem(WEEKS, "2"), new TimeLexem(DAY_OF_WEEK, "вторник")));
+        Assert.assertTrue(time.isOffsetTime());
+        Assert.assertEquals(time.getOffsetTime().getPeriod(), new Period().withWeeks(2));
+        Assert.assertEquals(time.getOffsetTime().getDayOfWeek(), DayOfWeek.TUESDAY);
     }
 
     @Test

@@ -174,6 +174,21 @@ class RepeatTimeParserTest {
     }
 
     @Test
+    void matchWeeksDayOfWeek() {
+        TimeParser timeParser = parser();
+        Time time = timeParser.parse(lexems(new TimeLexem(REPEAT, ""), new TimeLexem(WEEKS, "1"), new TimeLexem(DAY_OF_WEEK, "вторник")));
+        Assert.assertTrue(time.isRepeatTime());
+        Assert.assertEquals(time.getRepeatTimes().get(0).getInterval(), new org.joda.time.Period().withWeeks(1));
+        Assert.assertEquals(time.getRepeatTimes().get(0).getDayOfWeek(), DayOfWeek.TUESDAY);
+
+        timeParser = parser();
+        time = timeParser.parse(lexems(new TimeLexem(REPEAT, ""), new TimeLexem(WEEKS, "2"), new TimeLexem(DAY_OF_WEEK, "субботу")));
+        Assert.assertTrue(time.isRepeatTime());
+        Assert.assertEquals(time.getRepeatTimes().get(0).getInterval(), new org.joda.time.Period().withWeeks(2));
+        Assert.assertEquals(time.getRepeatTimes().get(0).getDayOfWeek(), DayOfWeek.SATURDAY);
+    }
+
+    @Test
     void repeatTimes() {
         TimeParser timeParser = parser();
         Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(DAY_OF_WEEK, "вторник"), new TimeLexem(HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30"), new TimeLexem(DAY_OF_WEEK, "среду"), new TimeLexem(HOUR, "20"), new TimeLexem(TimeToken.MINUTE, "00")));

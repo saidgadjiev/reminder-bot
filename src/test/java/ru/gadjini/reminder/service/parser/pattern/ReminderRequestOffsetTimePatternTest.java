@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static ru.gadjini.reminder.service.parser.pattern.PatternBuilder.TYPE;
+import static ru.gadjini.reminder.service.parser.pattern.PatternBuilder.*;
 import static ru.gadjini.reminder.service.parser.pattern.Patterns.OFFSET_TIME_PATTERN;
 import static ru.gadjini.reminder.service.parser.pattern.Patterns.match;
 
@@ -67,5 +67,16 @@ class ReminderRequestOffsetTimePatternTest {
         str = "Сходить на почту через 2д в 13";
         end = match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PatternBuilder.SUFFIX_DAYS, "2"), Map.entry(PatternBuilder.HOUR, "13")));
         Assert.assertEquals("Сходить на почту", str.substring(0, end).trim());
+    }
+
+    @Test
+    void matchWeeksDayOfWeek() {
+        String str = "Тест через неделю в пятницу";
+        int end = match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(ONE_WEEK, "неделю"), Map.entry(WEEKS_DAY_OF_WEEK_WORD, "пятницу")));
+        Assert.assertEquals("Тест", str.substring(0, end).trim());
+
+        str = "Тест через 2 недели во вторник";
+        end = match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PREFIX_WEEKS, "2"), Map.entry(WEEKS_DAY_OF_WEEK_WORD, "вторник")));
+        Assert.assertEquals("Тест", str.substring(0, end).trim());
     }
 }

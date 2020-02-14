@@ -2,18 +2,25 @@ package ru.gadjini.reminder.service.parser.time.parser;
 
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.time.OffsetTime;
+import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 @SuppressWarnings("CPD-START")
 public class OffsetTimeParser {
+
+    private final DayOfWeekService dayOfWeekService;
+
+    private final Locale locale;
 
     private String typeBefore;
 
@@ -27,12 +34,15 @@ public class OffsetTimeParser {
 
     private LexemsConsumer lexemsConsumer;
 
-    public OffsetTimeParser(LocalisationService localisationService, Locale locale, ZoneId zoneId, LexemsConsumer lexemsConsumer) {
+    public OffsetTimeParser(LocalisationService localisationService, DayOfWeekService dayOfWeekService,
+                            Locale locale, ZoneId zoneId, LexemsConsumer lexemsConsumer) {
+        this.locale = locale;
         this.typeBefore = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_BEFORE, locale);
         this.typeAfter = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_AFTER, locale);
         this.typeOn = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_FOR, locale);
         this.eve = localisationService.getMessage(MessagesProperties.EVE, locale);
         this.lexemsConsumer = lexemsConsumer;
+        this.dayOfWeekService = dayOfWeekService;
         this.offsetTime = new OffsetTime(zoneId);
     }
 
@@ -84,14 +94,30 @@ public class OffsetTimeParser {
         int weeks = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.WEEKS).getValue());
         offsetTime.setWeeks(weeks);
 
-        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
-            offsetTime.setTime(consumeTime(lexems));
-        }  else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
+        if (lexemsConsumer.check(lexems, TimeToken.DAY_OF_WEEK)) {
+            consumeDayOfWeek(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
             consumeDays(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
             consumeHours(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
             consumeMinutes(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            offsetTime.setTime(consumeTime(lexems));
+        }
+    }
+
+    private void consumeDayOfWeek(List<BaseLexem> lexems) {
+        String dayOfWeekValue = lexemsConsumer.consume(lexems, TimeToken.DAY_OF_WEEK).getValue();
+        DayOfWeek dayOfWeek = Stream.of(DayOfWeek.values())
+                .filter(dow -> dayOfWeekService.isThatDay(dow, dayOfWeekValue, locale))
+                .findFirst()
+                .orElseThrow();
+
+        offsetTime.setDayOfWeek(dayOfWeek);
+
+        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            offsetTime.setTime(consumeTime(lexems));
         }
     }
 
@@ -99,12 +125,12 @@ public class OffsetTimeParser {
         int days = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAYS).getValue());
         offsetTime.setDays(days);
 
-        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
-            offsetTime.setTime(consumeTime(lexems));
-        } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
+        if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
             consumeHours(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
             consumeMinutes(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            offsetTime.setTime(consumeTime(lexems));
         }
     }
 
@@ -112,9 +138,7 @@ public class OffsetTimeParser {
         int years = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.YEARS).getValue());
         offsetTime.setYears(years);
 
-        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
-            offsetTime.setTime(consumeTime(lexems));
-        } else if (lexemsConsumer.check(lexems, TimeToken.MONTHS)) {
+        if (lexemsConsumer.check(lexems, TimeToken.MONTHS)) {
             consumeMonths(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.WEEKS)) {
             consumeWeeks(lexems);
@@ -124,6 +148,8 @@ public class OffsetTimeParser {
             consumeHours(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
             consumeMinutes(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            offsetTime.setTime(consumeTime(lexems));
         }
     }
 
@@ -131,9 +157,7 @@ public class OffsetTimeParser {
         int months = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MONTHS).getValue());
         offsetTime.setMonths(months);
 
-        if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
-            offsetTime.setTime(consumeTime(lexems));
-        }  else if (lexemsConsumer.check(lexems, TimeToken.WEEKS)) {
+        if (lexemsConsumer.check(lexems, TimeToken.WEEKS)) {
             consumeWeeks(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
             consumeDays(lexems);
@@ -141,6 +165,8 @@ public class OffsetTimeParser {
             consumeHours(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
             consumeMinutes(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            offsetTime.setTime(consumeTime(lexems));
         }
     }
 
