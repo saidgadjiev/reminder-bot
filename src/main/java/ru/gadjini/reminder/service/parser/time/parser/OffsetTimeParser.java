@@ -123,7 +123,8 @@ public class OffsetTimeParser {
 
     private void consumeDays(List<BaseLexem> lexems) {
         int days = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAYS).getValue());
-        offsetTime.setDays(days);
+        offsetTime.setWeeks(offsetTime.getWeeks() + days / 7);
+        offsetTime.setDays(days % 7);
 
         if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
             consumeHours(lexems);

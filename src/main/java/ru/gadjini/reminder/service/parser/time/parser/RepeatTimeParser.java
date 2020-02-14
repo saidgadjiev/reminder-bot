@@ -131,7 +131,9 @@ public class RepeatTimeParser {
     }
 
     private void consumeDays(List<BaseLexem> lexems) {
-        repeatTime.setInterval(repeatTime.getInterval().withDays(Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAYS).getValue())));
+        int days = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAYS).getValue());
+        repeatTime.setInterval(repeatTime.getInterval().withWeeks(repeatTime.getInterval().getWeeks() + days / 7));
+        repeatTime.setInterval(repeatTime.getInterval().withDays(days % 7));
         if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
             consumeHours(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
