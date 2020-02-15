@@ -307,22 +307,7 @@ public class ReminderService {
         List<ReminderNotification> reminderNotifications = new ArrayList<>();
 
         for (RepeatTime repeatTime : repeatTimes) {
-            ReminderNotification reminderNotification;
-            ZonedDateTime now = timeCreator.zonedDateTimeNow();
-
-            if (repeatTime.isEveryWeeklyTime()) {
-                ZonedDateTime repeatReminder = now.with(TemporalAdjusters.nextOrSame(repeatTime.getDayOfWeek())).with(repeatTime.getTime());
-                reminderNotification = intervalReminderTime(repeatReminder.toLocalDate(), new Period().withWeeks(1), repeatTime.getTime());
-            } else if (TimeUtils.isBigInterval(repeatTime.getInterval())) {
-                ZonedDateTime repeatReminder = now.with(repeatTime.getTime());
-
-                if (repeatReminder.isBefore(now)) {
-                    repeatReminder = repeatReminder.plusDays(repeatTime.getInterval().getDays()).plusWeeks(repeatTime.getInterval().getWeeks());
-                }
-                reminderNotification = intervalReminderTime(repeatReminder.toLocalDate(), repeatTime.getInterval(), repeatTime.getTime());
-            } else {
-                reminderNotification = intervalReminderTime(now, repeatTime.getInterval());
-            }
+            ReminderNotification reminderNotification = reminderNotificationService.createReminderNotification(repeatTime);
             reminderNotification.setCustom(true);
             reminderNotification.setReminderId(reminderId);
 
@@ -373,7 +358,7 @@ public class ReminderService {
             }
         }
 
-        ReminderNotification intervalNotification = intervalReminderTime(remindAt, new Period().withMinutes(20));
+        ReminderNotification intervalNotification = reminderNotificationService.intervalReminderTime(remindAt, new Period().withMinutes(20));
         intervalNotification.setCustom(true);
         reminderNotifications.add(intervalNotification);
         if (reminderNotificationAI.isNeedCreateItsTimeNotification(remindAt)) {
@@ -389,21 +374,5 @@ public class ReminderService {
         reminderNotifications.add(fixedTime);
 
         return fixedTime;
-    }
-
-    private ReminderNotification intervalReminderTime(LocalDate repeatAt, Period period, LocalTime localTime) {
-        ReminderNotification reminderNotification = ReminderNotification.repeatTime();
-        reminderNotification.setLastReminderAt(ZonedDateTime.of(JodaTimeUtils.minus(repeatAt, period), localTime, ZoneOffset.UTC));
-        reminderNotification.setDelayTime(period);
-
-        return reminderNotification;
-    }
-
-    private ReminderNotification intervalReminderTime(ZonedDateTime remindAt, Period interval) {
-        ReminderNotification reminderNotification = ReminderNotification.repeatTime();
-        reminderNotification.setLastReminderAt(remindAt);
-        reminderNotification.setDelayTime(interval);
-
-        return reminderNotification;
     }
 }

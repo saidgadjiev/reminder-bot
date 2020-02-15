@@ -131,28 +131,18 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    @Profile(PROFILE_PROD)
-    public DefaultBotOptions prodBotOptions(WebHookProperties webHookProperties) {
-        DefaultBotOptions defaultBotOptions = ApiContext.getInstance(DefaultBotOptions.class);
-
-        defaultBotOptions.setMaxWebhookConnections(webHookProperties.getMaxConnections());
-
-        return defaultBotOptions;
-    }
-
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    @Profile(PROFILE_DEV)
     public DefaultBotOptions botOptions(WebHookProperties webHookProperties, ProxyProperties proxyProperties) {
         DefaultBotOptions defaultBotOptions = ApiContext.getInstance(DefaultBotOptions.class);
 
         defaultBotOptions.setMaxWebhookConnections(webHookProperties.getMaxConnections());
 
-        defaultBotOptions.setProxyType(DefaultBotOptions.ProxyType.HTTP);
-        defaultBotOptions.setProxyHost(proxyProperties.getHost());
-        defaultBotOptions.setProxyPort(proxyProperties.getPort());
+        if (proxyProperties.getType() != DefaultBotOptions.ProxyType.NO_PROXY) {
+            defaultBotOptions.setProxyType(proxyProperties.getType());
+            defaultBotOptions.setProxyHost(proxyProperties.getHost());
+            defaultBotOptions.setProxyPort(proxyProperties.getPort());
+        }
 
-        LOGGER.debug("Proxy host: " + proxyProperties.getHost() + " port: " + proxyProperties.getPort());
+        LOGGER.debug("Proxy type: {} host: {} port: {}", proxyProperties.getType(), proxyProperties.getHost(), proxyProperties.getPort());
 
         return defaultBotOptions;
     }

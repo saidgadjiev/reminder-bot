@@ -317,7 +317,6 @@ public class ReminderRequestService {
             OffsetTime postponeOn = postponeTime.getOffsetTime();
 
             LocalDate date = JodaTimeUtils.plus(remindAt.date(), postponeOn.getPeriod());
-            remindAt.date(date);
 
             if (remindAt.hasTime()) {
                 remindAt = remindAt.plusHours(postponeOn.getHours()).plusMinutes(postponeOn.getMinutes());
@@ -325,6 +324,10 @@ public class ReminderRequestService {
             if (postponeOn.hasTime()) {
                 remindAt = remindAt.time(postponeOn.getTime());
             }
+            if (postponeOn.getDayOfWeek() != null) {
+                date = date.with(TemporalAdjusters.nextOrSame(postponeOn.getDayOfWeek()));
+            }
+            remindAt.date(date);
 
             return remindAt;
         } else {

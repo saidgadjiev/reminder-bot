@@ -3,6 +3,7 @@ package ru.gadjini.reminder.bot.command.callback.state;
 import org.joda.time.Period;
 import ru.gadjini.reminder.domain.time.OffsetTime;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZoneId;
 
@@ -15,6 +16,8 @@ public class OffsetTimeData {
     private LocalTime time;
 
     private ZoneId zoneId;
+
+    private DayOfWeek dayOfWeek;
 
     public OffsetTime.Type getType() {
         return type;
@@ -57,6 +60,7 @@ public class OffsetTimeData {
         offsetTime.setType(offsetTimeData.getType());
         offsetTime.setPeriod(offsetTimeData.getPeriod());
         offsetTime.setTime(offsetTimeData.getTime());
+        offsetTime.setDayOfWeek(offsetTimeData.getDayOfWeek());
 
         return offsetTime;
     }
@@ -71,7 +75,16 @@ public class OffsetTimeData {
         offsetTimeData.setPeriod(offsetTime.getPeriod());
         offsetTimeData.setTime(offsetTime.getTime());
         offsetTimeData.setZoneId(offsetTime.getZoneId());
+        offsetTimeData.setDayOfWeek(offsetTime.getDayOfWeek());
 
         return offsetTimeData;
+    }
+
+    public DayOfWeek getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(DayOfWeek dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 }

@@ -494,4 +494,6 @@ public class MessagesProperties {
     public static final String MESSAGE_NOT_FRIEND = "message.not.friend";
 
     public static final String MESSAGE_CONTACT_ID_EMPTY = "message.contact.id.empty";
+
+    public static final String MESSAGE_CUSTOM_REMIND_WITHOUT_TIME = "message.custom.remind.without.time";
 }
