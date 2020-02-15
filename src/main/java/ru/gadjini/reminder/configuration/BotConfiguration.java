@@ -140,9 +140,9 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
             defaultBotOptions.setProxyType(proxyProperties.getType());
             defaultBotOptions.setProxyHost(proxyProperties.getHost());
             defaultBotOptions.setProxyPort(proxyProperties.getPort());
-        }
 
-        LOGGER.debug("Proxy type: {} host: {} port: {}", proxyProperties.getType(), proxyProperties.getHost(), proxyProperties.getPort());
+            LOGGER.debug("Proxy type: {} host: {} port: {}", proxyProperties.getType(), proxyProperties.getHost(), proxyProperties.getPort());
+        }
 
         return defaultBotOptions;
     }
