@@ -93,7 +93,7 @@ public class RepeatTime {
     }
 
     public boolean isEveryWeeklyTime() {
-        return dayOfWeek != null && (interval == null || (interval.getWeeks() < 2));
+        return dayOfWeek != null && (interval == null || interval.getWeeks() < 2);
     }
 
     public boolean hasTime() {

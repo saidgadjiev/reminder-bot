@@ -206,7 +206,6 @@ public class TimeBuilder {
     }
 
     private String dayAfterTomorrowTime(ZonedDateTime remindAt, Locale locale) {
-        String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE, locale);
         String today = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW, locale);
 
         return "<b>" + today + "(" + remindAt.getDayOfWeek().getDisplayName(TextStyle.SHORT, locale) + ") " + time(remindAt.toLocalTime(), locale) + "</b>";

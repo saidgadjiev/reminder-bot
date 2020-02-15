@@ -19,12 +19,8 @@ import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.ai.ReminderNotificationAI;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.TimeCreator;
-import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.*;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,18 +37,15 @@ public class ReminderService {
 
     private ReminderNotificationAI reminderNotificationAI;
 
-    private TimeCreator timeCreator;
-
     @Autowired
     public ReminderService(ReminderDao reminderDao,
                            ReminderNotificationService reminderNotificationService,
                            UserReminderNotificationService userReminderNotificationService,
-                           ReminderNotificationAI reminderNotificationAI, TimeCreator timeCreator) {
+                           ReminderNotificationAI reminderNotificationAI) {
         this.reminderDao = reminderDao;
         this.reminderNotificationService = reminderNotificationService;
         this.userReminderNotificationService = userReminderNotificationService;
         this.reminderNotificationAI = reminderNotificationAI;
-        this.timeCreator = timeCreator;
     }
 
     @Transactional
