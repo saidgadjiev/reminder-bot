@@ -34,18 +34,15 @@ public class DayOfWeekService {
             case MONDAY:
             case TUESDAY:
             case THURSDAY:
-                return dayOfWeek.getDisplayName(TextStyle.FULL, locale) + "[а]?";
+                return dayOfWeek.getDisplayName(TextStyle.FULL, locale) + "[а-я]?";
             case FRIDAY:
             case SATURDAY:
+            case SUNDAY:
             case WEDNESDAY: {
                 String displayName = dayOfWeek.getDisplayName(TextStyle.FULL, locale);
                 displayName = displayName.substring(0, displayName.length() - 1);
-                return displayName + "[ыу]?";
+                return displayName + "[[а-я][а-я]]?";
             }
-            case SUNDAY:
-                String displayName = dayOfWeek.getDisplayName(TextStyle.FULL, locale);
-                displayName = displayName.substring(0, displayName.length() - 1);
-                return displayName + "[яе]?";
         }
 
         throw new UnsupportedOperationException();
