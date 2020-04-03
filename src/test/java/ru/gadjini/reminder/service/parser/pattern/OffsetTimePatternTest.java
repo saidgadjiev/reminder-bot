@@ -78,6 +78,12 @@ class OffsetTimePatternTest {
     void matchAfterHour() {
         String str = "через час";
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(ONE_HOUR, "час")));
+
+        str = "через 1 час";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PREFIX_HOURS, "1")));
+
+        str = "через 1ч";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(SUFFIX_HOURS, "1")));
     }
 
     @Test
@@ -93,6 +99,12 @@ class OffsetTimePatternTest {
     void matchAfterDay() {
         String str = "через день";
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(ONE_DAY, "день")));
+
+        str = "через 1 день";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PREFIX_DAYS, "1")));
+
+        str = "через 1д";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(SUFFIX_DAYS, "1")));
     }
 
 
@@ -184,12 +196,36 @@ class OffsetTimePatternTest {
     void matchAfterMinute() {
         String str = "через минуту";
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(ONE_MINUTE, "минуту")));
+
+        str = "через 1 минуту";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PREFIX_MINUTES, "1")));
+
+        str = "через 1мин";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(SUFFIX_MINUTES, "1")));
     }
 
     @Test
     void matchAfterWeek() {
         String str = "через неделю";
         match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(ONE_WEEK, "неделю")));
+
+        str = "через 1 неделю";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PREFIX_WEEKS, "1")));
+
+        str = "через 1н";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(SUFFIX_WEEKS, "1")));
+    }
+
+    @Test
+    void matchAfterMonth() {
+        String str = "через месяц";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(ONE_MONTH, "месяц")));
+
+        str = "через 1 месяц";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(PREFIX_MONTHS, "1")));
+
+        str = "через 1м";
+        match(OFFSET_TIME_PATTERN, str, Map.ofEntries(Map.entry(TYPE, "через"), Map.entry(SUFFIX_MONTHS, "1")));
     }
 
     @Test

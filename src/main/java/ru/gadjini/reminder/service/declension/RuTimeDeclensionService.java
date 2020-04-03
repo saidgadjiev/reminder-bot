@@ -98,10 +98,9 @@ public class RuTimeDeclensionService implements TimeDeclensionService {
         if (period.getYears() != 0
                 || period.getMonths() != 0
                 || period.getDays() != 0
-                || period.getHours() != 0
-                || period.getMinutes() != 0) {
-            return getRepeatWordByDaysOrHoursOrMonthOrYears(period.getYears());
-        } else if (period.getWeeks() != 0) {
+                || period.getHours() != 0) {
+            return getRepeatWordByDaysOrHoursOrMonthOrYears(getAffectItem(period));
+        } else if (period.getWeeks() != 0 || period.getMinutes() != 0) {
             return getRepeatWordByMinutesWeeks(period.getWeeks());
         }
 
@@ -158,5 +157,19 @@ public class RuTimeDeclensionService implements TimeDeclensionService {
         }
 
         return "каждые";
+    }
+
+    private int getAffectItem(Period period) {
+        if (period.getYears() != 0) {
+            return period.getYears();
+        }
+        if (period.getMonths() != 0) {
+            return period.getMonths();
+        }
+        if (period.getDays() != 0) {
+            return period.getDays();
+        }
+
+        return period.getHours();
     }
 }

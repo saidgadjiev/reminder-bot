@@ -61,18 +61,36 @@ class RepeatTimePatternTest {
     void matchEveryHour() {
         String str = "каждый час";
         repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_HOUR, "час"))));
+
+        str = "каждый 1 час";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_HOURS, "1"))));
+
+        str = "каждый 1ч";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SUFFIX_HOURS, "1"))));
     }
 
     @Test
     void matchEveryDay() {
         String str = "каждый день";
         repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_DAY, "день"))));
+
+        str = "каждый 1 день";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_DAYS, "1"))));
+
+        str = "каждый 1д";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SUFFIX_DAYS, "1"))));
     }
 
     @Test
     void matchEveryMinute() {
         String str = "каждую минуту";
         repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_MINUTE, "минуту"))));
+
+        str = "каждую 1 минуту";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_MINUTES, "1"))));
+
+        str = "каждую 1мин";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SUFFIX_MINUTES, "1"))));
     }
 
     @Test
@@ -130,6 +148,12 @@ class RepeatTimePatternTest {
     void matchEveryMonthDay() {
         String str = "каждый месяц 20 числа";
         repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(ONE_MONTH, "месяц"), Map.entry(PREFIX_DAY_OF_MONTH, "20"))));
+
+        str = "каждый 1 месяц 20 числа";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(PREFIX_MONTHS, "1"), Map.entry(PREFIX_DAY_OF_MONTH, "20"))));
+
+        str = "каждый 1м 20 числа";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SUFFIX_MONTHS, "1"), Map.entry(PREFIX_DAY_OF_MONTH, "20"))));
     }
 
     @Test
