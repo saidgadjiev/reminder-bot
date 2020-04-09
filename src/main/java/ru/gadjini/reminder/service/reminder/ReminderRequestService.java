@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.User;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.TgUser;
@@ -16,12 +15,8 @@ import ru.gadjini.reminder.domain.mapping.Mapping;
 import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.Time;
-import ru.gadjini.reminder.exception.ParseException;
-import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.UpdateReminderResult;
-import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestExtractor;
@@ -37,7 +32,10 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class ReminderRequestService {
@@ -46,9 +44,7 @@ public class ReminderRequestService {
 
     private ValidatorFactory validatorFactory;
 
-    private RequestParser requestParser;
-
-    private LocalisationService localisationService;
+    private TimeRequestService timeRequestService;
 
     private RepeatReminderService repeatReminderService;
 
@@ -57,12 +53,10 @@ public class ReminderRequestService {
     private TimeCreator timeCreator;
 
     @Autowired
-    public ReminderRequestService(RequestParser requestParser, LocalisationService localisationService,
-                                  RepeatReminderService repeatReminderService,
+    public ReminderRequestService(TimeRequestService timeRequestService, RepeatReminderService repeatReminderService,
                                   @Qualifier("chain") ReminderRequestExtractor requestExtractor,
                                   TimeCreator timeCreator) {
-        this.requestParser = requestParser;
-        this.localisationService = localisationService;
+        this.timeRequestService = timeRequestService;
         this.repeatReminderService = repeatReminderService;
         this.requestExtractor = requestExtractor;
         this.timeCreator = timeCreator;
@@ -83,9 +77,17 @@ public class ReminderRequestService {
         reminderRequest.setCreatorId(context.creator().getId());
         reminderRequest.setMessageId(context.messageId());
 
-        validatorFactory.getValidator(ValidatorType.CREATE_REMINDER).validate(new ValidationContext().currentUser(context.creator()).reminderRequest(reminderRequest));
+        validatorFactory.getValidator(ValidatorType.CREATE_REMINDER).validate(new ValidationContext().creatorId(context.creator().getId()).reminderRequest(reminderRequest));
 
         return createReminder(context.creator(), reminderRequest);
+    }
+
+    public Reminder createChallengeReminder(User creator, ReminderRequest reminderRequest) {
+        reminderRequest.setCreatorId(creator.getId());
+
+        validatorFactory.getValidator(ValidatorType.CREATE_REMINDER).validate(new ValidationContext().creatorId(creator.getId()).reminderRequest(reminderRequest));
+
+        return createReminder(creator, reminderRequest);
     }
 
     @Transactional
@@ -145,7 +147,7 @@ public class ReminderRequestService {
             return null;
         }
 
-        Time customRemind = parseTime(text, reminder.getReceiver().getZone(), reminder.getReceiver().getLocale());
+        Time customRemind = timeRequestService.parseTime(text, reminder.getReceiver().getZone(), reminder.getReceiver().getLocale());
         validatorFactory.getValidator(ValidatorType.CUSTOM_REMIND).validate(new ValidationContext().time(customRemind).reminder(reminder));
 
         CustomRemindResult customRemindResult = new CustomRemindResult();
@@ -189,7 +191,7 @@ public class ReminderRequestService {
             return null;
         }
 
-        Time newReminderTimeInReceiverZone = parseTime(timeText, oldReminder.getReceiver().getZone(), oldReminder.getReceiver().getLocale());
+        Time newReminderTimeInReceiverZone = timeRequestService.parseTime(timeText, oldReminder.getReceiver().getZone(), oldReminder.getReceiver().getLocale());
         validatorFactory.getValidator(ValidatorType.REMINDER_TIME_VALIDATOR).validate(new ValidationContext().time(newReminderTimeInReceiverZone).reminder(oldReminder));
 
         Reminder newReminder = new Reminder(oldReminder);
@@ -218,14 +220,6 @@ public class ReminderRequestService {
                         .setCreatorMapping(new Mapping())
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
         );
-    }
-
-    public Time parseTime(String text, ZoneId zoneId, Locale locale) {
-        try {
-            return requestParser.parseTime(text, zoneId, locale);
-        } catch (ParseException ex) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
-        }
     }
 
     public UpdateReminderResult postponeReminder(Reminder reminder, Time postponeTime) {

@@ -21,9 +21,13 @@ public class UserUtils {
     }
 
     public static String userLink(TgUser user) {
+        return userLink(user.getUserId(), user.getName());
+    }
+
+    public static String userLink(int userId, String name) {
         StringBuilder link = new StringBuilder();
 
-        link.append("<a href=\"tg://user?id=").append(user.getUserId()).append("\">").append(user.getName()).append("</a>");
+        link.append("<a href=\"tg://user?id=").append(userId).append("\">").append(name).append("</a>");
 
         return link.toString();
     }
@@ -34,5 +38,9 @@ public class UserUtils {
         link.append("<a href=\"tg://user?id=").append(id).append("\">").append(id).append("</a>");
 
         return link.toString();
+    }
+
+    public static User toUser(TgUser user) {
+        return new User(user.getUserId(), user.getName(), false, null, user.getUsername(), user.getLanguageCode());
     }
 }

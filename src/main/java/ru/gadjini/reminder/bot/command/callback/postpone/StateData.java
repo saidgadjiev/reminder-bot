@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.bot.command.callback.postpone;
 
-import ru.gadjini.reminder.bot.command.callback.state.ReminderData;
-import ru.gadjini.reminder.bot.command.callback.state.TimeData;
+import ru.gadjini.reminder.bot.command.state.ReminderData;
+import ru.gadjini.reminder.bot.command.state.TimeData;
 import ru.gadjini.reminder.model.CallbackRequest;
 
 public class StateData {

@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.bot.command.callback.state;
+package ru.gadjini.reminder.bot.command.state;
 
 import ru.gadjini.reminder.domain.time.FixedTime;
 

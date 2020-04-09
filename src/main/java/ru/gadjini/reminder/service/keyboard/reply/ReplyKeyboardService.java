@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 
 public interface ReplyKeyboardService {
+
     ReplyKeyboardMarkup getSavedQueriesKeyboard(long chatId, List<String> queries, Locale locale);
 
     ReplyKeyboardMarkup getFriendRequestsKeyboard(long chatId, Locale locale);

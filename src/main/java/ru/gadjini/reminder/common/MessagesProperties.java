@@ -496,4 +496,32 @@ public class MessagesProperties {
     public static final String MESSAGE_CONTACT_ID_EMPTY = "message.contact.id.empty";
 
     public static final String MESSAGE_CUSTOM_REMIND_WITHOUT_TIME = "message.custom.remind.without.time";
+
+    public static final String CREATE_CHALLENGE_COMMAND_NAME = "create.challenge.command.name";
+
+    public static final String MESSAGE_CREATE_CHALLENGE = "message.create.challenge";
+
+    public static final String MESSAGE_CHALLENGE_TIME = "message.challenge.time";
+
+    public static final String MESSAGE_CHOOSE_PARTICIPANTS_HEADER = "message.choose.participants.header";
+
+    public static final String MESSAGE_CHOOSE_PARTICIPANTS_FOOTER = "message.choose.participants.footer";
+
+    public static final String GOTO_NEXT_COMMAND_NAME = "goto.next.command.name";
+
+    public static final String MESSAGE_CHOSE_PARTICIPANTS = "message.chose.participants";
+
+    public static final String MESSAGE_BAD_CHALLENGE_TIME = "message.bad.challenge.time";
+
+    public static final String MESSAGE_CHALLENGE_CREATED = "message.challenge.created";
+
+    public static final String MESSAGE_CHALLENGE_FINISHED_AT = "message.challenge.finished.at";
+
+    public static final String MESSAGE_CHALLENGE_CREATOR = "message.challenge.creator";
+
+    public static final String MESSAGE_CHALLENGE_PARTICIPANTS = "message.challenge.participants";
+
+    public static final String MESSAGE_CHALLENGE_TOTAL_SERIES = "message.challenge.total.series";
+
+    public static final String MESSAGE_PARTICIPANTS_REQUIRED = "message.participants.required";
 }

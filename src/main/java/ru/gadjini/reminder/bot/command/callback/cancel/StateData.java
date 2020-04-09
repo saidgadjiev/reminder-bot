@@ -1,6 +1,6 @@
 package ru.gadjini.reminder.bot.command.callback.cancel;
 
-import ru.gadjini.reminder.bot.command.callback.state.ReminderData;
+import ru.gadjini.reminder.bot.command.state.ReminderData;
 import ru.gadjini.reminder.model.CallbackRequest;
 
 public class StateData {

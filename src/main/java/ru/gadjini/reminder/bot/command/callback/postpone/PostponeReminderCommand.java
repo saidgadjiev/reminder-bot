@@ -7,8 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
-import ru.gadjini.reminder.bot.command.callback.state.ReminderData;
-import ru.gadjini.reminder.bot.command.callback.state.TimeData;
+import ru.gadjini.reminder.bot.command.state.ReminderData;
+import ru.gadjini.reminder.bot.command.state.TimeData;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
@@ -26,6 +26,7 @@ import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
+import ru.gadjini.reminder.service.reminder.TimeRequestService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 import ru.gadjini.reminder.service.validation.ValidationContext;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
@@ -43,7 +44,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     private InlineKeyboardService inlineKeyboardService;
 
-    private ReminderRequestService reminderRequestService;
+    private TimeRequestService timeRequestService;
 
     private ReminderMessageSender reminderMessageSender;
 
@@ -55,21 +56,25 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     private TgUserService userService;
 
+    private ReminderRequestService reminderRequestService;
+
     @Autowired
     public PostponeReminderCommand(CommandStateService stateService,
                                    MessageService messageService,
                                    InlineKeyboardService inlineKeyboardService,
-                                   ReminderRequestService reminderRequestService,
+                                   TimeRequestService timeRequestService,
                                    ReminderMessageSender reminderMessageSender,
-                                   LocalisationService localisationService, ValidatorFactory validatorFactory, TgUserService userService) {
+                                   LocalisationService localisationService, ValidatorFactory validatorFactory,
+                                   TgUserService userService, ReminderRequestService reminderRequestService) {
         this.stateService = stateService;
         this.localisationService = localisationService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
-        this.reminderRequestService = reminderRequestService;
+        this.timeRequestService = timeRequestService;
         this.reminderMessageSender = reminderMessageSender;
         this.validatorFactory = validatorFactory;
         this.userService = userService;
+        this.reminderRequestService = reminderRequestService;
     }
 
     @Autowired
@@ -152,7 +157,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
 
     private void postponeTime(int userId, String text, StateData stateData, Locale locale) {
         Reminder reminder = ReminderData.to(stateData.getReminder());
-        Time parseTime = reminderRequestService.parseTime(text, reminder.getReceiver().getZone(), reminder.getReceiver().getLocale());
+        Time parseTime = timeRequestService.parseTime(text, reminder.getReceiver().getZone(), reminder.getReceiver().getLocale());
 
         validatorFactory.getValidator(ValidatorType.POSTPONE).validate(new ValidationContext().time(parseTime).reminder(reminder));
 
@@ -177,4 +182,5 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         commandNavigator.silentPop(userId);
         reminderMessageSender.sendReminderPostponed(stateData.getCallbackRequest().getMessageId(), stateData.getCallbackRequest().getReplyKeyboard(), updateReminderResult, reason);
     }
+
 }

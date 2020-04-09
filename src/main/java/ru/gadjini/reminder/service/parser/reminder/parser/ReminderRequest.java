@@ -26,6 +26,8 @@ public class ReminderRequest {
 
     private Locale locale;
 
+    private int challengeId;
+
     public Integer getReceiverId() {
         return receiverId;
     }
@@ -46,7 +48,7 @@ public class ReminderRequest {
         return text;
     }
 
-    void setText(String text) {
+    public void setText(String text) {
         this.text = text;
     }
 
@@ -120,5 +122,13 @@ public class ReminderRequest {
 
     public void setCreatorId(Integer creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public int getChallengeId() {
+        return challengeId;
+    }
+
+    public void setChallengeId(int challengeId) {
+        this.challengeId = challengeId;
     }
 }

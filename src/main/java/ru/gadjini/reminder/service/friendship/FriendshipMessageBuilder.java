@@ -49,11 +49,14 @@ public class FriendshipMessageBuilder {
         return message.toString();
     }
 
-    public String getFriendsList(List<TgUser> items, String emptyCode, String footer, Locale locale) {
+    public String getFriendsList(List<TgUser> items, String emptyCode, String headerCode, String footerCode, Locale locale) {
         if (items.isEmpty()) {
             return localisationService.getMessage(emptyCode, locale);
         }
         StringBuilder message = new StringBuilder();
+        if (StringUtils.isNotBlank(headerCode)) {
+            message.append(localisationService.getMessage(headerCode, locale));
+        }
 
         int i = 1;
         for (TgUser friend : items) {
@@ -62,8 +65,8 @@ public class FriendshipMessageBuilder {
             }
             message.append("<b>").append(i++).append("</b>) ").append(UserUtils.userLink(friend));
         }
-        if (StringUtils.isNotBlank(footer)) {
-            message.append("\n\n").append(localisationService.getMessage(footer, locale));
+        if (StringUtils.isNotBlank(footerCode)) {
+            message.append("\n\n").append(localisationService.getMessage(footerCode, locale));
         }
 
         return message.toString();

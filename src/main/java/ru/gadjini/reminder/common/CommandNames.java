@@ -62,4 +62,5 @@ public class CommandNames {
     public static final String SUPPRESS_NOTIFICATIONS_COMMAND_NAME = "bb";
     public static final String TO_ME_FRIEND_REQUESTS_COMMAND_NAME = "bc";
     public static final String SEND_FRIEND_REQUEST_COMMAND_NAME = "bd";
+    public static final String CREATE_CHALLENGE_COMMAND_NAME = "be";
 }

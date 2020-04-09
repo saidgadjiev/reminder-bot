@@ -1,6 +1,5 @@
 package ru.gadjini.reminder.service.validation;
 
-import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
@@ -14,7 +13,7 @@ public class ValidationContext {
 
     private Time time;
 
-    private User currentUser;
+    private int creatorId;
 
     private ReminderRequest reminderRequest;
 
@@ -40,16 +39,16 @@ public class ValidationContext {
         return this;
     }
 
-    public User currentUser() {
-        return this.currentUser;
+    public int creatorId() {
+        return this.creatorId;
     }
 
     public ReminderRequest reminderRequest() {
         return this.reminderRequest;
     }
 
-    public ValidationContext currentUser(final User currentUser) {
-        this.currentUser = currentUser;
+    public ValidationContext creatorId(final int creatorId) {
+        this.creatorId = creatorId;
         return this;
     }
 

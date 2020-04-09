@@ -68,7 +68,7 @@ public class ToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableC
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
-                        .text(friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null, userService.getLocale(message.getFrom().getId())))
+                        .text(friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null, null, userService.getLocale(message.getFrom().getId())))
                         .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(friendRequests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.GET_FRIEND_REQUEST_COMMAND_NAME))
         );
         return false;
@@ -87,7 +87,7 @@ public class ToMeFriendRequestsCommand implements KeyboardBotCommand, NavigableC
                 new EditMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
-                        .text(friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null, userService.getLocale(tgMessage.getUser().getId())))
+                        .text(friendshipMessageBuilder.getFriendsList(friendRequests, MessagesProperties.MESSAGE_FRIEND_REQUESTS_EMPTY, null, null, userService.getLocale(tgMessage.getUser().getId())))
                         .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(friendRequests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.GET_FRIEND_REQUEST_COMMAND_NAME))
         );
     }

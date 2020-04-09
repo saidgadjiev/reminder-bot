@@ -3,6 +3,7 @@ package ru.gadjini.reminder.model;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.job.PriorityJob;
 
+//TODO: chatId и текст надо принимать в конструктор
 public class SendMessageContext {
 
     private long chatId;

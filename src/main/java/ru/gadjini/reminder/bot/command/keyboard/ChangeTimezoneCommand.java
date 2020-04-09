@@ -52,12 +52,12 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                                  TgUserService tgUserService,
                                  TimezoneService timezoneService,
                                  CurrReplyKeyboard replyKeyboardService,
-                                 LocalisationService localisationService1, TimeCreator timeCreator) {
+                                 TimeCreator timeCreator) {
+        this.localisationService = localisationService;
         this.messageService = messageService;
         this.tgUserService = tgUserService;
         this.timezoneService = timezoneService;
         this.replyKeyboardService = replyKeyboardService;
-        this.localisationService = localisationService1;
         this.timeCreator = timeCreator;
 
         for (Locale locale : localisationService.getSupportedLocales()) {

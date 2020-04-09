@@ -1,6 +1,9 @@
-package ru.gadjini.reminder.bot.command.callback.state;
+package ru.gadjini.reminder.bot.command.state;
 
 import ru.gadjini.reminder.domain.TgUser;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserData {
 
@@ -65,5 +68,13 @@ public class UserData {
         userData.setLanguageCode(user.getLanguageCode());
 
         return userData;
+    }
+
+    public static List<UserData> from(List<TgUser> users) {
+        return users.stream().map(UserData::from).collect(Collectors.toList());
+    }
+
+    public static List<TgUser> to(List<UserData> users) {
+        return users.stream().map(UserData::to).collect(Collectors.toList());
     }
 }

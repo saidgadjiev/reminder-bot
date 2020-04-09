@@ -57,6 +57,8 @@ public class Reminder {
 
     public static final String CREATED_AT = "created_at";
 
+    public static final String CHALLENGE_ID = "challenge_id";
+
     private int id;
 
     private String text;
@@ -105,6 +107,8 @@ public class Reminder {
 
     private ZonedDateTime createdAt;
 
+    private Integer challengeId;
+
     public Reminder() {
     }
 
@@ -133,6 +137,7 @@ public class Reminder {
         this.totalSeries = reminder.totalSeries;
         this.createdAt = reminder.createdAt;
         this.currRepeatIndex = reminder.currRepeatIndex;
+        this.challengeId = reminder.challengeId;
     }
 
     public int getId() {
@@ -374,6 +379,14 @@ public class Reminder {
 
     public ZonedDateTime getCreatedAtInReceiverZone() {
         return createdAt.withZoneSameInstant(receiver.getZone());
+    }
+
+    public Integer getChallengeId() {
+        return challengeId;
+    }
+
+    public void setChallengeId(Integer challengeId) {
+        this.challengeId = challengeId;
     }
 
     public Map<Field<?>, Object> getDiff(Reminder newReminder) {
