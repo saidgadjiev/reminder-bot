@@ -47,17 +47,24 @@ public class ChallengeMessageBuilder {
         return message.toString();
     }
 
+    public String getChallengeInvitation(Challenge challenge, Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_INVITATION, new Object[]{UserUtils.userLink(challenge.getCreator()), challenge.getName()}, locale);
+    }
+
     private String getParticipants(List<ChallengeParticipant> challengeParticipants, Locale locale) {
         StringBuilder participants = new StringBuilder();
 
         int i = 1;
-        for (ChallengeParticipant challengeParticipant: challengeParticipants) {
+        for (ChallengeParticipant challengeParticipant : challengeParticipants) {
             if (participants.length() > 0) {
                 participants.append("\n");
             }
-            participants
-                    .append(i++).append(") ").append(UserUtils.userLink(challengeParticipant.getUser())).append("\n")
-                    .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_TOTAL_SERIES, new Object[] {challengeParticipant.getTotalSeries()}, locale));
+            participants.append(i++).append(") ").append(UserUtils.userLink(challengeParticipant.getUser()));
+            if (challengeParticipant.isInvitationAccepted()) {
+                participants.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_TOTAL_SERIES, new Object[]{challengeParticipant.getTotalSeries()}, locale));
+            } else {
+                participants.append(" (").append(localisationService.getMessage(MessagesProperties.MESSAGE_PARTICIPANT_INVITATION_NOT_ACCEPTED_YET, locale));
+            }
         }
 
         return participants.toString();

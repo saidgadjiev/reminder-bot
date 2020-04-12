@@ -16,6 +16,8 @@ public class ChallengeParticipant {
 
     private int totalSeries = 0;
 
+    private boolean invitationAccepted = false;
+
     public int getUserId() {
         return userId;
     }
@@ -46,5 +48,13 @@ public class ChallengeParticipant {
 
     public void setTotalSeries(int totalSeries) {
         this.totalSeries = totalSeries;
+    }
+
+    public boolean isInvitationAccepted() {
+        return invitationAccepted;
+    }
+
+    public void setInvitationAccepted(boolean invitationAccepted) {
+        this.invitationAccepted = invitationAccepted;
     }
 }

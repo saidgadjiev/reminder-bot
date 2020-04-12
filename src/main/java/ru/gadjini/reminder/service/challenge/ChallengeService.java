@@ -9,18 +9,17 @@ import ru.gadjini.reminder.dao.ChallengeDao;
 import ru.gadjini.reminder.dao.ChallengeParticipantDao;
 import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
-import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.CreateChallengeRequest;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeCreator;
-import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -62,7 +61,7 @@ public class ChallengeService {
         List<ChallengeParticipant> challengeParticipants = saveParticipants(challenge.getId(), createChallengeRequest.participants());
         challenge.setChallengeParticipants(challengeParticipants);
 
-        createReminders(challenge.getId(), createChallengeRequest);
+        createCreatorReminder(challenge.getId(), creator, createChallengeRequest.reminderRequest());
 
         return challenge;
     }
@@ -92,19 +91,9 @@ public class ChallengeService {
         return challengeParticipants;
     }
 
-    private void createReminders(int challengeId, CreateChallengeRequest createChallengeRequest) {
-        createChallengeRequest.reminderRequest().setChallengeId(challengeId);
-        for (int participantUserId : createChallengeRequest.participants()) {
-            User participantUser = UserUtils.toUser(findFriend(createChallengeRequest.friends(), participantUserId));
-            reminderRequestService.createChallengeReminder(participantUser, createChallengeRequest.reminderRequest());
-        }
-    }
-
-    private TgUser findFriend(List<TgUser> candidates, int targetUserId) {
-        return candidates.stream()
-                .filter(user -> user.getUserId() == targetUserId)
-                .findAny()
-                .orElseThrow();
+    private void createCreatorReminder(int challengeId, User creator, ReminderRequest reminderRequest) {
+        reminderRequest.setChallengeId(challengeId);
+        reminderRequestService.createReminderFromRequest(creator, reminderRequest);
     }
 
     private DateTime getFinishedAt(Time challengeTime) {

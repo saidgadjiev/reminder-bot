@@ -82,7 +82,7 @@ public class ReminderRequestService {
         return createReminder(context.creator(), reminderRequest);
     }
 
-    public Reminder createChallengeReminder(User creator, ReminderRequest reminderRequest) {
+    public Reminder createReminderFromRequest(User creator, ReminderRequest reminderRequest) {
         reminderRequest.setCreatorId(creator.getId());
 
         validatorFactory.getValidator(ValidatorType.CREATE_REMINDER).validate(new ValidationContext().creatorId(creator.getId()).reminderRequest(reminderRequest));

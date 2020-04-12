@@ -15,7 +15,8 @@ public enum Arg {
     POSTPONE_TIME("k"),
     CALLBACK_DELEGATE("l"),
     REASON("m"),
-    FILTER("n");
+    FILTER("n"),
+    CHALLENGE_ID("o");
 
     private final String key;
 

@@ -15,6 +15,7 @@ import ru.gadjini.reminder.bot.command.state.UserData;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Challenge;
+import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.UserException;
@@ -201,6 +202,13 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
                         .chatId(message.getChatId())
                         .text(createdMessage)
         );
+
+        sendInvitations(
+                challenge.getChallengeParticipants().stream()
+                        .filter(challengeParticipant -> challengeParticipant.getUserId() != message.getFrom().getId())
+                        .collect(Collectors.toList()),
+                challenge
+        );
     }
 
     private void handleTimeState(ChallengeState state, Message message, String text) {
@@ -240,6 +248,17 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_TIME, locale))
                         .chatId(message.getChatId())
         );
+    }
+
+    private void sendInvitations(List<ChallengeParticipant> participants, Challenge challenge) {
+        for (ChallengeParticipant challengeParticipant : participants) {
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.HIGH)
+                            .chatId(challengeParticipant.getUserId())
+                            .text(challengeMessageBuilder.getChallengeInvitation(challenge, challengeParticipant.getUser().getLocale()))
+                            .replyKeyboard(inlineKeyboardService.getChallengeInvitation(challenge.getId(), challengeParticipant.getUser().getLocale()))
+            );
+        }
     }
 
     private void validateState(ChallengeState state) {

@@ -524,4 +524,14 @@ public class MessagesProperties {
     public static final String MESSAGE_CHALLENGE_TOTAL_SERIES = "message.challenge.total.series";
 
     public static final String MESSAGE_PARTICIPANTS_REQUIRED = "message.participants.required";
+
+    public static final String MESSAGE_PARTICIPANT_INVITATION_NOT_ACCEPTED_YET = "message.participant.invitation.not.accepted.yet";
+
+    public static final String MESSAGE_CHALLENGE_INVITATION = "message.challenge.invitation";
+
+    public static final String ACCEPT_CHALLENGE_INVITATION_COMMAND_DESCRIPTION = "accept.challenge.invitation.command.description";
+
+    public static final String REJECT_CHALLENGE_INVITATION_COMMAND_DESCRIPTION = "reject.challenge.invitation.command.description";
+
+    public static final String OPEN_CHALLENGE_DETAILS_COMMAND_DESCRIPTION = "open.challenge.details.command.description";
 }

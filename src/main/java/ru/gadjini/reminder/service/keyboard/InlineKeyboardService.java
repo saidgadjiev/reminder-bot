@@ -377,6 +377,15 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
+    public InlineKeyboardMarkup getChallengeInvitation(int challengeId, Locale locale) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
+
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.acceptChallenge(challengeId, locale), buttonFactory.rejectChallenge(challengeId, locale)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.openChallengeDetails(challengeId, locale)));
+
+        return inlineKeyboardMarkup;
+    }
+
     public InlineKeyboardMarkup goBackCallbackButton(String prevHistoryName, CallbackCommandNavigator.RestoreKeyboard restoreKeyboard, RequestParams requestParams, Locale locale) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 

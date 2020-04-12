@@ -63,4 +63,7 @@ public class CommandNames {
     public static final String TO_ME_FRIEND_REQUESTS_COMMAND_NAME = "bc";
     public static final String SEND_FRIEND_REQUEST_COMMAND_NAME = "bd";
     public static final String CREATE_CHALLENGE_COMMAND_NAME = "be";
+    public static final String ACCEPT_CHALLENGE_COMMAND_NAME = "bf";
+    public static final String REJECT_CHALLENGE_COMMAND_NAME = "bg";
+    public static final String OPEN_CHALLENGE_DETAILS_COMMAND_NAME = "bh";
 }
