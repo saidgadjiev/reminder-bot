@@ -208,7 +208,23 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getFriendsListKeyboard(List<Integer> friendsUserIds, String commandName) {
+    public InlineKeyboardMarkup getChooseChallengeParticipantKeyboard(List<Integer> friendUserIds, Locale locale) {
+        InlineKeyboardMarkup friendsListKeyboard = getFriendsListKeyboard(
+                friendUserIds,
+                CommandNames.CALLBACK_DELEGATE_COMMAND_NAME,
+                new RequestParams()
+                        .add(Arg.CALLBACK_DELEGATE.getKey(), CommandNames.CREATE_CHALLENGE_COMMAND_NAME)
+        );
+
+        friendsListKeyboard.getKeyboard().add(List.of(buttonFactory.delegateButton(
+                localisationService.getMessage(MessagesProperties.GO_TO_NEXT_COMMAND_DESCRIPTION, locale),
+                CommandNames.CREATE_CHALLENGE_COMMAND_NAME,
+                new RequestParams().add(Arg.COMMAND_NAME.getKey(), CommandNames.GO_TO_NEXT_COMMAND_NAME))));
+
+        return friendsListKeyboard;
+    }
+
+    public InlineKeyboardMarkup getFriendsListKeyboard(List<Integer> friendsUserIds, String commandName, RequestParams requestParams) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         int i = 1;
@@ -222,6 +238,7 @@ public class InlineKeyboardService {
                 button.setCallbackData(commandName + CommandParser.COMMAND_NAME_SEPARATOR +
                         new RequestParams()
                                 .add(Arg.FRIEND_ID.getKey(), friendUserId)
+                                .merge(requestParams == null ? new RequestParams() : requestParams)
                                 .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
                 row.add(button);
             }

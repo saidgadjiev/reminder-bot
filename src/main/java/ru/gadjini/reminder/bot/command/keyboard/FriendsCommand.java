@@ -69,7 +69,7 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(message.getChatId())
                         .text(friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null, null, userService.getLocale(message.getFrom().getId())))
-                        .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.FRIEND_DETAILS_COMMAND_NAME))
+                        .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.FRIEND_DETAILS_COMMAND_NAME, null))
         );
 
         return false;
@@ -89,7 +89,7 @@ public class FriendsCommand implements KeyboardBotCommand, NavigableCallbackBotC
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
                         .text(friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY, null, null, userService.getLocale(tgMessage.getUser().getId())))
-                        .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.FRIEND_DETAILS_COMMAND_NAME))
+                        .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.FRIEND_DETAILS_COMMAND_NAME, null))
         );
     }
 }

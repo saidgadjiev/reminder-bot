@@ -6,6 +6,8 @@ import java.util.List;
 
 public class Challenge {
 
+    public static final String ID = "id";
+
     public static final String TYPE = "challenge";
 
     public static final String CREATOR_ID = "creator_id";

@@ -8,6 +8,8 @@ public class ChallengeParticipant {
 
     public static final String CHALLENGE_ID = "challenge_id";
 
+    public static final String INVITATION_ACCEPTED = "invitation_accepted";
+
     private int userId;
 
     private int challengeId;

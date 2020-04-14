@@ -294,7 +294,7 @@ public class ReminderDao {
                 con -> {
                     PreparedStatement ps = con.prepareStatement("WITH r AS (\n" +
                             "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
-                            "                       note, message_id, read, curr_repeat_index) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *\n" +
+                            "                       note, message_id, read, curr_repeat_index, challenge_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *\n" +
                             ")\n" +
                             "SELECT r.id,\n" +
                             "       r.created_at,\n" +

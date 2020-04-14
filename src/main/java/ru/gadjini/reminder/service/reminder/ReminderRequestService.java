@@ -332,6 +332,9 @@ public class ReminderRequestService {
     private Reminder createReminder(User user, ReminderRequest reminderRequest) {
         Reminder reminder = new Reminder();
 
+        if (reminderRequest.getChallengeId() != null) {
+            reminder.setChallengeId(reminderRequest.getChallengeId());
+        }
         reminder.setText(reminderRequest.getText());
         reminder.setNote(reminderRequest.getNote());
         reminder.setMessageId(reminderRequest.getMessageId());

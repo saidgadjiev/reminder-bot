@@ -12,12 +12,15 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.util.UserUtils;
+
+import java.util.Locale;
 
 @Component
 public class AcceptFriendRequestCommand implements CallbackBotCommand {
@@ -34,13 +37,16 @@ public class AcceptFriendRequestCommand implements CallbackBotCommand {
 
     private LocalisationService localisationService;
 
+    private TgUserService userService;
+
     @Autowired
     public AcceptFriendRequestCommand(FriendshipService friendshipService, MessageService messageService,
                                       InlineKeyboardService inlineKeyboardService,
-                                      FriendshipMessageBuilder friendshipMessageBuilder, LocalisationService localisationService) {
+                                      FriendshipMessageBuilder friendshipMessageBuilder, LocalisationService localisationService, TgUserService userService) {
         this.inlineKeyboardService = inlineKeyboardService;
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.localisationService = localisationService;
+        this.userService = userService;
         this.name = CommandNames.ACCEPT_FRIEND_REQUEST_COMMAND_NAME;
         this.friendshipService = friendshipService;
         this.messageService = messageService;
@@ -54,6 +60,19 @@ public class AcceptFriendRequestCommand implements CallbackBotCommand {
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Friendship friendship = friendshipService.acceptFriendRequest(callbackQuery.getFrom(), requestParams.getInt(Arg.FRIEND_ID.getKey()));
+
+        if (friendship == null) {
+            messageService.deleteMessage(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
+
+            Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.HIGH)
+                            .chatId(callbackQuery.getMessage().getChatId())
+                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_FRIEND_REQUEST_MISSED, locale))
+            );
+
+            return null;
+        }
 
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)

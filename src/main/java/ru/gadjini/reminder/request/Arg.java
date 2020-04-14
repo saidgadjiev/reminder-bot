@@ -16,7 +16,8 @@ public enum Arg {
     CALLBACK_DELEGATE("l"),
     REASON("m"),
     FILTER("n"),
-    CHALLENGE_ID("o");
+    CHALLENGE_ID("o"),
+    COMMAND_NAME("p");
 
     private final String key;
 

@@ -5,22 +5,28 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
+import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @Service
 public class ChallengeMessageBuilder {
+
+    private FriendshipMessageBuilder friendshipMessageBuilder;
 
     private LocalisationService localisationService;
 
     private TimeBuilder timeBuilder;
 
     @Autowired
-    public ChallengeMessageBuilder(LocalisationService localisationService, TimeBuilder timeBuilder) {
+    public ChallengeMessageBuilder(FriendshipMessageBuilder friendshipMessageBuilder, LocalisationService localisationService, TimeBuilder timeBuilder) {
+        this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.localisationService = localisationService;
         this.timeBuilder = timeBuilder;
     }
@@ -45,6 +51,29 @@ public class ChallengeMessageBuilder {
                 .append(getParticipants(challenge.getChallengeParticipants(), locale));
 
         return message.toString();
+    }
+
+    public String getFriendsListWithChoseParticipantsInfo(List<TgUser> friends, Set<Integer> participants, Locale locale) {
+        String friendsList = friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY,
+                MessagesProperties.MESSAGE_CHOOSE_PARTICIPANTS_HEADER, null, locale);
+        if (participants.isEmpty()) {
+            return friendsList +
+                    "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_CHOOSE_PARTICIPANTS_FOOTER, locale);
+        }
+        StringBuilder selectedParticipants = new StringBuilder();
+
+        for (TgUser userData : friends) {
+            if (selectedParticipants.length() > 0) {
+                selectedParticipants.append(", ");
+            }
+            if (participants.contains(userData.getUserId())) {
+                selectedParticipants.append(UserUtils.userLink(userData.getUserId(), userData.getName()));
+            }
+        }
+
+        return friendsList
+                + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_CHOSE_PARTICIPANTS, new Object[]{selectedParticipants.toString()}, locale)
+                + "\n" + localisationService.getMessage(MessagesProperties.MESSAGE_CHOOSE_PARTICIPANTS_FOOTER, locale);
     }
 
     public String getChallengeInvitation(Challenge challenge, Locale locale) {

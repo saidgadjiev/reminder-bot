@@ -54,7 +54,7 @@ public class CancelFriendRequestCommand implements CallbackBotCommand {
         messageService.editMessageAsync(
                 EditMessageContext.from(callbackQuery)
                         .text(friendshipMessageBuilder.getFriendsList(requests, MessagesProperties.MESSAGE_FROM_ME_FRIEND_REQUESTS_EMPTY, null, null, userService.getLocale(callbackQuery.getFrom().getId())))
-                        .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(requests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.CANCEL_FRIEND_REQUEST_COMMAND_NAME))
+                        .replyKeyboard(inlineKeyboardService.getFriendsListKeyboard(requests.stream().map(TgUser::getUserId).collect(Collectors.toList()), CommandNames.CANCEL_FRIEND_REQUEST_COMMAND_NAME, null))
         );
 
         return null;

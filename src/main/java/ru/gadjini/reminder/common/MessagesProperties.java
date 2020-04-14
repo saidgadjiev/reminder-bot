@@ -49,6 +49,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_FRIEND_REQUEST_SENT = "message.friend.request.sent";
 
+    public static final String MESSAGE_FRIEND_REQUEST_MISSED = "message.friend.request.missed";
+
     public static final String MESSAGE_FRIEND_REQUEST_ALREADY_SENT = "message.friend.request.already.sent";
 
     public static final String MESSAGE_FRIEND_REQUEST_ALREADY_SENT_ME = "message.friend.request.already.sent.me";
@@ -507,7 +509,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_CHOOSE_PARTICIPANTS_FOOTER = "message.choose.participants.footer";
 
-    public static final String GOTO_NEXT_COMMAND_NAME = "goto.next.command.name";
+    public static final String GO_TO_NEXT_COMMAND_DESCRIPTION = "goto.next.command.description";
 
     public static final String MESSAGE_CHOSE_PARTICIPANTS = "message.chose.participants";
 

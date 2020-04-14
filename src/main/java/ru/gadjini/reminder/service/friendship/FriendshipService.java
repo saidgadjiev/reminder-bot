@@ -152,6 +152,10 @@ public class FriendshipService {
     public Friendship acceptFriendRequest(User user, int friendId) {
         Friendship friendship = friendshipDao.updateFriendshipStatus(user.getId(), friendId, Friendship.Status.ACCEPTED);
 
+        if (friendship == null) {
+            return null;
+        }
+
         friendship.setUserTwo(TgUser.from(user));
         friendship.setUserTwoId(user.getId());
 
