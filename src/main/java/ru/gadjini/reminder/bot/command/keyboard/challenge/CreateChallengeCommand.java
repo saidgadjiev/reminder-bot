@@ -197,11 +197,12 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
                 .challengeTime(TimeData.to(state.getTime()));
 
         Challenge challenge = challengeService.createChallenge(callbackQuery.getFrom(), createChallengeRequest);
-        String createdMessage = challengeMessageBuilder.getChallengeCreated(challenge, new Locale(state.getUserLanguage()));
+        String createdMessage = challengeMessageBuilder.getChallengeDetails(challenge, new Locale(state.getUserLanguage()));
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(callbackQuery.getFrom().getId())
                         .text(createdMessage)
+                        .replyKeyboard(inlineKeyboardService.getChallengeCreatedKeyboard(challenge.getId(), new Locale(state.getUserLanguage())))
         );
 
         sendInvitations(
@@ -260,7 +261,7 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(challengeParticipant.getUserId())
-                            .text(challengeMessageBuilder.getChallengeInvitation(challenge, challengeParticipant.getUser().getLocale()))
+                            .text(challengeMessageBuilder.getChallengeInvitation(challenge, challengeParticipant.getUserId(), challengeParticipant.getUser().getLocale()))
                             .replyKeyboard(inlineKeyboardService.getChallengeInvitation(challenge.getId(), challengeParticipant.getUser().getLocale()))
             );
         }

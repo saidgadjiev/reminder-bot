@@ -536,4 +536,6 @@ public class MessagesProperties {
     public static final String REJECT_CHALLENGE_INVITATION_COMMAND_DESCRIPTION = "reject.challenge.invitation.command.description";
 
     public static final String OPEN_CHALLENGE_DETAILS_COMMAND_DESCRIPTION = "open.challenge.details.command.description";
+
+    public static final String GET_CHALLENGE_COMMAND_NAME = "get.challenge.command.name";
 }

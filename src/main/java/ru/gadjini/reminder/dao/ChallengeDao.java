@@ -5,15 +5,19 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
 @Repository
 public class ChallengeDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    private ResultSetMapper resultSetMapper;
+
     @Autowired
-    public ChallengeDao(JdbcTemplate jdbcTemplate) {
+    public ChallengeDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.resultSetMapper = resultSetMapper;
     }
 
     public void save(Challenge challenge) {
@@ -35,6 +39,21 @@ public class ChallengeDao {
                     creator.setName(rs.getString(TgUser.NAME));
                     challenge.setCreator(creator);
                     challenge.setId(rs.getInt(Challenge.ID));
+                }
+        );
+    }
+
+    public Challenge getById(int id) {
+        return jdbcTemplate.query(
+                "SELECT ch.*, cr.name as cr_name\n" +
+                        "FROM challenge ch\n" +
+                        "         INNER JOIN tg_user cr on ch.creator_id = cr.user_id WHERE ch.id = ?",
+                ps -> ps.setInt(1, id),
+                rs -> {
+                    if (rs.next()) {
+                        return resultSetMapper.mapChallenge(rs);
+                    }
+                    return null;
                 }
         );
     }

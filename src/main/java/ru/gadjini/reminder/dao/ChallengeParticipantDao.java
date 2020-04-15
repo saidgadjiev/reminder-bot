@@ -5,15 +5,40 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
+
+import java.util.List;
 
 @Repository
 public class ChallengeParticipantDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    private ResultSetMapper resultSetMapper;
+
     @Autowired
-    public ChallengeParticipantDao(JdbcTemplate jdbcTemplate) {
+    public ChallengeParticipantDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.resultSetMapper = resultSetMapper;
+    }
+
+    public List<ChallengeParticipant> getParticipants(int challengeId) {
+        return jdbcTemplate.query(
+                "SELECT chpr.*, pr.name as pr_name, r.total_series\n" +
+                        "FROM challenge_participant chpr\n" +
+                        "         INNER JOIN tg_user pr on chpr.user_id = pr.user_id\n" +
+                        "         LEFT JOIN reminder r on chpr.user_id = r.creator_id AND chpr.user_id = r.receiver_id AND\n" +
+                        "                                 chpr.challenge_id = r.challenge_id\n" +
+                        "WHERE chpr.challenge_id = ?",
+                ps -> ps.setInt(1, challengeId),
+                (rs, rowNum) -> {
+                    if (rs.next()) {
+                        return resultSetMapper.mapChallengeParticipant(rs);
+                    }
+
+                    return null;
+                }
+        );
     }
 
     public void createParticipant(ChallengeParticipant challengeParticipant) {

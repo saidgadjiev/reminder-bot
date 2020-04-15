@@ -208,6 +208,13 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
+    public InlineKeyboardMarkup getChallengeCreatedKeyboard(int challengeId, Locale locale) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.openChallengeDetails(challengeId, locale)));
+
+        return inlineKeyboardMarkup;
+    }
+
     public InlineKeyboardMarkup getChooseChallengeParticipantKeyboard(List<Integer> friendUserIds, Locale locale) {
         InlineKeyboardMarkup friendsListKeyboard = getFriendsListKeyboard(
                 friendUserIds,

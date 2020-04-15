@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.challenge;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -36,7 +37,7 @@ public class ChallengeMessageBuilder {
         this.friendshipService = friendshipService;
     }
 
-    public String getChallengeCreated(Challenge challenge, Locale locale) {
+    public String getChallengeDetails(int requesterId, Challenge challenge, Locale locale) {
         StringBuilder message = new StringBuilder();
         message
                 .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_CREATED, new Object[]{challenge.getName()}, locale))
@@ -53,7 +54,7 @@ public class ChallengeMessageBuilder {
         message
                 .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_PARTICIPANTS, locale))
                 .append("\n")
-                .append(getParticipants(challenge.getCreatorId(), challenge.getChallengeParticipants(), locale));
+                .append(getParticipants(requesterId, challenge.getChallengeParticipants(), locale));
 
         return message.toString();
     }
@@ -100,7 +101,7 @@ public class ChallengeMessageBuilder {
                 participants.append("\n");
             }
             String friendName = friendshipService.getFriendName(creatorId, challengeParticipant.getUserId());
-            participants.append(i++).append(") ").append(UserUtils.userLink(challengeParticipant.getUserId(), friendName));
+            participants.append(i++).append(") ").append(UserUtils.userLink(challengeParticipant.getUserId(), StringUtils.isBlank(friendName) ? challengeParticipant.getUser().getName() : friendName));
             if (challengeParticipant.isInvitationAccepted()) {
                 participants.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_TOTAL_SERIES, new Object[]{challengeParticipant.getTotalSeries()}, locale));
             } else {

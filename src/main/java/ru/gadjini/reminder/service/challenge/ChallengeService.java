@@ -53,6 +53,13 @@ public class ChallengeService {
         this.reminderRequestService = reminderRequestService;
     }
 
+    public Challenge getChallenge(int challengeId) {
+        Challenge challenge = challengeDao.getById(challengeId);
+        challenge.setChallengeParticipants(challengeParticipantDao.getParticipants(challengeId));
+
+        return challenge;
+    }
+
     @Transactional
     public Challenge createChallenge(User creator, CreateChallengeRequest createChallengeRequest) {
         validateTime(creator.getId(), createChallengeRequest.challengeTime());

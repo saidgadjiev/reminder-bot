@@ -236,6 +236,37 @@ public class ResultSetMapper {
         return userReminderNotification;
     }
 
+    public ChallengeParticipant mapChallengeParticipant(ResultSet rs) throws SQLException {
+        ChallengeParticipant challengeParticipant = new ChallengeParticipant();
+        challengeParticipant.setUserId(rs.getInt(ChallengeParticipant.USER_ID));
+        challengeParticipant.setChallengeId(rs.getInt(ChallengeParticipant.CHALLENGE_ID));
+        challengeParticipant.setInvitationAccepted(rs.getBoolean(ChallengeParticipant.INVITATION_ACCEPTED));
+        challengeParticipant.setTotalSeries(rs.getInt("total_series"));
+
+        TgUser user = new TgUser();
+        user.setUserId(challengeParticipant.getUserId());
+        user.setName(rs.getString("pr_name"));
+        challengeParticipant.setUser(user);
+
+        return challengeParticipant;
+    }
+
+    public Challenge mapChallenge(ResultSet rs) throws SQLException {
+        Challenge challenge = new Challenge();
+        challenge.setId(rs.getInt(Challenge.ID));
+        challenge.setName(rs.getString(Challenge.NAME));
+        challenge.setCreatorId(rs.getInt(Challenge.CREATOR_ID));
+        TgUser creator = new TgUser();
+        creator.setUserId(challenge.getCreatorId());
+        creator.setName(rs.getString("cr_name"));
+        challenge.setCreator(creator);
+
+        Timestamp finishedAt = rs.getTimestamp(Challenge.FINISHED_AT);
+        challenge.setFinishedAt(DateTime.of(ZonedDateTime.of(finishedAt.toLocalDateTime(), ZoneOffset.UTC)));
+
+        return challenge;
+    }
+
     private DateTime mapDateTime(ResultSet rs) throws SQLException {
         Time time = rs.getTime(DateTime.TIME);
 

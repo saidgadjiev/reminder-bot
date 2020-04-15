@@ -41,17 +41,17 @@ public class ReminderNotificationMessageBuilder {
 
     public String getReminderNotificationForReceiver(Reminder reminder, boolean itsTime, DateTime nextRemindAt) {
         if (itsTime) {
-            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getReceiverId()).nextRemindAt(nextRemindAt).remindNotification(true)), reminder.getReceiver().getLocale());
+            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.ReminderMessageConfig().receiverId(reminder.getReceiverId()).nextRemindAt(nextRemindAt).remindNotification(true)), reminder.getReceiver().getLocale());
         } else {
-            return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getReceiverId()).remindNotification(true)), reminder.getReceiver().getLocale());
+            return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.ReminderMessageConfig().receiverId(reminder.getReceiverId()).remindNotification(true)), reminder.getReceiver().getLocale());
         }
     }
 
     public String getReminderNotificationMySelf(Reminder reminder, boolean itsTime, DateTime nextRemindAt) {
         if (itsTime) {
-            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getCreatorId()).nextRemindAt(nextRemindAt).remindNotification(true)), reminder.getCreator().getLocale());
+            return messageBuilder.getItsTimeReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.ReminderMessageConfig().receiverId(reminder.getCreatorId()).nextRemindAt(nextRemindAt).remindNotification(true)), reminder.getCreator().getLocale());
         } else {
-            return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.Config().receiverId(reminder.getCreatorId()).remindNotification(true)), reminder.getReceiver().getLocale());
+            return messageBuilder.getReminderNotification(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.ReminderMessageConfig().receiverId(reminder.getCreatorId()).remindNotification(true)), reminder.getReceiver().getLocale());
         }
     }
 

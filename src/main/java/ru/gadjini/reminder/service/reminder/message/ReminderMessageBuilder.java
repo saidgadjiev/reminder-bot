@@ -43,7 +43,7 @@ public class ReminderMessageBuilder {
     }
 
     public String getReminderMessage(Reminder reminder) {
-        return getReminderMessage(reminder, new Config().receiverId(reminder.getCreatorId()));
+        return getReminderMessage(reminder, new ReminderMessageConfig().receiverId(reminder.getCreatorId()));
     }
 
     public String getMySelfReminderEdited(Reminder reminder) {
@@ -60,7 +60,7 @@ public class ReminderMessageBuilder {
         return message.toString();
     }
 
-    public String getReminderMessage(Reminder reminder, Config config) {
+    public String getReminderMessage(Reminder reminder, ReminderMessageConfig config) {
         StringBuilder result = new StringBuilder();
         String text = reminder.getText();
         String note = reminder.getNote();
@@ -254,7 +254,7 @@ public class ReminderMessageBuilder {
     }
 
     public String getNewReminder(Reminder reminder, int messageReceiverId) {
-        return messageBuilder.getNewReminder(getReminderMessage(reminder, new Config().receiverId(messageReceiverId)), messageReceiverId == reminder.getReceiverId() ? reminder.getReceiver().getLocale() : reminder.getCreator().getLocale());
+        return messageBuilder.getNewReminder(getReminderMessage(reminder, new ReminderMessageConfig().receiverId(messageReceiverId)), messageReceiverId == reminder.getReceiverId() ? reminder.getReceiver().getLocale() : reminder.getCreator().getLocale());
     }
 
     public String getCompletedRemindersList(int requesterId, List<Reminder> reminders, Locale locale) {
@@ -519,7 +519,7 @@ public class ReminderMessageBuilder {
         }
     }
 
-    public static class Config {
+    public static class ReminderMessageConfig {
 
         private boolean remindNotification;
 
@@ -531,7 +531,7 @@ public class ReminderMessageBuilder {
             return this.remindNotification;
         }
 
-        public Config remindNotification(final boolean remindNotification) {
+        public ReminderMessageConfig remindNotification(final boolean remindNotification) {
             this.remindNotification = remindNotification;
             return this;
         }
@@ -540,7 +540,7 @@ public class ReminderMessageBuilder {
             return receiverId;
         }
 
-        public Config receiverId(final int receiverId) {
+        public ReminderMessageConfig receiverId(final int receiverId) {
             this.receiverId = receiverId;
 
             return this;
@@ -550,7 +550,7 @@ public class ReminderMessageBuilder {
             return this.nextRemindAt;
         }
 
-        public Config nextRemindAt(final DateTime nextRemindAt) {
+        public ReminderMessageConfig nextRemindAt(final DateTime nextRemindAt) {
             this.nextRemindAt = nextRemindAt;
             return this;
         }
