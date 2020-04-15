@@ -42,7 +42,7 @@ public class ChallengeMessageBuilder {
                 .append("\n");
 
         message
-                .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_CREATOR, new Object[]{UserUtils.userLink(challenge.getId())}, locale))
+                .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_CREATOR, new Object[]{UserUtils.userLink(challenge.getCreator())}, locale))
                 .append("\n");
 
         message
@@ -92,7 +92,7 @@ public class ChallengeMessageBuilder {
             if (challengeParticipant.isInvitationAccepted()) {
                 participants.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_TOTAL_SERIES, new Object[]{challengeParticipant.getTotalSeries()}, locale));
             } else {
-                participants.append(" (").append(localisationService.getMessage(MessagesProperties.MESSAGE_PARTICIPANT_INVITATION_NOT_ACCEPTED_YET, locale));
+                participants.append(" (").append(localisationService.getMessage(MessagesProperties.MESSAGE_PARTICIPANT_INVITATION_NOT_ACCEPTED_YET, locale)).append(")");
             }
         }
 

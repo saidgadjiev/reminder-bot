@@ -10,6 +10,7 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
@@ -68,8 +69,8 @@ public class UserSettingsCommand implements KeyboardBotCommand, NavigableBotComm
     }
 
     @Override
-    public void restore(Message message) {
-        Locale locale = userService.getLocale(message.getFrom().getId());
+    public void restore(TgMessage message) {
+        Locale locale = userService.getLocale(message.getUser().getId());
 
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)

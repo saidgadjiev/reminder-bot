@@ -2,13 +2,9 @@ package ru.gadjini.reminder.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SqlParameterValue;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Challenge;
-
-import java.sql.Types;
+import ru.gadjini.reminder.domain.TgUser;
 
 @Repository
 public class ChallengeDao {
@@ -21,14 +17,25 @@ public class ChallengeDao {
     }
 
     public void save(Challenge challenge) {
-        Number number = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(Challenge.TYPE)
-                .usingGeneratedKeyColumns(Challenge.ID)
-                .executeAndReturnKey(new MapSqlParameterSource()
-                        .addValue(Challenge.CREATOR_ID, challenge.getCreatorId())
-                        .addValue(Challenge.FINISHED_AT, challenge.getFinishedAt().sqlObject(), Types.OTHER)
-                        .addValue(Challenge.NAME, challenge.getName()));
-
-        challenge.setId(number.intValue());
+        jdbcTemplate.query(
+                "WITH challenge AS (\n" +
+                        "    INSERT INTO challenge (name, creator_id, finished_at) VALUES (?, ?, ?) RETURNING id, creator_id\n" +
+                        ")\n" +
+                        "SELECT challenge.id, usr.name\n" +
+                        "FROM tg_user usr\n" +
+                        "         INNER JOIN challenge ON usr.user_id = challenge.creator_id",
+                ps -> {
+                    ps.setString(1, challenge.getName());
+                    ps.setInt(2, challenge.getCreatorId());
+                    ps.setObject(3, challenge.getFinishedAt().sqlObject());
+                },
+                rs -> {
+                    TgUser creator = new TgUser();
+                    creator.setUserId(challenge.getCreatorId());
+                    creator.setName(rs.getString(TgUser.NAME));
+                    challenge.setCreator(creator);
+                    challenge.setId(rs.getInt(Challenge.ID));
+                }
+        );
     }
 }

@@ -15,6 +15,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
@@ -85,9 +86,9 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
     }
 
     @Override
-    public void restore(Message message) {
-        Locale locale = userService.getLocale(message.getFrom().getId());
-        sendMainMenu(message.getChatId().intValue(), locale);
+    public void restore(TgMessage message) {
+        Locale locale = userService.getLocale(message.getUser().getId());
+        sendMainMenu((int) message.getChatId(), locale);
     }
 
     @Override

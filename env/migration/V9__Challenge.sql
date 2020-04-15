@@ -15,4 +15,4 @@ CREATE TABLE IF NOT EXISTS challenge_participant
 );
 
 ALTER TABLE reminder
-    ADD COLUMN challenge_id INT REFERENCES challenge (id);
+    ADD COLUMN challenge_id INT REFERENCES challenge (id) ON DELETE CASCADE;

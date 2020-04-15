@@ -2,11 +2,9 @@ package ru.gadjini.reminder.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
+import ru.gadjini.reminder.domain.TgUser;
 
 @Repository
 public class ChallengeParticipantDao {
@@ -19,11 +17,23 @@ public class ChallengeParticipantDao {
     }
 
     public void createParticipant(ChallengeParticipant challengeParticipant) {
-        new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(ChallengeParticipant.TYPE)
-                .execute(new MapSqlParameterSource()
-                        .addValue(ChallengeParticipant.USER_ID, challengeParticipant.getUserId())
-                        .addValue(ChallengeParticipant.CHALLENGE_ID, challengeParticipant.getChallengeId())
-                        .addValue(ChallengeParticipant.INVITATION_ACCEPTED, challengeParticipant.isInvitationAccepted()));
+        jdbcTemplate.query(
+                "WITH participant AS (\n" +
+                        "    INSERT INTO challenge_participant (user_id, challenge_id) VALUES (?, ?) RETURNING user_id, challenge_id\n" +
+                        ")\n" +
+                        "SELECT usr.name\n" +
+                        "FROM tg_user usr\n" +
+                        "         INNER JOIN participant ON usr.user_id = participant.user_id",
+                ps -> {
+                    ps.setInt(1, challengeParticipant.getUserId());
+                    ps.setInt(2, challengeParticipant.getChallengeId());
+                },
+                rs -> {
+                    TgUser user = new TgUser();
+                    user.setUserId(challengeParticipant.getUserId());
+                    user.setName(rs.getString(TgUser.NAME));
+                    challengeParticipant.setUser(user);
+                }
+        );
     }
 }

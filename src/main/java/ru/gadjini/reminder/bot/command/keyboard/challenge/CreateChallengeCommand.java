@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
@@ -24,11 +23,13 @@ import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.CreateChallengeRequest;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.challenge.ChallengeMessageBuilder;
 import ru.gadjini.reminder.service.challenge.ChallengeService;
+import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
@@ -77,13 +78,15 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
 
     private ChallengeMessageBuilder challengeMessageBuilder;
 
+    private CommandNavigator commandNavigator;
+
     @Autowired
     public CreateChallengeCommand(LocalisationService localisationService, MessageService messageService,
                                   TgUserService userService, @Qualifier("currkeyboard") ReplyKeyboardService replyKeyboardService,
                                   InlineKeyboardService inlineKeyboardService, @Qualifier("chain") ReminderRequestExtractor requestExtractor,
                                   CommandStateService commandStateService, TimeRequestService timeRequestService,
                                   FriendshipService friendshipService, FriendshipMessageBuilder friendshipMessageBuilder,
-                                  ChallengeService challengeService, ChallengeMessageBuilder challengeMessageBuilder) {
+                                  ChallengeService challengeService, ChallengeMessageBuilder challengeMessageBuilder, CommandNavigator commandNavigator) {
         this.localisationService = localisationService;
         this.messageService = messageService;
         this.userService = userService;
@@ -96,6 +99,7 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.challengeService = challengeService;
         this.challengeMessageBuilder = challengeMessageBuilder;
+        this.commandNavigator = commandNavigator;
         for (Locale locale : localisationService.getSupportedLocales()) {
             names.add(localisationService.getMessage(MessagesProperties.CREATE_CHALLENGE_COMMAND_NAME, locale));
         }
@@ -148,7 +152,7 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
             String commandName = requestParams.getString(Arg.COMMAND_NAME.getKey());
             if (commandName.equals(CommandNames.GO_TO_NEXT_COMMAND_NAME) && state.getState().equals(ChallengeState.State.PARTICIPANTS)) {
                 validateState(state);
-                handleParticipantsState(state, callbackQuery.getFrom());
+                handleParticipantsState(state, callbackQuery);
                 return;
             }
         }
@@ -185,27 +189,29 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
         );
     }
 
-    private void handleParticipantsState(ChallengeState state, User from) {
+    private void handleParticipantsState(ChallengeState state, CallbackQuery callbackQuery) {
         CreateChallengeRequest createChallengeRequest = new CreateChallengeRequest()
                 .friends(UserData.to(state.getFriends()))
                 .participants(state.getParticipants())
                 .reminderRequest(ReminderRequestData.to(state.getReminderRequest()))
                 .challengeTime(TimeData.to(state.getTime()));
 
-        Challenge challenge = challengeService.createChallenge(from, createChallengeRequest);
+        Challenge challenge = challengeService.createChallenge(callbackQuery.getFrom(), createChallengeRequest);
         String createdMessage = challengeMessageBuilder.getChallengeCreated(challenge, new Locale(state.getUserLanguage()));
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
-                        .chatId(from.getId())
+                        .chatId(callbackQuery.getFrom().getId())
                         .text(createdMessage)
         );
 
         sendInvitations(
                 challenge.getChallengeParticipants().stream()
-                        .filter(challengeParticipant -> challengeParticipant.getUserId() != from.getId())
+                        .filter(challengeParticipant -> challengeParticipant.getUserId() != callbackQuery.getFrom().getId())
                         .collect(Collectors.toList()),
                 challenge
         );
+        messageService.deleteMessage(callbackQuery.getFrom().getId(), callbackQuery.getMessage().getMessageId());
+        commandNavigator.pop(TgMessage.from(callbackQuery));
     }
 
     private void handleTimeState(ChallengeState state, Message message, String text) {
