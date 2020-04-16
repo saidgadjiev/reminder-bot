@@ -10,6 +10,7 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.reminder.message.MessageBuilder;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.util.UserUtils;
 
@@ -28,13 +29,31 @@ public class ChallengeMessageBuilder {
 
     private FriendshipService friendshipService;
 
+    private MessageBuilder messageBuilder;
+
     @Autowired
     public ChallengeMessageBuilder(FriendshipMessageBuilder friendshipMessageBuilder, LocalisationService localisationService,
-                                   TimeBuilder timeBuilder, FriendshipService friendshipService) {
+                                   TimeBuilder timeBuilder, FriendshipService friendshipService, MessageBuilder messageBuilder) {
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.localisationService = localisationService;
         this.timeBuilder = timeBuilder;
         this.friendshipService = friendshipService;
+        this.messageBuilder = messageBuilder;
+    }
+
+    public String getUserChallenges(List<Challenge> challenges, Locale locale) {
+        StringBuilder message = new StringBuilder();
+        int i = 1;
+        for (Challenge challenge : challenges) {
+            if (message.length() > 0) {
+                message.append("\n");
+            }
+            message
+                    .append(i++).append(") ").append(challenge.getName()).append("\n")
+                    .append(messageBuilder.getChallengeCreator(challenge.getCreator(), locale));
+        }
+
+        return message.toString();
     }
 
     public String getChallengeDetails(int requesterId, Challenge challenge, Locale locale) {

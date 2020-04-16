@@ -261,8 +261,7 @@ public class ResultSetMapper {
         creator.setName(rs.getString("cr_name"));
         challenge.setCreator(creator);
 
-        Timestamp finishedAt = rs.getTimestamp(Challenge.FINISHED_AT);
-        challenge.setFinishedAt(DateTime.of(ZonedDateTime.of(finishedAt.toLocalDateTime(), ZoneOffset.UTC)));
+        challenge.setFinishedAt(mapDateTime(rs));
 
         return challenge;
     }

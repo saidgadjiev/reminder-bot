@@ -391,7 +391,7 @@ public class ButtonFactory {
 
     InlineKeyboardButton openChallengeDetails(int challengeId, Locale locale) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.OPEN_CHALLENGE_DETAILS_COMMAND_DESCRIPTION, locale));
-        button.setCallbackData(CommandNames.OPEN_CHALLENGE_DETAILS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+        button.setCallbackData(CommandNames.CHALLENGE_DETAILS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams().add(Arg.CHALLENGE_ID.getKey(), challengeId).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;

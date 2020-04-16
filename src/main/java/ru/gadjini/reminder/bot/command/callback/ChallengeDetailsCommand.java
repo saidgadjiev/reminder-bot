@@ -13,6 +13,7 @@ import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.challenge.ChallengeMessageBuilder;
 import ru.gadjini.reminder.service.challenge.ChallengeService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 
 import java.util.Locale;
@@ -28,13 +29,16 @@ public class ChallengeDetailsCommand implements CallbackBotCommand {
 
     private MessageService messageService;
 
+    private InlineKeyboardService inlineKeyboardService;
+
     @Autowired
     public ChallengeDetailsCommand(ChallengeMessageBuilder messageBuilder, ChallengeService challengeService,
-                                   TgUserService userService, MessageService messageService) {
+                                   TgUserService userService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
         this.messageBuilder = messageBuilder;
         this.challengeService = challengeService;
         this.userService = userService;
         this.messageService = messageService;
+        this.inlineKeyboardService = inlineKeyboardService;
     }
 
     @Override
@@ -54,6 +58,7 @@ public class ChallengeDetailsCommand implements CallbackBotCommand {
                         .chatId(callbackQuery.getFrom().getId())
                         .text(challengeDetails)
                         .messageId(callbackQuery.getMessage().getMessageId())
+                .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_CHALLENGES_COMMAND_NAME, locale))
         );
 
         return null;

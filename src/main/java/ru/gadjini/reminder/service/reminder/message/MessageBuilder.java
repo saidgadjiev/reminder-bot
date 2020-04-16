@@ -60,7 +60,7 @@ public class MessageBuilder {
     }
 
     public String getReminderEdited(String text, Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_EDITED, new Object[] {text}, locale);
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_EDITED, new Object[]{text}, locale);
     }
 
     public String getReminderTimeEditedReceiver(TgUser creator, String reminderText, List<RepeatTime> from, List<RepeatTime> to, Locale receiverLocale) {
@@ -208,7 +208,7 @@ public class MessageBuilder {
     }
 
     public String getTotalSeries(int totalSeries, Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_TOTAL_SERIES, new Object[] {totalSeries}, locale);
+        return localisationService.getMessage(MessagesProperties.MESSAGE_TOTAL_SERIES, new Object[]{totalSeries}, locale);
     }
 
     public String getReminderDeactivated(String text, Locale locale) {
@@ -220,22 +220,26 @@ public class MessageBuilder {
     }
 
     public String getReminderRead(Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_READ_REMINDER_STATUS, new Object[] {localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_READ, locale)}, locale);
+        return localisationService.getMessage(MessagesProperties.MESSAGE_READ_REMINDER_STATUS, new Object[]{localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_READ, locale)}, locale);
     }
 
     public String getReminderUnread(Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_READ_REMINDER_STATUS, new Object[] {localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_UNREAD, locale)}, locale);
+        return localisationService.getMessage(MessagesProperties.MESSAGE_READ_REMINDER_STATUS, new Object[]{localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_UNREAD, locale)}, locale);
     }
 
     public String getReadReminderCreator(TgUser receiver, String text, Locale creatorLocale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_READ_REMINDER_CREATOR, new Object[] {UserUtils.userLink(receiver), text}, creatorLocale);
+        return localisationService.getMessage(MessagesProperties.MESSAGE_READ_REMINDER_CREATOR, new Object[]{UserUtils.userLink(receiver), text}, creatorLocale);
     }
 
     public String getReminderCreatedAt(ZonedDateTime createdAt, Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_AT, new Object[] {timeBuilder.fixedDay(createdAt, locale)}, locale);
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_CREATED_AT, new Object[]{timeBuilder.fixedDay(createdAt, locale)}, locale);
     }
 
     public String getReason(String reason, Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_REASON, new Object[] {reason}, locale);
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REASON, new Object[]{reason}, locale);
+    }
+
+    public String getChallengeCreator(TgUser creator, Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_CREATOR, new Object[]{UserUtils.userLink(creator)}, locale);
     }
 }

@@ -92,6 +92,7 @@ public class ReplyKeyboardServiceImpl implements ReplyKeyboardService {
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.CREATE_REMINDER_COMMAND_NAME, locale)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GET_REMINDERS_COMMAND_NAME, locale)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.CREATE_CHALLENGE_COMMAND_NAME, locale)));
+        keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GET_CHALLENGES_COMMAND_NAME, locale)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.GET_FRIENDS_COMMAND_NAME, locale)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.FRIEND_REQUESTS_COMMAND_NAME, locale)));
         keyboard.add(keyboardRow(localisationService.getMessage(MessagesProperties.SEND_FRIEND_REQUEST_COMMAND_NAME, locale)));

@@ -256,6 +256,30 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
+    public InlineKeyboardMarkup getUserChallengesKeyboard(List<Integer> challengesIds) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
+
+        int i = 1;
+        List<List<Integer>> lists = Lists.partition(challengesIds, 4);
+        for (List<Integer> list : lists) {
+            List<InlineKeyboardButton> row = new ArrayList<>();
+
+            for (int challengeId : list) {
+                InlineKeyboardButton button = new InlineKeyboardButton();
+                button.setText(String.valueOf(i++));
+                button.setCallbackData(CommandNames.CHALLENGE_DETAILS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                        new RequestParams()
+                                .add(Arg.CHALLENGE_ID.getKey(), challengeId)
+                                .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+                row.add(button);
+            }
+
+            inlineKeyboardMarkup.getKeyboard().add(row);
+        }
+
+        return inlineKeyboardMarkup;
+    }
+
     public InlineKeyboardMarkup getActiveRemindersListKeyboard(List<Integer> reminderIds, String prevHistoryName, RequestParams requestParams, Locale locale) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 

@@ -25,6 +25,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ChallengeService {
@@ -53,6 +54,10 @@ public class ChallengeService {
         this.reminderRequestService = reminderRequestService;
     }
 
+    public List<Challenge> getUserChallenges(int userId) {
+        return challengeDao.getUserChallenges(userId);
+    }
+
     public Challenge getChallenge(int challengeId) {
         Challenge challenge = challengeDao.getById(challengeId);
         challenge.setChallengeParticipants(challengeParticipantDao.getParticipants(challengeId));
@@ -65,7 +70,9 @@ public class ChallengeService {
         validateTime(creator.getId(), createChallengeRequest.challengeTime());
         Challenge challenge = saveChallenge(creator.getId(), createChallengeRequest);
 
-        List<ChallengeParticipant> challengeParticipants = saveParticipants(challenge.getId(), createChallengeRequest.participants());
+        Set<Integer> participants = createChallengeRequest.participants();
+        participants.add(creator.getId());
+        List<ChallengeParticipant> challengeParticipants = saveParticipants(creator.getId(), challenge.getId(), participants);
         challenge.setChallengeParticipants(challengeParticipants);
 
         createCreatorReminder(challenge.getId(), creator, createChallengeRequest.reminderRequest());
@@ -83,13 +90,14 @@ public class ChallengeService {
         return challenge;
     }
 
-    private List<ChallengeParticipant> saveParticipants(int challengeId, Collection<Integer> participants) {
+    private List<ChallengeParticipant> saveParticipants(int creatorId, int challengeId, Collection<Integer> participants) {
         List<ChallengeParticipant> challengeParticipants = new ArrayList<>();
 
         for (int participant : participants) {
             ChallengeParticipant challengeParticipant = new ChallengeParticipant();
             challengeParticipant.setChallengeId(challengeId);
             challengeParticipant.setUserId(participant);
+            challengeParticipant.setInvitationAccepted(participant == creatorId);
 
             challengeParticipantDao.createParticipant(challengeParticipant);
             challengeParticipants.add(challengeParticipant);
