@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
@@ -51,7 +52,7 @@ public class ChallengeDetailsCommand implements CallbackBotCommand {
         int challengeId = requestParams.getInt(Arg.CHALLENGE_ID.getKey());
         Challenge challenge = challengeService.getChallenge(challengeId);
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
-        String challengeDetails = messageBuilder.getChallengeDetails(callbackQuery.getFrom().getId(), challenge, locale);
+        String challengeDetails = messageBuilder.getChallengeCreatedDetails(callbackQuery.getFrom().getId(), MessagesProperties.MESSAGE_CHALLENGE_CREATED, challenge, locale);
 
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)

@@ -197,7 +197,7 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
                 .challengeTime(TimeData.to(state.getTime()));
 
         Challenge challenge = challengeService.createChallenge(callbackQuery.getFrom(), createChallengeRequest);
-        String createdMessage = challengeMessageBuilder.getChallengeDetails(callbackQuery.getFrom().getId(), challenge, new Locale(state.getUserLanguage()));
+        String createdMessage = challengeMessageBuilder.getChallengeCreatedDetails(callbackQuery.getFrom().getId(), MessagesProperties.MESSAGE_CHALLENGE_CREATED, challenge, new Locale(state.getUserLanguage()));
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(callbackQuery.getFrom().getId())

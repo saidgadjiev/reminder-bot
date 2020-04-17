@@ -56,10 +56,10 @@ public class ChallengeMessageBuilder {
         return message.toString();
     }
 
-    public String getChallengeDetails(int requesterId, Challenge challenge, Locale locale) {
+    public String getChallengeCreatedDetails(int requesterId, String headerCode, Challenge challenge, Locale locale) {
         StringBuilder message = new StringBuilder();
         message
-                .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_CREATED, new Object[]{challenge.getName()}, locale))
+                .append(localisationService.getMessage(headerCode, new Object[]{challenge.getName()}, locale))
                 .append("\n");
 
         message

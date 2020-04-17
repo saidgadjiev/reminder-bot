@@ -2,6 +2,7 @@ package ru.gadjini.reminder.service.challenge;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.ChallengeParticipantDao;
 import ru.gadjini.reminder.dao.ReminderDao;
@@ -35,10 +36,10 @@ public class ChallengeBusinessService {
         this.challengeService = challengeService;
     }
 
+    @Transactional
     public Challenge acceptChallenge(User participant, int challengeId) {
         participantDao.updateInvitationAccepted(participant.getId(), challengeId, true);
-        Reminder challengeReminder = reminderDao.getReminder(
-                ReminderTable.TABLE.CREATOR_ID.eq(ReminderTable.TABLE.RECEIVER_ID).and(ReminderTable.TABLE.CHALLENGE_ID.eq(challengeId)),
+        Reminder challengeReminder = reminderDao.getReminder(ReminderTable.TABLE.as("r").CHALLENGE_ID.eq(challengeId),
                 new ReminderMapping()
         );
         ReminderRequest reminderRequest = createReminderRequest(challengeReminder, participant.getId());

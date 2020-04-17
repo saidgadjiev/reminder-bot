@@ -517,6 +517,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_CHALLENGE_CREATED = "message.challenge.created";
 
+    public static final String MESSAGE_CHALLENGE = "message.challenge";
+
     public static final String MESSAGE_CHALLENGE_FINISHED_AT = "message.challenge.finished.at";
 
     public static final String MESSAGE_CHALLENGE_CREATOR = "message.challenge.creator";
