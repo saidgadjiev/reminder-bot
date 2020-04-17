@@ -3,6 +3,7 @@ package ru.gadjini.reminder.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
@@ -53,6 +54,42 @@ public class ChallengeParticipantDao {
                     user.setUserId(challengeParticipant.getUserId());
                     user.setName(rs.getString(TgUser.NAME));
                     challengeParticipant.setUser(user);
+                }
+        );
+    }
+
+    public ChallengeParticipant updateInvitationAccepted(int userId, int challengeId, boolean invitationAccepted) {
+        return jdbcTemplate.query(
+                "WITH upd AS (UPDATE challenge_participant SET invitation_accepted = ? WHERE user_id = ? AND challenge_id = ? RETURNING challenge_id)\n" +
+                        "SELECT c.creator_id\n" +
+                        "FROM upd INNER JOIN challenge c ON c.id = upd.challenge_id",
+                ps -> {
+                    ps.setBoolean(1, invitationAccepted);
+                    ps.setInt(2, userId);
+                    ps.setInt(3, challengeId);
+                },
+                rs -> {
+                    if (rs.next()) {
+                        ChallengeParticipant challengeParticipant = new ChallengeParticipant();
+                        TgUser user = new TgUser();
+                        challengeParticipant.setUser(user);
+                        Challenge challenge = new Challenge();
+                        challenge.setCreatorId(rs.getInt(Challenge.CREATOR_ID));
+                        challengeParticipant.setChallenge(challenge);
+
+                        return challengeParticipant;
+                    }
+                    return null;
+                }
+        );
+    }
+
+    public void delete(int userId, int challengeId) {
+        jdbcTemplate.update(
+                "DELETE FROM challenge_participant WHERE user_id = ? AND challenge_id = ?",
+                ps -> {
+                    ps.setInt(1, userId);
+                    ps.setInt(2, challengeId);
                 }
         );
     }

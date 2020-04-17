@@ -49,6 +49,8 @@ public class ReminderTable extends TableImpl<Record> {
 
     public TableField<Record, Integer> CURR_REPEAT_INDEX;
 
+    public TableField<Record, Integer> CHALLENGE_ID;
+
     private ReminderTable() {
         this(DSL.name(Reminder.TYPE), null, null);
     }
@@ -82,6 +84,7 @@ public class ReminderTable extends TableImpl<Record> {
         RECEIVER_MESSAGE_ID = createField(Reminder.RECEIVER_MESSAGE_ID, SQLDataType.INTEGER);
         TOTAL_SERIES = createField(Reminder.TOTAL_SERIES, SQLDataType.INTEGER);
         CURR_REPEAT_INDEX = createField(Reminder.CURR_REPEAT_INDEX, SQLDataType.INTEGER);
+        CHALLENGE_ID = createField(Reminder.CHALLENGE_ID, SQLDataType.INTEGER);
     }
 
     @Override

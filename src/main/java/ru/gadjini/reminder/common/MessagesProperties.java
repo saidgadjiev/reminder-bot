@@ -538,4 +538,8 @@ public class MessagesProperties {
     public static final String OPEN_CHALLENGE_DETAILS_COMMAND_DESCRIPTION = "open.challenge.details.command.description";
 
     public static final String GET_CHALLENGES_COMMAND_NAME = "get.challenges.command.name";
+
+    public static final String MESSAGE_CHALLENGE_ACCEPTED_ANSWER = "message.challenge.accepted.answer";
+
+    public static final String MESSAGE_CHALLENGE_REJECTED_ANSWER = "message.challenge.rejected.answer";
 }
