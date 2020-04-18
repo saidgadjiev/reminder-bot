@@ -2,25 +2,53 @@ package ru.gadjini.reminder.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class ChallengeParticipantDao {
 
     private JdbcTemplate jdbcTemplate;
 
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
     private ResultSetMapper resultSetMapper;
 
     @Autowired
-    public ChallengeParticipantDao(JdbcTemplate jdbcTemplate, ResultSetMapper resultSetMapper) {
+    public ChallengeParticipantDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate, ResultSetMapper resultSetMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
         this.resultSetMapper = resultSetMapper;
+    }
+
+    public Map<Integer, List<ChallengeParticipant>> getParticipants(Collection<Integer> challenges) {
+        return namedParameterJdbcTemplate.query(
+                "SELECT chpr.*, pr.name as pr_name, r.total_series\n" +
+                        "FROM challenge_participant chpr\n" +
+                        "         INNER JOIN tg_user pr on chpr.user_id = pr.user_id\n" +
+                        "         LEFT JOIN reminder r on chpr.user_id = r.creator_id AND chpr.user_id = r.receiver_id AND\n" +
+                        "                                 chpr.challenge_id = r.challenge_id\n" +
+                        "WHERE chpr.challenge_id IN (:ids) ORDER BY r.total_series, pr.name",
+                new MapSqlParameterSource().addValue("ids", challenges),
+                rs -> {
+                    Map<Integer, List<ChallengeParticipant>> result = new LinkedHashMap<>();
+
+                    while (rs.next()) {
+                        int challengeId = rs.getInt("challenge_id");
+                        result.putIfAbsent(challengeId, new ArrayList<>());
+                        result.get(challengeId).add(resultSetMapper.mapChallengeParticipant(rs));
+                    }
+
+                    return result;
+                }
+        );
     }
 
     public List<ChallengeParticipant> getParticipants(int challengeId) {

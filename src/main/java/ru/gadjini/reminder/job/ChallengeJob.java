@@ -1,0 +1,69 @@
+package ru.gadjini.reminder.job;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import ru.gadjini.reminder.configuration.BotConfiguration;
+import ru.gadjini.reminder.domain.Challenge;
+import ru.gadjini.reminder.domain.ChallengeParticipant;
+import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.service.challenge.ChallengeBusinessService;
+import ru.gadjini.reminder.service.challenge.ChallengeMessageBuilder;
+import ru.gadjini.reminder.service.challenge.ChallengeService;
+import ru.gadjini.reminder.service.message.MessageService;
+import ru.gadjini.reminder.util.TimeCreator;
+
+import javax.annotation.PostConstruct;
+import java.util.List;
+
+@Component
+@Profile("!" + BotConfiguration.PROFILE_TEST)
+public class ChallengeJob {
+
+    private TimeCreator timeCreator;
+
+    private ChallengeBusinessService businessService;
+
+    private MessageService messageService;
+
+    private ChallengeMessageBuilder messageBuilder;
+
+    private ChallengeService challengeService;
+
+    @Autowired
+    public ChallengeJob(TimeCreator timeCreator, ChallengeBusinessService businessService, MessageService messageService, ChallengeMessageBuilder messageBuilder, ChallengeService challengeService) {
+        this.timeCreator = timeCreator;
+        this.businessService = businessService;
+        this.messageService = messageService;
+        this.messageBuilder = messageBuilder;
+        this.challengeService = challengeService;
+    }
+
+    @PostConstruct
+    public void init() {
+        finishChallenges();
+    }
+
+    //0:30 1:00 1:30 ...
+    @Scheduled(cron = "0 */30 * * * *")
+    public void finishChallenges() {
+        List<Challenge> finishedChallenges = businessService.getFinishedChallenges(timeCreator.localDateTimeNow());
+        for (Challenge challenge : finishedChallenges) {
+            ChallengeBusinessService.Winner winner = businessService.determineWinner(challenge.getChallengeParticipants());
+            sendChallengeFinishedMessages(challenge, winner);
+            challengeService.deleteChallenge(challenge.getId());
+        }
+    }
+
+    private void sendChallengeFinishedMessages(Challenge challenge, ChallengeBusinessService.Winner winner) {
+        for (ChallengeParticipant participant : challenge.getChallengeParticipants()) {
+            String message = messageBuilder.getChallengeFinished(participant.getUserId(), challenge, winner, participant.getUser().getLocale());
+            messageService.sendMessageAsync(
+                    new SendMessageContext(PriorityJob.Priority.HIGH)
+                            .chatId(participant.getUserId())
+                            .text(message)
+            );
+        }
+    }
+}

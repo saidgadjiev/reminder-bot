@@ -242,4 +242,28 @@ public class MessageBuilder {
     public String getChallengeCreator(TgUser creator, Locale locale) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_CREATOR, new Object[]{UserUtils.userLink(creator)}, locale);
     }
+
+    public String getChallengeFinishedAt(DateTime finishedAt, Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_FINISHED_AT, new Object[]{timeBuilder.time(finishedAt, locale)}, locale);
+    }
+
+    public String getChallengeParticipants(Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_PARTICIPANTS, locale);
+    }
+
+    public String getChallengeCreated(String challengeName, Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_CREATED, new Object[] {challengeName}, locale);
+    }
+
+    public String getChallengeDetails(String challengeName, Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE, new Object[] {challengeName}, locale);
+    }
+
+    public String getChallengeFinished(String challengeName, Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_FINISHED, new Object[] {challengeName}, locale);
+    }
+
+    public String getChallengeWinner(TgUser winner, int scores, Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_WINNER, new Object[] {UserUtils.userLink(winner), scores}, locale);
+    }
 }

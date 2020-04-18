@@ -52,7 +52,7 @@ public class ChallengeDetailsCommand implements CallbackBotCommand {
         int challengeId = requestParams.getInt(Arg.CHALLENGE_ID.getKey());
         Challenge challenge = challengeService.getChallenge(challengeId);
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
-        String challengeDetails = messageBuilder.getChallengeCreatedDetails(callbackQuery.getFrom().getId(), MessagesProperties.MESSAGE_CHALLENGE_CREATED, challenge, locale);
+        String challengeDetails = messageBuilder.getChallengeDetails(callbackQuery.getFrom().getId(), challenge, locale);
 
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)

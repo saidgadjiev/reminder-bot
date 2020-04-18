@@ -21,11 +21,10 @@ import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeCreator;
 
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ChallengeService {
@@ -52,6 +51,10 @@ public class ChallengeService {
         this.userService = userService;
         this.timeCreator = timeCreator;
         this.reminderRequestService = reminderRequestService;
+    }
+
+    public void deleteChallenge(int challengeId) {
+        challengeDao.delete(challengeId);
     }
 
     public List<Challenge> getUserChallenges(int userId) {

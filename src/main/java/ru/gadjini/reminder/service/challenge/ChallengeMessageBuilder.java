@@ -11,7 +11,6 @@ import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.message.MessageBuilder;
-import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.util.List;
@@ -25,20 +24,33 @@ public class ChallengeMessageBuilder {
 
     private LocalisationService localisationService;
 
-    private TimeBuilder timeBuilder;
-
     private FriendshipService friendshipService;
 
     private MessageBuilder messageBuilder;
 
     @Autowired
     public ChallengeMessageBuilder(FriendshipMessageBuilder friendshipMessageBuilder, LocalisationService localisationService,
-                                   TimeBuilder timeBuilder, FriendshipService friendshipService, MessageBuilder messageBuilder) {
+                                   FriendshipService friendshipService, MessageBuilder messageBuilder) {
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.localisationService = localisationService;
-        this.timeBuilder = timeBuilder;
         this.friendshipService = friendshipService;
         this.messageBuilder = messageBuilder;
+    }
+
+    public String getChallengeFinished(int requesterId, Challenge challenge, ChallengeBusinessService.Winner winner, Locale locale) {
+        StringBuilder message = new StringBuilder();
+        message
+                .append(messageBuilder.getChallengeFinished(challenge.getName(), locale)).append("\n");
+
+        if (winner.getWinnerState() == ChallengeBusinessService.WinnerState.WINNER) {
+            message.append(messageBuilder.getChallengeWinner(winner.getWinner().getUser(), winner.getWinner().getTotalSeries(), locale)).append("\n");
+        }
+
+        message.append(messageBuilder.getChallengeCreator(challenge.getCreator(), locale)).append("\n")
+                .append(messageBuilder.getChallengeParticipants(locale)).append("\n")
+                .append(getParticipants(requesterId, challenge.getChallengeParticipants(), locale));
+
+        return message.toString();
     }
 
     public String getUserChallenges(List<Challenge> challenges, Locale locale) {
@@ -56,23 +68,25 @@ public class ChallengeMessageBuilder {
         return message.toString();
     }
 
-    public String getChallengeCreatedDetails(int requesterId, String headerCode, Challenge challenge, Locale locale) {
+    public String getChallengeDetails(int requesterId, Challenge challenge, Locale locale) {
         StringBuilder message = new StringBuilder();
         message
-                .append(localisationService.getMessage(headerCode, new Object[]{challenge.getName()}, locale))
-                .append("\n");
+                .append(messageBuilder.getChallengeDetails(challenge.getName(), locale)).append("\n")
+                .append(messageBuilder.getChallengeFinishedAt(challenge.getFinishedAt(), locale)).append("\n")
+                .append(messageBuilder.getChallengeCreator(challenge.getCreator(), locale)).append("\n")
+                .append(messageBuilder.getChallengeParticipants(locale)).append("\n")
+                .append(getParticipants(requesterId, challenge.getChallengeParticipants(), locale));
 
-        message
-                .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_FINISHED_AT, new Object[]{timeBuilder.time(challenge.getFinishedAt(), challenge.getCreator().getLocale())}, locale))
-                .append("\n");
+        return message.toString();
+    }
 
+    public String getChallengeCreatedDetails(int requesterId, Challenge challenge, Locale locale) {
+        StringBuilder message = new StringBuilder();
         message
-                .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_CREATOR, new Object[]{UserUtils.userLink(challenge.getCreator())}, locale))
-                .append("\n");
-
-        message
-                .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_PARTICIPANTS, locale))
-                .append("\n")
+                .append(messageBuilder.getChallengeCreated(challenge.getName(), locale)).append("\n")
+                .append(messageBuilder.getChallengeFinishedAt(challenge.getFinishedAt(), locale)).append("\n")
+                .append(messageBuilder.getChallengeCreator(challenge.getCreator(), locale)).append("\n")
+                .append(messageBuilder.getChallengeParticipants(locale)).append("\n")
                 .append(getParticipants(requesterId, challenge.getChallengeParticipants(), locale));
 
         return message.toString();

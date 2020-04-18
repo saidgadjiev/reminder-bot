@@ -9,6 +9,8 @@ import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -82,6 +84,27 @@ public class ChallengeDao {
                     }
                     return null;
                 }
+        );
+    }
+
+    public List<Challenge> getChallenges(LocalDateTime localDateTime) {
+        return namedParameterJdbcTemplate.query(
+                "SELECT ch.*, (ch.finished_at).*, cr.name as cr_name\n" +
+                        "FROM challenge ch\n" +
+                        "         INNER JOIN tg_user cr on ch.creator_id = cr.user_id\n" +
+                        "WHERE CASE\n" +
+                        "          WHEN (ch.finished_at).dt_time IS NULL THEN (ch.finished_at).dt_date <\n" +
+                        "                                                     (:datetime AT TIME ZONE 'UTC' AT TIME ZONE cr.zone_id)::date\n" +
+                        "          ELSE (ch.finished_at).dt_date + (ch.finished_at).dt_time < :datetime END",
+                new MapSqlParameterSource().addValue("datetime", Timestamp.valueOf(localDateTime)),
+                (rs, rowNum) -> resultSetMapper.mapChallenge(rs)
+        );
+    }
+
+    public void delete(int challengeId) {
+        jdbcTemplate.update(
+                "DELETE FROM challenge WHERE id = ?",
+                ps -> ps.setInt(1, challengeId)
         );
     }
 }

@@ -69,6 +69,7 @@ public class ReminderJob {
         moveReminders();
     }
 
+    //00:00
     @Scheduled(cron = "0 0 0 * * *")
     public void deleteCompletedReminders() {
         int deleted = reminderService.deleteCompletedReminders(timeCreator.localDateTimeNow());
@@ -76,6 +77,7 @@ public class ReminderJob {
         LOGGER.debug("Delete {} completed reminders at {}", deleted, LocalDateTime.now());
     }
 
+    //every hour
     @Scheduled(cron = "0 0 * * * *")
     public void moveReminders() {
         List<Reminder> overdueReminders = repeatReminderService.getOverdueRepeatReminders();
@@ -91,6 +93,7 @@ public class ReminderJob {
         LOGGER.debug("Move reminders finished at {}", LocalDateTime.now());
     }
 
+    //every minute on 10-th second
     @Scheduled(cron = "10 * * * * *")
     public void sendReminders() {
         List<Reminder> reminders = reminderService.getRemindersWithReminderTimes(LocalDateTime.now(), 30);

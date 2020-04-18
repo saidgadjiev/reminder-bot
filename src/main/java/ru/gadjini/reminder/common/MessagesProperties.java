@@ -544,4 +544,8 @@ public class MessagesProperties {
     public static final String MESSAGE_CHALLENGE_ACCEPTED_ANSWER = "message.challenge.accepted.answer";
 
     public static final String MESSAGE_CHALLENGE_REJECTED_ANSWER = "message.challenge.rejected.answer";
+
+    public static final String MESSAGE_CHALLENGE_FINISHED = "message.challenge.finished";
+
+    public static final String MESSAGE_CHALLENGE_WINNER = "message.challenge.winner";
 }
