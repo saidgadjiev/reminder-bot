@@ -9,6 +9,7 @@ import ru.gadjini.reminder.dao.ChallengeDao;
 import ru.gadjini.reminder.dao.ChallengeParticipantDao;
 import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
+import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.UserException;
@@ -16,15 +17,17 @@ import ru.gadjini.reminder.model.CreateChallengeRequest;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
+import ru.gadjini.reminder.service.reminder.ChallengeReminderService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeCreator;
 
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class ChallengeService {
@@ -41,16 +44,20 @@ public class ChallengeService {
 
     private ReminderRequestService reminderRequestService;
 
+    private ChallengeReminderService challengeReminderService;
+
     @Autowired
     public ChallengeService(ChallengeDao challengeDao, ChallengeParticipantDao challengeParticipantDao,
                             LocalisationService localisationService, TgUserService userService,
-                            TimeCreator timeCreator, ReminderRequestService reminderRequestService) {
+                            TimeCreator timeCreator, ReminderRequestService reminderRequestService,
+                            ChallengeReminderService challengeReminderService) {
         this.challengeDao = challengeDao;
         this.challengeParticipantDao = challengeParticipantDao;
         this.localisationService = localisationService;
         this.userService = userService;
         this.timeCreator = timeCreator;
         this.reminderRequestService = reminderRequestService;
+        this.challengeReminderService = challengeReminderService;
     }
 
     public void deleteChallenge(int challengeId) {
@@ -78,7 +85,7 @@ public class ChallengeService {
         List<ChallengeParticipant> challengeParticipants = saveParticipants(creator.getId(), challenge.getId(), participants);
         challenge.setChallengeParticipants(challengeParticipants);
 
-        createCreatorReminder(challenge.getId(), creator, createChallengeRequest.reminderRequest());
+        createCreatorAndChallengeReminder(challenge.getId(), creator, createChallengeRequest.reminderRequest());
 
         return challenge;
     }
@@ -86,7 +93,6 @@ public class ChallengeService {
     private Challenge saveChallenge(int creatorId, CreateChallengeRequest createChallengeRequest) {
         Challenge challenge = new Challenge();
         challenge.setCreatorId(creatorId);
-        challenge.setName(createChallengeRequest.reminderRequest().getText());
         challenge.setFinishedAt(getFinishedAt(createChallengeRequest.challengeTime()).withZoneSameInstant(ZoneOffset.UTC));
         challengeDao.save(challenge);
 
@@ -109,9 +115,10 @@ public class ChallengeService {
         return challengeParticipants;
     }
 
-    private void createCreatorReminder(int challengeId, User creator, ReminderRequest reminderRequest) {
+    private void createCreatorAndChallengeReminder(int challengeId, User creator, ReminderRequest reminderRequest) {
         reminderRequest.setChallengeId(challengeId);
-        reminderRequestService.createReminderFromRequest(creator, reminderRequest);
+        Reminder reminder = reminderRequestService.createReminderFromRequest(creator, reminderRequest);
+        challengeReminderService.createReminder(reminder);
     }
 
     private DateTime getFinishedAt(Time challengeTime) {

@@ -14,11 +14,7 @@ public class Challenge {
 
     public static final String FINISHED_AT = "finished_at";
 
-    public static final String NAME = "name";
-
     private int id;
-
-    private String name;
 
     private int creatorId;
 
@@ -27,6 +23,8 @@ public class Challenge {
     private DateTime finishedAt;
 
     private List<ChallengeParticipant> challengeParticipants;
+
+    private Reminder reminder;
 
     public int getId() {
         return id;
@@ -68,11 +66,11 @@ public class Challenge {
         this.challengeParticipants = challengeParticipants;
     }
 
-    public String getName() {
-        return name;
+    public Reminder getReminder() {
+        return reminder;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setReminder(Reminder reminder) {
+        this.reminder = reminder;
     }
 }

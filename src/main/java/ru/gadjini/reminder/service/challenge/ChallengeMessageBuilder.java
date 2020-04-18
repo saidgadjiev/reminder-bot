@@ -6,11 +6,13 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
+import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.message.MessageBuilder;
+import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.util.List;
@@ -28,19 +30,22 @@ public class ChallengeMessageBuilder {
 
     private MessageBuilder messageBuilder;
 
+    private TimeBuilder timeBuilder;
+
     @Autowired
     public ChallengeMessageBuilder(FriendshipMessageBuilder friendshipMessageBuilder, LocalisationService localisationService,
-                                   FriendshipService friendshipService, MessageBuilder messageBuilder) {
+                                   FriendshipService friendshipService, MessageBuilder messageBuilder, TimeBuilder timeBuilder) {
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.localisationService = localisationService;
         this.friendshipService = friendshipService;
         this.messageBuilder = messageBuilder;
+        this.timeBuilder = timeBuilder;
     }
 
     public String getChallengeFinished(int requesterId, Challenge challenge, ChallengeBusinessService.Winner winner, Locale locale) {
         StringBuilder message = new StringBuilder();
         message
-                .append(messageBuilder.getChallengeFinished(challenge.getName(), locale)).append("\n");
+                .append(messageBuilder.getChallengeFinished(getChallengeName(challenge.getReminder(), locale), locale)).append("\n");
 
         if (winner.getWinnerState() == ChallengeBusinessService.WinnerState.WINNER) {
             message.append(messageBuilder.getChallengeWinner(winner.getWinner().getUser(), winner.getWinner().getTotalSeries(), locale)).append("\n");
@@ -61,7 +66,7 @@ public class ChallengeMessageBuilder {
                 message.append("\n");
             }
             message
-                    .append(i++).append(") ").append(challenge.getName()).append("\n")
+                    .append(i++).append(") ").append(getChallengeName(challenge.getReminder(), locale)).append("\n")
                     .append(messageBuilder.getChallengeCreator(challenge.getCreator(), locale));
         }
 
@@ -71,7 +76,7 @@ public class ChallengeMessageBuilder {
     public String getChallengeDetails(int requesterId, Challenge challenge, Locale locale) {
         StringBuilder message = new StringBuilder();
         message
-                .append(messageBuilder.getChallengeDetails(challenge.getName(), locale)).append("\n")
+                .append(messageBuilder.getChallengeDetails(getChallengeName(challenge.getReminder(), locale), locale)).append("\n")
                 .append(messageBuilder.getChallengeFinishedAt(challenge.getFinishedAt(), locale)).append("\n")
                 .append(messageBuilder.getChallengeCreator(challenge.getCreator(), locale)).append("\n")
                 .append(messageBuilder.getChallengeParticipants(locale)).append("\n")
@@ -83,7 +88,7 @@ public class ChallengeMessageBuilder {
     public String getChallengeCreatedDetails(int requesterId, Challenge challenge, Locale locale) {
         StringBuilder message = new StringBuilder();
         message
-                .append(messageBuilder.getChallengeCreated(challenge.getName(), locale)).append("\n")
+                .append(messageBuilder.getChallengeCreated(getChallengeName(challenge.getReminder(), locale), locale)).append("\n")
                 .append(messageBuilder.getChallengeFinishedAt(challenge.getFinishedAt(), locale)).append("\n")
                 .append(messageBuilder.getChallengeCreator(challenge.getCreator(), locale)).append("\n")
                 .append(messageBuilder.getChallengeParticipants(locale)).append("\n")
@@ -120,7 +125,7 @@ public class ChallengeMessageBuilder {
 
         return localisationService.getMessage(
                 MessagesProperties.MESSAGE_CHALLENGE_INVITATION,
-                new Object[]{UserUtils.userLink(challenge.getCreatorId(), friendName), challenge.getName()},
+                new Object[]{UserUtils.userLink(challenge.getCreatorId(), friendName), getChallengeName(challenge.getReminder(), locale)},
                 locale
         );
     }
@@ -143,5 +148,12 @@ public class ChallengeMessageBuilder {
         }
 
         return participants.toString();
+    }
+
+    private String getChallengeName(Reminder reminder, Locale locale) {
+        StringBuilder message = new StringBuilder();
+        message.append(reminder.getText()).append(" ").append(timeBuilder.time(reminder.getRepeatRemindAts(), locale));
+
+        return message.toString();
     }
 }

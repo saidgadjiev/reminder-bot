@@ -86,7 +86,12 @@ public class ResultSetMapper {
         reminder.setReminderNotifications(new ArrayList<>());
         reminder.setId(rs.getInt(Reminder.ID));
         reminder.setText(rs.getString(Reminder.TEXT));
-        reminder.setReceiverId(rs.getInt(Reminder.RECEIVER_ID));
+
+        int receiverId = rs.getInt(Reminder.RECEIVER_ID);
+        if (!rs.wasNull()) {
+            reminder.setReceiverId(receiverId);
+        }
+
         reminder.setCreatorId(rs.getInt(Reminder.CREATOR_ID));
         reminder.setNote(rs.getString(Reminder.NOTE));
 
@@ -259,12 +264,19 @@ public class ResultSetMapper {
     public Challenge mapChallenge(ResultSet rs) throws SQLException {
         Challenge challenge = new Challenge();
         challenge.setId(rs.getInt(Challenge.ID));
-        challenge.setName(rs.getString(Challenge.NAME));
         challenge.setCreatorId(rs.getInt(Challenge.CREATOR_ID));
         TgUser creator = new TgUser();
         creator.setUserId(challenge.getCreatorId());
         creator.setName(rs.getString("cr_name"));
         challenge.setCreator(creator);
+
+        Reminder reminder = new Reminder();
+        reminder.setText(rs.getString(Reminder.TEXT));
+        String repeatRemindAt = rs.getString(Reminder.REPEAT_REMIND_AT);
+        if (StringUtils.isNotBlank(repeatRemindAt)) {
+            reminder.setRepeatRemindAts(mapRepeatTime(rs));
+        }
+        challenge.setReminder(reminder);
 
         challenge.setFinishedAt(mapDateTime(rs));
 

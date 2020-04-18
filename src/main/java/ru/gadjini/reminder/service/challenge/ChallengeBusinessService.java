@@ -6,14 +6,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.gadjini.reminder.dao.ChallengeDao;
 import ru.gadjini.reminder.dao.ChallengeParticipantDao;
-import ru.gadjini.reminder.dao.ReminderDao;
 import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.jooq.ReminderTable;
-import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
+import ru.gadjini.reminder.service.reminder.ChallengeReminderService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 
 import java.time.LocalDateTime;
@@ -29,18 +27,19 @@ public class ChallengeBusinessService {
 
     private ChallengeDao challengeDao;
 
-    private ReminderDao reminderDao;
+    private ChallengeReminderService challengeReminderService;
 
     private ReminderRequestService reminderRequestService;
 
     private ChallengeService challengeService;
 
     @Autowired
-    public ChallengeBusinessService(ChallengeParticipantDao participantDao, ChallengeDao challengeDao, ReminderDao reminderDao,
+    public ChallengeBusinessService(ChallengeParticipantDao participantDao, ChallengeDao challengeDao,
+                                    ChallengeReminderService challengeReminderService,
                                     ReminderRequestService reminderRequestService, ChallengeService challengeService) {
         this.participantDao = participantDao;
         this.challengeDao = challengeDao;
-        this.reminderDao = reminderDao;
+        this.challengeReminderService = challengeReminderService;
         this.reminderRequestService = reminderRequestService;
         this.challengeService = challengeService;
     }
@@ -59,9 +58,7 @@ public class ChallengeBusinessService {
     @Transactional
     public Challenge acceptChallenge(User participant, int challengeId) {
         participantDao.updateInvitationAccepted(participant.getId(), challengeId, true);
-        Reminder challengeReminder = reminderDao.getReminder(ReminderTable.TABLE.as("r").CHALLENGE_ID.eq(challengeId),
-                new ReminderMapping()
-        );
+        Reminder challengeReminder = challengeReminderService.getReminder(challengeId);
         ReminderRequest reminderRequest = createReminderRequest(challengeReminder, participant.getId());
         reminderRequestService.createReminderFromRequest(participant, reminderRequest);
 

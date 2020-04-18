@@ -308,7 +308,11 @@ public class ReminderDao {
 
                     ps.setString(1, reminder.getText());
                     ps.setInt(2, reminder.getCreatorId());
-                    ps.setInt(3, reminder.getReceiverId());
+                    if (reminder.getReceiverId() != null) {
+                        ps.setInt(3, reminder.getReceiverId());
+                    } else {
+                        ps.setNull(3, Types.INTEGER);
+                    }
                     ps.setObject(4, reminder.getRemindAt().sqlObject());
 
                     Object[] repeatTimes = reminder.getRepeatRemindAts() != null ? reminder.getRepeatRemindAts().stream().map(RepeatTime::sqlObject).toArray() : null;

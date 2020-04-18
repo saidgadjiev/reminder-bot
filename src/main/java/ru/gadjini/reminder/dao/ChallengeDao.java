@@ -32,15 +32,14 @@ public class ChallengeDao {
     public void save(Challenge challenge) {
         jdbcTemplate.query(
                 "WITH challenge AS (\n" +
-                        "    INSERT INTO challenge (name, creator_id, finished_at) VALUES (?, ?, ?) RETURNING id, creator_id\n" +
+                        "    INSERT INTO challenge (creator_id, finished_at) VALUES (?, ?) RETURNING id, creator_id\n" +
                         ")\n" +
                         "SELECT challenge.id, usr.name\n" +
                         "FROM tg_user usr\n" +
                         "         INNER JOIN challenge ON usr.user_id = challenge.creator_id",
                 ps -> {
-                    ps.setString(1, challenge.getName());
-                    ps.setInt(2, challenge.getCreatorId());
-                    ps.setObject(3, challenge.getFinishedAt().sqlObject());
+                    ps.setInt(1, challenge.getCreatorId());
+                    ps.setObject(2, challenge.getFinishedAt().sqlObject());
                 },
                 rs -> {
                     TgUser creator = new TgUser();
@@ -60,8 +59,11 @@ public class ChallengeDao {
                         "           WHEN ch.creator_id = :user_id THEN cr.name\n" +
                         "           ELSE CASE\n" +
                         "                    WHEN ch.creator_id = f.user_one_id THEN f.user_one_name\n" +
-                        "                    ELSE f.user_two_name END END AS cr_name\n" +
+                        "                    ELSE f.user_two_name END END AS cr_name,\n" +
+                        "       r.reminder_text,\n" +
+                        "       r.repeat_remind_at\n" +
                         "FROM challenge ch\n" +
+                        "         INNER JOIN reminder r ON ch.id = r.challenge_id AND r.creator_id IS NULL AND r.receiver_id IS NULL\n" +
                         "         INNER JOIN tg_user cr ON ch.creator_id = cr.user_id\n" +
                         "         LEFT JOIN friendship f ON CASE\n" +
                         "                                       WHEN ch.creator_id = f.user_one_id THEN :user_id = f.user_two_id\n" +
@@ -74,9 +76,13 @@ public class ChallengeDao {
 
     public Challenge getById(int id) {
         return jdbcTemplate.query(
-                "SELECT ch.*, (ch.finished_at).*, cr.name as cr_name\n" +
+                "SELECT ch.*, (ch.finished_at).*, cr.name as cr_name,\n" +
+                        "       r.reminder_text,\n" +
+                        "       r.repeat_remind_at\n" +
                         "FROM challenge ch\n" +
-                        "         INNER JOIN tg_user cr on ch.creator_id = cr.user_id WHERE ch.id = ?",
+                        "         INNER JOIN reminder r ON ch.id = r.challenge_id AND r.creator_id IS NULL AND r.receiver_id IS NULL\n" +
+                        "         INNER JOIN tg_user cr on ch.creator_id = cr.user_id\n" +
+                        "WHERE ch.id = ?",
                 ps -> ps.setInt(1, id),
                 rs -> {
                     if (rs.next()) {
@@ -89,8 +95,9 @@ public class ChallengeDao {
 
     public List<Challenge> getChallenges(LocalDateTime localDateTime) {
         return namedParameterJdbcTemplate.query(
-                "SELECT ch.*, (ch.finished_at).*, cr.name as cr_name\n" +
+                "SELECT ch.*, (ch.finished_at).*, cr.name as cr_name, r.reminder_text, r.repeat_remind_at\n" +
                         "FROM challenge ch\n" +
+                        "         INNER JOIN reminder r ON ch.id = r.challenge_id AND r.creator_id IS NULL AND r.receiver_id IS NULL\n" +
                         "         INNER JOIN tg_user cr on ch.creator_id = cr.user_id\n" +
                         "WHERE CASE\n" +
                         "          WHEN (ch.finished_at).dt_time IS NULL THEN (ch.finished_at).dt_date <\n" +

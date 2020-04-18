@@ -1,7 +1,6 @@
 CREATE TABLE IF NOT EXISTS challenge
 (
     id          SERIAL PRIMARY KEY,
-    name        TEXT,
     creator_id  INT      NOT NULL REFERENCES tg_user (user_id) ON DELETE CASCADE,
     finished_at datetime NOT NULL
 );
@@ -16,3 +15,8 @@ CREATE TABLE IF NOT EXISTS challenge_participant
 
 ALTER TABLE reminder
     ADD COLUMN challenge_id INT REFERENCES challenge (id) ON DELETE CASCADE;
+ALTER TABLE reminder
+    ALTER COLUMN receiver_id DROP NOT NULL;
+
+ALTER TABLE reminder
+    ALTER COLUMN creator_id DROP NOT NULL;

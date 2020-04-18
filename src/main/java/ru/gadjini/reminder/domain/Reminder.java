@@ -63,11 +63,11 @@ public class Reminder {
 
     private String text;
 
-    private int creatorId;
+    private Integer creatorId;
 
     private TgUser creator;
 
-    private int receiverId;
+    private Integer receiverId;
 
     private TgUser receiver;
 
@@ -168,19 +168,19 @@ public class Reminder {
         this.text = text;
     }
 
-    public int getCreatorId() {
+    public Integer getCreatorId() {
         return creatorId;
     }
 
-    public void setCreatorId(int creatorId) {
+    public void setCreatorId(Integer creatorId) {
         this.creatorId = creatorId;
     }
 
-    public int getReceiverId() {
+    public Integer getReceiverId() {
         return receiverId;
     }
 
-    public void setReceiverId(int receiverId) {
+    public void setReceiverId(Integer receiverId) {
         this.receiverId = receiverId;
     }
 
