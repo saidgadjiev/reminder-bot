@@ -29,13 +29,16 @@ public class ChallengeParticipantDao {
     }
 
     public Map<Integer, List<ChallengeParticipant>> getParticipants(Collection<Integer> challenges) {
+        if (challenges.isEmpty()) {
+            return Collections.emptyMap();
+        }
         return namedParameterJdbcTemplate.query(
                 "SELECT chpr.*, pr.name as pr_name, r.total_series\n" +
                         "FROM challenge_participant chpr\n" +
                         "         INNER JOIN tg_user pr on chpr.user_id = pr.user_id\n" +
                         "         LEFT JOIN reminder r on chpr.user_id = r.creator_id AND chpr.user_id = r.receiver_id AND\n" +
                         "                                 chpr.challenge_id = r.challenge_id\n" +
-                        "WHERE chpr.challenge_id IN (:ids) ORDER BY r.total_series, pr.name",
+                        "WHERE chpr.challenge_id IN (:ids) ORDER BY r.total_series DESC, pr.name",
                 new MapSqlParameterSource().addValue("ids", challenges),
                 rs -> {
                     Map<Integer, List<ChallengeParticipant>> result = new LinkedHashMap<>();
@@ -58,7 +61,7 @@ public class ChallengeParticipantDao {
                         "         INNER JOIN tg_user pr on chpr.user_id = pr.user_id\n" +
                         "         LEFT JOIN reminder r on chpr.user_id = r.creator_id AND chpr.user_id = r.receiver_id AND\n" +
                         "                                 chpr.challenge_id = r.challenge_id\n" +
-                        "WHERE chpr.challenge_id = ? ORDER BY r.total_series, pr.name",
+                        "WHERE chpr.challenge_id = ? ORDER BY r.total_series DESC, pr.name",
                 ps -> ps.setInt(1, challengeId),
                 (rs, rowNum) -> resultSetMapper.mapChallengeParticipant(rs)
         );

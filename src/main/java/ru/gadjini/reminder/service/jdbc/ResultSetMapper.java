@@ -89,6 +89,11 @@ public class ResultSetMapper {
         reminder.setReceiverId(rs.getInt(Reminder.RECEIVER_ID));
         reminder.setCreatorId(rs.getInt(Reminder.CREATOR_ID));
         reminder.setNote(rs.getString(Reminder.NOTE));
+
+        int challengeId = rs.getInt(Reminder.CHALLENGE_ID);
+        if (!rs.wasNull()) {
+            reminder.setChallengeId(challengeId);
+        }
         if (columnNames.contains(Reminder.MESSAGE_ID)) {
             reminder.setMessageId(rs.getInt(Reminder.MESSAGE_ID));
         }
