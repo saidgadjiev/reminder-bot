@@ -11,10 +11,7 @@ import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JdbcUtils;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.DayOfWeek;
 import java.time.Month;
 import java.time.ZoneOffset;
@@ -285,8 +282,13 @@ public class ResultSetMapper {
 
     private DateTime mapDateTime(ResultSet rs) throws SQLException {
         Time time = rs.getTime(DateTime.TIME);
+        Date date = rs.getDate(DateTime.DATE);
 
-        return DateTime.of(rs.getDate(DateTime.DATE).toLocalDate(), time == null ? null : time.toLocalTime(), ZoneOffset.UTC);
+        if (time == null && date == null) {
+            return null;
+        }
+
+        return DateTime.of(date == null ? null : date.toLocalDate(), time == null ? null : time.toLocalTime(), ZoneOffset.UTC);
     }
 
     private List<RepeatTime> mapRepeatTime(ResultSet rs) throws SQLException {

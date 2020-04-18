@@ -535,7 +535,10 @@ public class InlineKeyboardService {
 
         int reminderId = reminder.getId();
         Locale locale = reminder.getReceiver().getLocale();
-        if (reminder.isRepeatable()) {
+        if (reminder.isRepeatableWithoutTime()) {
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminderId, locale), buttonFactory.cancelReminderButton(reminderId, locale)));
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminderId, CommandNames.REMINDER_DETAILS_COMMAND_NAME, locale), buttonFactory.stopRepeatReminderButton(reminderId, locale)));
+        } else if (reminder.isRepeatable()) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminderId, locale), buttonFactory.cancelReminderButton(reminderId, locale)));
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.skipRepeatReminderButton(reminderId, locale), buttonFactory.stopRepeatReminderButton(reminderId, locale)));
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.returnReminderButton(reminderId, locale), buttonFactory.customReminderTimeButton(reminderId, CommandNames.REMINDER_DETAILS_COMMAND_NAME, locale)));

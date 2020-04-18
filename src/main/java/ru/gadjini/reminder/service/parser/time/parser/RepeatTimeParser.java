@@ -7,6 +7,7 @@ import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
+import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -16,6 +17,8 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class RepeatTimeParser {
@@ -40,6 +43,18 @@ public class RepeatTimeParser {
     }
 
     public List<RepeatTime> parse(List<BaseLexem> lexems) {
+        List<RepeatTime> repeatTimes = parse0(lexems);
+
+        repeatTimes.forEach(repeatTime -> {
+            if (TimeUtils.isEmptyInterval(repeatTime.getInterval())) {
+                repeatTime.setInterval(null);
+            }
+        });
+
+        return repeatTimes;
+    }
+
+    public List<RepeatTime> parse0(List<BaseLexem> lexems) {
         repeatTime = new RepeatTime(zoneId);
         repeatTime.setInterval(new Period());
         repeatTimes.add(repeatTime);

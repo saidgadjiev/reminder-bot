@@ -24,7 +24,7 @@ public class ReminderTimeBuilder {
         if (reminder.isInactive()) {
             return "<b>" + timeBuilder.deactivated(locale) + "</b>";
         }
-        if (reminder.isRepeatable()) {
+        if (reminder.isRepeatable() || reminder.isRepeatableWithoutTime()) {
             return timeBuilder.time(reminder.getRepeatRemindAtsInReceiverZone(timeCreator), locale);
         } else {
             return timeBuilder.time(reminder.getRemindAtInReceiverZone(), locale);

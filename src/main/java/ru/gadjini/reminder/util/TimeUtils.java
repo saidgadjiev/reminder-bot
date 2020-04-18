@@ -13,4 +13,15 @@ public class TimeUtils {
                 || period.getMonths() != 0
                 || period.getWeeks() != 0;
     }
+
+    public static boolean isEmptyInterval(Period period) {
+        int[] values = period.getValues();
+        for (int value : values) {
+            if (value != 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

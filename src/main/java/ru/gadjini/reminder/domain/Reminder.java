@@ -153,7 +153,7 @@ public class Reminder {
     }
 
     public DateTime getRemindAtInReceiverZone() {
-        return remindAt.withZoneSameInstant(receiver.getZone());
+        return remindAt != null ? remindAt.withZoneSameInstant(receiver.getZone()) : null;
     }
 
     public void setRemindAt(DateTime remindAt) {
@@ -241,7 +241,7 @@ public class Reminder {
     }
 
     public boolean isRepeatable() {
-        return repeatRemindAts != null;
+        return repeatRemindAts != null && !isRepeatableWithoutTime();
     }
 
     public RepeatTime getRepeatRemindAt() {
@@ -387,6 +387,10 @@ public class Reminder {
 
     public void setChallengeId(Integer challengeId) {
         this.challengeId = challengeId;
+    }
+
+    public boolean isRepeatableWithoutTime() {
+        return repeatRemindAts != null && getRepeatRemindAts().get(0).isEmpty();
     }
 
     public Map<Field<?>, Object> getDiff(Reminder newReminder) {

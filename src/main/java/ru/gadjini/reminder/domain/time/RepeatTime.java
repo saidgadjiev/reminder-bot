@@ -104,6 +104,10 @@ public class RepeatTime {
         return interval != null;
     }
 
+    public boolean isEmpty() {
+        return !hasDayOfWeek() && !hasInterval() && !hasTime();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -145,6 +149,8 @@ public class RepeatTime {
         }
         if (interval != null) {
             sql.append(JodaTimeUtils.toSqlInterval(interval)).append(",");
+        } else {
+            sql.append(",");
         }
         if (month == null) {
             sql.append(",");

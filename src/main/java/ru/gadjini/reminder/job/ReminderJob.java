@@ -25,7 +25,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-@Component
+//@Component
 @Profile("!" + BotConfiguration.PROFILE_TEST)
 public class ReminderJob {
 

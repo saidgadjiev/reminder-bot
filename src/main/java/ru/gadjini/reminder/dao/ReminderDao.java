@@ -313,12 +313,20 @@ public class ReminderDao {
                     } else {
                         ps.setNull(3, Types.INTEGER);
                     }
-                    ps.setObject(4, reminder.getRemindAt().sqlObject());
+                    if (reminder.getRemindAt() != null) {
+                        ps.setObject(4, reminder.getRemindAt().sqlObject());
+                    } else {
+                        ps.setNull(4, Types.OTHER);
+                    }
 
                     Object[] repeatTimes = reminder.getRepeatRemindAts() != null ? reminder.getRepeatRemindAts().stream().map(RepeatTime::sqlObject).toArray() : null;
                     Array array = con.createArrayOf(RepeatTime.TYPE, repeatTimes);
                     ps.setArray(5, array);
-                    ps.setObject(6, reminder.getRemindAt().sqlObject());
+                    if (reminder.getRemindAt() != null) {
+                        ps.setObject(6, reminder.getRemindAt().sqlObject());
+                    } else {
+                        ps.setNull(6, Types.OTHER);
+                    }
                     ps.setString(7, reminder.getNote());
                     ps.setInt(8, reminder.getMessageId());
                     ps.setBoolean(9, reminder.isRead());
@@ -368,13 +376,21 @@ public class ReminderDao {
 
                     ps.setString(1, reminder.getText());
                     ps.setInt(2, reminder.getCreatorId());
-                    ps.setObject(3, reminder.getRemindAt().sqlObject());
+                    if (reminder.getRemindAt() != null) {
+                        ps.setObject(3, reminder.getRemindAt().sqlObject());
+                    } else {
+                        ps.setNull(3, Types.OTHER);
+                    }
 
                     Object[] repeatTimes = reminder.getRepeatRemindAts() != null ? reminder.getRepeatRemindAts().stream().map(RepeatTime::sqlObject).toArray() : null;
                     Array array = con.createArrayOf(RepeatTime.TYPE, repeatTimes);
                     ps.setArray(4, array);
 
-                    ps.setObject(5, reminder.getRemindAt().sqlObject());
+                    if (reminder.getRemindAt() != null) {
+                        ps.setObject(5, reminder.getRemindAt().sqlObject());
+                    } else {
+                        ps.setNull(5, Types.OTHER);
+                    }
                     ps.setString(6, reminder.getNote());
                     ps.setInt(7, reminder.getMessageId());
                     ps.setBoolean(8, reminder.isRead());

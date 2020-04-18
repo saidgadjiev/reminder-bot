@@ -104,7 +104,7 @@ public class RepeatReminderService {
 
     RemindAtCandidate getFirstRemindAt(List<RepeatTime> repeatTimes) {
         DateTime firstRemindAt = getFirstRemindAt(repeatTimes.get(0));
-        int index = 0;
+        Integer index = null;
 
         if (repeatTimes.size() > 1) {
             for (int i = 1; i < repeatTimes.size(); ++i) {
@@ -528,10 +528,12 @@ public class RepeatReminderService {
 
         if (repeatTime.isEveryWeeklyTime()) {
             addWeeklyReminderNotificationsWithoutTime(repeatTime, receiverId, reminderNotifications);
-        } else if (TimeUtils.isBigInterval(repeatTime.getInterval())) {
-            addWeeklyMonthlyOrYearlyOrDailyReminderNotificationsWithoutTime(repeatTime, receiverId, reminderNotifications);
-        } else {
-            addIntervalReminderNotifications(repeatTime, receiverId, reminderNotifications);
+        } else if (repeatTime.getInterval() != null) {
+            if (TimeUtils.isBigInterval(repeatTime.getInterval())) {
+                addWeeklyMonthlyOrYearlyOrDailyReminderNotificationsWithoutTime(repeatTime, receiverId, reminderNotifications);
+            } else {
+                addIntervalReminderNotifications(repeatTime, receiverId, reminderNotifications);
+            }
         }
 
         return reminderNotifications;
@@ -650,30 +652,34 @@ public class RepeatReminderService {
     private DateTime getFirstRemindAt(RepeatTime repeatTime) {
         if (repeatTime.hasDayOfWeek()) {
             return getDayOfWeekFirstRemindAt(repeatTime);
-        } else if (repeatTime.getInterval().getDays() != 0
-                || repeatTime.getInterval().getWeeks() != 0) {
-            return getWeeklyDailyFirstRemindAt(repeatTime);
-        } else if (repeatTime.getInterval().getMonths() != 0) {
-            return getMonthlyFirstRemindAt(repeatTime);
-        } else if (repeatTime.getInterval().getYears() != 0) {
-            return getYearlyFirstRemindAt(repeatTime);
+        } else if (repeatTime.hasInterval()) {
+            if (repeatTime.getInterval().getDays() != 0
+                    || repeatTime.getInterval().getWeeks() != 0) {
+                return getWeeklyDailyFirstRemindAt(repeatTime);
+            } else if (repeatTime.getInterval().getMonths() != 0) {
+                return getMonthlyFirstRemindAt(repeatTime);
+            } else if (repeatTime.getInterval().getYears() != 0) {
+                return getYearlyFirstRemindAt(repeatTime);
+            } else {
+                return getIntervalFirstRemindAt(repeatTime);
+            }
         } else {
-            return getIntervalFirstRemindAt(repeatTime);
+            return null;
         }
     }
 
     public static class RemindAtCandidate {
 
-        private int index;
+        private Integer index;
 
         private DateTime remindAt;
 
-        private RemindAtCandidate(int index, DateTime remindAt) {
+        private RemindAtCandidate(Integer index, DateTime remindAt) {
             this.index = index;
             this.remindAt = remindAt;
         }
 
-        public int getIndex() {
+        public Integer getIndex() {
             return index;
         }
 

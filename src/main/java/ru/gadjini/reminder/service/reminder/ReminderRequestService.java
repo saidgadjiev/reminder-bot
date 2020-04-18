@@ -253,7 +253,7 @@ public class ReminderRequestService {
         } else {
             reminder.setRepeatRemindAts(timeCreator.withZone(time.getRepeatTimes(), ZoneOffset.UTC));
             RepeatReminderService.RemindAtCandidate firstRemindAtInReceiverZone = repeatReminderService.getFirstRemindAt(reminder.getRepeatRemindAtsInReceiverZone(timeCreator));
-            reminder.setRemindAt(firstRemindAtInReceiverZone.getRemindAt().withZoneSameInstant(ZoneOffset.UTC));
+            reminder.setRemindAt(firstRemindAtInReceiverZone.getRemindAt() != null ? firstRemindAtInReceiverZone.getRemindAt().withZoneSameInstant(ZoneOffset.UTC) : null);
             reminder.setCurrRepeatIndex(firstRemindAtInReceiverZone.getIndex());
         }
     }
