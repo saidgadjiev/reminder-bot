@@ -539,6 +539,8 @@ public class MessagesProperties {
 
     public static final String OPEN_CHALLENGE_DETAILS_COMMAND_DESCRIPTION = "open.challenge.details.command.description";
 
+    public static final String OPEN_CHALLENGE_DETAILS_FROM_REMINDER_COMMAND_DESCRIPTION = "open.challenge.details.from.reminder.command.description";
+
     public static final String GET_CHALLENGES_COMMAND_NAME = "get.challenges.command.name";
 
     public static final String MESSAGE_CHALLENGE_ACCEPTED_ANSWER = "message.challenge.accepted.answer";
@@ -548,4 +550,6 @@ public class MessagesProperties {
     public static final String MESSAGE_CHALLENGE_FINISHED = "message.challenge.finished";
 
     public static final String MESSAGE_CHALLENGE_WINNER = "message.challenge.winner";
+
+    public static final String MESSAGE_CHALLENGE_REMINDER = "message.challenge.reminder";
 }

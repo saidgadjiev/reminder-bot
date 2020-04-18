@@ -266,4 +266,8 @@ public class MessageBuilder {
     public String getChallengeWinner(TgUser winner, int scores, Locale locale) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_WINNER, new Object[] {UserUtils.userLink(winner), scores}, locale);
     }
+
+    public String getReminderChallenge(Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_REMINDER, locale);
+    }
 }

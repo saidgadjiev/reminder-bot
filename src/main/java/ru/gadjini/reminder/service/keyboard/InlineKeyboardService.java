@@ -22,6 +22,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 @Service
 public class InlineKeyboardService {
@@ -459,6 +460,27 @@ public class InlineKeyboardService {
         return keyboardMarkup;
     }
 
+    private InlineKeyboardMarkup getChallengeReminderDetailsKeyboard(Reminder reminder, RequestParams requestParams) {
+        InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
+        Locale locale = reminder.getReceiver().getLocale();
+
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminder.getId(), locale), buttonFactory.customReminderTimeButton(reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, locale)));
+        if (!reminder.isSuppressNotifications()) {
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.suppressNotifications(reminder.getId(), locale)));
+        }
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderTimesScheduleButton(reminder.getId(), locale)));
+        if (reminder.isCountSeries()) {
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.disableCountSeries(reminder.getId(), locale)));
+        } else {
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.enableCountSeries(reminder.getId(), locale)));
+        }
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.openChallengeDetailsFromReminder(reminder.getChallengeId(), locale)));
+
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME, requestParams, locale)));
+
+        return keyboardMarkup;
+    }
+
     private InlineKeyboardMarkup getMySelfReminderDetailsKeyboard(Reminder reminder, RequestParams requestParams) {
         InlineKeyboardMarkup keyboardMarkup = getInitialReceiverReminderDetailsKeyboard(reminder);
 
@@ -466,12 +488,13 @@ public class InlineKeyboardService {
 
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME, requestParams, reminder.getReceiver().getLocale())));
 
-
         return keyboardMarkup;
     }
 
     public InlineKeyboardMarkup getReminderDetailsKeyboard(int currUserId, RequestParams requestParams, Reminder reminder) {
-        if (reminder.getCreatorId() == reminder.getReceiverId()) {
+        if (reminder.getChallengeId() != null) {
+            return getChallengeReminderDetailsKeyboard(reminder, requestParams);
+        } else if (Objects.equals(reminder.getCreatorId(), reminder.getReceiverId())) {
             return getMySelfReminderDetailsKeyboard(reminder, requestParams);
         } else if (currUserId == reminder.getReceiverId()) {
             return getReceiverReminderDetailsKeyboard(reminder, requestParams);

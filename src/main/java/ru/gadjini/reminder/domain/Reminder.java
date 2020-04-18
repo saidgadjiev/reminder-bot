@@ -273,11 +273,11 @@ public class Reminder {
     }
 
     public boolean isMySelf() {
-        return creatorId == receiverId;
+        return Objects.equals(creatorId, receiverId);
     }
 
     public boolean isNotMySelf() {
-        return creatorId != receiverId;
+        return !Objects.equals(creatorId, receiverId);
     }
 
     public int getMessageId() {
