@@ -25,6 +25,13 @@ class PatternBuilderTest {
     private PatternBuilder patternBuilder;
 
     @Test
+    void buildRepeatWordPattern() {
+        GroupPattern repeatWordPattern = patternBuilder.buildRepeatWordPattern(LOCALE);
+
+        Assert.assertEquals(Patterns.REPEAT_WORD_PATTERN.pattern(), repeatWordPattern.getPattern());
+    }
+
+    @Test
     void buildRepeatTimePattern() {
         GroupPattern timePattern = patternBuilder.buildRepeatTimePattern(LOCALE);
 

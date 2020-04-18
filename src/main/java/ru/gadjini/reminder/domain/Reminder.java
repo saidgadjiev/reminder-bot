@@ -241,7 +241,7 @@ public class Reminder {
     }
 
     public boolean isRepeatable() {
-        return repeatRemindAts != null && repeatRemindAts.size() > 0;
+        return repeatRemindAts != null;
     }
 
     public RepeatTime getRepeatRemindAt() {

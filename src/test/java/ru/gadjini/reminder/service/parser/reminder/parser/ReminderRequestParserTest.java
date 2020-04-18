@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigura
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.common.TestConstants;
+import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
@@ -17,6 +18,7 @@ import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderLexem;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderToken;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
+import ru.gadjini.reminder.service.parser.time.parser.TimeParser;
 import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.DayOfWeek;
@@ -27,6 +29,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+
+import static ru.gadjini.reminder.service.parser.time.lexer.TimeToken.REPEAT;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class, TimeCreator.class})
@@ -103,6 +107,15 @@ class ReminderRequestParserTest {
         Assert.assertEquals(new Period().withYears(2).withMonths(2).withDays(2), request.getOffsetTime().getPeriod());
         Assert.assertEquals(TestConstants.TEST_ZONE, request.getZone());
         Assert.assertEquals(LocalTime.of(19, 30), request.getOffsetTime().getTime());
+    }
+
+    @Test
+    void matchRepeatWithoutTime() {
+        ReminderRequestParser parser = new ReminderRequestParser(localisationService, LOCALE, TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
+        ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(REPEAT, "")));
+
+        Assert.assertEquals(request.getText(), "Тест");
+        Assert.assertTrue(request.getTime().isRepeatTime());
     }
 
     private List<BaseLexem> lexems(BaseLexem... lexems) {

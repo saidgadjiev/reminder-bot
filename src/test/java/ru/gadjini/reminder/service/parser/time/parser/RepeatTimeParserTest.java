@@ -201,6 +201,15 @@ class RepeatTimeParserTest {
         Assert.assertEquals(LocalTime.of(20, 0), parse.getRepeatTimes().get(1).getTime());
     }
 
+    @Test
+    void matchRepeatWithoutTime() {
+        TimeParser parser = parser();
+        Time parsed = parser.parse(lexems(new TimeLexem(REPEAT, "")));
+        Assert.assertTrue(parsed.isRepeatTime());
+
+        Assert.assertNull(parsed.getRepeatTimes().get(0).getTime());
+    }
+
     private List<BaseLexem> lexems(BaseLexem... lexems) {
         return new LinkedList<>(Arrays.asList(lexems));
     }

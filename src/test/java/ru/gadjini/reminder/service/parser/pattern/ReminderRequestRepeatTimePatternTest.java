@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -239,6 +240,13 @@ class ReminderRequestRepeatTimePatternTest {
     void matchRepeatRepeat() {
         String str = "Тест каждый вторник 19:00 среду 20:00 пятницу";
         int end = repeatTimeMatch(str, Arrays.asList(Map.of(DAY_OF_WEEK_WORD, "пятницу"), Map.of(DAY_OF_WEEK_WORD, "среду", HOUR, "20", MINUTE, "00"), Map.of(DAY_OF_WEEK_WORD, "вторник", HOUR, "19", MINUTE, "00")));
+        Assert.assertEquals("Тест", str.substring(0, end).trim());
+    }
+
+    @Test
+    void matchRepeatWithoutTime() {
+        String str = "Тест повторять";
+        int end = repeatTimeMatch(str, Collections.emptyList());
         Assert.assertEquals("Тест", str.substring(0, end).trim());
     }
 }

@@ -42,6 +42,7 @@ public class RepeatTimeParser {
     public List<RepeatTime> parse(List<BaseLexem> lexems) {
         repeatTime = new RepeatTime(zoneId);
         repeatTime.setInterval(new Period());
+        repeatTimes.add(repeatTime);
 
         if (lexemsConsumer.check(lexems, TimeToken.YEARS)) {
             consumeYears(lexems);
@@ -64,7 +65,6 @@ public class RepeatTimeParser {
         } else {
             return repeatTimes;
         }
-        repeatTimes.add(repeatTime);
 
         return parse(lexems);
     }

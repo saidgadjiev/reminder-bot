@@ -193,6 +193,16 @@ class RepeatTimeLexerTest {
         Assert.assertEquals("Тест", timeLexer.eraseTime());
     }
 
+    @Test
+    void matchRepeatWithoutTime() {
+        String str = "Тест повторять";
+        TimeLexer lexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
+        LinkedList<BaseLexem> lexems = lexer.tokenize();
+
+        Assert.assertEquals(expected(new TimeLexem(TimeToken.REPEAT, "")), lexems);
+        Assert.assertEquals("Тест", lexer.eraseTime());
+    }
+
     private LinkedList<BaseLexem> expected(BaseLexem... lexems) {
         return new LinkedList<>(Arrays.asList(lexems));
     }
