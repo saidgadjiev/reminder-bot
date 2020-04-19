@@ -411,8 +411,9 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getChallengeDetailsKeyboard(int challengeId, Locale locale) {
+    public InlineKeyboardMarkup getChallengeDetailsKeyboard(int reminderId, int challengeId, Locale locale) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.openReminderDetailsFromChallenge(reminderId, locale)));
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteChallenge(challengeId, locale)));
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.GET_CHALLENGES_COMMAND_NAME, locale)));
 
@@ -478,10 +479,10 @@ public class InlineKeyboardService {
         Locale locale = reminder.getReceiver().getLocale();
 
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeRepeatReminderButton(reminder.getId(), locale), buttonFactory.customReminderTimeButton(reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, locale)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.returnReminderButton(reminder.getId(), locale), buttonFactory.reminderTimesScheduleButton(reminder.getId(), locale)));
         if (!reminder.isSuppressNotifications()) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.suppressNotifications(reminder.getId(), locale)));
         }
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.reminderTimesScheduleButton(reminder.getId(), locale)));
         if (reminder.isCountSeries()) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.disableCountSeries(reminder.getId(), locale)));
         } else {

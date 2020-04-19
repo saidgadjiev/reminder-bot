@@ -172,6 +172,11 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
 
     @Override
     public void leave(long chatId) {
+        ChallengeState state = commandStateService.getState(chatId, false);
+        if (state.getState() != ChallengeState.State.CREATED && state.getMessageIdToDelete() != null) {
+            messageService.deleteMessage(chatId, state.getMessageIdToDelete());
+        }
+
         commandStateService.deleteState(chatId);
     }
 
@@ -198,11 +203,14 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
                 .challengeTime(TimeData.to(state.getTime()));
 
         Challenge challenge = challengeService.createChallenge(callbackQuery.getFrom(), createChallengeRequest);
+        state.setState(ChallengeState.State.CREATED);
+        commandStateService.setState(callbackQuery.getMessage().getChatId(), state);
         String createdMessage = challengeMessageBuilder.getChallengeCreatedDetails(callbackQuery.getFrom().getId(), challenge, new Locale(state.getUserLanguage()));
-        messageService.sendMessageAsync(
-                new SendMessageContext(PriorityJob.Priority.HIGH)
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(callbackQuery.getFrom().getId())
                         .text(createdMessage)
+                        .messageId(callbackQuery.getMessage().getMessageId())
                         .replyKeyboard(inlineKeyboardService.getChallengeCreatedKeyboard(challenge.getId(), new Locale(state.getUserLanguage())))
         );
 
@@ -212,7 +220,6 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
                         .collect(Collectors.toList()),
                 challenge
         );
-        messageService.deleteMessage(callbackQuery.getFrom().getId(), callbackQuery.getMessage().getMessageId());
         commandNavigator.pop(TgMessage.from(callbackQuery));
     }
 
@@ -221,12 +228,11 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
         ZoneId zoneId = userService.getTimeZone(message.getFrom().getId());
         Time time = timeRequestService.parseTime(text, zoneId, locale);
         validateTime(message.getFrom().getId(), time);
-        
+
         state.setTime(TimeData.from(time));
         state.setState(ChallengeState.State.PARTICIPANTS);
         List<TgUser> friends = friendshipService.getFriends(message.getFrom().getId());
         state.setFriends(UserData.from(friends));
-        commandStateService.setState(message.getChatId(), state);
 
         String friendsList = friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY,
                 MessagesProperties.MESSAGE_CHOOSE_PARTICIPANTS_HEADER, MessagesProperties.MESSAGE_CHOOSE_PARTICIPANTS_FOOTER, locale);
@@ -237,7 +243,11 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .text(friendsList)
                         .chatId(message.getChatId())
-                        .replyKeyboard(replyKeyboard)
+                        .replyKeyboard(replyKeyboard),
+                sent -> {
+                    state.setMessageIdToDelete(sent.getMessageId());
+                    commandStateService.setState(sent.getChatId(), state);
+                }
         );
     }
 
@@ -247,6 +257,8 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
                 .voice(message.hasVoice())
                 .creator(message.getFrom())
                 .messageId(message.getMessageId()));
+        validateReminderRequest(message.getFrom().getId(), reminderRequest);
+
         state.setReminderRequest(ReminderRequestData.from(reminderRequest));
         state.setState(ChallengeState.State.TIME);
         commandStateService.setState(message.getChatId(), state);
@@ -282,6 +294,12 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
         }
         if (time.isOffsetTime() && !time.getOffsetTime().getType().equals(OffsetTime.Type.FOR)) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_CHALLENGE_TIME, userService.getLocale(creatorId)));
+        }
+    }
+
+    private void validateReminderRequest(int userId, ReminderRequest reminderRequest) {
+        if (!reminderRequest.isRepeatTime()) {
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_INCORRECT_REMINDER_TYPE_IN_CHALLENGE, userService.getLocale(userId)));
         }
     }
 }

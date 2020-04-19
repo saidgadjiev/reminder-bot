@@ -53,7 +53,7 @@ public class ChallengeMessageBuilder {
                 .append(messageBuilder.getChallengeFinished(getChallengeName(challenge.getReminder(), locale), locale)).append("\n");
 
         if (winner.getWinnerState() == ChallengeBusinessService.WinnerState.WINNER) {
-            message.append(messageBuilder.getChallengeWinner(winner.getWinner().getUser(), winner.getWinner().getTotalSeries(), locale)).append("\n");
+            message.append(messageBuilder.getChallengeWinner(winner.getWinner().getUser(), winner.getWinner().getReminder().getTotalSeries(), locale)).append("\n");
         }
 
         message.append(messageBuilder.getChallengeCreator(challenge.getCreator(), locale)).append("\n")
@@ -116,10 +116,10 @@ public class ChallengeMessageBuilder {
         StringBuilder selectedParticipants = new StringBuilder();
 
         for (TgUser userData : friends) {
-            if (selectedParticipants.length() > 0) {
-                selectedParticipants.append(", ");
-            }
             if (participants.contains(userData.getUserId())) {
+                if (selectedParticipants.length() > 0) {
+                    selectedParticipants.append(", ");
+                }
                 selectedParticipants.append(UserUtils.userLink(userData.getUserId(), userData.getName()));
             }
         }
@@ -150,7 +150,7 @@ public class ChallengeMessageBuilder {
             String friendName = friendshipService.getFriendName(creatorId, challengeParticipant.getUserId());
             participants.append(i++).append(") ").append(UserUtils.userLink(challengeParticipant.getUserId(), StringUtils.isBlank(friendName) ? challengeParticipant.getUser().getName() : friendName));
             if (challengeParticipant.isInvitationAccepted()) {
-                participants.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_TOTAL_SERIES, new Object[]{challengeParticipant.getTotalSeries()}, locale));
+                participants.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_TOTAL_SERIES, new Object[]{challengeParticipant.getReminder().getTotalSeries()}, locale));
             } else {
                 participants.append(" (").append(localisationService.getMessage(MessagesProperties.MESSAGE_PARTICIPANT_INVITATION_NOT_ACCEPTED_YET, locale)).append(")");
             }
@@ -161,7 +161,11 @@ public class ChallengeMessageBuilder {
 
     private String getChallengeName(Reminder reminder, Locale locale) {
         StringBuilder message = new StringBuilder();
-        message.append(reminder.getText()).append(" ").append(timeBuilder.time(reminder.getRepeatRemindAts(), locale));
+        message.append(reminder.getText());
+        String time = timeBuilder.time(reminder.getRepeatRemindAts(), locale);
+        if (StringUtils.isNotBlank(time)) {
+            message.append(" ").append(time);
+        }
 
         return message.toString();
     }

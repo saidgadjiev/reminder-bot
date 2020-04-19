@@ -18,7 +18,7 @@ public class ChallengeParticipant {
 
     private TgUser user;
 
-    private int totalSeries = 0;
+    private Reminder reminder;
 
     private boolean invitationAccepted = false;
 
@@ -46,14 +46,6 @@ public class ChallengeParticipant {
         this.user = user;
     }
 
-    public int getTotalSeries() {
-        return totalSeries;
-    }
-
-    public void setTotalSeries(int totalSeries) {
-        this.totalSeries = totalSeries;
-    }
-
     public boolean isInvitationAccepted() {
         return invitationAccepted;
     }
@@ -68,5 +60,13 @@ public class ChallengeParticipant {
 
     public void setChallenge(Challenge challenge) {
         this.challenge = challenge;
+    }
+
+    public Reminder getReminder() {
+        return reminder;
+    }
+
+    public void setReminder(Reminder reminder) {
+        this.reminder = reminder;
     }
 }

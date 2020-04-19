@@ -23,6 +23,8 @@ public class ChallengeState {
 
     private String userLanguage;
 
+    private Integer messageIdToDelete;
+
     public State getState() {
         return state;
     }
@@ -73,9 +75,18 @@ public class ChallengeState {
         this.userLanguage = userLanguage;
     }
 
+    public Integer getMessageIdToDelete() {
+        return messageIdToDelete;
+    }
+
+    public void setMessageIdToDelete(Integer messageIdToDelete) {
+        this.messageIdToDelete = messageIdToDelete;
+    }
+
     public enum State {
         TEXT,
         TIME,
-        PARTICIPANTS
+        PARTICIPANTS,
+        CREATED
     }
 }

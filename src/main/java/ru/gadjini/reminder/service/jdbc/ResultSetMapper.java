@@ -248,7 +248,11 @@ public class ResultSetMapper {
         challengeParticipant.setUserId(rs.getInt(ChallengeParticipant.USER_ID));
         challengeParticipant.setChallengeId(rs.getInt(ChallengeParticipant.CHALLENGE_ID));
         challengeParticipant.setInvitationAccepted(rs.getBoolean(ChallengeParticipant.INVITATION_ACCEPTED));
-        challengeParticipant.setTotalSeries(rs.getInt("total_series"));
+
+        Reminder reminder = new Reminder();
+        reminder.setTotalSeries(rs.getInt("total_series"));
+        reminder.setId(rs.getInt("reminder_id"));
+        challengeParticipant.setReminder(reminder);
 
         TgUser user = new TgUser();
         user.setUserId(challengeParticipant.getUserId());

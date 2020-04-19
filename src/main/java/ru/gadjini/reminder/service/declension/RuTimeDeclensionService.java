@@ -96,7 +96,7 @@ public class RuTimeDeclensionService implements TimeDeclensionService {
     @Override
     public String getRepeatWord(Period period) {
         if (period == null) {
-            return "без периода повтора";
+            return "";
         }
         if (period.getYears() != 0
                 || period.getMonths() != 0

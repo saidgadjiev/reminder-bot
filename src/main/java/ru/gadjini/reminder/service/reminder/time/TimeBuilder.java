@@ -66,7 +66,6 @@ public class TimeBuilder {
     public String time(List<RepeatTime> repeatTimes, Locale locale) {
         StringBuilder time = new StringBuilder();
 
-        time.append("<b>");
         TimeDeclensionService declensionService = timeDeclensionProvider.getService(locale.getLanguage());
         if (repeatTimes.get(0).isEveryWeeklyTime()) {
             time.append(declensionService.getRepeatWord(repeatTimes.get(0).getDayOfWeek())).append(" ");
@@ -82,9 +81,8 @@ public class TimeBuilder {
                 time.append(", ");
             }
         }
-        time.append("</b>");
 
-        return time.toString();
+        return time.length() == 0 ? "" : "<b>" + time.toString() + "</b>";
     }
 
     public String time(RepeatTime repeatTime, Locale locale) {

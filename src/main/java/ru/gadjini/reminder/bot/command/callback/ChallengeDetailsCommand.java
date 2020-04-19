@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.domain.Challenge;
+import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
@@ -17,6 +18,7 @@ import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 
 import java.util.Locale;
+import java.util.function.Predicate;
 
 @Component
 public class ChallengeDetailsCommand implements CallbackBotCommand {
@@ -52,13 +54,17 @@ public class ChallengeDetailsCommand implements CallbackBotCommand {
         Challenge challenge = challengeService.getChallenge(challengeId);
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         String challengeDetails = messageBuilder.getChallengeDetails(callbackQuery.getFrom().getId(), challenge, locale);
+        ChallengeParticipant me = challenge.getChallengeParticipants().stream()
+                .filter(challengeParticipant -> challengeParticipant.getUserId() == callbackQuery.getFrom().getId())
+                .findFirst()
+                .orElseThrow();
 
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(callbackQuery.getFrom().getId())
                         .text(challengeDetails)
                         .messageId(callbackQuery.getMessage().getMessageId())
-                .replyKeyboard(inlineKeyboardService.getChallengeDetailsKeyboard(challengeId, locale))
+                .replyKeyboard(inlineKeyboardService.getChallengeDetailsKeyboard(me.getReminder().getId(), challengeId, locale))
         );
 
         return null;

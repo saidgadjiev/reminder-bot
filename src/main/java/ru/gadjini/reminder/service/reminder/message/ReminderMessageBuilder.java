@@ -313,7 +313,12 @@ public class ReminderMessageBuilder {
             if (reminder.getChallengeId() != null) {
                 text.append(messageBuilder.getReminderChallenge(locale)).append(": ");
             }
-            text.append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder, locale)).append(")\n");
+            text.append(reminder.getText());
+            String time = reminderTimeBuilder.time(reminder, locale);
+            if (StringUtils.isNotBlank(time)) {
+                text.append("(").append(time).append(")");
+            }
+            text.append("\n");
 
             if (!reminder.isInactive() && reminder.isRepeatableWithTime()) {
                 text.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getReceiver().getLocale())).append("\n");

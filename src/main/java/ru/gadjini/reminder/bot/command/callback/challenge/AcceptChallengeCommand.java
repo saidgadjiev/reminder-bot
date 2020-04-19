@@ -7,6 +7,7 @@ import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Challenge;
+import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
@@ -53,13 +54,17 @@ public class AcceptChallengeCommand implements CallbackBotCommand {
         Challenge challenge = challengeBusinessService.acceptChallenge(callbackQuery.getFrom(), requestParams.getInt(Arg.CHALLENGE_ID.getKey()));
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         String challengeDetails = messageBuilder.getChallengeDetails(callbackQuery.getFrom().getId(), challenge, locale);
+        ChallengeParticipant me = challenge.getChallengeParticipants().stream()
+                .filter(challengeParticipant -> challengeParticipant.getUserId() == callbackQuery.getFrom().getId())
+                .findFirst()
+                .orElseThrow();
 
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(callbackQuery.getFrom().getId())
                         .text(challengeDetails)
                         .messageId(callbackQuery.getMessage().getMessageId())
-                        .replyKeyboard(inlineKeyboardService.getChallengeDetailsKeyboard(challenge.getId(), locale))
+                        .replyKeyboard(inlineKeyboardService.getChallengeDetailsKeyboard(me.getReminder().getId(), challenge.getId(), locale))
         );
 
         return MessagesProperties.MESSAGE_CHALLENGE_ACCEPTED_ANSWER;
