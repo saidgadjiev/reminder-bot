@@ -84,10 +84,8 @@ public class RepeatReminderService {
         toComplete.setMaxSeries(Math.max(toComplete.getMaxSeries(), toComplete.getCurrentSeries()));
         if (toComplete.isRepeatableWithTime()) {
             completedReminderDao.create(toComplete);
-            moveReminderNotificationToNextPeriod(toComplete, UpdateSeries.INCREMENT);
-        } else {
-            updateSeries(toComplete.getId(), UpdateSeries.INCREMENT, Collections.emptyMap());
         }
+        moveReminderNotificationToNextPeriod(toComplete, UpdateSeries.INCREMENT);
 
         return toComplete;
     }
@@ -106,6 +104,9 @@ public class RepeatReminderService {
     RemindAtCandidate getFirstRemindAt(List<RepeatTime> repeatTimes) {
         DateTime firstRemindAt = getFirstRemindAt(repeatTimes.get(0));
         Integer index = null;
+        if (firstRemindAt != null) {
+            index = 0;
+        }
 
         if (repeatTimes.size() > 1) {
             for (int i = 1; i < repeatTimes.size(); ++i) {
@@ -191,14 +192,19 @@ public class RepeatReminderService {
 
         if (returned) {
             toReturn.setCurrentSeries(Math.max(0, toReturn.getCurrentSeries() - 1));
+            if (toReturn.getCurrentSeries() > 0) {
+                toReturn.setTotalSeries(Math.max(0, toReturn.getTotalSeries() - 1));
+                toReturn.setMaxSeries(Math.max(0, toReturn.getMaxSeries() - 1));
+            }
+
         }
 
         return new ReturnReminderResult(toReturn, returned);
     }
 
     public void updateNextRemindAtAndSeries(int reminderId, UpdateSeries updateSeries, int currRepeatIndex, DateTime nextRemindAt) {
-       updateSeries(reminderId, updateSeries, Map.of(ReminderTable.TABLE.CURR_REPEAT_INDEX, currRepeatIndex, ReminderTable.TABLE.REMIND_AT, nextRemindAt.sqlObject(),
-               ReminderTable.TABLE.INITIAL_REMIND_AT, nextRemindAt.sqlObject()));
+        updateSeries(reminderId, updateSeries, Map.of(ReminderTable.TABLE.CURR_REPEAT_INDEX, currRepeatIndex, ReminderTable.TABLE.REMIND_AT, nextRemindAt.sqlObject(),
+                ReminderTable.TABLE.INITIAL_REMIND_AT, nextRemindAt.sqlObject()));
     }
 
     public RemindAtCandidate getNextRemindAt(DateTime remindAt, List<RepeatTime> repeatTimes) {
@@ -307,6 +313,10 @@ public class RepeatReminderService {
     }
 
     private boolean moveReminderNotificationToPrevPeriod(Reminder reminder) {
+        if (reminder.isRepeatableWithoutTime()) {
+            updateSeries(reminder.getId(), UpdateSeries.DECREMENT, Collections.emptyMap());
+            return true;
+        }
         RemindAtCandidate prevRemindAt = getPrevRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAts());
 
         if (prevRemindAt != null) {
@@ -344,6 +354,8 @@ public class RepeatReminderService {
                 break;
             case DECREMENT:
                 updateValues.put(ReminderTable.TABLE.CURRENT_SERIES, DSL.greatest(0, ReminderTable.TABLE.CURRENT_SERIES.minus(1)));
+                updateValues.put(ReminderTable.TABLE.TOTAL_SERIES, DSL.field("CASE WHEN current_series > 0 THEN GREATEST(0, total_series - 1) ELSE total_series END"));
+                updateValues.put(ReminderTable.TABLE.MAX_SERIES, DSL.field("CASE WHEN current_series > 0 THEN GREATEST(0, max_series - 1) ELSE max_series END"));
                 break;
         }
 
@@ -365,6 +377,10 @@ public class RepeatReminderService {
     }
 
     private void moveReminderNotificationToNextPeriod(Reminder reminder, UpdateSeries updateSeries) {
+        if (reminder.isRepeatableWithoutTime()) {
+            updateSeries(reminder.getId(), updateSeries, Collections.emptyMap());
+            return;
+        }
         int id = reminder.getId();
         List<ReminderNotification> reminderNotifications = reminderNotificationService.getList(id);
         for (ReminderNotification reminderNotification : reminderNotifications) {

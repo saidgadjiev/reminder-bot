@@ -15,6 +15,9 @@ public class TimeUtils {
     }
 
     public static boolean isEmptyInterval(Period period) {
+        if (period == null) {
+            return true;
+        }
         int[] values = period.getValues();
         for (int value : values) {
             if (value != 0) {

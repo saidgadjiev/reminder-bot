@@ -525,11 +525,11 @@ public class ReminderMessageBuilder {
 
         if (reminder.isRepeatableWithoutTime()) {
             message
-                    .append("\n")
+                    .append("\n\n")
                     .append(messageBuilder.getTotalSeries(reminder.getTotalSeries(), locale));
         } else if (reminder.isCountSeries()) {
             message
-                    .append("\n")
+                    .append("\n\n")
                     .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries(), locale)).append("\n")
                     .append(messageBuilder.getMaxSeries(reminder.getMaxSeries(), locale)).append("\n")
                     .append(messageBuilder.getTotalSeries(reminder.getTotalSeries(), locale));

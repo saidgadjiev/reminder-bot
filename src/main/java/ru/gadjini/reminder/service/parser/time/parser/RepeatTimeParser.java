@@ -81,7 +81,11 @@ public class RepeatTimeParser {
             return repeatTimes;
         }
 
-        return parse(lexems);
+        if (lexemsConsumer.getPosition() < lexems.size()) {
+            return parse(lexems);
+        }
+
+        return repeatTimes;
     }
 
     private void consumeWeeks(List<BaseLexem> lexems) {
