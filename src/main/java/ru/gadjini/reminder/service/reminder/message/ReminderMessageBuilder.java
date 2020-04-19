@@ -109,7 +109,7 @@ public class ReminderMessageBuilder {
                         .append(messageBuilder.getReminderCreator(reminder.getCreator()));
             }
         }
-        if ((reminder.getChallengeId() != null && !reminder.isCountSeries()) || reminder.isRepeatableWithoutTime()) {
+        if (reminder.getChallengeId() != null && !reminder.isCountSeries() || reminder.isRepeatableWithoutTime()) {
             result
                     .append("\n\n")
                     .append(messageBuilder.getTotalSeries(reminder.getTotalSeries(), locale));

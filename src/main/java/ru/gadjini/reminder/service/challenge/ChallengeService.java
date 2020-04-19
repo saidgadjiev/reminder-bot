@@ -12,8 +12,6 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.model.CreateChallengeRequest;
-import ru.gadjini.reminder.service.TgUserService;
-import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.service.reminder.ChallengeReminderService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
@@ -34,10 +32,6 @@ public class ChallengeService {
 
     private ChallengeParticipantDao challengeParticipantDao;
 
-    private LocalisationService localisationService;
-
-    private TgUserService userService;
-
     private TimeCreator timeCreator;
 
     private ReminderRequestService reminderRequestService;
@@ -46,13 +40,10 @@ public class ChallengeService {
 
     @Autowired
     public ChallengeService(ChallengeDao challengeDao, ChallengeParticipantDao challengeParticipantDao,
-                            LocalisationService localisationService, TgUserService userService,
                             TimeCreator timeCreator, ReminderRequestService reminderRequestService,
                             ChallengeReminderService challengeReminderService) {
         this.challengeDao = challengeDao;
         this.challengeParticipantDao = challengeParticipantDao;
-        this.localisationService = localisationService;
-        this.userService = userService;
         this.timeCreator = timeCreator;
         this.reminderRequestService = reminderRequestService;
         this.challengeReminderService = challengeReminderService;
