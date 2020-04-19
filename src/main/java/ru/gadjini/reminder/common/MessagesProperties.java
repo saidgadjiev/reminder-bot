@@ -541,6 +541,8 @@ public class MessagesProperties {
 
     public static final String OPEN_CHALLENGE_DETAILS_FROM_REMINDER_COMMAND_DESCRIPTION = "open.challenge.details.from.reminder.command.description";
 
+    public static final String OPEN_CHALLENGE_REMINDER_DETAILS_FROM_CHALLENGE_COMMAND_DESCRIPTION = "open.challenge.reminder.details.from.challenge.command.description";
+
     public static final String GET_CHALLENGES_COMMAND_NAME = "get.challenges.command.name";
 
     public static final String MESSAGE_CHALLENGE_ACCEPTED_ANSWER = "message.challenge.accepted.answer";
@@ -556,4 +558,8 @@ public class MessagesProperties {
     public static final String DELETE_CHALLENGE_COMMAND_DESCRIPTION = "delete.challenge.command.description";
 
     public static final String MESSAGE_CHALLENGE_DELETED_ANSWER = "message.challenge.deleted.answer";
+
+    public static final String MESSAGE_INCORRECT_REMINDER_TYPE_IN_CHALLENGE = "message.incorrect.reminder.type.in.challenge";
+
+    public static final String MESSAGE_CHALLENGE_NOT_FOUND = "message.challenge.not.found";
 }

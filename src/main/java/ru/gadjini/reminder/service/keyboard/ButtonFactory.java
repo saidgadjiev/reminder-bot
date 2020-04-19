@@ -246,6 +246,16 @@ public class ButtonFactory {
         return button;
     }
 
+    InlineKeyboardButton openReminderDetailsFromChallenge(int reminderId, Locale locale) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.OPEN_CHALLENGE_REMINDER_DETAILS_FROM_CHALLENGE_COMMAND_DESCRIPTION, locale));
+        button.setCallbackData(CommandNames.REMINDER_DETAILS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams()
+                        .add(Arg.REMINDER_ID.getKey(), reminderId)
+                        .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
+
     InlineKeyboardButton okButton(int reminderId, Locale locale) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.OK_COMMAND_DESCRIPTION, locale));
         button.setCallbackData(CommandNames.OK_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +

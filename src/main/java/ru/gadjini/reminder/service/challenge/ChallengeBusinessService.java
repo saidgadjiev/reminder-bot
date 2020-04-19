@@ -84,11 +84,11 @@ public class ChallengeBusinessService {
     }
 
     public Winner determineWinner(List<ChallengeParticipant> challengeParticipants) {
-        int winnerScore = challengeParticipants.stream().map(ChallengeParticipant::getTotalSeries).mapToInt(Integer::intValue).max().orElse(-1);
+        int winnerScore = challengeParticipants.stream().map(participant -> participant.getReminder().getTotalSeries()).mapToInt(Integer::intValue).max().orElse(-1);
         ChallengeParticipant winner = null;
         if (winnerScore != -1) {
             List<ChallengeParticipant> winners = challengeParticipants.stream()
-                    .filter(challengeParticipant -> challengeParticipant.getTotalSeries() == winnerScore)
+                    .filter(challengeParticipant -> challengeParticipant.getReminder().getTotalSeries() == winnerScore)
                     .collect(Collectors.toList());
 
             winner = winners.size() > 1 ? null : winners.get(0);
