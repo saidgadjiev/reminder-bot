@@ -59,7 +59,7 @@ public class AcceptChallengeCommand implements CallbackBotCommand {
                         .chatId(callbackQuery.getFrom().getId())
                         .text(challengeDetails)
                         .messageId(callbackQuery.getMessage().getMessageId())
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_CHALLENGES_COMMAND_NAME, locale))
+                        .replyKeyboard(inlineKeyboardService.getChallengeDetailsKeyboard(challenge.getId(), locale))
         );
 
         return MessagesProperties.MESSAGE_CHALLENGE_ACCEPTED_ANSWER;

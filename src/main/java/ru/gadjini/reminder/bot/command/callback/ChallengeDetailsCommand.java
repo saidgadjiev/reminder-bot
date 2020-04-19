@@ -59,7 +59,7 @@ public class ChallengeDetailsCommand implements CallbackBotCommand {
                         .chatId(callbackQuery.getFrom().getId())
                         .text(challengeDetails)
                         .messageId(callbackQuery.getMessage().getMessageId())
-                .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.GET_CHALLENGES_COMMAND_NAME, locale))
+                .replyKeyboard(inlineKeyboardService.getChallengeDetailsKeyboard(challengeId, locale))
         );
 
         return null;

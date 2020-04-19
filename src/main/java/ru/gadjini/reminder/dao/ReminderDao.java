@@ -307,7 +307,11 @@ public class ReminderDao {
                             "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END");
 
                     ps.setString(1, reminder.getText());
-                    ps.setInt(2, reminder.getCreatorId());
+                    if (reminder.getCreatorId() != null) {
+                        ps.setInt(2, reminder.getCreatorId());
+                    } else {
+                        ps.setNull(2, Types.INTEGER);
+                    }
                     if (reminder.getReceiverId() != null) {
                         ps.setInt(3, reminder.getReceiverId());
                     } else {

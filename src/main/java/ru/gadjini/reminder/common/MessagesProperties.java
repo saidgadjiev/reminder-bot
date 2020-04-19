@@ -552,4 +552,8 @@ public class MessagesProperties {
     public static final String MESSAGE_CHALLENGE_WINNER = "message.challenge.winner";
 
     public static final String MESSAGE_CHALLENGE_REMINDER = "message.challenge.reminder";
+
+    public static final String DELETE_CHALLENGE_COMMAND_DESCRIPTION = "delete.challenge.command.description";
+
+    public static final String MESSAGE_CHALLENGE_DELETED_ANSWER = "message.challenge.deleted.answer";
 }

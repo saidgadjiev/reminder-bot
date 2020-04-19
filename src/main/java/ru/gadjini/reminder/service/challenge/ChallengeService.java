@@ -85,7 +85,8 @@ public class ChallengeService {
         List<ChallengeParticipant> challengeParticipants = saveParticipants(creator.getId(), challenge.getId(), participants);
         challenge.setChallengeParticipants(challengeParticipants);
 
-        createCreatorAndChallengeReminder(challenge.getId(), creator, createChallengeRequest.reminderRequest());
+        Reminder reminder = createCreatorAndChallengeReminder(challenge.getId(), creator, createChallengeRequest.reminderRequest());
+        challenge.setReminder(reminder);
 
         return challenge;
     }
@@ -115,10 +116,12 @@ public class ChallengeService {
         return challengeParticipants;
     }
 
-    private void createCreatorAndChallengeReminder(int challengeId, User creator, ReminderRequest reminderRequest) {
+    private Reminder createCreatorAndChallengeReminder(int challengeId, User creator, ReminderRequest reminderRequest) {
         reminderRequest.setChallengeId(challengeId);
         Reminder reminder = reminderRequestService.createReminderFromRequest(creator, reminderRequest);
         challengeReminderService.createReminder(reminder);
+
+        return reminder;
     }
 
     private DateTime getFinishedAt(Time challengeTime) {

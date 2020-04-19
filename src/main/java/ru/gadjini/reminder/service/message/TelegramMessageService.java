@@ -216,6 +216,19 @@ public class TelegramMessageService implements MessageService {
         );
     }
 
+    @Override
+    public void removeMessageKeyboard(long chatId, int messageId) {
+        EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
+        editMessageReplyMarkup.setChatId(chatId);
+        editMessageReplyMarkup.setMessageId(messageId);
+
+        try {
+            telegramService.execute(editMessageReplyMarkup);
+        } catch (TelegramApiException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     private String buildErrorMessage(long chatId, Throwable ex) {
         StringBuilder message = new StringBuilder();
 

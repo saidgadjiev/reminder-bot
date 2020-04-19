@@ -89,4 +89,9 @@ public class DummyMessageService implements MessageService {
     public void sendBotRestartedMessage(long chatId, ReplyKeyboard replyKeyboard, Locale locale) {
 
     }
+
+    @Override
+    public void removeMessageKeyboard(long chatId, int messageId) {
+
+    }
 }
