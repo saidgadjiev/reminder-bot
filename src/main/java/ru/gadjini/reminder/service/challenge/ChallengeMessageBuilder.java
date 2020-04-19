@@ -8,6 +8,7 @@ import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -15,6 +16,7 @@ import ru.gadjini.reminder.service.reminder.message.MessageBuilder;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.util.UserUtils;
 
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -32,14 +34,17 @@ public class ChallengeMessageBuilder {
 
     private TimeBuilder timeBuilder;
 
+    private TgUserService userService;
+
     @Autowired
     public ChallengeMessageBuilder(FriendshipMessageBuilder friendshipMessageBuilder, LocalisationService localisationService,
-                                   FriendshipService friendshipService, MessageBuilder messageBuilder, TimeBuilder timeBuilder) {
+                                   FriendshipService friendshipService, MessageBuilder messageBuilder, TimeBuilder timeBuilder, TgUserService userService) {
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.localisationService = localisationService;
         this.friendshipService = friendshipService;
         this.messageBuilder = messageBuilder;
         this.timeBuilder = timeBuilder;
+        this.userService = userService;
     }
 
     public String getChallengeFinished(int requesterId, Challenge challenge, ChallengeBusinessService.Winner winner, Locale locale) {
@@ -74,10 +79,12 @@ public class ChallengeMessageBuilder {
     }
 
     public String getChallengeDetails(int requesterId, Challenge challenge, Locale locale) {
+        ZoneId zoneId = userService.getTimeZone(requesterId);
+
         StringBuilder message = new StringBuilder();
         message
                 .append(messageBuilder.getChallengeDetails(getChallengeName(challenge.getReminder(), locale), locale)).append("\n")
-                .append(messageBuilder.getChallengeFinishedAt(challenge.getFinishedAt(), locale)).append("\n")
+                .append(messageBuilder.getChallengeFinishedAt(challenge.getFinishedAt().withZoneSameInstant(zoneId), locale)).append("\n")
                 .append(messageBuilder.getChallengeCreator(challenge.getCreator(), locale)).append("\n")
                 .append(messageBuilder.getChallengeParticipants(locale)).append("\n")
                 .append(getParticipants(requesterId, challenge.getChallengeParticipants(), locale));
@@ -86,10 +93,12 @@ public class ChallengeMessageBuilder {
     }
 
     public String getChallengeCreatedDetails(int requesterId, Challenge challenge, Locale locale) {
+        ZoneId zoneId = userService.getTimeZone(requesterId);
+
         StringBuilder message = new StringBuilder();
         message
                 .append(messageBuilder.getChallengeCreated(getChallengeName(challenge.getReminder(), locale), locale)).append("\n")
-                .append(messageBuilder.getChallengeFinishedAt(challenge.getFinishedAt(), locale)).append("\n")
+                .append(messageBuilder.getChallengeFinishedAt(challenge.getFinishedAt().withZoneSameInstant(zoneId), locale)).append("\n")
                 .append(messageBuilder.getChallengeCreator(challenge.getCreator(), locale)).append("\n")
                 .append(messageBuilder.getChallengeParticipants(locale)).append("\n")
                 .append(getParticipants(requesterId, challenge.getChallengeParticipants(), locale));

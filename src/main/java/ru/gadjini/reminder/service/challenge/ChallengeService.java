@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.User;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.dao.ChallengeDao;
 import ru.gadjini.reminder.dao.ChallengeParticipantDao;
 import ru.gadjini.reminder.domain.Challenge;
@@ -12,7 +11,6 @@ import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.Time;
-import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.CreateChallengeRequest;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
@@ -77,7 +75,6 @@ public class ChallengeService {
 
     @Transactional
     public Challenge createChallenge(User creator, CreateChallengeRequest createChallengeRequest) {
-        validateTime(creator.getId(), createChallengeRequest.challengeTime());
         Challenge challenge = saveChallenge(creator.getId(), createChallengeRequest);
 
         Set<Integer> participants = createChallengeRequest.participants();
@@ -134,14 +131,5 @@ public class ChallengeService {
 
     private DateTime getByOffsetTime(OffsetTime offsetTime) {
         return DateTime.of(JodaTimeUtils.plus(timeCreator.zonedDateTimeNow(offsetTime.getZoneId()), offsetTime.getPeriod()));
-    }
-
-    private void validateTime(int creatorId, Time time) {
-        if (time.isRepeatTime()) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_CHALLENGE_TIME, userService.getLocale(creatorId)));
-        }
-        if (time.isOffsetTime() && !time.getOffsetTime().getType().equals(OffsetTime.Type.FOR)) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_CHALLENGE_TIME, userService.getLocale(creatorId)));
-        }
     }
 }

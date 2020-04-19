@@ -17,6 +17,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.domain.TgUser;
+import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.job.PriorityJob;
@@ -219,6 +220,8 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
         Locale locale = new Locale(state.getUserLanguage());
         ZoneId zoneId = userService.getTimeZone(message.getFrom().getId());
         Time time = timeRequestService.parseTime(text, zoneId, locale);
+        validateTime(message.getFrom().getId(), time);
+        
         state.setTime(TimeData.from(time));
         state.setState(ChallengeState.State.PARTICIPANTS);
         List<TgUser> friends = friendshipService.getFriends(message.getFrom().getId());
@@ -270,6 +273,15 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
     private void validateState(ChallengeState state) {
         if (state.getState() == ChallengeState.State.PARTICIPANTS && state.getParticipants().isEmpty()) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_PARTICIPANTS_REQUIRED, new Locale(state.getUserLanguage())));
+        }
+    }
+
+    private void validateTime(int creatorId, Time time) {
+        if (time.isRepeatTime()) {
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_CHALLENGE_TIME, userService.getLocale(creatorId)));
+        }
+        if (time.isOffsetTime() && !time.getOffsetTime().getType().equals(OffsetTime.Type.FOR)) {
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_CHALLENGE_TIME, userService.getLocale(creatorId)));
         }
     }
 }
