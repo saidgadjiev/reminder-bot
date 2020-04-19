@@ -191,12 +191,11 @@ public class RepeatReminderService {
         boolean returned = moveReminderNotificationToPrevPeriod(toReturn);
 
         if (returned) {
-            toReturn.setCurrentSeries(Math.max(0, toReturn.getCurrentSeries() - 1));
             if (toReturn.getCurrentSeries() > 0) {
                 toReturn.setTotalSeries(Math.max(0, toReturn.getTotalSeries() - 1));
                 toReturn.setMaxSeries(Math.max(0, toReturn.getMaxSeries() - 1));
             }
-
+            toReturn.setCurrentSeries(Math.max(0, toReturn.getCurrentSeries() - 1));
         }
 
         return new ReturnReminderResult(toReturn, returned);
