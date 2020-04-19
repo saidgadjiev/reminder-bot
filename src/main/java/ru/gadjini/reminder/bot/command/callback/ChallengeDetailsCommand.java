@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.job.PriorityJob;
@@ -15,10 +16,10 @@ import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.challenge.ChallengeMessageBuilder;
 import ru.gadjini.reminder.service.challenge.ChallengeService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
+import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 
 import java.util.Locale;
-import java.util.function.Predicate;
 
 @Component
 public class ChallengeDetailsCommand implements CallbackBotCommand {
@@ -33,14 +34,18 @@ public class ChallengeDetailsCommand implements CallbackBotCommand {
 
     private InlineKeyboardService inlineKeyboardService;
 
+    private LocalisationService localisationService;
+
     @Autowired
     public ChallengeDetailsCommand(ChallengeMessageBuilder messageBuilder, ChallengeService challengeService,
-                                   TgUserService userService, MessageService messageService, InlineKeyboardService inlineKeyboardService) {
+                                   TgUserService userService, MessageService messageService,
+                                   InlineKeyboardService inlineKeyboardService, LocalisationService localisationService) {
         this.messageBuilder = messageBuilder;
         this.challengeService = challengeService;
         this.userService = userService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
+        this.localisationService = localisationService;
     }
 
     @Override
@@ -53,6 +58,15 @@ public class ChallengeDetailsCommand implements CallbackBotCommand {
         int challengeId = requestParams.getInt(Arg.CHALLENGE_ID.getKey());
         Challenge challenge = challengeService.getChallenge(challengeId);
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
+        if (challenge == null) {
+            messageService.editMessageAsync(
+                    new EditMessageContext(PriorityJob.Priority.HIGH)
+                            .chatId(callbackQuery.getMessage().getChatId())
+                            .messageId(callbackQuery.getMessage().getMessageId())
+                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_NOT_FOUND, locale))
+            );
+            return null;
+        }
         String challengeDetails = messageBuilder.getChallengeDetails(callbackQuery.getFrom().getId(), challenge, locale);
         ChallengeParticipant me = challenge.getChallengeParticipants().stream()
                 .filter(challengeParticipant -> challengeParticipant.getUserId() == callbackQuery.getFrom().getId())
@@ -64,7 +78,7 @@ public class ChallengeDetailsCommand implements CallbackBotCommand {
                         .chatId(callbackQuery.getFrom().getId())
                         .text(challengeDetails)
                         .messageId(callbackQuery.getMessage().getMessageId())
-                .replyKeyboard(inlineKeyboardService.getChallengeDetailsKeyboard(me.getReminder().getId(), challengeId, locale))
+                        .replyKeyboard(inlineKeyboardService.getChallengeDetailsKeyboard(me.getReminder().getId(), challengeId, locale))
         );
 
         return null;

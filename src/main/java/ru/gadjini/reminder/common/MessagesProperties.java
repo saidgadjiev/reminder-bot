@@ -560,4 +560,6 @@ public class MessagesProperties {
     public static final String MESSAGE_CHALLENGE_DELETED_ANSWER = "message.challenge.deleted.answer";
 
     public static final String MESSAGE_INCORRECT_REMINDER_TYPE_IN_CHALLENGE = "message.incorrect.reminder.type.in.challenge";
+
+    public static final String MESSAGE_CHALLENGE_NOT_FOUND = "message.challenge.not.found";
 }
