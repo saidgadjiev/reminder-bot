@@ -154,10 +154,10 @@ public class ReminderRequestService {
         List<ReminderNotification> reminderNotifications = new ArrayList<>();
 
         if (customRemind.isOffsetTime()) {
-            ZonedDateTime remindTime = buildTime(
-                    customRemind.getOffsetTime(),
-                    reminder.getRemindAtInReceiverZone().hasTime() ? reminder.getRemindAtInReceiverZone().toZonedDateTime() : null
-            ).withZoneSameInstant(ZoneOffset.UTC);
+            ZonedDateTime remindAt = reminder.hasRemindAt() && reminder.getRemindAtInReceiverZone().hasTime()
+                    ? reminder.getRemindAtInReceiverZone().toZonedDateTime()
+                    : null;
+            ZonedDateTime remindTime = buildTime(customRemind.getOffsetTime(), remindAt).withZoneSameInstant(ZoneOffset.UTC);
 
             validatorFactory.getValidator(ValidatorType.PAST_TIME_VALIDATOR).validate(new ValidationContext().dateTime(remindTime).locale(reminder.getReceiver().getLocale()));
 
@@ -364,7 +364,7 @@ public class ReminderRequestService {
         reminder.getReceiver().setZone(reminderRequest.getZone());
         setTime(reminder, reminderRequest.getTime());
 
-        if (reminder.isRepeatableWithTime()) {
+        if (reminder.isRepeatableWithTime() || reminder.isRepeatableWithoutTime()) {
             return repeatReminderService.createReminder(reminder);
         } else {
             return reminderService.createReminder(reminder);

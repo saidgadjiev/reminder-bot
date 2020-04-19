@@ -67,6 +67,12 @@ class OffsetTimeLexerTest {
         LinkedList<BaseLexem> lexems = timeLexer.tokenize();
         Assert.assertEquals(expected(new TimeLexem(OFFSET, ""), new TimeLexem(TYPE, "через"), new TimeLexem(MINUTES, "10")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
+
+        str = "Тест через минуту";
+        timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
+        lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new TimeLexem(OFFSET, ""), new TimeLexem(TYPE, "через"), new TimeLexem(MINUTES, "1")), lexems);
+        Assert.assertEquals("Тест", timeLexer.eraseTime());
     }
 
     @Test

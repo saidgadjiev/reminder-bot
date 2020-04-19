@@ -393,6 +393,10 @@ public class Reminder {
         return repeatRemindAts != null && getRepeatRemindAts().get(0).isEmpty();
     }
 
+    public boolean hasRemindAt() {
+        return remindAt != null;
+    }
+
     public Map<Field<?>, Object> getDiff(Reminder newReminder) {
         Map<Field<?>, Object> values = new HashMap<>();
         if (!Objects.equals(getText(), newReminder.getText())) {
