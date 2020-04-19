@@ -31,7 +31,7 @@ public class RestoreReminderService {
     }
 
     public boolean isNeedRestore(Reminder reminder) {
-        if (reminder.isRepeatable()) {
+        if (reminder.isRepeatableWithTime()) {
             return isNeedRestoreRepeatableReminder(reminder);
         } else {
             return isNeedRestoreStandardReminder(reminder);
@@ -40,7 +40,7 @@ public class RestoreReminderService {
 
     @Transactional
     public void restore(Reminder reminder) {
-        if (reminder.isRepeatable()) {
+        if (reminder.isRepeatableWithTime()) {
             restoreRepeatableReminder(reminder);
         } else {
             restoreStandardReminder(reminder);
@@ -55,7 +55,7 @@ public class RestoreReminderService {
                 if (repeatReminderService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
                     RepeatReminderService.RemindAtCandidate nextRemindAtCandidate = repeatReminderService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtsInReceiverZone(timeCreator));
                     DateTime nextRemindAt = nextRemindAtCandidate.getRemindAt().withZoneSameInstant(ZoneOffset.UTC);
-                    repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAtCandidate.getIndex(), nextRemindAt, RepeatReminderService.UpdateSeries.NONE);
+                    repeatReminderService.updateNextRemindAtAndSeries(reminder.getId(), RepeatReminderService.UpdateSeries.NONE, nextRemindAtCandidate.getIndex(), nextRemindAt);
                     reminder.setRemindAt(nextRemindAt);
                 }
                 ZonedDateTime restoredLastRemindAt = getNextLastRemindAt(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime());

@@ -240,7 +240,7 @@ public class Reminder {
         this.note = note;
     }
 
-    public boolean isRepeatable() {
+    public boolean isRepeatableWithTime() {
         return repeatRemindAts != null && !isRepeatableWithoutTime();
     }
 

@@ -127,7 +127,7 @@ public class ReminderRequestService {
 
         boolean needUpdateNotifications = isNeedUpdateNotifications(values);
         if (needUpdateNotifications) {
-            if (newReminder.isRepeatable()) {
+            if (newReminder.isRepeatableWithTime()) {
                 repeatReminderService.updateReminderNotifications(oldReminder.getId(), oldReminder.getReceiverId(), newReminder.getRepeatRemindAtsInReceiverZone(timeCreator));
             } else {
                 reminderService.updateReminderNotifications(oldReminder.getId(), oldReminder.getReceiverId(), newReminder.getRemindAt());
@@ -364,7 +364,7 @@ public class ReminderRequestService {
         reminder.getReceiver().setZone(reminderRequest.getZone());
         setTime(reminder, reminderRequest.getTime());
 
-        if (reminder.isRepeatable()) {
+        if (reminder.isRepeatableWithTime()) {
             return repeatReminderService.createReminder(reminder);
         } else {
             return reminderService.createReminder(reminder);

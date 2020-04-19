@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
@@ -109,7 +108,7 @@ public class ReminderJob {
     }
 
     private void sendReminderRestored(Reminder reminder) {
-        if (reminder.isRepeatable()) {
+        if (reminder.isRepeatableWithTime()) {
             sendRepeatableReminderRestored(reminder);
         } else {
             sendStandardReminderRestored(reminder);
@@ -135,7 +134,7 @@ public class ReminderJob {
                         sendOnceReminder(reminder, reminderNotification);
                         break;
                     case REPEAT:
-                        if (reminder.isRepeatable()) {
+                        if (reminder.isRepeatableWithTime()) {
                             sendRepeatReminderTimeForRepeatableReminder(reminder, reminderNotification);
                         } else {
                             sendRepeatReminderTime(reminder, reminderNotification);
@@ -165,7 +164,7 @@ public class ReminderJob {
         if (repeatReminderService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
             RepeatReminderService.RemindAtCandidate nextRemindAtCandidate = repeatReminderService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtsInReceiverZone(timeCreator));
             nextRemindAt = nextRemindAtCandidate.getRemindAt().withZoneSameInstant(ZoneOffset.UTC);
-            repeatReminderService.updateNextRemindAt(reminder.getId(), nextRemindAtCandidate.getIndex(), nextRemindAt, RepeatReminderService.UpdateSeries.INCREMENT);
+            repeatReminderService.updateNextRemindAtAndSeries(reminder.getId(), RepeatReminderService.UpdateSeries.INCREMENT, nextRemindAtCandidate.getIndex(), nextRemindAt);
             reminder.setRemindAt(nextRemindAt);
         }
         reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), nextRemindAt);

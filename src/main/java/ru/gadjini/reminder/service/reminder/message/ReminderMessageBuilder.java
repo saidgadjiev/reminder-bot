@@ -78,11 +78,11 @@ public class ReminderMessageBuilder {
         if (reminder.isInactive()) {
             result.append("(<b>").append(timeBuilder.deactivated(locale)).append("</b>)");
         } else {
-            if (reminder.isRepeatable() || reminder.isRepeatableWithoutTime()) {
+            if (reminder.isRepeatableWithTime() || reminder.isRepeatableWithoutTime()) {
                 result
                         .append(timeBuilder.time(reminder.getRepeatRemindAtsInReceiverZone(timeCreator), locale));
 
-                if (reminder.isRepeatable()) {
+                if (reminder.isRepeatableWithTime()) {
                     result.append("\n").append(messageBuilder.getNextRemindAt(config.nextRemindAt == null ? reminder.getRemindAtInReceiverZone() : config.nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId()), locale));
                 }
             } else {
@@ -113,7 +113,7 @@ public class ReminderMessageBuilder {
             result
                     .append("\n\n")
                     .append(messageBuilder.getTotalSeries(reminder.getTotalSeries(), locale));
-        } else if (reminder.isRepeatable() && reminder.isCountSeries()) {
+        } else if (reminder.isRepeatableWithTime() && reminder.isCountSeries()) {
             result
                     .append("\n\n")
                     .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries(), locale)).append("\n")
@@ -315,7 +315,7 @@ public class ReminderMessageBuilder {
             }
             text.append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder, locale)).append(")\n");
 
-            if (!reminder.isInactive() && reminder.isRepeatable()) {
+            if (!reminder.isInactive() && reminder.isRepeatableWithTime()) {
                 text.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getReceiver().getLocale())).append("\n");
             }
 
@@ -334,13 +334,13 @@ public class ReminderMessageBuilder {
     }
 
     public String getReminderTimeChanged(Reminder oldReminder, Reminder newReminder) {
-        if (newReminder.isRepeatable() && oldReminder.isRepeatable()) {
+        if (newReminder.isRepeatableWithTime() && oldReminder.isRepeatableWithTime()) {
             return messageBuilder.getReminderTimeEditedReceiver(oldReminder.getCreator(), oldReminder.getText(), oldReminder.getRepeatRemindAtsInReceiverZone(timeCreator), newReminder.getRepeatRemindAtsInReceiverZone(timeCreator), oldReminder.getReceiver().getLocale());
         }
-        if (newReminder.isRepeatable() && !oldReminder.isRepeatable()) {
+        if (newReminder.isRepeatableWithTime() && !oldReminder.isRepeatableWithTime()) {
             return messageBuilder.getReminderTimeEditedReceiver(oldReminder.getCreator(), oldReminder.getText(), oldReminder.getRemindAtInReceiverZone(), newReminder.getRepeatRemindAtsInReceiverZone(timeCreator), oldReminder.getReceiver().getLocale());
         }
-        if (!newReminder.isRepeatable() && oldReminder.isRepeatable()) {
+        if (!newReminder.isRepeatableWithTime() && oldReminder.isRepeatableWithTime()) {
             return messageBuilder.getReminderTimeEditedReceiver(oldReminder.getCreator(), oldReminder.getText(), oldReminder.getRepeatRemindAtsInReceiverZone(timeCreator), newReminder.getRemindAtInReceiverZone(), oldReminder.getReceiver().getLocale());
         }
 
@@ -505,13 +505,13 @@ public class ReminderMessageBuilder {
     }
 
     private String getReminderTimeEdited(Reminder oldReminder, Reminder newReminder) {
-        if (newReminder.isRepeatable() && oldReminder.isRepeatable()) {
+        if (newReminder.isRepeatableWithTime() && oldReminder.isRepeatableWithTime()) {
             return messageBuilder.getReminderTimeEdited(oldReminder.getRepeatRemindAtsInReceiverZone(timeCreator), newReminder.getRepeatRemindAtsInReceiverZone(timeCreator), oldReminder.getReceiver().getLocale());
         }
-        if (newReminder.isRepeatable() && !oldReminder.isRepeatable()) {
+        if (newReminder.isRepeatableWithTime() && !oldReminder.isRepeatableWithTime()) {
             return messageBuilder.getReminderTimeEdited(oldReminder.getRemindAtInReceiverZone(), newReminder.getRepeatRemindAtsInReceiverZone(timeCreator), oldReminder.getReceiver().getLocale());
         }
-        if (!newReminder.isRepeatable() && oldReminder.isRepeatable()) {
+        if (!newReminder.isRepeatableWithTime() && oldReminder.isRepeatableWithTime()) {
             return messageBuilder.getReminderTimeEdited(oldReminder.getRepeatRemindAtsInReceiverZone(timeCreator), newReminder.getRemindAtInReceiverZone(), oldReminder.getReceiver().getLocale());
         }
 
@@ -519,11 +519,15 @@ public class ReminderMessageBuilder {
     }
 
     private void appendRepeatReminderCommonValues(StringBuilder message, boolean appendNextRemindAt, Reminder reminder, Locale locale) {
-        if (appendNextRemindAt) {
+        if (appendNextRemindAt && reminder.isRepeatableWithTime()) {
             message.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getReceiver().getLocale()));
         }
 
-        if (reminder.isCountSeries()) {
+        if (reminder.isRepeatableWithoutTime()) {
+            message
+                    .append("\n")
+                    .append(messageBuilder.getTotalSeries(reminder.getTotalSeries(), locale));
+        } else if (reminder.isCountSeries()) {
             message
                     .append("\n")
                     .append(messageBuilder.getCurrentSeries(reminder.getCurrentSeries(), locale)).append("\n")
