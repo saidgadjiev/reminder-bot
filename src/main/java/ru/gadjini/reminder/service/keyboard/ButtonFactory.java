@@ -226,14 +226,19 @@ public class ButtonFactory {
         return button;
     }
 
-    InlineKeyboardButton editReminder(int reminderId, Locale locale) {
+    InlineKeyboardButton editReminder(int reminderId, Locale locale, RequestParams requestParams) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.EDIT_REMINDER_COMMAND_DESCRIPTION, locale));
         button.setCallbackData(CommandNames.EDIT_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
+                        .merge(requestParams)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;
+    }
+
+    InlineKeyboardButton editReminder(int reminderId, Locale locale) {
+        return editReminder(reminderId, locale, new RequestParams());
     }
 
     InlineKeyboardButton reminderDetails(int reminderId, Locale locale) {

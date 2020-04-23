@@ -484,6 +484,7 @@ public class InlineKeyboardService {
         if (!reminder.isSuppressNotifications()) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.suppressNotifications(reminder.getId(), locale)));
         }
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminder(reminder.getId(), locale, new RequestParams().add(Arg.CHALLENGE_ID.getKey(), reminder.getChallengeId()))));
         if (reminder.isCountSeries()) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.disableCountSeries(reminder.getId(), locale)));
         } else {
@@ -518,11 +519,13 @@ public class InlineKeyboardService {
         }
     }
 
-    public InlineKeyboardMarkup getEditReminderKeyboard(int reminderId, String prevHistoryName, Locale locale) {
+    public InlineKeyboardMarkup getEditReminderKeyboard(int reminderId, Integer challengeId, String prevHistoryName, Locale locale) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminderTimeButton(reminderId, locale)));
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminderTextButton(reminderId, locale)));
+        if (challengeId == null) {
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminderTimeButton(reminderId, locale)));
+            keyboardMarkup.getKeyboard().add(List.of(buttonFactory.editReminderTextButton(reminderId, locale)));
+        }
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.changeReminderNote(reminderId, locale)));
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteReminderNote(reminderId, locale)));
 
