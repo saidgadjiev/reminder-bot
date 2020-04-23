@@ -196,7 +196,9 @@ public class CommandExecutor {
         sendAction(message.getChatId(), botCommand);
         boolean pushToHistory = botCommand.processMessage(message, text);
 
-        if (pushToHistory) {
+        if (botCommand instanceof NavigableCallbackBotCommand && ((NavigableCallbackBotCommand) botCommand).isAcquireKeyboard()) {
+            callbackCommandNavigator.push(message.getChatId(), (NavigableCallbackBotCommand) botCommand);
+        } else if (pushToHistory) {
             commandNavigator.push(message.getChatId(), (NavigableBotCommand) botCommand);
         }
     }

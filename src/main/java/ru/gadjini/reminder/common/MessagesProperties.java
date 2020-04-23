@@ -562,4 +562,8 @@ public class MessagesProperties {
     public static final String MESSAGE_INCORRECT_REMINDER_TYPE_IN_CHALLENGE = "message.incorrect.reminder.type.in.challenge";
 
     public static final String MESSAGE_CHALLENGE_NOT_FOUND = "message.challenge.not.found";
+
+    public static final String MESSAGE_CHALLENGE_STATE_NAME = "message.challenge.state.name";
+
+    public static final String MESSAGE_CHALLENGE_STATE_DURATION = "message.challenge.state.duration";
 }

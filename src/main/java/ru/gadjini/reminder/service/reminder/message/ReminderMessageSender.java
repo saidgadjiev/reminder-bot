@@ -314,7 +314,8 @@ public class ReminderMessageSender {
                         .chatId(oldReminder.getCreatorId())
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderMessage(newReminder))
-                        .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(oldReminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, oldReminder.getCreator().getLocale()))
+                        .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(oldReminder.getId(), oldReminder.getChallengeId(),
+                                CommandNames.REMINDER_DETAILS_COMMAND_NAME, oldReminder.getCreator().getLocale()))
         );
         if (oldReminder.isMySelf()) {
             tryEditRemindMessage(messageId, oldReminder, reminderMessageBuilder.getReminderMessage(newReminder, new ReminderMessageBuilder.ReminderMessageConfig().receiverId(newReminder.getReceiverId())));
@@ -365,7 +366,8 @@ public class ReminderMessageSender {
                         .chatId(oldReminder.getCreatorId())
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderMessage(newReminder))
-                        .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(newReminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, oldReminder.getCreator().getLocale()))
+                        .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(newReminder.getId(),
+                                oldReminder.getChallengeId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, oldReminder.getCreator().getLocale()))
         );
         if (newReminder.isMySelf()) {
             tryEditRemindMessage(messageId, newReminder, reminderMessageBuilder.getReminderMessage(newReminder, new ReminderMessageBuilder.ReminderMessageConfig().receiverId(newReminder.getReceiverId())));
@@ -558,11 +560,11 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendReminderEdit(int userId, Integer messageId, int reminderId) {
+    public void sendReminderEdit(int userId, Integer messageId, int reminderId, Integer challengeId) {
         messageService.editReplyKeyboard(
                 userId,
                 messageId,
-                inlineKeyboardService.getEditReminderKeyboard(reminderId, CommandNames.REMINDER_DETAILS_COMMAND_NAME, userService.getLocale(userId))
+                inlineKeyboardService.getEditReminderKeyboard(reminderId, challengeId, CommandNames.REMINDER_DETAILS_COMMAND_NAME, userService.getLocale(userId))
         );
     }
 
@@ -592,7 +594,8 @@ public class ReminderMessageSender {
                         .chatId(reminder.getCreatorId())
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderMessage(reminder))
-                        .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, reminder.getCreator().getLocale()))
+                        .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(reminder.getId(),
+                                reminder.getChallengeId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, reminder.getCreator().getLocale()))
         );
         if (reminder.isMySelf()) {
             tryEditRemindMessage(messageId, reminder, reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.ReminderMessageConfig().receiverId(reminder.getReceiverId())));
@@ -607,7 +610,8 @@ public class ReminderMessageSender {
                         .chatId(reminder.getCreatorId())
                         .messageId(messageId)
                         .text(reminderMessageBuilder.getReminderMessage(reminder))
-                        .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(reminder.getId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, reminder.getCreator().getLocale()))
+                        .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(reminder.getId(),
+                                reminder.getChallengeId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, reminder.getCreator().getLocale()))
         );
         if (reminder.isMySelf()) {
             tryEditRemindMessage(messageId, reminder, reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.ReminderMessageConfig().receiverId(reminder.getReceiverId())));

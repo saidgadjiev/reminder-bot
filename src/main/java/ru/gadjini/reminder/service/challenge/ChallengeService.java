@@ -74,6 +74,7 @@ public class ChallengeService {
         challenge.setChallengeParticipants(challengeParticipants);
 
         Reminder reminder = createCreatorAndChallengeReminder(challenge.getId(), creator, createChallengeRequest.reminderRequest());
+
         challenge.setReminder(reminder);
 
         return challenge;
@@ -95,7 +96,12 @@ public class ChallengeService {
             ChallengeParticipant challengeParticipant = new ChallengeParticipant();
             challengeParticipant.setChallengeId(challengeId);
             challengeParticipant.setUserId(participant);
-            challengeParticipant.setInvitationAccepted(participant == creatorId);
+            if (participant == creatorId) {
+                challengeParticipant.setInvitationAccepted(true);
+                Reminder reminder = new Reminder();
+                reminder.setTotalSeries(0);
+                challengeParticipant.setReminder(reminder);
+            }
 
             challengeParticipantDao.createParticipant(challengeParticipant);
             challengeParticipants.add(challengeParticipant);

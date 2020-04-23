@@ -49,7 +49,8 @@ public class EditReminderCommand implements CallbackBotCommand, NavigableCallbac
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        reminderMessageSender.sendReminderEdit(callbackQuery.getFrom().getId(), callbackQuery.getMessage().getMessageId(), requestParams.getInt(Arg.REMINDER_ID.getKey()));
+        reminderMessageSender.sendReminderEdit(callbackQuery.getFrom().getId(), callbackQuery.getMessage().getMessageId(),
+                requestParams.getInt(Arg.REMINDER_ID.getKey()), requestParams.getInt(Arg.CHALLENGE_ID.getKey()));
         return null;
     }
 
@@ -62,7 +63,8 @@ public class EditReminderCommand implements CallbackBotCommand, NavigableCallbac
                         .chatId(tgMessage.getChatId())
                         .messageId(tgMessage.getMessageId())
                         .text(messageBuilder.getReminderMessage(reminder))
-                        .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(requestParams.getInt(Arg.REMINDER_ID.getKey()), CommandNames.REMINDER_DETAILS_COMMAND_NAME, reminder.getCreator().getLocale()))
+                        .replyKeyboard(inlineKeyboardService.getEditReminderKeyboard(requestParams.getInt(Arg.REMINDER_ID.getKey()),
+                                reminder.getChallengeId(), CommandNames.REMINDER_DETAILS_COMMAND_NAME, reminder.getCreator().getLocale()))
         );
     }
 }

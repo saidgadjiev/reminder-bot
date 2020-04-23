@@ -6,10 +6,12 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
@@ -17,6 +19,7 @@ import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.model.UpdateReminderResult;
+import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.reply.CurrReplyKeyboard;
 import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
@@ -31,7 +34,7 @@ import java.util.Locale;
 import java.util.Set;
 
 @Component
-public class StartCommand extends BotCommand implements NavigableBotCommand, KeyboardBotCommand {
+public class StartCommand extends BotCommand implements NavigableBotCommand, KeyboardBotCommand, NavigableCallbackBotCommand {
 
     private MessageService messageService;
 
@@ -122,6 +125,21 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
         sendMainMenu(message.getFrom().getId(), locale);
 
         return true;
+    }
+
+    @Override
+    public String getName() {
+        return CommandNames.START_COMMAND_NAME;
+    }
+
+    @Override
+    public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
+        messageService.deleteMessage(tgMessage.getChatId(), tgMessage.getMessageId());
+    }
+
+    @Override
+    public void leave(long chatId) {
+
     }
 
     private void sendMainMenu(int userId, Locale locale) {

@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
-import ru.gadjini.reminder.bot.command.api.NavigableBotCommand;
+import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
 import ru.gadjini.reminder.bot.command.state.ReminderRequestData;
 import ru.gadjini.reminder.bot.command.state.TimeData;
 import ru.gadjini.reminder.bot.command.state.UserData;
@@ -24,18 +24,16 @@ import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.CreateChallengeRequest;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
-import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.challenge.ChallengeMessageBuilder;
 import ru.gadjini.reminder.service.challenge.ChallengeService;
-import ru.gadjini.reminder.service.command.CommandNavigator;
+import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
 import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
-import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
@@ -51,7 +49,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
-public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotCommand, CallbackBotCommand {
+public class CreateChallengeCommand implements KeyboardBotCommand, CallbackBotCommand, NavigableCallbackBotCommand {
 
     private Set<String> names = new HashSet<>();
 
@@ -60,8 +58,6 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
     private MessageService messageService;
 
     private TgUserService userService;
-
-    private ReplyKeyboardService replyKeyboardService;
 
     private InlineKeyboardService inlineKeyboardService;
 
@@ -79,19 +75,17 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
 
     private ChallengeMessageBuilder challengeMessageBuilder;
 
-    private CommandNavigator commandNavigator;
+    private CallbackCommandNavigator commandNavigator;
 
     @Autowired
     public CreateChallengeCommand(LocalisationService localisationService, MessageService messageService,
-                                  TgUserService userService, @Qualifier("currkeyboard") ReplyKeyboardService replyKeyboardService,
-                                  InlineKeyboardService inlineKeyboardService, @Qualifier("chain") ReminderRequestExtractor requestExtractor,
+                                  TgUserService userService, InlineKeyboardService inlineKeyboardService, @Qualifier("chain") ReminderRequestExtractor requestExtractor,
                                   CommandStateService commandStateService, TimeRequestService timeRequestService,
                                   FriendshipService friendshipService, FriendshipMessageBuilder friendshipMessageBuilder,
-                                  ChallengeService challengeService, ChallengeMessageBuilder challengeMessageBuilder, CommandNavigator commandNavigator) {
+                                  ChallengeService challengeService, ChallengeMessageBuilder challengeMessageBuilder) {
         this.localisationService = localisationService;
         this.messageService = messageService;
         this.userService = userService;
-        this.replyKeyboardService = replyKeyboardService;
         this.inlineKeyboardService = inlineKeyboardService;
         this.requestExtractor = requestExtractor;
         this.commandStateService = commandStateService;
@@ -100,10 +94,14 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.challengeService = challengeService;
         this.challengeMessageBuilder = challengeMessageBuilder;
-        this.commandNavigator = commandNavigator;
         for (Locale locale : localisationService.getSupportedLocales()) {
             names.add(localisationService.getMessage(MessagesProperties.CREATE_CHALLENGE_COMMAND_NAME, locale));
         }
+    }
+
+    @Autowired
+    public void setCommandNavigator(CallbackCommandNavigator commandNavigator) {
+        this.commandNavigator = commandNavigator;
     }
 
     @Override
@@ -112,20 +110,28 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
     }
 
     @Override
+    public boolean isAcquireKeyboard() {
+        return true;
+    }
+
+    @Override
     public boolean processMessage(Message message, String text) {
         ChallengeState state = new ChallengeState();
         Locale locale = userService.getLocale(message.getFrom().getId());
         state.setUserLanguage(locale.getLanguage());
-        commandStateService.setState(message.getChatId(), state);
 
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(message.getChatId())
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_CREATE_CHALLENGE, locale))
-                        .replyKeyboard(replyKeyboardService.goBackCommand(message.getChatId(), locale))
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.START_COMMAND_NAME, locale)),
+                sent -> {
+                    state.setMessageId(sent.getMessageId());
+                    commandStateService.setState(message.getChatId(), state);
+                }
         );
 
-        return true;
+        return false;
     }
 
     @Override
@@ -139,11 +145,6 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
                 handleTimeState(state, message, text);
                 break;
         }
-    }
-
-    @Override
-    public String getHistoryName() {
-        return CommandNames.CREATE_CHALLENGE_COMMAND_NAME;
     }
 
     @Override
@@ -172,11 +173,6 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
 
     @Override
     public void leave(long chatId) {
-        ChallengeState state = commandStateService.getState(chatId, false);
-        if (state.getState() != ChallengeState.State.CREATED && state.getMessageIdToDelete() != null) {
-            messageService.deleteMessage(chatId, state.getMessageIdToDelete());
-        }
-
         commandStateService.deleteState(chatId);
     }
 
@@ -184,12 +180,10 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
         state.addOrRemoveParticipant(requestParams.getInt(Arg.FRIEND_ID.getKey()));
         commandStateService.setState(callbackQuery.getMessage().getChatId(), state);
 
-        Locale locale = new Locale(state.getUserLanguage());
-        String friendsList = challengeMessageBuilder.getFriendsListWithChoseParticipantsInfo(UserData.to(state.getFriends()), state.getParticipants(), locale);
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .messageId(callbackQuery.getMessage().getMessageId())
-                        .text(friendsList)
+                        .text(toMessage(state))
                         .chatId(callbackQuery.getMessage().getChatId())
                         .replyKeyboard(callbackQuery.getMessage().getReplyMarkup())
         );
@@ -220,7 +214,7 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
                         .collect(Collectors.toList()),
                 challenge
         );
-        commandNavigator.pop(TgMessage.from(callbackQuery));
+        commandNavigator.silentPop(callbackQuery.getMessage().getChatId());
     }
 
     private void handleTimeState(ChallengeState state, Message message, String text) {
@@ -229,25 +223,24 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
         Time time = timeRequestService.parseTime(text, zoneId, locale);
         validateTime(message.getFrom().getId(), time);
 
+        state.setDuration(text);
         state.setTime(TimeData.from(time));
-        state.setState(ChallengeState.State.PARTICIPANTS);
         List<TgUser> friends = friendshipService.getFriends(message.getFrom().getId());
         state.setFriends(UserData.from(friends));
 
-        String friendsList = friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY,
-                MessagesProperties.MESSAGE_CHOOSE_PARTICIPANTS_HEADER, MessagesProperties.MESSAGE_CHOOSE_PARTICIPANTS_FOOTER, locale);
-        ReplyKeyboard replyKeyboard = inlineKeyboardService.getChooseChallengeParticipantKeyboard(
+        InlineKeyboardMarkup replyKeyboard = inlineKeyboardService.getChooseChallengeParticipantKeyboard(
                 friends.stream().map(TgUser::getUserId).collect(Collectors.toList()), locale);
 
-        messageService.sendMessageAsync(
-                new SendMessageContext(PriorityJob.Priority.HIGH)
-                        .text(friendsList)
+        String messageText = toMessage(state);
+        state.setState(ChallengeState.State.PARTICIPANTS);
+        commandStateService.setState(message.getChatId(), state);
+
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.HIGH)
+                        .text(messageText)
                         .chatId(message.getChatId())
-                        .replyKeyboard(replyKeyboard),
-                sent -> {
-                    state.setMessageIdToDelete(sent.getMessageId());
-                    commandStateService.setState(sent.getChatId(), state);
-                }
+                        .messageId(state.getMessageId())
+                        .replyKeyboard(replyKeyboard)
         );
     }
 
@@ -259,15 +252,19 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
                 .messageId(message.getMessageId()));
         validateReminderRequest(message.getFrom().getId(), reminderRequest);
 
+        state.setChallengeName(text);
         state.setReminderRequest(ReminderRequestData.from(reminderRequest));
+
+        String messageText = toMessage(state);
         state.setState(ChallengeState.State.TIME);
         commandStateService.setState(message.getChatId(), state);
 
-        Locale locale = new Locale(state.getUserLanguage());
-        messageService.sendMessageAsync(
-                new SendMessageContext(PriorityJob.Priority.HIGH)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_TIME, locale))
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.HIGH)
+                        .text(messageText)
                         .chatId(message.getChatId())
+                        .messageId(state.getMessageId())
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.START_COMMAND_NAME, new Locale(state.getUserLanguage())))
         );
     }
 
@@ -301,5 +298,38 @@ public class CreateChallengeCommand implements KeyboardBotCommand, NavigableBotC
         if (!reminderRequest.isRepeatTime()) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_INCORRECT_REMINDER_TYPE_IN_CHALLENGE, userService.getLocale(userId)));
         }
+    }
+
+    private String toMessage(ChallengeState state) {
+        StringBuilder message = new StringBuilder();
+        Locale locale = new Locale(state.getUserLanguage());
+
+        switch (state.getState()) {
+            case TEXT:
+                message
+                        .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_STATE_NAME, new Object[]{state.getChallengeName()}, locale))
+                        .append("\n\n")
+                        .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_TIME, locale));
+                break;
+            case TIME:
+                message
+                        .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_STATE_NAME, new Object[]{state.getChallengeName()}, new Locale(state.getUserLanguage())))
+                        .append("\n")
+                        .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_STATE_DURATION, new Object[]{state.getDuration()}, new Locale(state.getUserLanguage())))
+                        .append("\n\n")
+                        .append(friendshipMessageBuilder.getFriendsList(UserData.to(state.getFriends()), MessagesProperties.MESSAGE_FRIENDS_EMPTY,
+                                MessagesProperties.MESSAGE_CHOOSE_PARTICIPANTS_HEADER, MessagesProperties.MESSAGE_CHOOSE_PARTICIPANTS_FOOTER, locale));
+                break;
+            case PARTICIPANTS:
+                message
+                        .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_STATE_NAME, new Object[]{state.getChallengeName()}, new Locale(state.getUserLanguage())))
+                        .append("\n")
+                        .append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_STATE_DURATION, new Object[]{state.getDuration()}, new Locale(state.getUserLanguage())))
+                        .append("\n\n")
+                        .append(challengeMessageBuilder.getFriendsListWithChoseParticipantsInfo(UserData.to(state.getFriends()), state.getParticipants(), locale));
+                break;
+        }
+
+        return message.toString();
     }
 }
