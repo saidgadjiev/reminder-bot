@@ -23,7 +23,11 @@ public class ChallengeState {
 
     private String userLanguage;
 
-    private Integer messageIdToDelete;
+    private String challengeName;
+
+    private String duration;
+
+    private int messageId;
 
     public State getState() {
         return state;
@@ -75,12 +79,28 @@ public class ChallengeState {
         this.userLanguage = userLanguage;
     }
 
-    public Integer getMessageIdToDelete() {
-        return messageIdToDelete;
+    public String getChallengeName() {
+        return challengeName;
     }
 
-    public void setMessageIdToDelete(Integer messageIdToDelete) {
-        this.messageIdToDelete = messageIdToDelete;
+    public void setChallengeName(String challengeName) {
+        this.challengeName = challengeName;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public int getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(int messageId) {
+        this.messageId = messageId;
     }
 
     public enum State {

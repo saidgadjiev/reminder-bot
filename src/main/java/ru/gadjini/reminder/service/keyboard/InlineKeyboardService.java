@@ -228,6 +228,7 @@ public class InlineKeyboardService {
                 localisationService.getMessage(MessagesProperties.GO_TO_NEXT_COMMAND_DESCRIPTION, locale),
                 CommandNames.CREATE_CHALLENGE_COMMAND_NAME,
                 new RequestParams().add(Arg.COMMAND_NAME.getKey(), CommandNames.GO_TO_NEXT_COMMAND_NAME))));
+        friendsListKeyboard.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.START_COMMAND_NAME, locale)));
 
         return friendsListKeyboard;
     }

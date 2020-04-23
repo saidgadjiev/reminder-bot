@@ -101,42 +101,6 @@ public class RepeatReminderService {
         return reminderNotification.isItsTime();
     }
 
-    RemindAtCandidate getFirstRemindAt(List<RepeatTime> repeatTimes) {
-        DateTime firstRemindAt = getFirstRemindAt(repeatTimes.get(0));
-        Integer index = null;
-        if (firstRemindAt != null) {
-            index = 0;
-        }
-
-        if (repeatTimes.size() > 1) {
-            for (int i = 1; i < repeatTimes.size(); ++i) {
-                RepeatTime repeatTime = repeatTimes.get(i);
-                DateTime candidate = getFirstRemindAt(repeatTime);
-                LocalTime candidateTime = candidate.hasTime() ? candidate.time() : LocalTime.MIDNIGHT;
-                LocalDate candidateDate = candidate.date();
-
-                LocalTime time = firstRemindAt.hasTime() ? firstRemindAt.time() : LocalTime.MIDNIGHT;
-                LocalDate date = firstRemindAt.date();
-                if (ZonedDateTime.of(candidateDate, candidateTime, repeatTime.getZoneId()).isBefore(ZonedDateTime.of(date, time, firstRemindAt.getZoneId()))) {
-                    firstRemindAt = candidate;
-                    index = i;
-                }
-            }
-        }
-
-        return new RemindAtCandidate(index, firstRemindAt);
-    }
-
-    void updateReminderNotifications(int reminderId, int receiverId, List<RepeatTime> repeatTimesInReceiverZone) {
-        reminderNotificationService.deleteReminderNotifications(reminderId);
-        List<ReminderNotification> reminderNotifications = new ArrayList<>();
-        for (RepeatTime repeatTimeInReceiverZone : repeatTimesInReceiverZone) {
-            reminderNotifications.addAll(getRepeatReminderNotifications(repeatTimeInReceiverZone, receiverId));
-        }
-        reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
-        reminderNotificationService.create(reminderNotifications);
-    }
-
     public List<Reminder> getOverdueRepeatReminders() {
         return reminderDao.getOverdueRepeatReminders();
     }
@@ -687,6 +651,42 @@ public class RepeatReminderService {
         } else {
             return null;
         }
+    }
+
+    RemindAtCandidate getFirstRemindAt(List<RepeatTime> repeatTimes) {
+        DateTime firstRemindAt = getFirstRemindAt(repeatTimes.get(0));
+        Integer index = null;
+        if (firstRemindAt != null) {
+            index = 0;
+        }
+
+        if (repeatTimes.size() > 1) {
+            for (int i = 1; i < repeatTimes.size(); ++i) {
+                RepeatTime repeatTime = repeatTimes.get(i);
+                DateTime candidate = getFirstRemindAt(repeatTime);
+                LocalTime candidateTime = candidate.hasTime() ? candidate.time() : LocalTime.MIDNIGHT;
+                LocalDate candidateDate = candidate.date();
+
+                LocalTime time = firstRemindAt.hasTime() ? firstRemindAt.time() : LocalTime.MIDNIGHT;
+                LocalDate date = firstRemindAt.date();
+                if (ZonedDateTime.of(candidateDate, candidateTime, repeatTime.getZoneId()).isBefore(ZonedDateTime.of(date, time, firstRemindAt.getZoneId()))) {
+                    firstRemindAt = candidate;
+                    index = i;
+                }
+            }
+        }
+
+        return new RemindAtCandidate(index, firstRemindAt);
+    }
+
+    void updateReminderNotifications(int reminderId, int receiverId, List<RepeatTime> repeatTimesInReceiverZone) {
+        reminderNotificationService.deleteReminderNotifications(reminderId);
+        List<ReminderNotification> reminderNotifications = new ArrayList<>();
+        for (RepeatTime repeatTimeInReceiverZone : repeatTimesInReceiverZone) {
+            reminderNotifications.addAll(getRepeatReminderNotifications(repeatTimeInReceiverZone, receiverId));
+        }
+        reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
+        reminderNotificationService.create(reminderNotifications);
     }
 
     public static class RemindAtCandidate {
