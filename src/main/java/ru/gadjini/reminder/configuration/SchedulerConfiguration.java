@@ -9,6 +9,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import ru.gadjini.reminder.exception.TelegramMethodException;
+import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 
 @Configuration
@@ -17,7 +18,7 @@ public class SchedulerConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerConfiguration.class);
 
     @Bean
-    public TaskScheduler jobsThreadPoolTaskScheduler(ReminderNotificationService reminderNotificationService) {
+    public TaskScheduler jobsThreadPoolTaskScheduler(TgUserService userService) {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
         threadPoolTaskScheduler.setPoolSize(2 + Runtime.getRuntime().availableProcessors() * 2);
         threadPoolTaskScheduler.setThreadNamePrefix("JobsThreadPoolTaskScheduler");
@@ -26,7 +27,7 @@ public class SchedulerConfiguration {
             if (throwable instanceof TelegramMethodException) {
                 TelegramMethodException exception = (TelegramMethodException) throwable;
                 if (exception.getErrorCode() == 403) {
-                    reminderNotificationService.deleteReminderNotificationsByReceiver((int) exception.getChatId());
+                    userService.blockUser((int) exception.getChatId());
                 }
             }
         });

@@ -34,6 +34,8 @@ public class TgUser {
 
     private String zoneId;
 
+    private boolean blocked;
+
     public long getChatId() {
         return chatId;
     }
@@ -92,6 +94,14 @@ public class TgUser {
 
     public void setLanguageCode(String languageCode) {
 
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 
     public void setFrom(User user) {
