@@ -64,6 +64,9 @@ public class ChallengeMessageBuilder {
     }
 
     public String getUserChallenges(List<Challenge> challenges, Locale locale) {
+        if (challenges.isEmpty()) {
+            return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGES_EMPTY, locale);
+        }
         StringBuilder message = new StringBuilder();
         int i = 1;
         for (Challenge challenge : challenges) {
@@ -153,14 +156,27 @@ public class ChallengeMessageBuilder {
                 String friendName = friendshipService.getFriendName(requesterId, challengeParticipant.getUserId());
                 participants.append(i++).append(") ").append(UserUtils.userLink(challengeParticipant.getUserId(), StringUtils.isBlank(friendName) ? challengeParticipant.getUser().getName() : friendName));
             }
-            if (challengeParticipant.isInvitationAccepted()) {
-                participants.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_TOTAL_SERIES, new Object[]{challengeParticipant.getReminder().getTotalSeries()}, locale));
-            } else {
-                participants.append(" (").append(localisationService.getMessage(MessagesProperties.MESSAGE_PARTICIPANT_INVITATION_NOT_ACCEPTED_YET, locale)).append(")");
-            }
+            participants.append(participantStateToString(challengeParticipant, locale));
         }
 
         return participants.toString();
+    }
+
+    private String participantStateToString(ChallengeParticipant challengeParticipant, Locale locale) {
+        StringBuilder state = new StringBuilder();
+        switch (challengeParticipant.getState()) {
+            case WAITING:
+                state.append(" (").append(localisationService.getMessage(MessagesProperties.MESSAGE_PARTICIPANT_INVITATION_NOT_ACCEPTED_YET, locale)).append(")");
+                break;
+            case ACCEPTED:
+                state.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_TOTAL_SERIES, new Object[]{challengeParticipant.getReminder().getTotalSeries()}, locale));
+                break;
+            case GAVE_UP:
+                state.append(" (").append(localisationService.getMessage(MessagesProperties.MESSAGE_PARTICIPANT_GAVE_UP, locale)).append(")");
+                break;
+        }
+
+        return state.toString();
     }
 
     private String getChallengeName(Reminder reminder, Locale locale) {

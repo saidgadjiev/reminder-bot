@@ -5,68 +5,60 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.common.CommandNames;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.challenge.ChallengeBusinessService;
 import ru.gadjini.reminder.service.challenge.ChallengeMessageBuilder;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 
-import java.util.Locale;
-
 @Component
-public class AcceptChallengeCommand implements CallbackBotCommand {
+public class GiveUpCommand implements CallbackBotCommand {
 
     private ChallengeBusinessService challengeBusinessService;
 
-    private TgUserService userService;
-
-    private ChallengeMessageBuilder messageBuilder;
+    private ChallengeMessageBuilder challengeMessageBuilder;
 
     private InlineKeyboardService inlineKeyboardService;
 
     private MessageService messageService;
 
     @Autowired
-    public AcceptChallengeCommand(ChallengeBusinessService challengeBusinessService, TgUserService userService,
-                                  ChallengeMessageBuilder messageBuilder, InlineKeyboardService inlineKeyboardService,
-                                  MessageService messageService) {
+    public GiveUpCommand(ChallengeBusinessService challengeBusinessService, ChallengeMessageBuilder challengeMessageBuilder,
+                         InlineKeyboardService inlineKeyboardService, MessageService messageService) {
         this.challengeBusinessService = challengeBusinessService;
-        this.userService = userService;
-        this.messageBuilder = messageBuilder;
+        this.challengeMessageBuilder = challengeMessageBuilder;
         this.inlineKeyboardService = inlineKeyboardService;
         this.messageService = messageService;
     }
 
     @Override
     public String getName() {
-        return CommandNames.ACCEPT_CHALLENGE_COMMAND_NAME;
+        return CommandNames.GIVE_UP_COMMAND_NAME;
     }
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        Challenge challenge = challengeBusinessService.acceptChallenge(callbackQuery.getFrom(), requestParams.getInt(Arg.CHALLENGE_ID.getKey()));
-        Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
-        String challengeDetails = messageBuilder.getChallengeDetails(callbackQuery.getFrom().getId(), challenge, locale);
+        int challengeId = requestParams.getInt(Arg.CHALLENGE_ID.getKey());
+        Challenge challenge = challengeBusinessService.giveUp(callbackQuery.getFrom(), challengeId);
         ChallengeParticipant me = challenge.getChallengeParticipants().stream()
                 .filter(challengeParticipant -> challengeParticipant.getUserId() == callbackQuery.getFrom().getId())
                 .findFirst()
                 .orElseThrow();
 
+        String text = challengeMessageBuilder.getChallengeDetails(callbackQuery.getFrom().getId(), challenge, me.getUser().getLocale());
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
-                        .chatId(callbackQuery.getFrom().getId())
-                        .text(challengeDetails)
                         .messageId(callbackQuery.getMessage().getMessageId())
+                        .chatId(callbackQuery.getMessage().getChatId())
+                        .text(text)
                         .replyKeyboard(inlineKeyboardService.getChallengeDetailsKeyboard(me, challenge.getCreatorId()))
         );
 
-        return MessagesProperties.MESSAGE_CHALLENGE_ACCEPTED_ANSWER;
+        return null;
     }
 }

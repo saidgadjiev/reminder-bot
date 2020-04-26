@@ -68,7 +68,7 @@ public class ChallengeDao {
                         "         LEFT JOIN friendship f ON CASE\n" +
                         "                                       WHEN ch.creator_id = f.user_one_id THEN :user_id = f.user_two_id\n" +
                         "                                       ELSE :user_id = f.user_one_id END\n" +
-                        "WHERE EXISTS(SELECT 1 FROM challenge_participant WHERE challenge_id = ch.id AND user_id = :user_id)",
+                        "WHERE EXISTS(SELECT 1 FROM challenge_participant WHERE state IN (1, 2) AND challenge_id = ch.id AND user_id = :user_id)",
                 new MapSqlParameterSource().addValue("user_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapChallenge(rs)
         );
@@ -108,10 +108,13 @@ public class ChallengeDao {
         );
     }
 
-    public void delete(int challengeId) {
+    public void delete(int performerId, int challengeId) {
         jdbcTemplate.update(
-                "DELETE FROM challenge WHERE id = ?",
-                ps -> ps.setInt(1, challengeId)
+                "DELETE FROM challenge WHERE id = ? AND creator_id = ?",
+                ps -> {
+                    ps.setInt(1, challengeId);
+                    ps.setInt(2, performerId);
+                }
         );
     }
 }

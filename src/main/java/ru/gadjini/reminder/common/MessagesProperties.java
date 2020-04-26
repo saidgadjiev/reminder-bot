@@ -531,6 +531,8 @@ public class MessagesProperties {
 
     public static final String MESSAGE_PARTICIPANT_INVITATION_NOT_ACCEPTED_YET = "message.participant.invitation.not.accepted.yet";
 
+    public static final String MESSAGE_PARTICIPANT_GAVE_UP = "message.participant.gave.up";
+
     public static final String MESSAGE_CHALLENGE_INVITATION = "message.challenge.invitation";
 
     public static final String ACCEPT_CHALLENGE_INVITATION_COMMAND_DESCRIPTION = "accept.challenge.invitation.command.description";
@@ -566,4 +568,12 @@ public class MessagesProperties {
     public static final String MESSAGE_CHALLENGE_STATE_NAME = "message.challenge.state.name";
 
     public static final String MESSAGE_CHALLENGE_STATE_DURATION = "message.challenge.state.duration";
+
+    public static final String GIVE_UP_COMMAND_DESCRIPTION = "give.up.command.description";
+
+    public static final String EXIT_COMMAND_DESCRIPTION = "exit.command.description";
+
+    public static final String GIVE_UP_AND_EXIT_COMMAND_DESCRIPTION = "give.up.and.exit.command.description";
+
+    public static final String MESSAGE_CHALLENGES_EMPTY = "message.challenges.empty";
 }

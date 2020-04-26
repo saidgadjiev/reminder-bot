@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.dao.ReminderDao;
+import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.domain.PaymentType;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.UserReminderNotification;
@@ -259,6 +260,9 @@ public class InlineKeyboardService {
     }
 
     public InlineKeyboardMarkup getUserChallengesKeyboard(List<Integer> challengesIds) {
+        if (challengesIds.isEmpty()) {
+            return null;
+        }
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         int i = 1;
@@ -412,10 +416,21 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getChallengeDetailsKeyboard(int reminderId, int challengeId, Locale locale) {
+    public InlineKeyboardMarkup getChallengeDetailsKeyboard(ChallengeParticipant requester, int challengeCreatorId) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.openReminderDetailsFromChallenge(reminderId, locale)));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteChallenge(challengeId, locale)));
+        Locale locale = requester.getUser().getLocale();
+        if (requester.getState() == ChallengeParticipant.State.ACCEPTED) {
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.openReminderDetailsFromChallenge(requester.getReminderId(), locale)));
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.giveUp(requester.getChallengeId(), locale)));
+            if (challengeCreatorId != requester.getUserId()) {
+                inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.giveUpAndExit(requester.getChallengeId(), locale)));
+            }
+        } else if (requester.getState() == ChallengeParticipant.State.GAVE_UP && requester.getUserId() != challengeCreatorId) {
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.exit(requester.getChallengeId(), locale)));
+        }
+        if (challengeCreatorId == requester.getUserId()) {
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteChallenge(requester.getChallengeId(), locale)));
+        }
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.GET_CHALLENGES_COMMAND_NAME, locale)));
 
         return inlineKeyboardMarkup;

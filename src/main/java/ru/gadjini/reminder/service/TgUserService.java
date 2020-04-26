@@ -56,6 +56,7 @@ public class TgUserService {
         tgUser.setUsername(user.getUserName());
         tgUser.setName(UserUtils.name(user));
         tgUser.setZoneId(ReminderConstants.DEFAULT_TIMEZONE);
+        tgUser.setBlocked(false);
 
         String state = tgUserDao.createOrUpdate(tgUser);
 
@@ -82,9 +83,11 @@ public class TgUserService {
         return ZoneId.of(zone);
     }
 
+    public void blockUser(int userId) {
+        tgUserDao.blockUser(userId);
+    }
+
     public void saveZoneId(int userId, ZoneId zoneId) {
         tgUserDao.updateTimezone(userId, zoneId.getId());
     }
-
-
 }

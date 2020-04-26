@@ -56,8 +56,22 @@ public class ChallengeBusinessService {
     }
 
     @Transactional
+    public void exit(User participant, int challengeId) {
+        participantDao.delete(participant.getId(), challengeId);
+        challengeReminderService.deleteReminder(participant.getId(), challengeId);
+    }
+
+    @Transactional
+    public Challenge giveUp(User participant, int challengeId) {
+        participantDao.updateState(participant.getId(), challengeId, ChallengeParticipant.State.GAVE_UP);
+        challengeReminderService.deleteReminder(participant.getId(), challengeId);
+
+        return challengeService.getChallenge(challengeId);
+    }
+
+    @Transactional
     public Challenge acceptChallenge(User participant, int challengeId) {
-        participantDao.updateInvitationAccepted(participant.getId(), challengeId, true);
+        participantDao.updateState(participant.getId(), challengeId, ChallengeParticipant.State.ACCEPTED);
         Reminder challengeReminder = challengeReminderService.getReminder(challengeId);
         ReminderRequest reminderRequest = createReminderRequest(challengeReminder, participant.getId());
         reminderRequestService.createReminderFromRequest(participant, reminderRequest);
@@ -84,7 +98,16 @@ public class ChallengeBusinessService {
     }
 
     public Winner determineWinner(List<ChallengeParticipant> challengeParticipants) {
-        int winnerScore = challengeParticipants.stream().map(participant -> participant.getReminder().getTotalSeries()).mapToInt(Integer::intValue).max().orElse(-1);
+        challengeParticipants = challengeParticipants.stream()
+                .filter(challengeParticipant -> challengeParticipant.getState() == ChallengeParticipant.State.ACCEPTED)
+                .collect(Collectors.toList());
+
+        int winnerScore = challengeParticipants.stream()
+                .map(participant -> participant.getReminder().getTotalSeries())
+                .mapToInt(Integer::intValue)
+                .max()
+                .orElse(-1);
+
         ChallengeParticipant winner = null;
         if (winnerScore != -1) {
             List<ChallengeParticipant> winners = challengeParticipants.stream()

@@ -129,6 +129,15 @@ public class ReminderNotificationDao {
         jdbcTemplate.update(delete.getSQL(), new JooqPreparedSetter(delete.getParams()));
     }
 
+    public void deleteByReceiverId(int receiverId) {
+        jdbcTemplate.update(
+                "DELETE\n" +
+                        "FROM reminder_time\n" +
+                        "WHERE reminder_id IN (SELECT id FROM reminder WHERE receiver_id = ?)",
+                ps -> ps.setInt(1, receiverId)
+        );
+    }
+
     private SqlParameterSource sqlParameterSource(ReminderNotification reminderNotification) {
         return new MapSqlParameterSource()
                 .addValue(ReminderNotification.TYPE_COL, reminderNotification.getType().getCode())

@@ -78,7 +78,7 @@ public class ChallengeDetailsCommand implements CallbackBotCommand {
                         .chatId(callbackQuery.getFrom().getId())
                         .text(challengeDetails)
                         .messageId(callbackQuery.getMessage().getMessageId())
-                        .replyKeyboard(inlineKeyboardService.getChallengeDetailsKeyboard(me.getReminder().getId(), challengeId, locale))
+                        .replyKeyboard(inlineKeyboardService.getChallengeDetailsKeyboard(me, challenge.getCreatorId()))
         );
 
         return null;

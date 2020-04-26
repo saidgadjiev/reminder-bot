@@ -52,7 +52,7 @@ public class ChallengeJob {
         for (Challenge challenge : finishedChallenges) {
             ChallengeBusinessService.Winner winner = businessService.determineWinner(challenge.getChallengeParticipants());
             sendChallengeFinishedMessages(challenge, winner);
-            challengeService.deleteChallenge(challenge.getId());
+            challengeService.deleteChallenge(challenge.getCreatorId(), challenge.getId());
         }
     }
 

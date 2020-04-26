@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.domain;
 
+import java.util.Objects;
+
 public class ChallengeParticipant {
 
     public static final String TYPE = "challenge_participant";
@@ -8,7 +10,7 @@ public class ChallengeParticipant {
 
     public static final String CHALLENGE_ID = "challenge_id";
 
-    public static final String INVITATION_ACCEPTED = "invitation_accepted";
+    public static final String STATE = "state";
 
     private int userId;
 
@@ -20,7 +22,7 @@ public class ChallengeParticipant {
 
     private Reminder reminder;
 
-    private boolean invitationAccepted = false;
+    private State state = State.WAITING;
 
     public int getUserId() {
         return userId;
@@ -47,11 +49,7 @@ public class ChallengeParticipant {
     }
 
     public boolean isInvitationAccepted() {
-        return invitationAccepted;
-    }
-
-    public void setInvitationAccepted(boolean invitationAccepted) {
-        this.invitationAccepted = invitationAccepted;
+        return Objects.equals(State.ACCEPTED, state);
     }
 
     public Challenge getChallenge() {
@@ -62,11 +60,49 @@ public class ChallengeParticipant {
         this.challenge = challenge;
     }
 
+    public Integer getReminderId() {
+        return reminder == null ? null : reminder.getId();
+    }
+
     public Reminder getReminder() {
         return reminder;
     }
 
     public void setReminder(Reminder reminder) {
         this.reminder = reminder;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public enum State {
+        WAITING(0),
+        ACCEPTED(1),
+        GAVE_UP(2);
+
+        private final int code;
+
+        State(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public static State fromCode(int code) {
+            for (State state : values()) {
+                if (state.code == code) {
+                    return state;
+                }
+            }
+
+            throw new IllegalArgumentException("Unknown code " + code);
+        }
     }
 }

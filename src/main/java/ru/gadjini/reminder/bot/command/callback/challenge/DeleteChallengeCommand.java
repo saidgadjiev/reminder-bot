@@ -32,7 +32,7 @@ public class DeleteChallengeCommand implements CallbackBotCommand {
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         int challengeId = requestParams.getInt(Arg.CHALLENGE_ID.getKey());
-        challengeService.deleteChallenge(challengeId);
+        challengeService.deleteChallenge(callbackQuery.getFrom().getId(), challengeId);
         messageService.deleteMessage(callbackQuery.getMessage().getChatId(), callbackQuery.getMessage().getMessageId());
 
         return MessagesProperties.MESSAGE_CHALLENGE_DELETED_ANSWER;

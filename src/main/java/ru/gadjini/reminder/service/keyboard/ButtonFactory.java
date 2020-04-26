@@ -427,4 +427,28 @@ public class ButtonFactory {
 
         return button;
     }
+
+    InlineKeyboardButton giveUp(int challengeId, Locale locale) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.GIVE_UP_COMMAND_DESCRIPTION, locale));
+        button.setCallbackData(CommandNames.GIVE_UP_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams().add(Arg.CHALLENGE_ID.getKey(), challengeId).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
+
+    InlineKeyboardButton exit(int challengeId, Locale locale) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.EXIT_COMMAND_DESCRIPTION, locale));
+        button.setCallbackData(CommandNames.EXIT_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams().add(Arg.CHALLENGE_ID.getKey(), challengeId).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
+
+    InlineKeyboardButton giveUpAndExit(int challengeId, Locale locale) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.GIVE_UP_AND_EXIT_COMMAND_DESCRIPTION, locale));
+        button.setCallbackData(CommandNames.EXIT_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams().add(Arg.CHALLENGE_ID.getKey(), challengeId).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
 }

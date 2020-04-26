@@ -49,8 +49,8 @@ public class ChallengeService {
         this.challengeReminderService = challengeReminderService;
     }
 
-    public void deleteChallenge(int challengeId) {
-        challengeDao.delete(challengeId);
+    public void deleteChallenge(int performerId, int challengeId) {
+        challengeDao.delete(performerId, challengeId);
     }
 
     public List<Challenge> getUserChallenges(int userId) {
@@ -97,7 +97,7 @@ public class ChallengeService {
             challengeParticipant.setChallengeId(challengeId);
             challengeParticipant.setUserId(participant);
             if (participant == creatorId) {
-                challengeParticipant.setInvitationAccepted(true);
+                challengeParticipant.setState(ChallengeParticipant.State.ACCEPTED);
                 Reminder reminder = new Reminder();
                 reminder.setTotalSeries(0);
                 challengeParticipant.setReminder(reminder);

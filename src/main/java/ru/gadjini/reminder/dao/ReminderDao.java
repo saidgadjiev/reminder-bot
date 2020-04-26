@@ -152,7 +152,7 @@ public class ReminderDao {
                         "         LEFT JOIN friendship f ON CASE\n" +
                         "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
                         "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
-                        "WHERE r.status = 0 AND CASE\n" +
+                        "WHERE rc.blocked = false AND r.status = 0 AND CASE\n" +
                         "          WHEN rt.time_type = 0 THEN :curr_date >= rt.fixed_time\n" +
                         "          ELSE date_diff_in_minute(:curr_date, rt.last_reminder_at) >= minute(rt.delay_time)\n" +
                         "          END\n" +

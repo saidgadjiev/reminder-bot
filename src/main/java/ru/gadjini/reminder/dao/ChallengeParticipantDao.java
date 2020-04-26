@@ -70,7 +70,7 @@ public class ChallengeParticipantDao {
     public void createParticipant(ChallengeParticipant challengeParticipant) {
         jdbcTemplate.query(
                 "WITH participant AS (\n" +
-                        "    INSERT INTO challenge_participant (user_id, challenge_id, invitation_accepted) VALUES (?, ?, ?) RETURNING user_id, challenge_id\n" +
+                        "    INSERT INTO challenge_participant (user_id, challenge_id, state) VALUES (?, ?, ?) RETURNING user_id, challenge_id\n" +
                         ")\n" +
                         "SELECT usr.name\n" +
                         "FROM tg_user usr\n" +
@@ -78,7 +78,7 @@ public class ChallengeParticipantDao {
                 ps -> {
                     ps.setInt(1, challengeParticipant.getUserId());
                     ps.setInt(2, challengeParticipant.getChallengeId());
-                    ps.setBoolean(3, challengeParticipant.isInvitationAccepted());
+                    ps.setInt(3, challengeParticipant.getState().getCode());
                 },
                 rs -> {
                     TgUser user = new TgUser();
@@ -89,13 +89,13 @@ public class ChallengeParticipantDao {
         );
     }
 
-    public ChallengeParticipant updateInvitationAccepted(int userId, int challengeId, boolean invitationAccepted) {
+    public ChallengeParticipant updateState(int userId, int challengeId, ChallengeParticipant.State state) {
         return jdbcTemplate.query(
-                "WITH upd AS (UPDATE challenge_participant SET invitation_accepted = ? WHERE user_id = ? AND challenge_id = ? RETURNING challenge_id)\n" +
+                "WITH upd AS (UPDATE challenge_participant SET state = ? WHERE user_id = ? AND challenge_id = ? RETURNING challenge_id)\n" +
                         "SELECT c.creator_id\n" +
                         "FROM upd INNER JOIN challenge c ON c.id = upd.challenge_id",
                 ps -> {
-                    ps.setBoolean(1, invitationAccepted);
+                    ps.setInt(1, state.getCode());
                     ps.setInt(2, userId);
                     ps.setInt(3, challengeId);
                 },

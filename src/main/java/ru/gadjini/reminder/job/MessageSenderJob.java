@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.configuration.BotConfiguration;
-import ru.gadjini.reminder.exception.ExceptionWithStackTrace;
 import ru.gadjini.reminder.service.metric.LoggingSystem;
 
 import java.util.Comparator;
@@ -40,7 +39,8 @@ public class MessageSenderJob {
             try {
                 job.run();
             } catch (Exception e) {
-                throw new ExceptionWithStackTrace(e.getMessage(), job.getStackTraceElements());
+                e.setStackTrace(job.getStackTraceElements());
+                throw e;
             }
         } catch (InterruptedException e) {
             LOGGER.error("Message sender job interrupted");
