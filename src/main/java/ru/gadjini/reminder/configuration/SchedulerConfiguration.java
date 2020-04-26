@@ -10,7 +10,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import ru.gadjini.reminder.exception.TelegramMethodException;
 import ru.gadjini.reminder.service.TgUserService;
-import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 
 @Configuration
 public class SchedulerConfiguration {
