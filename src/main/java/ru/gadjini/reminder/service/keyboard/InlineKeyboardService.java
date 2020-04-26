@@ -419,6 +419,11 @@ public class InlineKeyboardService {
         if (requester.getState() == ChallengeParticipant.State.ACCEPTED) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.openReminderDetailsFromChallenge(requester.getReminderId(), locale)));
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.giveUp(requester.getChallengeId(), locale)));
+            if (challengeCreatorId != requester.getUserId()) {
+                inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.giveUpAndExit(requester.getChallengeId(), locale)));
+            }
+        } else if (requester.getState() == ChallengeParticipant.State.GAVE_UP && requester.getUserId() != challengeCreatorId) {
+            inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.exit(requester.getChallengeId(), locale)));
         }
         if (challengeCreatorId == requester.getUserId()) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteChallenge(requester.getChallengeId(), locale)));

@@ -55,6 +55,13 @@ public class ChallengeBusinessService {
         return challenges;
     }
 
+    @Transactional
+    public void exit(User participant, int challengeId) {
+        participantDao.delete(participant.getId(), challengeId);
+        challengeReminderService.deleteReminder(participant.getId(), challengeId);
+    }
+
+    @Transactional
     public Challenge giveUp(User participant, int challengeId) {
         participantDao.updateState(participant.getId(), challengeId, ChallengeParticipant.State.GAVE_UP);
         challengeReminderService.deleteReminder(participant.getId(), challengeId);
