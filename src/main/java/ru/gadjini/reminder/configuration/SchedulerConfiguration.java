@@ -8,6 +8,8 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import ru.gadjini.reminder.exception.TelegramMethodException;
+import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 
 @Configuration
 public class SchedulerConfiguration {
@@ -15,11 +17,19 @@ public class SchedulerConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(SchedulerConfiguration.class);
 
     @Bean
-    public TaskScheduler jobsThreadPoolTaskScheduler() {
+    public TaskScheduler jobsThreadPoolTaskScheduler(ReminderNotificationService reminderNotificationService) {
         ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
         threadPoolTaskScheduler.setPoolSize(2 + Runtime.getRuntime().availableProcessors() * 2);
         threadPoolTaskScheduler.setThreadNamePrefix("JobsThreadPoolTaskScheduler");
-        threadPoolTaskScheduler.setErrorHandler(throwable -> LOGGER.error(throwable.getMessage(), throwable));
+        threadPoolTaskScheduler.setErrorHandler(throwable -> {
+            LOGGER.error(throwable.getMessage(), throwable);
+            if (throwable instanceof TelegramMethodException) {
+                TelegramMethodException exception = (TelegramMethodException) throwable;
+                if (exception.getErrorCode() == 403) {
+                    reminderNotificationService.deleteReminderNotificationsByReceiver((int) exception.getChatId());
+                }
+            }
+        });
 
         LOGGER.debug("Jobs thread pool scheduler initialized with pool size: {}", threadPoolTaskScheduler.getPoolSize());
 

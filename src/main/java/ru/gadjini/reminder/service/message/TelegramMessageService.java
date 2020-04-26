@@ -22,6 +22,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.ReminderConstants;
 import ru.gadjini.reminder.common.TgConstants;
 import ru.gadjini.reminder.configuration.BotConfiguration;
+import ru.gadjini.reminder.exception.TelegramMethodException;
 import ru.gadjini.reminder.job.MessageSenderJob;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.AnswerCallbackContext;
@@ -116,7 +117,7 @@ public class TelegramMessageService implements MessageService {
                 callback.accept(msg);
             }
         } catch (TelegramApiRequestException ex) {
-            throw new RuntimeException(ex.getApiResponse() + "(" + messageContext.chatId() + ")", ex);
+            throw new TelegramMethodException(ex, messageContext.chatId());
         } catch (TelegramApiException ex) {
             throw new RuntimeException(ex.getMessage() + "(" + messageContext.chatId() + ")", ex);
         }
