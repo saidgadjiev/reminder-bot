@@ -64,6 +64,9 @@ public class ChallengeMessageBuilder {
     }
 
     public String getUserChallenges(List<Challenge> challenges, Locale locale) {
+        if (challenges.isEmpty()) {
+            return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGES_EMPTY, locale);
+        }
         StringBuilder message = new StringBuilder();
         int i = 1;
         for (Challenge challenge : challenges) {

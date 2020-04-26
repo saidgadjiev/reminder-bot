@@ -574,4 +574,6 @@ public class MessagesProperties {
     public static final String EXIT_COMMAND_DESCRIPTION = "exit.command.description";
 
     public static final String GIVE_UP_AND_EXIT_COMMAND_DESCRIPTION = "give.up.and.exit.command.description";
+
+    public static final String MESSAGE_CHALLENGES_EMPTY = "message.challenges.empty";
 }

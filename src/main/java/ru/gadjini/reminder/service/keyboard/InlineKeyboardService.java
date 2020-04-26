@@ -260,6 +260,9 @@ public class InlineKeyboardService {
     }
 
     public InlineKeyboardMarkup getUserChallengesKeyboard(List<Integer> challengesIds) {
+        if (challengesIds.isEmpty()) {
+            return null;
+        }
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         int i = 1;

@@ -22,7 +22,7 @@ public class ChallengeParticipant {
 
     private Reminder reminder;
 
-    private State state;
+    private State state = State.WAITING;
 
     public int getUserId() {
         return userId;
