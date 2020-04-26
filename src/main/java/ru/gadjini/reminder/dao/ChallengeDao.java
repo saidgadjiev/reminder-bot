@@ -108,10 +108,13 @@ public class ChallengeDao {
         );
     }
 
-    public void delete(int challengeId) {
+    public void delete(int performerId, int challengeId) {
         jdbcTemplate.update(
-                "DELETE FROM challenge WHERE id = ?",
-                ps -> ps.setInt(1, challengeId)
+                "DELETE FROM challenge WHERE id = ? AND creator_id = ?",
+                ps -> {
+                    ps.setInt(1, challengeId);
+                    ps.setInt(2, performerId);
+                }
         );
     }
 }
