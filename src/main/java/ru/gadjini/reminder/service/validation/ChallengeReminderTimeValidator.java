@@ -19,12 +19,15 @@ public class ChallengeReminderTimeValidator implements Validator<TimeValidationC
 
     @Override
     public ValidatorType event() {
-        return null;
+        return ValidatorType.CHALLENGE_REMINDER_TIME;
     }
 
     @Override
     public void validate(TimeValidationContext validationContext) {
         if (!validationContext.time().isRepeatTime()) {
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_INCORRECT_REMINDER_TYPE_IN_CHALLENGE, validationContext.locale()));
+        }
+        if (validationContext.time().getRepeatTimes().size() > 1) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_INCORRECT_REMINDER_TYPE_IN_CHALLENGE, validationContext.locale()));
         }
     }

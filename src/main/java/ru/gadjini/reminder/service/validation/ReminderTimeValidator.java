@@ -9,7 +9,7 @@ import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.validation.context.TimeValidationContext;
+import ru.gadjini.reminder.service.validation.context.ReminderTimeValidationContext;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
 
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Service
-public class ReminderTimeValidator implements Validator<TimeValidationContext> {
+public class ReminderTimeValidator implements Validator<ReminderTimeValidationContext> {
 
     private LocalisationService localisationService;
 
@@ -36,17 +36,17 @@ public class ReminderTimeValidator implements Validator<TimeValidationContext> {
     }
 
     @Override
-    public void validate(TimeValidationContext validationContext) {
-        validate(validationContext.time(), validationContext.locale());
+    public void validate(ReminderTimeValidationContext validationContext) {
+        validate(validationContext.challengeId(), validationContext.time(), validationContext.locale());
     }
 
-    private void validate(Time time, Locale locale) {
+    private void validate(Integer challengeId, Time time, Locale locale) {
         if (time.isFixedTime()) {
             validate(time.getFixedTime(), locale);
         } else if (time.isOffsetTime()) {
             validate(time.getOffsetTime(), locale);
         } else if (time.isRepeatTime()) {
-            validate(time.getRepeatTimes(), locale);
+            validate(challengeId, time.getRepeatTimes(), locale);
         }
     }
 
@@ -80,9 +80,15 @@ public class ReminderTimeValidator implements Validator<TimeValidationContext> {
         validate(fixedTime.getDateTime(), locale);
     }
 
-    private void validate(List<RepeatTime> repeatTimes, Locale locale) {
-        for (RepeatTime repeatTime : repeatTimes) {
-            if (repeatTime.isEmpty()) {
+    private void validate(Integer challengeId, List<RepeatTime> repeatTimes, Locale locale) {
+        if (challengeId == null) {
+            for (RepeatTime repeatTime : repeatTimes) {
+                if (repeatTime.isEmpty()) {
+                    throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
+                }
+            }
+        } else {
+            if (repeatTimes.size() > 1) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
             }
         }

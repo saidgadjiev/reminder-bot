@@ -16,10 +16,7 @@ import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.ZoneId;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class ReminderMessageBuilder {
@@ -67,11 +64,18 @@ public class ReminderMessageBuilder {
         String note = reminder.getNote();
 
         Locale locale = config.receiverId == reminder.getCreatorId() ? reminder.getCreator().getLocale() : reminder.getReceiver().getLocale();
-        if (reminder.isSuppressNotifications() && config.receiverId == reminder.getReceiverId()) {
-            result.append(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI, locale)).append(" ");
-        }
+        List<String> icons = new ArrayList<>();
         if (reminder.getChallengeId() != null) {
-            result.append(messageBuilder.getReminderChallenge(locale)).append(": ");
+            icons.add(messageBuilder.getReminderChallenge(locale));
+        }
+        if (reminder.isSuppressNotifications() && config.receiverId == reminder.getReceiverId()) {
+            icons.add(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI, locale));
+        }
+        for (String icon: icons) {
+            result.append(icon);
+        }
+        if (icons.size() > 0) {
+            result.append(" ");
         }
         result.append(text).append(" ");
 
@@ -306,12 +310,19 @@ public class ReminderMessageBuilder {
         for (Reminder reminder : reminders) {
             String number = i++ + ") ";
             text.append(number);
+            List<String> icons = new ArrayList<>();
 
-            if (reminder.isSuppressNotifications() && requesterId == reminder.getReceiverId()) {
-                text.append(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI, locale)).append(" ");
-            }
             if (reminder.getChallengeId() != null) {
-                text.append(messageBuilder.getReminderChallenge(locale)).append(": ");
+                icons.add(messageBuilder.getReminderChallenge(locale));
+            }
+            if (reminder.isSuppressNotifications() && requesterId == reminder.getReceiverId()) {
+                icons.add(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI, locale));
+            }
+            for (String icon : icons) {
+                text.append(icon);
+            }
+            if (icons.size() > 0) {
+                text.append(" ");
             }
             text.append(reminder.getText());
             String time = reminderTimeBuilder.time(reminder, locale);
