@@ -43,47 +43,47 @@ public class RepeatTimeParser {
     public List<RepeatTime> parse(List<BaseLexem> lexems) {
         List<RepeatTime> repeatTimes = parse0(lexems);
 
-        repeatTimes.forEach(repeatTime -> {
-            if (TimeUtils.isEmptyInterval(repeatTime.getInterval())) {
-                repeatTime.setInterval(null);
-            }
-        });
-
-        return repeatTimes;
+        return repeatTimes.isEmpty() ? List.of(new RepeatTime(zoneId)) : repeatTimes;
     }
 
-    public List<RepeatTime> parse0(List<BaseLexem> lexems) {
-        repeatTime = new RepeatTime(zoneId);
-        repeatTime.setInterval(new Period());
-        repeatTimes.add(repeatTime);
-
+    private List<RepeatTime> parse0(List<BaseLexem> lexems) {
         if (lexemsConsumer.check(lexems, TimeToken.YEARS)) {
+            newRepeatTime();
             consumeYears(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.MONTHS)) {
+            newRepeatTime();
             consumeMonths(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAY)) {
+            newRepeatTime();
             repeatTime.setInterval(repeatTime.getInterval().withYears(1));
             consumeDay(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.WEEKS)) {
+            newRepeatTime();
             consumeWeeks(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAYS)) {
+            newRepeatTime();
             consumeDays(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOURS)) {
+            newRepeatTime();
             consumeHours(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
+            newRepeatTime();
             consumeMinutes(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.DAY_OF_WEEK)) {
+            newRepeatTime();
             repeatTime.setInterval(repeatTime.getInterval().withWeeks(1));
             consumeDayOfWeek(lexems);
         } else {
             return repeatTimes;
         }
 
-        if (lexemsConsumer.getPosition() < lexems.size()) {
-            return parse(lexems);
-        }
+        return parse(lexems);
+    }
 
-        return repeatTimes;
+    private void newRepeatTime() {
+        repeatTime = new RepeatTime(zoneId);
+        repeatTime.setInterval(new Period());
+        repeatTimes.add(repeatTime);
     }
 
     private void consumeWeeks(List<BaseLexem> lexems) {

@@ -7,12 +7,14 @@ import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.validation.context.ReminderRequestValidationContext;
+import ru.gadjini.reminder.service.validation.context.TimeValidationContext;
 
 import java.util.Locale;
 import java.util.Objects;
 
 @Service
-public class CreateReminderValidator implements Validator {
+public class CreateReminderValidator implements Validator<ReminderRequestValidationContext> {
 
     private LocalisationService localisationService;
 
@@ -33,13 +35,13 @@ public class CreateReminderValidator implements Validator {
     }
 
     @Override
-    public void validate(ValidationContext validationContext) {
+    public void validate(ReminderRequestValidationContext validationContext) {
         if (validationContext.reminderRequest().getReceiverName() != null) {
-            checkFriendShip(validationContext.creatorId(), validationContext.reminderRequest().getReceiverName(), validationContext.reminderRequest().getLocale());
+            checkFriendShip(validationContext.reminderRequest().getCreatorId(), validationContext.reminderRequest().getReceiverName(), validationContext.reminderRequest().getLocale());
         } else if (!Objects.equals(validationContext.reminderRequest().getReceiverId(), validationContext.reminderRequest().getCreatorId())) {
-            checkFriendShip(validationContext.creatorId(), validationContext.reminderRequest().getReceiverId(), validationContext.reminderRequest().getLocale());
+            checkFriendShip(validationContext.reminderRequest().getCreatorId(), validationContext.reminderRequest().getReceiverId(), validationContext.reminderRequest().getLocale());
         }
-        reminderTimeValidator.validate(new ValidationContext().time(validationContext.reminderRequest().getTime()).locale(validationContext.reminderRequest().getLocale()));
+        reminderTimeValidator.validate(new TimeValidationContext().time(validationContext.reminderRequest().getTime()).locale(validationContext.reminderRequest().getLocale()));
     }
 
     private void checkFriendShip(int userId, String receiverName, Locale locale) {

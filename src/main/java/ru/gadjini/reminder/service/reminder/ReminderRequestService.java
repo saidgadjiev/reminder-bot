@@ -20,9 +20,12 @@ import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestExtractor;
-import ru.gadjini.reminder.service.validation.ValidationContext;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
 import ru.gadjini.reminder.service.validation.ValidatorType;
+import ru.gadjini.reminder.service.validation.context.ReminderRequestValidationContext;
+import ru.gadjini.reminder.service.validation.context.ReminderTimeValidationContext;
+import ru.gadjini.reminder.service.validation.context.TimeValidationContext;
+import ru.gadjini.reminder.service.validation.context.ZonedDateTimeValidationContext;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeCreator;
@@ -77,7 +80,7 @@ public class ReminderRequestService {
         reminderRequest.setCreatorId(context.creator().getId());
         reminderRequest.setMessageId(context.messageId());
 
-        validatorFactory.getValidator(ValidatorType.CREATE_REMINDER).validate(new ValidationContext().creatorId(context.creator().getId()).reminderRequest(reminderRequest));
+        validatorFactory.getValidator(ValidatorType.CREATE_REMINDER).validate(new ReminderRequestValidationContext().reminderRequest(reminderRequest));
 
         return createReminder(context.creator(), reminderRequest);
     }
@@ -85,7 +88,7 @@ public class ReminderRequestService {
     public Reminder createReminderFromRequest(User creator, ReminderRequest reminderRequest) {
         reminderRequest.setCreatorId(creator.getId());
 
-        validatorFactory.getValidator(ValidatorType.CREATE_REMINDER).validate(new ValidationContext().creatorId(creator.getId()).reminderRequest(reminderRequest));
+        validatorFactory.getValidator(ValidatorType.CREATE_REMINDER).validate(new ReminderRequestValidationContext().reminderRequest(reminderRequest));
 
         return createReminder(creator, reminderRequest);
     }
@@ -148,7 +151,7 @@ public class ReminderRequestService {
         }
 
         Time customRemind = timeRequestService.parseTime(text, reminder.getReceiver().getZone(), reminder.getReceiver().getLocale());
-        validatorFactory.getValidator(ValidatorType.CUSTOM_REMIND).validate(new ValidationContext().time(customRemind).reminder(reminder));
+        validatorFactory.getValidator(ValidatorType.CUSTOM_REMIND).validate(new ReminderTimeValidationContext().time(customRemind).remindAt(reminder.getRemindAt()));
 
         CustomRemindResult customRemindResult = new CustomRemindResult();
         List<ReminderNotification> reminderNotifications = new ArrayList<>();
@@ -159,7 +162,7 @@ public class ReminderRequestService {
                     : null;
             ZonedDateTime remindTime = buildTime(customRemind.getOffsetTime(), remindAt).withZoneSameInstant(ZoneOffset.UTC);
 
-            validatorFactory.getValidator(ValidatorType.PAST_TIME_VALIDATOR).validate(new ValidationContext().dateTime(remindTime).locale(reminder.getReceiver().getLocale()));
+            validatorFactory.getValidator(ValidatorType.PAST_TIME_VALIDATOR).validate(new ZonedDateTimeValidationContext().dateTime(remindTime).locale(reminder.getReceiver().getLocale()));
 
             reminderNotifications.add(reminderService.customRemind(reminderId, remindTime));
             customRemindResult.setZonedDateTime(remindTime);
@@ -170,7 +173,7 @@ public class ReminderRequestService {
         } else {
             ZonedDateTime remindTime = customRemind.getFixedDateTime().toZonedDateTime().withZoneSameInstant(ZoneOffset.UTC);
 
-            validatorFactory.getValidator(ValidatorType.PAST_TIME_VALIDATOR).validate(new ValidationContext().dateTime(remindTime).locale(reminder.getReceiver().getLocale()));
+            validatorFactory.getValidator(ValidatorType.PAST_TIME_VALIDATOR).validate(new ZonedDateTimeValidationContext().dateTime(remindTime).locale(reminder.getReceiver().getLocale()));
 
             reminderNotifications.add(reminderService.customRemind(reminderId, remindTime));
             customRemindResult.setZonedDateTime(remindTime);
@@ -192,7 +195,7 @@ public class ReminderRequestService {
         }
 
         Time newReminderTimeInReceiverZone = timeRequestService.parseTime(timeText, oldReminder.getReceiver().getZone(), oldReminder.getReceiver().getLocale());
-        validatorFactory.getValidator(ValidatorType.REMINDER_TIME_VALIDATOR).validate(new ValidationContext().time(newReminderTimeInReceiverZone).reminder(oldReminder));
+        validatorFactory.getValidator(ValidatorType.REMINDER_TIME_VALIDATOR).validate(new TimeValidationContext().time(newReminderTimeInReceiverZone).locale(oldReminder.getReceiver().getLocale()));
 
         Reminder newReminder = new Reminder(oldReminder);
         Reminder changed;

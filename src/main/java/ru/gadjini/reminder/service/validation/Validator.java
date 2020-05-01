@@ -1,8 +1,10 @@
 package ru.gadjini.reminder.service.validation;
 
-public interface Validator {
+import ru.gadjini.reminder.service.validation.context.ValidationContext;
+
+public interface Validator<T extends ValidationContext> {
 
     ValidatorType event();
 
-    void validate(ValidationContext validationContext);
+    void validate(T validationContext);
 }

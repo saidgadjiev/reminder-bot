@@ -6,9 +6,10 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.validation.context.TimeValidationContext;
 
 @Service
-public class UserReminderNotificationValidator implements Validator {
+public class UserReminderNotificationValidator implements Validator<TimeValidationContext> {
 
     private LocalisationService localisationService;
 
@@ -23,7 +24,7 @@ public class UserReminderNotificationValidator implements Validator {
     }
 
     @Override
-    public void validate(ValidationContext validationContext) {
+    public void validate(TimeValidationContext validationContext) {
         if (validationContext.time().isOffsetTime()) {
             if (validationContext.time().getOffsetTime().getType() != OffsetTime.Type.BEFORE) {
                 throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_USER_REMIND, validationContext.locale()));

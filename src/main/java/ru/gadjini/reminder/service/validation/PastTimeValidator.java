@@ -5,10 +5,11 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.validation.context.ZonedDateTimeValidationContext;
 import ru.gadjini.reminder.util.TimeCreator;
 
 @Service
-public class PastTimeValidator implements Validator {
+public class PastTimeValidator implements Validator<ZonedDateTimeValidationContext> {
 
     private LocalisationService localisationService;
 
@@ -26,7 +27,7 @@ public class PastTimeValidator implements Validator {
     }
 
     @Override
-    public void validate(ValidationContext validationContext) {
+    public void validate(ZonedDateTimeValidationContext validationContext) {
         if (validationContext.dateTime().isBefore(timeCreator.zonedDateTimeNow(validationContext.dateTime().getZone()))) {
             throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_PAST_TIME, validationContext.locale()));
         }

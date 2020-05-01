@@ -28,9 +28,9 @@ import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.service.reminder.TimeRequestService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
-import ru.gadjini.reminder.service.validation.ValidationContext;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
 import ru.gadjini.reminder.service.validation.ValidatorType;
+import ru.gadjini.reminder.service.validation.context.ReminderTimeValidationContext;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -159,11 +159,11 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         Reminder reminder = ReminderData.to(stateData.getReminder());
         Time parseTime = timeRequestService.parseTime(text, reminder.getReceiver().getZone(), reminder.getReceiver().getLocale());
 
-        validatorFactory.getValidator(ValidatorType.POSTPONE).validate(new ValidationContext().time(parseTime).reminder(reminder));
+        validatorFactory.getValidator(ValidatorType.POSTPONE).validate(new ReminderTimeValidationContext().time(parseTime).remindAt(reminder.getRemindAt()).locale(locale));
 
         stateData.setPostponeTime(TimeData.from(parseTime));
 
-        if (reminder.getReceiverId() != reminder.getCreatorId()) {
+        if (!Objects.equals(reminder.getReceiverId(), reminder.getCreatorId())) {
             stateData.setState(StateData.State.REASON);
             messageService.editMessageAsync(
                     new EditMessageContext(PriorityJob.Priority.HIGH)

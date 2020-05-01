@@ -12,9 +12,9 @@ import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.RequestParser;
-import ru.gadjini.reminder.service.validation.ValidationContext;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
 import ru.gadjini.reminder.service.validation.ValidatorType;
+import ru.gadjini.reminder.service.validation.context.TimeValidationContext;
 import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.LocalTime;
@@ -62,7 +62,7 @@ public class UserReminderNotificationService {
         ZoneId zoneId = userService.getTimeZone(user.getId());
         Locale locale = userService.getLocale(user.getId());
         Time time = parseCustomRemind(text, zoneId, locale);
-        validatorFactory.getValidator(ValidatorType.USER_REMINDER_NOTIFICATION).validate(new ValidationContext().time(time).locale(locale));
+        validatorFactory.getValidator(ValidatorType.USER_REMINDER_NOTIFICATION).validate(new TimeValidationContext().time(time).locale(locale));
 
         time.setOffsetTime(timeCreator.withZone(time.getOffsetTime(), ZoneOffset.UTC));
         UserReminderNotification userReminderNotification = new UserReminderNotification(ZoneOffset.UTC);
