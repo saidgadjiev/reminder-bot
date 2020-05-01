@@ -14,7 +14,7 @@ public class ValidatorFactory {
     private Map<ValidatorType, Validator<ValidationContext>> validators = new HashMap<>();
 
     @Autowired
-    public ValidatorFactory(Set<Validator> validatorsSet) {
+    public void setValidators(Set<Validator> validatorsSet) {
         validatorsSet.forEach(validator -> validators.put(validator.event(), validator));
     }
 

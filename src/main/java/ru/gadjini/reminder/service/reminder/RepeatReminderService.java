@@ -178,7 +178,7 @@ public class RepeatReminderService {
             for (int i = 1; i < repeatTimes.size(); ++i) {
                 RepeatTime repeatTime = repeatTimes.get(i);
                 DateTime candidate = getNextRemindAt(remindAt, repeatTimes.get(currentIndex), repeatTime);
-                if (isMoreAppropriateNextRemindAtCandidate(remindAt, candidate, nextRemindAt)) {
+                if (isMoreAppropriateNextRemindAtCandidate(candidate, nextRemindAt)) {
                     nextRemindAt = candidate;
                     index = i;
                 }
@@ -667,7 +667,7 @@ public class RepeatReminderService {
         }
     }
 
-    private boolean isMoreAppropriateNextRemindAtCandidate(DateTime remindAt, DateTime candidate, DateTime currentNextRemindAt) {
+    private boolean isMoreAppropriateNextRemindAtCandidate(DateTime candidate, DateTime currentNextRemindAt) {
         ZonedDateTime candidateZoned = ZonedDateTime.of(candidate.date(), candidate.hasTime() ? candidate.time() : LocalTime.MIDNIGHT, candidate.getZoneId());
         ZonedDateTime nextRemindAtZoned = ZonedDateTime.of(currentNextRemindAt.date(), currentNextRemindAt.hasTime() ? currentNextRemindAt.time() : LocalTime.MIDNIGHT, currentNextRemindAt.getZoneId());
         if (candidateZoned.isBefore(nextRemindAtZoned)) {

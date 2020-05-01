@@ -17,7 +17,11 @@ public class RequestParams {
     }
 
     public Integer getInt(String key) {
-        return Integer.parseInt(params.get(key));
+        if (params.containsKey(key)) {
+            return Integer.parseInt(params.get(key));
+        }
+
+        return null;
     }
 
     public boolean getBoolean(String key) {

@@ -36,9 +36,13 @@ public class FriendshipService {
     private ValidatorFactory validatorFactory;
 
     @Autowired
-    public FriendshipService(FriendshipDao friendshipDao, TgUserService userService, ValidatorFactory validatorFactory) {
+    public FriendshipService(FriendshipDao friendshipDao, TgUserService userService) {
         this.friendshipDao = friendshipDao;
         this.userService = userService;
+    }
+
+    @Autowired
+    public void setValidatorFactory(ValidatorFactory validatorFactory) {
         this.validatorFactory = validatorFactory;
     }
 

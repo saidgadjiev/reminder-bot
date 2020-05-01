@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.service.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Friendship;
 import ru.gadjini.reminder.exception.UserException;
@@ -13,7 +13,7 @@ import ru.gadjini.reminder.service.validation.context.TimeValidationContext;
 import java.util.Locale;
 import java.util.Objects;
 
-@Service
+@Component
 public class CreateReminderValidator implements Validator<ReminderRequestValidationContext> {
 
     private LocalisationService localisationService;

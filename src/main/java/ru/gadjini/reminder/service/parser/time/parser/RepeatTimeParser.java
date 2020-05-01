@@ -7,7 +7,6 @@ import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.parser.api.BaseLexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
-import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -73,6 +72,9 @@ public class RepeatTimeParser {
             newRepeatTime();
             repeatTime.setInterval(repeatTime.getInterval().withWeeks(1));
             consumeDayOfWeek(lexems);
+        } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
+            newRepeatTime();
+            consumeEveryDailyTime(lexems);
         } else {
             return repeatTimes;
         }
@@ -145,6 +147,11 @@ public class RepeatTimeParser {
         if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             repeatTime.setTime(consumeTime(lexems));
         }
+    }
+
+    private void consumeEveryDailyTime(List<BaseLexem> lexems) {
+        repeatTime.setInterval(repeatTime.getInterval().withDays(1));
+        repeatTime.setTime(consumeTime(lexems));
     }
 
     private void consumeDays(List<BaseLexem> lexems) {
