@@ -15,7 +15,9 @@ import ru.gadjini.reminder.model.CreateFriendRequestResult;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
-import ru.gadjini.reminder.service.validation.UserValidator;
+import ru.gadjini.reminder.service.validation.ValidatorFactory;
+import ru.gadjini.reminder.service.validation.ValidatorType;
+import ru.gadjini.reminder.service.validation.context.UserValidationContext;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,17 +29,21 @@ public class FriendshipService {
 
     private FriendshipDao friendshipDao;
 
-    private UserValidator userValidator;
-
     private ReminderService reminderService;
 
     private TgUserService userService;
 
+    private ValidatorFactory validatorFactory;
+
     @Autowired
-    public FriendshipService(FriendshipDao friendshipDao, UserValidator userValidator, TgUserService userService) {
+    public FriendshipService(FriendshipDao friendshipDao, TgUserService userService) {
         this.friendshipDao = friendshipDao;
-        this.userValidator = userValidator;
         this.userService = userService;
+    }
+
+    @Autowired
+    public void setValidatorFactory(ValidatorFactory validatorFactory) {
+        this.validatorFactory = validatorFactory;
     }
 
     @Autowired
@@ -60,10 +66,10 @@ public class FriendshipService {
 
         Locale locale = userService.getLocale(tgMessage.getUser().getId());
         if (StringUtils.isNotBlank(friendUsername)) {
-            userValidator.checkExists(friendUsername, locale);
+            validatorFactory.getValidator(ValidatorType.USER_EXIST).validate(new UserValidationContext().username(friendUsername).locale(locale));
             friendship = getFriendship(user.getId(), friendUsername);
         } else {
-            userValidator.checkExists(friendUserId, locale);
+            validatorFactory.getValidator(ValidatorType.USER_EXIST).validate(new UserValidationContext().userId(friendUserId).locale(locale));
             friendship = getFriendship(user.getId(), friendUserId);
         }
 

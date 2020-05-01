@@ -3,12 +3,12 @@ package ru.gadjini.reminder.service.validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.time.FixedTime;
 import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.validation.context.ReminderTimeValidationContext;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
 
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Service
-public class CustomRemindValidator implements Validator {
+public class CustomRemindValidator implements Validator<ReminderTimeValidationContext> {
 
     private LocalisationService localisationService;
 
@@ -34,34 +34,34 @@ public class CustomRemindValidator implements Validator {
     }
 
     @Override
-    public void validate(ValidationContext validationContext) {
+    public void validate(ReminderTimeValidationContext validationContext) {
         if (validationContext.time().isOffsetTime()) {
-            validate(validationContext.reminder(), validationContext.time().getOffsetTime());
+            validate(validationContext.remindAt(), validationContext.time().getOffsetTime(), validationContext.locale());
         } else if (validationContext.time().isFixedTime()) {
-            validate(validationContext.time().getFixedTime(), validationContext.reminder().getReceiver().getLocale());
+            validate(validationContext.time().getFixedTime(), validationContext.locale());
         } else if (validationContext.time().isRepeatTime()) {
-            validate(validationContext.reminder(), validationContext.time().getRepeatTimes());
+            validate(validationContext.time().getRepeatTimes(), validationContext.locale());
         }
     }
 
-    private void validate(Reminder reminder, List<RepeatTime> repeatTimes) {
-        for (RepeatTime repeatTime: repeatTimes) {
-            validate(reminder, repeatTime);
+    private void validate(List<RepeatTime> repeatTimes, Locale locale) {
+        for (RepeatTime repeatTime : repeatTimes) {
+            validate(repeatTime, locale);
         }
     }
 
-    private void validate(Reminder reminder, RepeatTime repeatTime) {
+    private void validate(RepeatTime repeatTime, Locale locale) {
         if (!repeatTime.hasTime()) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND_WITHOUT_TIME, reminder.getReceiver().getLocale()));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_CUSTOM_REMIND_WITHOUT_TIME, locale));
         }
     }
 
-    private void validate(Reminder reminder, OffsetTime offsetTime) {
+    private void validate(DateTime remindAt, OffsetTime offsetTime, Locale locale) {
         if (offsetTime.getType() == OffsetTime.Type.FOR) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, reminder.getReceiver().getLocale()));
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
         }
-        if (offsetTime.getType() == OffsetTime.Type.BEFORE && !reminder.getRemindAt().hasTime()) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, reminder.getReceiver().getLocale()));
+        if (offsetTime.getType() == OffsetTime.Type.BEFORE && !remindAt.hasTime()) {
+            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
         }
     }
 

@@ -53,7 +53,7 @@ public class RestoreReminderService {
                 reminderNotificationService.deleteReminderNotification(reminderNotification.getId());
             } else {
                 if (repeatReminderService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
-                    RepeatReminderService.RemindAtCandidate nextRemindAtCandidate = repeatReminderService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtsInReceiverZone(timeCreator));
+                    RepeatReminderService.RemindAtCandidate nextRemindAtCandidate = repeatReminderService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtsInReceiverZone(timeCreator), reminder.getCurrRepeatIndex());
                     DateTime nextRemindAt = nextRemindAtCandidate.getRemindAt().withZoneSameInstant(ZoneOffset.UTC);
                     repeatReminderService.updateNextRemindAtAndSeries(reminder.getId(), RepeatReminderService.UpdateSeries.NONE, nextRemindAtCandidate.getIndex(), nextRemindAt);
                     reminder.setRemindAt(nextRemindAt);

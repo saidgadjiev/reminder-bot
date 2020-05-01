@@ -17,9 +17,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.domain.TgUser;
-import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.Time;
-import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.CreateChallengeRequest;
 import ru.gadjini.reminder.model.EditMessageContext;
@@ -40,6 +38,10 @@ import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
 import ru.gadjini.reminder.service.reminder.TimeRequestService;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestExtractor;
+import ru.gadjini.reminder.service.validation.ValidatorFactory;
+import ru.gadjini.reminder.service.validation.ValidatorType;
+import ru.gadjini.reminder.service.validation.context.ChallengeStateContext;
+import ru.gadjini.reminder.service.validation.context.TimeValidationContext;
 
 import java.time.ZoneId;
 import java.util.HashSet;
@@ -77,12 +79,15 @@ public class CreateChallengeCommand implements KeyboardBotCommand, CallbackBotCo
 
     private CallbackCommandNavigator commandNavigator;
 
+    private ValidatorFactory validatorFactory;
+
     @Autowired
     public CreateChallengeCommand(LocalisationService localisationService, MessageService messageService,
                                   TgUserService userService, InlineKeyboardService inlineKeyboardService, @Qualifier("chain") ReminderRequestExtractor requestExtractor,
                                   CommandStateService commandStateService, TimeRequestService timeRequestService,
                                   FriendshipService friendshipService, FriendshipMessageBuilder friendshipMessageBuilder,
-                                  ChallengeService challengeService, ChallengeMessageBuilder challengeMessageBuilder) {
+                                  ChallengeService challengeService, ChallengeMessageBuilder challengeMessageBuilder,
+                                  ValidatorFactory validatorFactory) {
         this.localisationService = localisationService;
         this.messageService = messageService;
         this.userService = userService;
@@ -94,6 +99,7 @@ public class CreateChallengeCommand implements KeyboardBotCommand, CallbackBotCo
         this.friendshipMessageBuilder = friendshipMessageBuilder;
         this.challengeService = challengeService;
         this.challengeMessageBuilder = challengeMessageBuilder;
+        this.validatorFactory = validatorFactory;
         for (Locale locale : localisationService.getSupportedLocales()) {
             names.add(localisationService.getMessage(MessagesProperties.CREATE_CHALLENGE_COMMAND_NAME, locale));
         }
@@ -153,7 +159,7 @@ public class CreateChallengeCommand implements KeyboardBotCommand, CallbackBotCo
         if (requestParams.contains(Arg.COMMAND_NAME.getKey())) {
             String commandName = requestParams.getString(Arg.COMMAND_NAME.getKey());
             if (commandName.equals(CommandNames.GO_TO_NEXT_COMMAND_NAME) && state.getState().equals(ChallengeState.State.PARTICIPANTS)) {
-                validateState(state);
+                validatorFactory.getValidator(ValidatorType.CHALLENGE_STATE).validate(new ChallengeStateContext().challengeState(state));
                 handleParticipantsState(state, callbackQuery);
                 return;
             }
@@ -221,7 +227,7 @@ public class CreateChallengeCommand implements KeyboardBotCommand, CallbackBotCo
         Locale locale = new Locale(state.getUserLanguage());
         ZoneId zoneId = userService.getTimeZone(message.getFrom().getId());
         Time time = timeRequestService.parseTime(text, zoneId, locale);
-        validateTime(message.getFrom().getId(), time);
+        validatorFactory.getValidator(ValidatorType.CHALLENGE_TIME).validate(new TimeValidationContext().time(time).locale(locale));
 
         state.setDuration(text);
         state.setTime(TimeData.from(time));
@@ -245,12 +251,13 @@ public class CreateChallengeCommand implements KeyboardBotCommand, CallbackBotCo
     }
 
     private void handleTextState(ChallengeState state, Message message, String text) {
+        Locale locale = new Locale(state.getUserLanguage());
         ReminderRequest reminderRequest = requestExtractor.extract(new ReminderRequestContext()
                 .text(text)
                 .voice(message.hasVoice())
                 .creator(message.getFrom())
                 .messageId(message.getMessageId()));
-        validateReminderRequest(message.getFrom().getId(), reminderRequest);
+        validatorFactory.getValidator(ValidatorType.CHALLENGE_REMINDER_TIME).validate(new TimeValidationContext().time(reminderRequest.getTime()).locale(locale));
 
         state.setChallengeName(text);
         state.setReminderRequest(ReminderRequestData.from(reminderRequest));
@@ -264,8 +271,7 @@ public class CreateChallengeCommand implements KeyboardBotCommand, CallbackBotCo
                         .text(messageText)
                         .chatId(message.getChatId())
                         .messageId(state.getMessageId())
-                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.START_COMMAND_NAME, new Locale(state.getUserLanguage())))
-        );
+                        .replyKeyboard(inlineKeyboardService.goBackCallbackButton(CommandNames.START_COMMAND_NAME, locale)));
     }
 
     private void sendInvitations(List<ChallengeParticipant> participants, Challenge challenge) {
@@ -276,27 +282,6 @@ public class CreateChallengeCommand implements KeyboardBotCommand, CallbackBotCo
                             .text(challengeMessageBuilder.getChallengeInvitation(challenge, challengeParticipant.getUserId(), challengeParticipant.getUser().getLocale()))
                             .replyKeyboard(inlineKeyboardService.getChallengeInvitation(challenge.getId(), challengeParticipant.getUser().getLocale()))
             );
-        }
-    }
-
-    private void validateState(ChallengeState state) {
-        if (state.getState() == ChallengeState.State.PARTICIPANTS && state.getParticipants().isEmpty()) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_PARTICIPANTS_REQUIRED, new Locale(state.getUserLanguage())));
-        }
-    }
-
-    private void validateTime(int creatorId, Time time) {
-        if (time.isRepeatTime()) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_CHALLENGE_TIME, userService.getLocale(creatorId)));
-        }
-        if (time.isOffsetTime() && !time.getOffsetTime().getType().equals(OffsetTime.Type.FOR)) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_CHALLENGE_TIME, userService.getLocale(creatorId)));
-        }
-    }
-
-    private void validateReminderRequest(int userId, ReminderRequest reminderRequest) {
-        if (!reminderRequest.isRepeatTime()) {
-            throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_INCORRECT_REMINDER_TYPE_IN_CHALLENGE, userService.getLocale(userId)));
         }
     }
 
