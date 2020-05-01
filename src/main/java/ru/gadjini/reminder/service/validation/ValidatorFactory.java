@@ -15,7 +15,12 @@ public class ValidatorFactory {
 
     @Autowired
     public void setValidators(Set<Validator> validatorsSet) {
-        validatorsSet.forEach(validator -> validators.put(validator.event(), validator));
+        validatorsSet.forEach(validator -> {
+            if (validator.event() == null) {
+                throw new IllegalStateException("Validator " + validator.getClass() + " has null event type");
+            }
+            validators.put(validator.event(), validator);
+        });
     }
 
     public Validator<ValidationContext> getValidator(ValidatorType event) {

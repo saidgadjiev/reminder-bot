@@ -238,7 +238,7 @@ public class ButtonFactory {
     }
 
     InlineKeyboardButton editReminder(int reminderId, Locale locale) {
-        return editReminder(reminderId, locale, new RequestParams());
+        return editReminder(reminderId, locale, RequestParams.EMPTY);
     }
 
     InlineKeyboardButton reminderDetails(int reminderId, Locale locale) {

@@ -13,6 +13,8 @@ public class ReminderTimeValidationContext implements ValidationContext {
 
     private Locale locale;
 
+    private Integer challengeId;
+
     public DateTime remindAt() {
         return this.remindAt;
     }
@@ -39,4 +41,15 @@ public class ReminderTimeValidationContext implements ValidationContext {
         this.locale = locale;
         return this;
     }
+
+    public Integer challengeId() {
+        return this.challengeId;
+    }
+
+    public ReminderTimeValidationContext challengeId(final Integer challengeId) {
+        this.challengeId = challengeId;
+        return this;
+    }
+
+
 }

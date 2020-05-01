@@ -268,6 +268,6 @@ public class MessageBuilder {
     }
 
     public String getReminderChallenge(Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_REMINDER, locale);
+        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_REMINDER_ICON, locale);
     }
 }

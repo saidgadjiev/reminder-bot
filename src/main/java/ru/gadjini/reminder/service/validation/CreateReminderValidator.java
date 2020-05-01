@@ -8,6 +8,7 @@ import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.validation.context.ReminderRequestValidationContext;
+import ru.gadjini.reminder.service.validation.context.ReminderTimeValidationContext;
 import ru.gadjini.reminder.service.validation.context.TimeValidationContext;
 
 import java.util.Locale;
@@ -41,7 +42,7 @@ public class CreateReminderValidator implements Validator<ReminderRequestValidat
         } else if (!Objects.equals(validationContext.reminderRequest().getReceiverId(), validationContext.reminderRequest().getCreatorId())) {
             checkFriendShip(validationContext.reminderRequest().getCreatorId(), validationContext.reminderRequest().getReceiverId(), validationContext.reminderRequest().getLocale());
         }
-        reminderTimeValidator.validate(new TimeValidationContext().time(validationContext.reminderRequest().getTime()).locale(validationContext.reminderRequest().getLocale()));
+        reminderTimeValidator.validate(new ReminderTimeValidationContext().challengeId(validationContext.reminderRequest().getChallengeId()).time(validationContext.reminderRequest().getTime()).locale(validationContext.reminderRequest().getLocale()));
     }
 
     private void checkFriendShip(int userId, String receiverName, Locale locale) {

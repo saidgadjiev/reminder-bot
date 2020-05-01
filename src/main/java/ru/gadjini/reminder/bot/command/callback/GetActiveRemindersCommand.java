@@ -49,12 +49,12 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
                 callbackQuery.getMessage().getChatId(),
                 callbackQuery.getMessage().getMessageId(),
                 callbackQuery.getMessage().getText(),
-                getHeader(filter),
+                getFilterMessageCode(filter),
                 new RequestParams().add(Arg.FILTER.getKey(), filter.getCode()),
                 reminders
         );
 
-        return getCallbackAnswer(filter);
+        return getFilterMessageCode(filter);
     }
 
     @Override
@@ -67,17 +67,20 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
                 tgMessage.getChatId(),
                 tgMessage.getMessageId(),
                 null,
-                getHeader(filter),
+                getFilterMessageCode(filter),
                 new RequestParams().add(Arg.FILTER.getKey(), filter.getCode()),
                 reminders
         );
     }
 
-    private String getCallbackAnswer(ReminderDao.Filter filter) {
-        return filter == ReminderDao.Filter.ALL ? MessagesProperties.ALL_ACTIVE_REMINDERS_COMMAND_DESCRIPTION : MessagesProperties.TODAY_ACTIVE_REMINDERS_COMMAND_DESCRIPTION;
-    }
-
-    private String getHeader(ReminderDao.Filter filter) {
-        return filter == ReminderDao.Filter.ALL ? MessagesProperties.MESSAGE_ACTIVE_REMINDERS_ALL : MessagesProperties.MESSAGE_ACTIVE_REMINDERS_TODAY;
+    private String getFilterMessageCode(ReminderDao.Filter filter) {
+        switch (filter) {
+            case TODAY:
+                return MessagesProperties.TODAY_ACTIVE_REMINDERS_COMMAND_DESCRIPTION;
+            case EXPIRED:
+                return MessagesProperties.EXPIRED_REMINDERS_COMMAND_DESCRIPTION;
+            default:
+                return MessagesProperties.ALL_ACTIVE_REMINDERS_COMMAND_DESCRIPTION;
+        }
     }
 }
