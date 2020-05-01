@@ -171,9 +171,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_LET_SEE_ON_REMINDERS = "message.let.see.on.reminders";
 
-    public static final String MESSAGE_COMPLETED_REMINDERS_EMPTY = "message.completed.reminders.empty";
-
-    public static final String MESSAGE_ACTIVE_REMINDERS_EMPTY = "message.active.reminders.empty";
+    public static final String MESSAGE_REMINDERS_EMPTY = "message.reminders.empty";
 
     public static final String GO_BACK_CALLBACK_COMMAND_DESCRIPTION = "go.back.callback.command.description";
 
@@ -555,7 +553,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_CHALLENGE_WINNER = "message.challenge.winner";
 
-    public static final String MESSAGE_CHALLENGE_REMINDER = "message.challenge.reminder";
+    public static final String MESSAGE_CHALLENGE_REMINDER_ICON = "message.challenge.reminder.icon";
 
     public static final String DELETE_CHALLENGE_COMMAND_DESCRIPTION = "delete.challenge.command.description";
 
@@ -576,4 +574,8 @@ public class MessagesProperties {
     public static final String GIVE_UP_AND_EXIT_COMMAND_DESCRIPTION = "give.up.and.exit.command.description";
 
     public static final String MESSAGE_CHALLENGES_EMPTY = "message.challenges.empty";
+
+    public static final String MESSAGE_EXPIRED_REMINDER_ICON = "message.expired.reminder.icon";
+
+    public static final String EXPIRED_REMINDERS_COMMAND_DESCRIPTION = "expired.reminders.command.description";
 }

@@ -393,6 +393,10 @@ public class Reminder {
         return repeatRemindAts != null && getRepeatRemindAts().get(0).isEmpty();
     }
 
+    public boolean isRepeatable() {
+        return isRepeatableWithTime() || isRepeatableWithoutTime();
+    }
+
     public boolean hasRemindAt() {
         return remindAt != null;
     }

@@ -80,7 +80,7 @@ public class ReminderDao {
                         "                   ON rt.reminder_id = r.id\n" +
                         "WHERE ((r.creator_id = :user_id AND r.status IN (0, 2))\n" +
                         "   OR (r.receiver_id = :user_id AND r.status = 0))\n" +
-                        (filter == Filter.TODAY ? "AND (r.remind_at).dt_date = (now()::timestamp AT TIME ZONE 'UTC' AT TIME ZONE rc.zone_id)::date\n" : "") +
+                        getFilterClause(filter) + "\n" +
                         "ORDER BY (r.remind_at).dt_date, (r.remind_at).dt_time NULLS LAST, r.id",
                 new MapSqlParameterSource().addValue("user_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
@@ -424,6 +424,20 @@ public class ReminderDao {
         return reminder;
     }
 
+    private String getFilterClause(Filter filter) {
+        switch (filter) {
+            case TODAY:
+                return "AND (r.remind_at).dt_date = (now()::timestamp AT TIME ZONE 'UTC' AT TIME ZONE rc.zone_id)::date";
+            case EXPIRED:
+                return "AND CASE\n" +
+                        "          WHEN (remind_at).dt_time IS NULL THEN (remind_at).dt_date <\n" +
+                        "                                                (now()::timestamp AT TIME ZONE 'UTC' AT TIME ZONE rc.zone_id)::date\n" +
+                        "          ELSE (remind_at).dt_date + (remind_at).dt_time < now() END\n";
+            default:
+                return "";
+        }
+    }
+
     private SelectSelectStep<Record> buildSelect(ReminderMapping reminderMapping) {
         ReminderTable r = ReminderTable.TABLE.as("r");
         SelectSelectStep<Record> select = dslContext.select(r.asterisk(), DSL.field("(r.remind_at).*"), DSL.field("CASE WHEN rt.exists_notifications IS NULL THEN TRUE ELSE FALSE END suppress_notifications"));
@@ -470,7 +484,9 @@ public class ReminderDao {
 
         TODAY(0),
 
-        ALL(1);
+        ALL(1),
+
+        EXPIRED(2);
 
         private final int code;
 

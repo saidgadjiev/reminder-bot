@@ -524,7 +524,7 @@ public class ReminderMessageSender {
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(chatId)
                             .messageId(messageId)
-                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_COMPLETED_REMINDERS_EMPTY, locale))
+                            .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDERS_EMPTY, locale))
                             .replyKeyboard(inlineKeyboardService.getEmptyRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME, locale))
             );
         } else {
@@ -583,7 +583,7 @@ public class ReminderMessageSender {
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(chatId)
                         .messageId(messageId)
-                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_COMPLETED_REMINDERS_EMPTY, locale))
+                        .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDERS_EMPTY, locale))
                         .replyKeyboard(inlineKeyboardService.getEmptyRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME, null))
         );
     }
