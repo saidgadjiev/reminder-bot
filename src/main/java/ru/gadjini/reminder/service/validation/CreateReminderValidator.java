@@ -9,7 +9,6 @@ import ru.gadjini.reminder.service.friendship.FriendshipService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.validation.context.ReminderRequestValidationContext;
 import ru.gadjini.reminder.service.validation.context.ReminderTimeValidationContext;
-import ru.gadjini.reminder.service.validation.context.TimeValidationContext;
 
 import java.util.Locale;
 import java.util.Objects;
