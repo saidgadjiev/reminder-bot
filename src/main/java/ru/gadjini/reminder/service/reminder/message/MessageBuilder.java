@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.time.RepeatTime;
+import ru.gadjini.reminder.service.declension.TimesDeclensionService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
@@ -21,10 +22,13 @@ public class MessageBuilder {
 
     private TimeBuilder timeBuilder;
 
+    private TimesDeclensionService timesDeclensionService;
+
     @Autowired
-    public MessageBuilder(LocalisationService localisationService, TimeBuilder timeBuilder) {
+    public MessageBuilder(LocalisationService localisationService, TimeBuilder timeBuilder, TimesDeclensionService timesDeclensionService) {
         this.localisationService = localisationService;
         this.timeBuilder = timeBuilder;
+        this.timesDeclensionService = timesDeclensionService;
     }
 
     public String getReminderTimeEditedReceiver(TgUser creator, String reminderText, DateTime from, DateTime to, Locale locale) {
@@ -269,5 +273,9 @@ public class MessageBuilder {
 
     public String getReminderChallenge(Locale locale) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_REMINDER_ICON, locale);
+    }
+
+    public String getSeriesToComplete(int currSeriesToComplete, int seriesToComplete, Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_SERIES_TO_COMPLETE, new Object[] {currSeriesToComplete + " " + timesDeclensionService.getTimes(currSeriesToComplete), seriesToComplete}, locale);
     }
 }

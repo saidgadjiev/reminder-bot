@@ -4,8 +4,9 @@ import org.joda.time.Period;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
-import ru.gadjini.reminder.service.parser.api.BaseLexem;
+import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
+import ru.gadjini.reminder.service.parser.time.lexer.RepeatTimeToken;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 
 import java.time.DayOfWeek;
@@ -39,13 +40,13 @@ public class RepeatTimeParser {
         this.zoneId = zoneId;
     }
 
-    public List<RepeatTime> parse(List<BaseLexem> lexems) {
+    public List<RepeatTime> parse(List<Lexem> lexems) {
         List<RepeatTime> repeatTimes = parse0(lexems);
 
         return repeatTimes.isEmpty() ? List.of(new RepeatTime(zoneId)) : repeatTimes;
     }
 
-    private List<RepeatTime> parse0(List<BaseLexem> lexems) {
+    private List<RepeatTime> parse0(List<Lexem> lexems) {
         if (lexemsConsumer.check(lexems, TimeToken.YEARS)) {
             newRepeatTime();
             consumeYears(lexems);
@@ -88,7 +89,7 @@ public class RepeatTimeParser {
         repeatTimes.add(repeatTime);
     }
 
-    private void consumeWeeks(List<BaseLexem> lexems) {
+    private void consumeWeeks(List<Lexem> lexems) {
         repeatTime.setInterval(repeatTime.getInterval().withWeeks(Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.WEEKS).getValue())));
 
         if (lexemsConsumer.check(lexems, TimeToken.DAY_OF_WEEK)) {
@@ -104,7 +105,7 @@ public class RepeatTimeParser {
         }
     }
 
-    private void consumeMonths(List<BaseLexem> lexems) {
+    private void consumeMonths(List<Lexem> lexems) {
         int months = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MONTHS).getValue());
         repeatTime.setInterval(repeatTime.getInterval().withMonths(months));
 
@@ -123,23 +124,25 @@ public class RepeatTimeParser {
         }
     }
 
-    private void consumeYears(List<BaseLexem> lexems) {
+    private void consumeYears(List<Lexem> lexems) {
         int years = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.YEARS).getValue());
         repeatTime.setInterval(repeatTime.getInterval().withYears(years));
         consumeDay(lexems);
     }
 
-    private void consumeDay(List<BaseLexem> lexems) {
+    private void consumeDay(List<Lexem> lexems) {
         int day = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAY).getValue());
         repeatTime.setDay(day);
         if (lexemsConsumer.check(lexems, TimeToken.MONTH_WORD)) {
             consumeMonthWord(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             repeatTime.setTime(consumeTime(lexems));
+        } else if (lexemsConsumer.check(lexems, RepeatTimeToken.SERIES_TO_COMPLETE)) {
+            consumeSeriesToComplete(lexems);
         }
     }
 
-    private void consumeMonthWord(List<BaseLexem> lexems) {
+    private void consumeMonthWord(List<Lexem> lexems) {
         String month = lexemsConsumer.consume(lexems, TimeToken.MONTH_WORD).getValue();
         Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, locale).equals(month)).findFirst().orElseThrow(ParseException::new);
         repeatTime.setMonth(m);
@@ -149,12 +152,12 @@ public class RepeatTimeParser {
         }
     }
 
-    private void consumeEveryDailyTime(List<BaseLexem> lexems) {
+    private void consumeEveryDailyTime(List<Lexem> lexems) {
         repeatTime.setInterval(repeatTime.getInterval().withDays(1));
         repeatTime.setTime(consumeTime(lexems));
     }
 
-    private void consumeDays(List<BaseLexem> lexems) {
+    private void consumeDays(List<Lexem> lexems) {
         int days = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAYS).getValue());
         repeatTime.setInterval(repeatTime.getInterval().withWeeks(repeatTime.getInterval().getWeeks() + days / 7));
         repeatTime.setInterval(repeatTime.getInterval().withDays(days % 7));
@@ -164,21 +167,23 @@ public class RepeatTimeParser {
             consumeMinutes(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             repeatTime.setTime(consumeTime(lexems));
+        } else if (lexemsConsumer.check(lexems, RepeatTimeToken.SERIES_TO_COMPLETE)) {
+            consumeSeriesToComplete(lexems);
         }
     }
 
-    private void consumeMinutes(List<BaseLexem> lexems) {
+    private void consumeMinutes(List<Lexem> lexems) {
         repeatTime.setInterval(repeatTime.getInterval().withMinutes(Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MINUTES).getValue())));
     }
 
-    private void consumeHours(List<BaseLexem> lexems) {
+    private void consumeHours(List<Lexem> lexems) {
         repeatTime.setInterval(repeatTime.getInterval().withHours(Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.HOURS).getValue())));
         if (lexemsConsumer.check(lexems, TimeToken.MINUTES)) {
             consumeMinutes(lexems);
         }
     }
 
-    private void consumeDayOfWeek(List<BaseLexem> lexems) {
+    private void consumeDayOfWeek(List<Lexem> lexems) {
         String dayOfWeekValue = lexemsConsumer.consume(lexems, TimeToken.DAY_OF_WEEK).getValue();
         DayOfWeek dayOfWeek = Stream.of(DayOfWeek.values())
                 .filter(dow -> dayOfWeekService.isThatDay(dow, dayOfWeekValue, locale))
@@ -188,10 +193,17 @@ public class RepeatTimeParser {
         repeatTime.setDayOfWeek(dayOfWeek);
         if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             repeatTime.setTime(consumeTime(lexems));
+        } else if (lexemsConsumer.check(lexems, RepeatTimeToken.SERIES_TO_COMPLETE)) {
+            consumeSeriesToComplete(lexems);
         }
     }
 
-    private LocalTime consumeTime(List<BaseLexem> lexems) {
+    private void consumeSeriesToComplete(List<Lexem> lexems) {
+        int seriesToComplete = Integer.parseInt(lexemsConsumer.consume(lexems, RepeatTimeToken.SERIES_TO_COMPLETE).getValue());
+        repeatTime.setSeriesToComplete(seriesToComplete);
+    }
+
+    private LocalTime consumeTime(List<Lexem> lexems) {
         int hour = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.HOUR).getValue());
         int minute = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MINUTE).getValue());
 

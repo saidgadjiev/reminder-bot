@@ -8,8 +8,10 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
+import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.time.ReminderTimeBuilder;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
@@ -66,7 +68,7 @@ public class ReminderMessageBuilder {
 
         Locale locale = config.receiverId == reminder.getCreatorId() ? reminder.getCreator().getLocale() : reminder.getReceiver().getLocale();
         List<String> icons = getReminderIcons(config.receiverId, reminder, locale);
-        for (String icon: icons) {
+        for (String icon : icons) {
             result.append(icon);
         }
         if (icons.size() > 0) {
@@ -83,6 +85,10 @@ public class ReminderMessageBuilder {
 
                 if (reminder.isRepeatableWithTime()) {
                     result.append("\n").append(messageBuilder.getNextRemindAt(config.nextRemindAt == null ? reminder.getRemindAtInReceiverZone() : config.nextRemindAt.withZoneSameInstant(reminder.getReceiverZoneId()), locale));
+                }
+                RepeatTime repeatTime = reminder.getRepeatRemindAt();
+                if (repeatTime.hasSeriesToComplete()) {
+                    result.append("\n").append(messageBuilder.getSeriesToComplete(reminder.getCurrSeriesToComplete(), repeatTime.getSeriesToComplete(), locale));
                 }
             } else {
                 result.append(timeBuilder.time(reminder.getRemindAtInReceiverZone(), locale));
@@ -151,7 +157,11 @@ public class ReminderMessageBuilder {
         return messageBuilder.getReminderCompleted(reminder.getText(), reminder.getReceiver().getLocale());
     }
 
-    public String getMySelfRepeatReminderCompleted(Reminder reminder) {
+    public String getMySelfRepeatReminderCompleted(RepeatReminderService.ReminderActionResult reminderActionResult) {
+        Reminder reminder = reminderActionResult.getReminder();
+        if (reminderActionResult.getActionResult() == RepeatReminderService.ActionResult.CURR_SERIES_TO_COMPLETE_CHANGED) {
+            return getReminderMessage(reminder, new ReminderMessageBuilder.ReminderMessageConfig().receiverId(reminder.getReceiverId()));
+        }
         StringBuilder message = new StringBuilder();
 
         message.append(messageBuilder.getReminderCompleted(reminder.getText(), reminder.getReceiver().getLocale())).append("\n");
@@ -525,6 +535,9 @@ public class ReminderMessageBuilder {
     private void appendRepeatReminderCommonValues(StringBuilder message, boolean appendNextRemindAt, Reminder reminder, Locale locale) {
         if (appendNextRemindAt && reminder.isRepeatableWithTime()) {
             message.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getReceiver().getLocale()));
+        }
+        if (reminder.getRepeatRemindAt().hasSeriesToComplete()) {
+            message.append("\n").append(messageBuilder.getSeriesToComplete(reminder.getCurrSeriesToComplete(), reminder.getRepeatRemindAt().getSeriesToComplete(), locale));
         }
 
         if (reminder.isRepeatableWithoutTime()) {

@@ -129,21 +129,21 @@ public class MessagesProperties {
 
     public static final String FIXED_TIME_TYPE_UNTIL = "fixed.time.type.until";
 
-    public static final String REGEX_DAY_PREFIX = "regex.day.prefix";
+    public static final String REGEXP_DAY_PREFIX = "regexp.day.prefix";
 
     public static final String REGEXP_MONTH_DAY_PREFIX = "regexp.month.day.prefix";
 
     public static final String REGEXP_ONE_WEEK_PREFIX = "regexp.one.week.prefix";
 
-    public static final String REGEXP_MONTH_PREFIX = "regex.month.prefix";
+    public static final String REGEXP_MONTH_PREFIX = "regexp.month.prefix";
 
-    public static final String REGEX_WEEK_PREFIX = "regex.week.prefix";
+    public static final String REGEXP_WEEK_PREFIX = "regexp.week.prefix";
 
-    public static final String REGEXP_YEAR_PREFIX = "regex.year.prefix";
+    public static final String REGEXP_YEAR_PREFIX = "regexp.year.prefix";
 
-    public static final String REGEX_HOUR_PREFIX = "regex.hour.prefix";
+    public static final String REGEXP_HOUR_PREFIX = "regexp.hour.prefix";
 
-    public static final String REGEX_MINUTE_PREFIX = "regex.minute.prefix";
+    public static final String REGEXP_MINUTE_PREFIX = "regexp.minute.prefix";
 
     public static final String DELETE_COMPLETED_REMINDERS_COMMAND_DESCRIPTION = "delete.completed.reminders.command.description";
 
@@ -210,6 +210,8 @@ public class MessagesProperties {
     public static final String REGEXP_NEXT_WEEK = "regexp.next.week";
 
     public static final String REGEXP_REPEAT = "regexp.repeat";
+
+    public static final String REGEXP_TIMES = "regexp.times";
 
     public static final String MESSAGE_POSTPONE_15_MIN = "message.postpone.15min";
 
@@ -578,4 +580,6 @@ public class MessagesProperties {
     public static final String MESSAGE_EXPIRED_REMINDER_ICON = "message.expired.reminder.icon";
 
     public static final String EXPIRED_REMINDERS_COMMAND_DESCRIPTION = "expired.reminders.command.description";
+
+    public static final String MESSAGE_REMINDER_SERIES_TO_COMPLETE = "message.reminder.series.to.complete";
 }

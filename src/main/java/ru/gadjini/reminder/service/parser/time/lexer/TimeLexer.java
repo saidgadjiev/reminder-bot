@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.service.parser.time.lexer;
 
 import ru.gadjini.reminder.exception.ParseException;
-import ru.gadjini.reminder.service.parser.api.BaseLexem;
+import ru.gadjini.reminder.service.parser.api.Lexem;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -32,8 +32,8 @@ public class TimeLexer {
         this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, str, fullMatch, locale);
     }
 
-    public List<BaseLexem> tokenizeThrowParseException() {
-        List<BaseLexem> lexems = tokenize();
+    public List<Lexem> tokenizeThrowParseException() {
+        List<Lexem> lexems = tokenize();
 
         if (lexems == null) {
             throw new ParseException();
@@ -42,11 +42,11 @@ public class TimeLexer {
         return lexems;
     }
 
-    public LinkedList<BaseLexem> tokenize() {
-        LinkedList<BaseLexem> lexems = offsetTimeLexer.tokenize();
+    public LinkedList<Lexem> tokenize() {
+        LinkedList<Lexem> lexems = offsetTimeLexer.tokenize();
 
         if (lexems != null) {
-            lexems.addFirst(new TimeLexem(TimeToken.OFFSET, ""));
+            lexems.addFirst(new Lexem(TimeToken.OFFSET, ""));
             end = offsetTimeLexer.end();
             return lexems;
         }
@@ -55,7 +55,7 @@ public class TimeLexer {
 
         if (lexems != null) {
             end = repeatTimeLexer.end();
-            lexems.addFirst(new TimeLexem(TimeToken.REPEAT, ""));
+            lexems.addFirst(new Lexem(TimeToken.REPEAT, ""));
             return lexems;
         }
 

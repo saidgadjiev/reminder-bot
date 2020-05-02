@@ -57,6 +57,7 @@ public class TimeCreator {
         result.setInterval(repeatTime.getInterval());
         result.setDay(repeatTime.getDay());
         result.setMonth(repeatTime.getMonth());
+        result.setSeriesToComplete(repeatTime.getSeriesToComplete());
         if (repeatTime.hasTime()) {
             LocalTime time = ZonedDateTime.of(localDateNow(repeatTime.getZoneId()), repeatTime.getTime(), repeatTime.getZoneId()).withZoneSameInstant(target).toLocalTime();
             result.setTime(time);

@@ -33,13 +33,13 @@ public class CompleteRepeatReminderCommand implements CallbackBotCommand {
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        Reminder reminder = repeatReminderService.complete(requestParams.getInt(Arg.REMINDER_ID.getKey()));
+        RepeatReminderService.ReminderActionResult reminderActionResult = repeatReminderService.complete(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         boolean isCalledFromReminderDetails = new KeyboardCustomizer(callbackQuery.getMessage().getReplyMarkup()).hasButton(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME);
         if (isCalledFromReminderDetails) {
-            reminderMessageSender.sendRepeatReminderCompletedFromList(callbackQuery.getMessage().getMessageId(), callbackQuery.getMessage().getReplyMarkup(), reminder);
+            reminderMessageSender.sendRepeatReminderCompletedFromList(callbackQuery.getMessage().getMessageId(), callbackQuery.getMessage().getReplyMarkup(), reminderActionResult);
         } else {
-            reminderMessageSender.sendRepeatReminderCompleted(reminder);
+            reminderMessageSender.sendRepeatReminderCompleted(reminderActionResult);
         }
 
         return MessagesProperties.MESSAGE_REMINDER_COMPLETE_ANSWER;

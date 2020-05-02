@@ -1,14 +1,14 @@
 package ru.gadjini.reminder.service.parser.reminder.lexer;
 
-import ru.gadjini.reminder.service.parser.api.BaseLexem;
+import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.api.Token;
 
-public class ReminderLexem extends BaseLexem {
+public class ReminderLexem extends Lexem {
 
     private final ReminderToken token;
 
     public ReminderLexem(ReminderToken token, String value) {
-        super(value);
+        super(token, value);
         this.token = token;
     }
 

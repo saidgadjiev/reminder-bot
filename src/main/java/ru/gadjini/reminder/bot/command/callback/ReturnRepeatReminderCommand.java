@@ -31,9 +31,9 @@ public class ReturnRepeatReminderCommand implements CallbackBotCommand {
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        RepeatReminderService.ReturnReminderResult returnReminderResult = repeatReminderService.returnReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
+        RepeatReminderService.ReminderActionResult returnReminderResult = repeatReminderService.returnReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
-        if (!returnReminderResult.isReturned()) {
+        if (returnReminderResult.getActionResult() == RepeatReminderService.ActionResult.NOT_RETURNED) {
             messageSender.sendRepeatReminderCantBeReturnedFromList(
                     callbackQuery.getMessage().getChatId(),
                     callbackQuery.getMessage().getMessageId(),

@@ -15,8 +15,7 @@ import ru.gadjini.reminder.common.TestConstants;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.parser.api.BaseLexem;
-import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
+import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
@@ -58,7 +57,7 @@ class FixedTimeParserTest {
     void hourMinute() {
         Mockito.when(timeCreator.dateTimeNow(TestConstants.TEST_ZONE)).thenReturn(DateTime.of(STATIC_TIME));
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "00")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "00")));
         Assert.assertTrue(parse.isFixedTime());
 
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 0));
@@ -68,7 +67,7 @@ class FixedTimeParserTest {
     @Test
     void tomorrow() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.DAY_WORD, "завтра"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.DAY_WORD, "завтра"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
         Assert.assertEquals(parse.getFixedDateTime().date(), STATIC_TIME.toLocalDate().plusDays(1));
@@ -77,7 +76,7 @@ class FixedTimeParserTest {
     @Test
     void dayAfterTomorrow() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.DAY_WORD, "послезавтра"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.DAY_WORD, "послезавтра"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
         Assert.assertEquals(parse.getFixedDateTime().date(), STATIC_TIME.toLocalDate().plusDays(2));
@@ -86,7 +85,7 @@ class FixedTimeParserTest {
     @Test
     void dayOfWeek() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.DAY_OF_WEEK, "среду"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.DAY_OF_WEEK, "среду"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
@@ -98,7 +97,7 @@ class FixedTimeParserTest {
     @Test
     void nextDayOfWeek() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.NEXT_WEEK, "след"), new TimeLexem(TimeToken.DAY_OF_WEEK, "среду"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.NEXT_WEEK, "след"), new Lexem(TimeToken.DAY_OF_WEEK, "среду"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
@@ -110,7 +109,7 @@ class FixedTimeParserTest {
     @Test
     void dayOfMonth() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "сентября"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        Time parse = timeParser.parse(lexems(new Lexem(DAY, "25"), new Lexem(TimeToken.MONTH_WORD, "сентября"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
@@ -121,7 +120,7 @@ class FixedTimeParserTest {
     @Test
     void yearMonthDay() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.YEAR, "2030"), new TimeLexem(TimeToken.MONTH, "01"), new TimeLexem(DAY, "05"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.YEAR, "2030"), new Lexem(TimeToken.MONTH, "01"), new Lexem(DAY, "05"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
@@ -133,7 +132,7 @@ class FixedTimeParserTest {
     @Test
     void monthDay() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.MONTH, "01"), new TimeLexem(DAY, "05"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.MONTH, "01"), new Lexem(DAY, "05"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isFixedTime());
         Assert.assertEquals(parse.getFixedDateTime().time(), LocalTime.of(19, 30));
 
@@ -142,7 +141,7 @@ class FixedTimeParserTest {
         Assert.assertEquals(LocalTime.of(19, 30), parse.getFixedDateTime().time());
     }
 
-    private List<BaseLexem> lexems(BaseLexem... lexems) {
+    private List<Lexem> lexems(Lexem... lexems) {
         return new LinkedList<>(Arrays.asList(lexems));
     }
 

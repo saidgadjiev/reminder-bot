@@ -5,7 +5,7 @@ import ru.gadjini.reminder.domain.time.FixedTime;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.parser.api.BaseLexem;
+import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import ru.gadjini.reminder.util.TimeCreator;
@@ -51,7 +51,7 @@ public class FixedTimeParser {
         this.dayOfWeekService = dayOfWeekService;
     }
 
-    public FixedTime parse(List<BaseLexem> lexems) {
+    public FixedTime parse(List<Lexem> lexems) {
         if (lexemsConsumer.check(lexems, TimeToken.TYPE)) {
             consumeType(lexems);
         }
@@ -85,7 +85,7 @@ public class FixedTimeParser {
         return fixedTime;
     }
 
-    private void consumeType(List<BaseLexem> lexems) {
+    private void consumeType(List<Lexem> lexems) {
         String type = lexemsConsumer.consume(lexems, TimeToken.TYPE).getValue();
         if (type.equals(typeUntil)) {
             fixedTime.setType(FixedTime.Type.UNTIL);
@@ -96,14 +96,14 @@ public class FixedTimeParser {
         }
     }
 
-    private void consumeNextWeek(List<BaseLexem> lexems) {
+    private void consumeNextWeek(List<Lexem> lexems) {
         lexemsConsumer.consume(lexems, TimeToken.NEXT_WEEK);
 
         consumeDayOfWeek(lexems);
         fixedTime.plusDays(7);
     }
 
-    private void consumeDayOfWeek(List<BaseLexem> lexems) {
+    private void consumeDayOfWeek(List<Lexem> lexems) {
         String dayOfWeekValue = lexemsConsumer.consume(lexems, TimeToken.DAY_OF_WEEK).getValue();
         DayOfWeek dayOfWeek = Stream.of(DayOfWeek.values())
                 .filter(dow -> dayOfWeekService.isThatDay(dow, dayOfWeekValue, locale))
@@ -118,7 +118,7 @@ public class FixedTimeParser {
         }
     }
 
-    private void consumeYear(List<BaseLexem> lexems) {
+    private void consumeYear(List<Lexem> lexems) {
         int year = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.YEAR).getValue());
         int month = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MONTH).getValue());
         int day = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAY).getValue());
@@ -132,7 +132,7 @@ public class FixedTimeParser {
         }
     }
 
-    private void consumeMonth(List<BaseLexem> lexems) {
+    private void consumeMonth(List<Lexem> lexems) {
         int month = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MONTH).getValue());
         int day = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAY).getValue());
 
@@ -145,7 +145,7 @@ public class FixedTimeParser {
         }
     }
 
-    private void consumeMonthWord(List<BaseLexem> lexems) {
+    private void consumeMonthWord(List<Lexem> lexems) {
         String month = lexemsConsumer.consume(lexems, TimeToken.MONTH_WORD).getValue();
 
         Month m = Stream.of(Month.values()).filter(item -> item.getDisplayName(TextStyle.FULL, locale).equals(month)).findFirst().orElseThrow(ParseException::new);
@@ -156,7 +156,7 @@ public class FixedTimeParser {
         }
     }
 
-    private void consumeDayWord(List<BaseLexem> lexems) {
+    private void consumeDayWord(List<Lexem> lexems) {
         String dayWord = lexemsConsumer.consume(lexems, TimeToken.DAY_WORD).getValue();
 
         if (dayWord.equals(tomorrow)) {
@@ -169,7 +169,7 @@ public class FixedTimeParser {
         }
     }
 
-    private void consumeDay(List<BaseLexem> lexems) {
+    private void consumeDay(List<Lexem> lexems) {
         int day = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.DAY).getValue());
 
         fixedTime.dayOfMonth(day);
@@ -183,7 +183,7 @@ public class FixedTimeParser {
         }
     }
 
-    private LocalTime consumeTime(List<BaseLexem> lexems) {
+    private LocalTime consumeTime(List<Lexem> lexems) {
         int hour = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.HOUR).getValue());
         int minute = Integer.parseInt(lexemsConsumer.consume(lexems, TimeToken.MINUTE).getValue());
 

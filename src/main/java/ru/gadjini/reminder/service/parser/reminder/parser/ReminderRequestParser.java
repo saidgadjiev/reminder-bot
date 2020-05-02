@@ -5,7 +5,7 @@ import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.parser.api.BaseLexem;
+import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderToken;
 import ru.gadjini.reminder.service.parser.time.parser.TimeParser;
@@ -29,7 +29,7 @@ public class ReminderRequestParser {
         reminderRequest.setTime(new Time(zoneId));
     }
 
-    public ReminderRequest parse(List<BaseLexem> lexems) {
+    public ReminderRequest parse(List<Lexem> lexems) {
         if (lexemsConsumer.check(lexems, ReminderToken.TEXT)) {
             consumeText(lexems);
         }
@@ -40,7 +40,7 @@ public class ReminderRequestParser {
         return reminderRequest;
     }
 
-    private void consumeText(List<BaseLexem> lexems) {
+    private void consumeText(List<Lexem> lexems) {
         String text = lexemsConsumer.consume(lexems, ReminderToken.TEXT).getValue();
 
         if (StringUtils.isBlank(text)) {

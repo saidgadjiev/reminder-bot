@@ -211,6 +211,7 @@ public class ReminderRequestService {
         newReminder.setInitialRemindAt(changed.getInitialRemindAt());
         newReminder.setRepeatRemindAts(changed.getRepeatRemindAts());
         newReminder.setCurrRepeatIndex(changed.getCurrRepeatIndex());
+        newReminder.setCurrSeriesToComplete(changed.getCurrSeriesToComplete());
         newReminder.setSuppressNotifications(changed.isSuppressNotifications());
 
         return new UpdateReminderResult(oldReminder, newReminder);
@@ -258,6 +259,7 @@ public class ReminderRequestService {
             RepeatReminderService.RemindAtCandidate firstRemindAtInReceiverZone = repeatReminderService.getFirstRemindAt(reminder.getRepeatRemindAtsInReceiverZone(timeCreator));
             reminder.setRemindAt(firstRemindAtInReceiverZone.getRemindAt() != null ? firstRemindAtInReceiverZone.getRemindAt().withZoneSameInstant(ZoneOffset.UTC) : null);
             reminder.setCurrRepeatIndex(firstRemindAtInReceiverZone.getIndex());
+            reminder.setCurrSeriesToComplete(firstRemindAtInReceiverZone.getCurrentSeriesToComplete());
         }
     }
 

@@ -84,6 +84,13 @@ public class ResultSetMapper {
         reminder.setId(rs.getInt(Reminder.ID));
         reminder.setText(rs.getString(Reminder.TEXT));
 
+        if (columnNames.contains(Reminder.CURR_SERIES_TO_COMPLETE)) {
+            int currentSeriesToComplete = rs.getInt(Reminder.CURR_SERIES_TO_COMPLETE);
+            if (!rs.wasNull()) {
+                reminder.setCurrSeriesToComplete(currentSeriesToComplete);
+            }
+        }
+
         int receiverId = rs.getInt(Reminder.RECEIVER_ID);
         if (!rs.wasNull()) {
             reminder.setReceiverId(receiverId);
@@ -327,12 +334,9 @@ public class ResultSetMapper {
             }
             if (argMatcher.find()) {
                 String arg = t.substring(argMatcher.start(), argMatcher.end() - 1);
-                PGInterval interval = null;
                 if (StringUtils.isNotBlank(arg)) {
-                    interval = new PGInterval();
+                    PGInterval interval = new PGInterval();
                     interval.setValue(arg);
-                }
-                if (interval != null) {
                     repeatTime.setInterval(JodaTimeUtils.toPeriod(interval));
                 }
             }
@@ -343,13 +347,15 @@ public class ResultSetMapper {
                 }
             }
             if (argMatcher.find()) {
-                String arg = t.substring(argMatcher.start(), argMatcher.end());
-                int day = 0;
+                String arg = t.substring(argMatcher.start(), argMatcher.end() - 1);
                 if (StringUtils.isNotBlank(arg)) {
-                    day = Integer.parseInt(arg);
+                    repeatTime.setDay(Integer.parseInt(arg));
                 }
-                if (day != 0) {
-                    repeatTime.setDay(day);
+            }
+            if (argMatcher.find()) {
+                String arg = t.substring(argMatcher.start(), argMatcher.end());
+                if (StringUtils.isNotBlank(arg)) {
+                    repeatTime.setSeriesToComplete(Integer.parseInt(arg));
                 }
             }
             repeatTimes.add(repeatTime);
