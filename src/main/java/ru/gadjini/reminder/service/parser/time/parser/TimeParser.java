@@ -4,7 +4,7 @@ import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.parser.api.BaseLexem;
+import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import ru.gadjini.reminder.util.TimeCreator;
@@ -37,7 +37,7 @@ public class TimeParser {
         this(localisationService, locale, zoneId, dayOfWeekService, timeCreator, new LexemsConsumer());
     }
 
-    public Time parseWithParseException(List<BaseLexem> lexems) {
+    public Time parseWithParseException(List<Lexem> lexems) {
         parse(lexems);
 
         if (lexemsConsumer.getPosition() < lexems.size()) {
@@ -47,7 +47,7 @@ public class TimeParser {
         return time;
     }
 
-    public Time parse(List<BaseLexem> lexems) {
+    public Time parse(List<Lexem> lexems) {
         if (lexemsConsumer.check(lexems, TimeToken.REPEAT)) {
             lexemsConsumer.consume(lexems, TimeToken.REPEAT);
             time.setRepeatTimes(repeatTimeParser.parse(lexems));

@@ -11,10 +11,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.parser.api.BaseLexem;
+import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import ru.gadjini.reminder.service.parser.pattern.Patterns;
-import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 
@@ -45,35 +44,35 @@ class ReminderRequestLexerTest {
     void fixedTime() {
         String str = "Тест 25 января 19:30";
         ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str, LOCALE);
-        List<BaseLexem> lexems = lexer.tokenize();
-        Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
+        List<Lexem> lexems = lexer.tokenize();
+        Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new Lexem(TimeToken.DAY, "25"), new Lexem(TimeToken.MONTH_WORD, "января"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")), lexems);
     }
 
     @Test
     void repeatTime() {
         String str = "Тест каждое 25 января 19:30";
         ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str, LOCALE);
-        List<BaseLexem> lexems = lexer.tokenize();
-        Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
+        List<Lexem> lexems = lexer.tokenize();
+        Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new Lexem(TimeToken.REPEAT, ""), new Lexem(TimeToken.DAY, "25"), new Lexem(TimeToken.MONTH_WORD, "января"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")), lexems);
     }
 
     @Test
     void repeatTimes() {
         String str = "Тест каждое 25 января 19:30 среду 19:30";
         ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str, LOCALE);
-        List<BaseLexem> lexems = lexer.tokenize();
-        Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30"), new TimeLexem(TimeToken.DAY_OF_WEEK, "среду"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
+        List<Lexem> lexems = lexer.tokenize();
+        Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new Lexem(TimeToken.REPEAT, ""), new Lexem(TimeToken.DAY, "25"), new Lexem(TimeToken.MONTH_WORD, "января"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30"), new Lexem(TimeToken.DAY_OF_WEEK, "среду"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")), lexems);
     }
 
     @Test
     void offsetTime() {
         String str = "Тест через 2 года 2 месяца 2 дня в 19:30";
         ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str, LOCALE);
-        List<BaseLexem> lexems = lexer.tokenize();
-        Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.OFFSET, ""), new TimeLexem(TimeToken.TYPE, "через"), new TimeLexem(TimeToken.YEARS, "2"), new TimeLexem(TimeToken.MONTHS, "2"), new TimeLexem(TimeToken.DAYS, "2"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
+        List<Lexem> lexems = lexer.tokenize();
+        Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new Lexem(TimeToken.OFFSET, ""), new Lexem(TimeToken.TYPE, "через"), new Lexem(TimeToken.YEARS, "2"), new Lexem(TimeToken.MONTHS, "2"), new Lexem(TimeToken.DAYS, "2"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")), lexems);
     }
 
-    private LinkedList<BaseLexem> expected(BaseLexem... lexems) {
+    private LinkedList<Lexem> expected(Lexem... lexems) {
         return new LinkedList<>(Arrays.asList(lexems));
     }
 }

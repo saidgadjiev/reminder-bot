@@ -85,6 +85,8 @@ public class PatternBuilder {
 
     public static final String SUFFIX_DAY_OF_MONTH = "suffixdayofmonth";
 
+    public static final String SERIES_TO_COMPLETE = "seriestocomplete";
+
     public static final List<String> FIXED_TIME_PATTERN_GROUPS = List.of(TYPE, YEAR, MONTH, DAY, DAY_WORD, MONTH_WORD, NEXT_WEEK, DAY_OF_WEEK_WORD, HOUR, MINUTE);
 
     public static final List<String> REPEAT_TIME_PATTERN_GROUPS = List.of(
@@ -107,6 +109,8 @@ public class PatternBuilder {
             HOUR, MINUTE
     );
 
+    public static final List<String> REPEAT_WORD_PATTERN_GROUPS = List.of(SERIES_TO_COMPLETE);
+
     private LocalisationService localisationService;
 
     private DayOfWeekService dayOfWeekService;
@@ -118,16 +122,19 @@ public class PatternBuilder {
     }
 
     public GroupPattern buildRepeatWordPattern(Locale locale) {
-        String regexRepeat = localisationService.getMessage(MessagesProperties.REGEXP_REPEAT, locale);
+        String regexpRepeatEvery = localisationService.getMessage(MessagesProperties.REGEXP_REPEAT_EVERY, locale);
+        String regexpRepeat = localisationService.getMessage(MessagesProperties.REGEXP_REPEAT, locale);
+        String regexpTimes = localisationService.getMessage(MessagesProperties.REGEXP_TIMES, locale);
+        String pattern = "(" + regexpRepeatEvery + "|" + regexpRepeat + "|(" + regexpRepeatEvery + " " + regexpTimes + " (?<" + SERIES_TO_COMPLETE + ">\\d+)( " + regexpRepeat + ")?))$";
 
-        return new GroupPattern(Pattern.compile(regexRepeat + "$"), Collections.emptyList());
+        return new GroupPattern(Pattern.compile(pattern), REPEAT_WORD_PATTERN_GROUPS);
     }
 
     public GroupPattern buildRepeatTimePattern(Locale locale) {
         StringBuilder pattern = new StringBuilder();
 
-        String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX, locale);
-        String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX, locale);
+        String minutePrefix = localisationService.getMessage(MessagesProperties.REGEXP_MINUTE_PREFIX, locale);
+        String hourPrefix = localisationService.getMessage(MessagesProperties.REGEXP_HOUR_PREFIX, locale);
         String regexpTimeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE, locale);
         String regexpEveryDay = localisationService.getMessage(MessagesProperties.REGEXP_DAY, locale);
         String regexpEveryMinute = localisationService.getMessage(MessagesProperties.REGEXP_MINUTE, locale);
@@ -135,9 +142,9 @@ public class PatternBuilder {
         String regexpEveryHour = localisationService.getMessage(MessagesProperties.REGEXP_HOUR, locale);
         String regexpEveryMonth = localisationService.getMessage(MessagesProperties.REGEXP_MONTH, locale);
         String regexpEveryYear = localisationService.getMessage(MessagesProperties.REGEXP_YEAR, locale);
-        String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX, locale);
+        String dayPrefix = localisationService.getMessage(MessagesProperties.REGEXP_DAY_PREFIX, locale);
         String monthPrefix = localisationService.getMessage(MessagesProperties.REGEXP_MONTH_PREFIX, locale);
-        String weekRegexp = localisationService.getMessage(MessagesProperties.REGEX_WEEK_PREFIX, locale);
+        String weekRegexp = localisationService.getMessage(MessagesProperties.REGEXP_WEEK_PREFIX, locale);
         String oneWeekRegexp = localisationService.getMessage(MessagesProperties.REGEXP_ONE_WEEK_PREFIX, locale);
         String regexpDayOfWeekArticle = localisationService.getMessage(MessagesProperties.REGEXP_DAY_OF_WEEK_ARTICLE, locale);
 
@@ -192,9 +199,9 @@ public class PatternBuilder {
     public GroupPattern buildOffsetTimePattern(Locale locale) {
         StringBuilder patternBuilder = new StringBuilder();
 
-        String dayPrefix = localisationService.getMessage(MessagesProperties.REGEX_DAY_PREFIX, locale);
-        String hourPrefix = localisationService.getMessage(MessagesProperties.REGEX_HOUR_PREFIX, locale);
-        String minutePrefix = localisationService.getMessage(MessagesProperties.REGEX_MINUTE_PREFIX, locale);
+        String dayPrefix = localisationService.getMessage(MessagesProperties.REGEXP_DAY_PREFIX, locale);
+        String hourPrefix = localisationService.getMessage(MessagesProperties.REGEXP_HOUR_PREFIX, locale);
+        String minutePrefix = localisationService.getMessage(MessagesProperties.REGEXP_MINUTE_PREFIX, locale);
         String eve = localisationService.getMessage(MessagesProperties.EVE, locale);
         String timeArticle = localisationService.getMessage(MessagesProperties.TIME_ARTICLE, locale);
         String typeAfter = localisationService.getMessage(MessagesProperties.OFFSET_TIME_TYPE_AFTER, locale);
@@ -207,7 +214,7 @@ public class PatternBuilder {
         String month = localisationService.getMessage(MessagesProperties.REGEXP_MONTH, locale);
         String monthPrefix = localisationService.getMessage(MessagesProperties.REGEXP_MONTH_PREFIX, locale);
         String minute = localisationService.getMessage(MessagesProperties.REGEXP_MINUTE, locale);
-        String weekRegexp = localisationService.getMessage(MessagesProperties.REGEX_WEEK_PREFIX, locale);
+        String weekRegexp = localisationService.getMessage(MessagesProperties.REGEXP_WEEK_PREFIX, locale);
         String oneWeekRegexp = localisationService.getMessage(MessagesProperties.REGEXP_ONE_WEEK_PREFIX, locale);
         String regexpDayOfWeekArticle = localisationService.getMessage(MessagesProperties.REGEXP_DAY_OF_WEEK_ARTICLE, locale);
 

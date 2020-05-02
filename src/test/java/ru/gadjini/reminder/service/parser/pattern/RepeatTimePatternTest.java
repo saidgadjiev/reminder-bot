@@ -276,4 +276,13 @@ class RepeatTimePatternTest {
         String str = "повторять";
         repeatTimeMatch(str, Collections.emptyList());
     }
+
+    @Test
+    void matchSeriesToComplete() {
+        String str = "повторять 5 раз каждый день";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SERIES_TO_COMPLETE, "5"))), List.of(Map.ofEntries(Map.entry(ONE_DAY, "день"))));
+
+        str = "5 раз каждый день";
+        repeatTimeMatch(str, List.of(Map.ofEntries(Map.entry(SERIES_TO_COMPLETE, "5"))), List.of(Map.ofEntries(Map.entry(ONE_DAY, "день"))));
+    }
 }

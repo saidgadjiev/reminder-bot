@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.parser.api.BaseLexem;
+import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderRequestLexer;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderRequestLexerConfig;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
@@ -45,13 +45,13 @@ public class RequestParser {
     }
 
     public ReminderRequest parseRequest(String text, ZoneId zoneId, Locale locale) {
-        List<BaseLexem> lexems = new ReminderRequestLexer(reminderRequestLexerConfig, timeLexerConfig, text, locale).tokenize();
+        List<Lexem> lexems = new ReminderRequestLexer(reminderRequestLexerConfig, timeLexerConfig, text, locale).tokenize();
 
         return new ReminderRequestParser(localisationService, locale, zoneId, dayOfWeekService, timeCreator).parse(lexems);
     }
 
     public Time parseTime(String time, ZoneId zoneId, Locale locale) {
-        List<BaseLexem> lexems = new TimeLexer(timeLexerConfig, time, true, locale).tokenizeThrowParseException();
+        List<Lexem> lexems = new TimeLexer(timeLexerConfig, time, true, locale).tokenizeThrowParseException();
 
         return new TimeParser(localisationService, locale, zoneId, dayOfWeekService, timeCreator).parseWithParseException(lexems);
     }

@@ -2,6 +2,7 @@ package ru.gadjini.reminder.service.parser.pattern;
 
 import org.junit.Assert;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -17,7 +18,7 @@ public class Patterns {
     public static final Pattern FIXED_TIME_PATTERN = Pattern.compile("((\\b(?<hour>2[0-3]|[01]?[0-9])(:(?<minute>[0-5]?[0-9]))?\\b ?)(в ?)?)?(((((?<dayofweek>понедельник[а-я]?|вторник[а-я]?|сред[[а-я][а-я]]?|четверг[а-я]?|пятниц[[а-я][а-я]]?|суббот[[а-я][а-я]]?|воскресень[[а-я][а-я]]?|пн|вт|ср|чт|пт|сб|вс) ?)((?<nextweek>следующ(ий|ей|ую|ее)|след) ?)?)((во|в) ?)?)|((((?<monthword>января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря) )|(((?<year>\\d{4})\\.)?(?<month>1[0-2]|0?[1-9])\\.))((?<day>0[1-9]|[12]\\d|3[01]|0?[1-9]) ?))|(?<dayword>\\b(сегодня|завтра|послезавтра)\\b))?((?<type>\\bдо\\b) ?)?");
     public static final Pattern OFFSET_TIME_PATTERN = Pattern.compile("((\\b(?<hour>2[0-3]|[01]?[0-9])(:(?<minute>[0-5]?[0-9]))?\\b ?)(в ?)?)?((?<oneminute>минуту)|(((минут[а-я]?|мин) )(?<prefixminutes>\\d+)|(?<suffixminutes>\\d+)(минут[а-я]?|мин)( )?)?(( )?((?<onehour>час)|((час[а-я]{0,2}|ч) )(?<prefixhours>\\d+)|(?<suffixhours>\\d+)(час[а-я]{0,2}|ч)( )?))?(( )?((?<oneday>день)|((дн[а-я]{1,2}|д|день) )(?<prefixdays>\\d+)|(?<suffixdays>\\d+)(дн[а-я]{1,2}|д|день)))?(( )?((((?<weeksdayofweek>понедельник[а-я]?|вторник[а-я]?|сред[[а-я][а-я]]?|четверг[а-я]?|пятниц[[а-я][а-я]]?|суббот[[а-я][а-я]]?|воскресень[[а-я][а-я]]?|пн|вт|ср|чт|пт|сб|вс) )((во|в) ?)?)?((?<oneweek>недел[а-я])|((недел[а-я]{1,2}|н) )(?<prefixweeks>\\d+)|(?<suffixweeks>\\d+)(недел[а-я]{1,2}|н))))?(( )?((?<onemonth>месяц)|((месяц[а-я]{0,2}|м) )(?<prefixmonths>\\d+)|(?<suffixmonths>\\d+)(месяц[а-я]{0,2}|м)))?(( )?((?<oneyear>год)|((год[а-я]{0,2}|лет|г) )(?<prefixyears>\\d+)|(?<suffixyears>\\d+)(год[а-я]{0,2}|лет|г)))?) (?<type>\\b(накануне|через|за|на)\\b)");
     public static final Pattern REPEAT_TIME_PATTERN = Pattern.compile("((\\b(?<hour>2[0-3]|[01]?[0-9])(:(?<minute>[0-5]?[0-9]))?\\b ?)(в ?)?)?((?<oneminute>минуту)|((((минут[а-я]?|мин) )(?<prefixminutes>\\d+)|(?<suffixminutes>\\d+)(минут[а-я]?|мин)( )?)?(( )?((?<onehour>час)|((час[а-я]{0,2}|ч) )(?<prefixhours>\\d+)|(?<suffixhours>\\d+)(час[а-я]{0,2}|ч)( )?))?(( )?((?<oneday>день)|((дн[а-я]{1,2}|д|день) )(?<prefixdays>\\d+)|(?<suffixdays>\\d+)(дн[а-я]{1,2}|д|день)))?(( )?((((?<weeksdayofweek>понедельник[а-я]?|вторник[а-я]?|сред[[а-я][а-я]]?|четверг[а-я]?|пятниц[[а-я][а-я]]?|суббот[[а-я][а-я]]?|воскресень[[а-я][а-я]]?|пн|вт|ср|чт|пт|сб|вс) )((во|в) ?)?)?((?<oneweek>недел[а-я])|((недел[а-я]{1,2}|н) )(?<prefixweeks>\\d+)|(?<suffixweeks>\\d+)(недел[а-я]{1,2}|н))))?(((числ[а-я] )(?<prefixdayofmonth>\\d+)|(?<suffixdayofmonth>\\d+)(числ[а-я]))?(( )?((?<onemonth>месяц)|(((месяц[а-я]{0,2}|м) )(?<prefixmonths>\\d+)|(?<suffixmonths>\\d+)(месяц[а-я]{0,2}|м)))))?)|((?<monthword>января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря) (?<day>\\d+)( (?<oneyear>год))?)|(?<dayofweek>понедельник[а-я]?|вторник[а-я]?|сред[[а-я][а-я]]?|четверг[а-я]?|пятниц[[а-я][а-я]]?|суббот[[а-я][а-я]]?|воскресень[[а-я][а-я]]?|пн|вт|ср|чт|пт|сб|вс))");
-    public static final Pattern REPEAT_WORD_PATTERN = Pattern.compile("(кажд[а-я]{1,2}|повторять)$");
+    public static final Pattern REPEAT_WORD_PATTERN = Pattern.compile("(кажд[а-я]{1,2}|повторять|(кажд[а-я]{1,2} раз (?<seriestocomplete>\\d+)( повторять)?))$");
 
     static int find(Pattern p, String text) {
         Matcher matcher = p.matcher(text);
@@ -56,10 +57,14 @@ public class Patterns {
     }
 
     static int repeatTimeMatch(String text, List<Map<String, String>> expected) {
-        return repeatMatch(REPEAT_TIME_PATTERN, REPEAT_WORD_PATTERN, text, expected);
+        return repeatMatch(REPEAT_TIME_PATTERN, REPEAT_WORD_PATTERN, text, Collections.emptyList(), expected);
     }
 
-    static int repeatMatch(Pattern p, Pattern wordsP, String text, List<Map<String, String>> expected) {
+    static int repeatTimeMatch(String text, List<Map<String, String>> expectedFirst, List<Map<String, String>> expected) {
+        return repeatMatch(REPEAT_TIME_PATTERN, REPEAT_WORD_PATTERN, text, expectedFirst, expected);
+    }
+
+    static int repeatMatch(Pattern p, Pattern wordsP, String text, List<Map<String, String>> expectedFirst, List<Map<String, String>> expected) {
         int index = 0;
         int matchEnd = 0;
         String tmp = text;
@@ -78,8 +83,10 @@ public class Patterns {
         matcher = maxMatcher(wordsP, tmp);
 
         Assert.assertNotNull(matcher);
-
         matchEnd += matcher.end();
+        for (Map<String, String> expFirst: expectedFirst) {
+            assertGroups(matcher, expFirst);
+        }
 
         return text.length() - matchEnd;
     }

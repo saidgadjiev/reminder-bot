@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.service.parser.reminder.lexer;
 
 import org.apache.commons.lang3.StringUtils;
-import ru.gadjini.reminder.service.parser.api.BaseLexem;
+import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
 
@@ -26,8 +26,8 @@ public class ReminderRequestLexer {
         this.timeLexer = new TimeLexer(timeLexerConfig, parts[0], locale);
     }
 
-    public List<BaseLexem> tokenize() {
-        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
+    public List<Lexem> tokenize() {
+        LinkedList<Lexem> lexems = timeLexer.tokenize();
 
         if (lexems == null) {
             lexems = new LinkedList<>();
@@ -38,7 +38,7 @@ public class ReminderRequestLexer {
         return tokenizeReminderTextAndNote(tokenizeStr, lexems);
     }
 
-    private LinkedList<BaseLexem> tokenizeReminderTextAndNote(String tokenizeStr, LinkedList<BaseLexem> lexems) {
+    private LinkedList<Lexem> tokenizeReminderTextAndNote(String tokenizeStr, LinkedList<Lexem> lexems) {
         lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, StringUtils.capitalize(tokenizeStr.trim())));
 
         if (parts.length > 1) {

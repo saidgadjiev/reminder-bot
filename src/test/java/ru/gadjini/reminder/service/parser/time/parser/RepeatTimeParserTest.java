@@ -13,13 +13,10 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.common.TestConstants;
-import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.parser.api.BaseLexem;
-import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
-import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
+import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
@@ -59,7 +56,7 @@ class RepeatTimeParserTest {
     @Test
     void everyDay() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(DAYS, "1"), new TimeLexem(HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.REPEAT, ""), new Lexem(DAYS, "1"), new Lexem(HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isRepeatTime());
 
         Assert.assertEquals(LocalTime.of(19, 30), parse.getRepeatTimes().get(0).getTime());
@@ -69,7 +66,7 @@ class RepeatTimeParserTest {
     @Test
     void everyDays() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(DAYS, "2"), new TimeLexem(HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.REPEAT, ""), new Lexem(DAYS, "2"), new Lexem(HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isRepeatTime());
 
         Assert.assertEquals(LocalTime.of(19, 30), parse.getRepeatTimes().get(0).getTime());
@@ -79,7 +76,7 @@ class RepeatTimeParserTest {
     @Test
     void everyMonth() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(MONTHS, "1"), new TimeLexem(DAY, "25"), new TimeLexem(HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.REPEAT, ""), new Lexem(MONTHS, "1"), new Lexem(DAY, "25"), new Lexem(HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isRepeatTime());
 
         Assert.assertEquals(LocalTime.of(19, 30), parse.getRepeatTimes().get(0).getTime());
@@ -90,7 +87,7 @@ class RepeatTimeParserTest {
     @Test
     void everyDayOfWeek() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(DAY_OF_WEEK, "вторник"), new TimeLexem(HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.REPEAT, ""), new Lexem(DAY_OF_WEEK, "вторник"), new Lexem(HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isRepeatTime());
 
         Assert.assertEquals(LocalTime.of(19, 30), parse.getRepeatTimes().get(0).getTime());
@@ -100,7 +97,7 @@ class RepeatTimeParserTest {
     @Test
     void everyYearMonthDay() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(DAY, "25"), new TimeLexem(MONTH_WORD, "сентября"), new TimeLexem(HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.REPEAT, ""), new Lexem(DAY, "25"), new Lexem(MONTH_WORD, "сентября"), new Lexem(HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isRepeatTime());
 
         Assert.assertEquals(LocalTime.of(19, 30), parse.getRepeatTimes().get(0).getTime());
@@ -112,7 +109,7 @@ class RepeatTimeParserTest {
     @Test
     void everyMonths() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(MONTHS, "2"), new TimeLexem(DAY, "25"), new TimeLexem(HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.REPEAT, ""), new Lexem(MONTHS, "2"), new Lexem(DAY, "25"), new Lexem(HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
         Assert.assertTrue(parse.isRepeatTime());
 
         Assert.assertEquals(LocalTime.of(19, 30), parse.getRepeatTimes().get(0).getTime());
@@ -123,7 +120,7 @@ class RepeatTimeParserTest {
     @Test
     void everyMinutes() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(MINUTES, "10")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.REPEAT, ""), new Lexem(MINUTES, "10")));
         Assert.assertTrue(parse.isRepeatTime());
 
         Assert.assertEquals(10, parse.getRepeatTimes().get(0).getInterval().getMinutes());
@@ -132,7 +129,7 @@ class RepeatTimeParserTest {
     @Test
     void everyHours() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(HOURS, "2")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.REPEAT, ""), new Lexem(HOURS, "2")));
         Assert.assertTrue(parse.isRepeatTime());
 
         Assert.assertEquals(2, parse.getRepeatTimes().get(0).getInterval().getHours());
@@ -141,7 +138,7 @@ class RepeatTimeParserTest {
     @Test
     void everyHoursMinutes() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(HOURS, "2"), new TimeLexem(MINUTES, "10")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.REPEAT, ""), new Lexem(HOURS, "2"), new Lexem(MINUTES, "10")));
         Assert.assertTrue(parse.isRepeatTime());
 
         Assert.assertEquals(2, parse.getRepeatTimes().get(0).getInterval().getHours());
@@ -151,7 +148,7 @@ class RepeatTimeParserTest {
     @Test
     void everyMonthsDaysHoursMinutes() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(DAYS, "2"), new TimeLexem(HOURS, "2"), new TimeLexem(MINUTES, "20")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.REPEAT, ""), new Lexem(DAYS, "2"), new Lexem(HOURS, "2"), new Lexem(MINUTES, "20")));
         Assert.assertTrue(parse.isRepeatTime());
 
         Assert.assertEquals(2, parse.getRepeatTimes().get(0).getInterval().getDays());
@@ -162,12 +159,12 @@ class RepeatTimeParserTest {
     @Test
     void afterWeeks() {
         TimeParser timeParser = parser();
-        Time time = timeParser.parse(lexems(new TimeLexem(REPEAT, ""), new TimeLexem(WEEKS, "1")));
+        Time time = timeParser.parse(lexems(new Lexem(REPEAT, ""), new Lexem(WEEKS, "1")));
         Assert.assertTrue(time.isRepeatTime());
         Assert.assertEquals(time.getRepeatTimes().get(0).getInterval().getWeeks(), 1);
 
         timeParser = parser();
-        time = timeParser.parse(lexems(new TimeLexem(REPEAT, ""), new TimeLexem(WEEKS, "2"), new TimeLexem(HOUR, "19"), new TimeLexem(MINUTE, "30")));
+        time = timeParser.parse(lexems(new Lexem(REPEAT, ""), new Lexem(WEEKS, "2"), new Lexem(HOUR, "19"), new Lexem(MINUTE, "30")));
         Assert.assertTrue(time.isRepeatTime());
         Assert.assertEquals(time.getRepeatTimes().get(0).getInterval().getWeeks(), 2);
         Assert.assertEquals(LocalTime.of(19, 30), time.getRepeatTimes().get(0).getTime());
@@ -176,13 +173,13 @@ class RepeatTimeParserTest {
     @Test
     void matchWeeksDayOfWeek() {
         TimeParser timeParser = parser();
-        Time time = timeParser.parse(lexems(new TimeLexem(REPEAT, ""), new TimeLexem(WEEKS, "1"), new TimeLexem(DAY_OF_WEEK, "вторник")));
+        Time time = timeParser.parse(lexems(new Lexem(REPEAT, ""), new Lexem(WEEKS, "1"), new Lexem(DAY_OF_WEEK, "вторник")));
         Assert.assertTrue(time.isRepeatTime());
         Assert.assertEquals(time.getRepeatTimes().get(0).getInterval(), new org.joda.time.Period().withWeeks(1));
         Assert.assertEquals(time.getRepeatTimes().get(0).getDayOfWeek(), DayOfWeek.TUESDAY);
 
         timeParser = parser();
-        time = timeParser.parse(lexems(new TimeLexem(REPEAT, ""), new TimeLexem(WEEKS, "2"), new TimeLexem(DAY_OF_WEEK, "субботу")));
+        time = timeParser.parse(lexems(new Lexem(REPEAT, ""), new Lexem(WEEKS, "2"), new Lexem(DAY_OF_WEEK, "субботу")));
         Assert.assertTrue(time.isRepeatTime());
         Assert.assertEquals(time.getRepeatTimes().get(0).getInterval(), new org.joda.time.Period().withWeeks(2));
         Assert.assertEquals(time.getRepeatTimes().get(0).getDayOfWeek(), DayOfWeek.SATURDAY);
@@ -191,7 +188,7 @@ class RepeatTimeParserTest {
     @Test
     void repeatTimes() {
         TimeParser timeParser = parser();
-        Time parse = timeParser.parse(lexems(new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(DAY_OF_WEEK, "вторник"), new TimeLexem(HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30"), new TimeLexem(DAY_OF_WEEK, "среду"), new TimeLexem(HOUR, "20"), new TimeLexem(TimeToken.MINUTE, "00")));
+        Time parse = timeParser.parse(lexems(new Lexem(TimeToken.REPEAT, ""), new Lexem(DAY_OF_WEEK, "вторник"), new Lexem(HOUR, "19"), new Lexem(TimeToken.MINUTE, "30"), new Lexem(DAY_OF_WEEK, "среду"), new Lexem(HOUR, "20"), new Lexem(TimeToken.MINUTE, "00")));
         Assert.assertTrue(parse.isRepeatTime());
 
         Assert.assertEquals(DayOfWeek.TUESDAY, parse.getRepeatTimes().get(0).getDayOfWeek());
@@ -204,13 +201,13 @@ class RepeatTimeParserTest {
     @Test
     void matchRepeatWithoutTime() {
         TimeParser parser = parser();
-        Time parsed = parser.parse(lexems(new TimeLexem(REPEAT, "")));
+        Time parsed = parser.parse(lexems(new Lexem(REPEAT, "")));
         Assert.assertTrue(parsed.isRepeatTime());
 
         Assert.assertNull(parsed.getRepeatTimes().get(0).getTime());
     }
 
-    private List<BaseLexem> lexems(BaseLexem... lexems) {
+    private List<Lexem> lexems(Lexem... lexems) {
         return new LinkedList<>(Arrays.asList(lexems));
     }
 

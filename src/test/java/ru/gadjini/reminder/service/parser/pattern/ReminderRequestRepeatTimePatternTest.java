@@ -125,7 +125,7 @@ class ReminderRequestRepeatTimePatternTest {
     @Test
     void matchMinutes() {
         String str = "Готовность торта каждые 10мин";
-        int end = repeatMatch(REPEAT_TIME_PATTERN, REPEAT_WORD_PATTERN, str, List.of(Map.ofEntries(Map.entry(SUFFIX_MINUTES, "10"))));
+        int end = repeatMatch(REPEAT_TIME_PATTERN, REPEAT_WORD_PATTERN, str, Collections.emptyList(), List.of(Map.ofEntries(Map.entry(SUFFIX_MINUTES, "10"))));
         Assert.assertEquals("Готовность торта", str.substring(0, end).trim());
 
         str = "Готовность торта каждые 10минут";

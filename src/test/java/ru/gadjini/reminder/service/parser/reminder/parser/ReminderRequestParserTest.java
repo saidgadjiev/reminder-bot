@@ -10,15 +10,12 @@ import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigura
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.gadjini.reminder.common.TestConstants;
-import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.parser.api.BaseLexem;
+import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderLexem;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderToken;
-import ru.gadjini.reminder.service.parser.time.lexer.TimeLexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
-import ru.gadjini.reminder.service.parser.time.parser.TimeParser;
 import ru.gadjini.reminder.util.TimeCreator;
 
 import java.time.DayOfWeek;
@@ -51,7 +48,7 @@ class ReminderRequestParserTest {
     @Test
     void fixedTime() {
         ReminderRequestParser parser = new ReminderRequestParser(localisationService, LOCALE, TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
-        ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new Lexem(TimeToken.DAY, "25"), new Lexem(TimeToken.MONTH_WORD, "января"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
 
         Assert.assertEquals(request.getText(), "Тест");
         Assert.assertTrue(request.getTime().isFixedTime());
@@ -68,7 +65,7 @@ class ReminderRequestParserTest {
     @Test
     void repeatTime() {
         ReminderRequestParser parser = new ReminderRequestParser(localisationService, LOCALE, TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
-        ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new Lexem(TimeToken.REPEAT, ""), new Lexem(TimeToken.DAY, "25"), new Lexem(TimeToken.MONTH_WORD, "января"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
 
         Assert.assertEquals(request.getText(), "Тест");
         Assert.assertTrue(request.getTime().isRepeatTime());
@@ -82,7 +79,7 @@ class ReminderRequestParserTest {
     @Test
     void repeatTimes() {
         ReminderRequestParser parser = new ReminderRequestParser(localisationService, LOCALE, TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
-        ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.REPEAT, ""), new TimeLexem(TimeToken.DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30"), new TimeLexem(TimeToken.DAY_OF_WEEK, "среду"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new Lexem(TimeToken.REPEAT, ""), new Lexem(TimeToken.DAY, "25"), new Lexem(TimeToken.MONTH_WORD, "января"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30"), new Lexem(TimeToken.DAY_OF_WEEK, "среду"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
 
         Assert.assertEquals(request.getText(), "Тест");
         Assert.assertTrue(request.getTime().isRepeatTime());
@@ -99,7 +96,7 @@ class ReminderRequestParserTest {
     @Test
     void offsetTime() {
         ReminderRequestParser parser = new ReminderRequestParser(localisationService, LOCALE, TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
-        ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(TimeToken.OFFSET, ""), new TimeLexem(TimeToken.TYPE, "через"), new TimeLexem(TimeToken.YEARS, "2"), new TimeLexem(TimeToken.MONTHS, "2"), new TimeLexem(TimeToken.DAYS, "2"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")));
+        ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new Lexem(TimeToken.OFFSET, ""), new Lexem(TimeToken.TYPE, "через"), new Lexem(TimeToken.YEARS, "2"), new Lexem(TimeToken.MONTHS, "2"), new Lexem(TimeToken.DAYS, "2"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")));
 
         Assert.assertEquals(request.getText(), "Тест");
         Assert.assertTrue(request.getTime().isOffsetTime());
@@ -112,13 +109,13 @@ class ReminderRequestParserTest {
     @Test
     void matchRepeatWithoutTime() {
         ReminderRequestParser parser = new ReminderRequestParser(localisationService, LOCALE, TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
-        ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new TimeLexem(REPEAT, "")));
+        ReminderRequest request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new Lexem(REPEAT, "")));
 
         Assert.assertEquals(request.getText(), "Тест");
         Assert.assertTrue(request.getTime().isRepeatTime());
     }
 
-    private List<BaseLexem> lexems(BaseLexem... lexems) {
+    private List<Lexem> lexems(Lexem... lexems) {
         return new LinkedList<>(Arrays.asList(lexems));
     }
 }

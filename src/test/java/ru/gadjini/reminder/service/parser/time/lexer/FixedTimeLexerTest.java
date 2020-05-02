@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ru.gadjini.reminder.regex.GroupPattern;
-import ru.gadjini.reminder.service.parser.api.BaseLexem;
+import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.pattern.PatternBuilder;
 import ru.gadjini.reminder.service.parser.pattern.Patterns;
 
@@ -33,14 +33,14 @@ class FixedTimeLexerTest {
     void hourMinute() {
         String str = "Тест в 19";
         TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
-        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "00")), lexems);
+        LinkedList<Lexem> lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "00")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
 
         str = "Тест в 19:30";
         timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
         lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
+        Assert.assertEquals(expected(new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
     }
 
@@ -58,14 +58,14 @@ class FixedTimeLexerTest {
     void dayOfWeek() {
         String str = "Тест во вторник в 19:30";
         TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
-        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(TimeToken.DAY_OF_WEEK, "вторник"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
+        LinkedList<Lexem> lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new Lexem(TimeToken.DAY_OF_WEEK, "вторник"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
 
         str = "Тест в пятницу";
         timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
         lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(TimeToken.DAY_OF_WEEK, "пятницу")), lexems);
+        Assert.assertEquals(expected(new Lexem(TimeToken.DAY_OF_WEEK, "пятницу")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
     }
 
@@ -73,14 +73,14 @@ class FixedTimeLexerTest {
     void nextDayOfWeek() {
         String str = "Тест в след вторник в 19:30";
         TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
-        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(TimeToken.NEXT_WEEK, "след"), new TimeLexem(TimeToken.DAY_OF_WEEK, "вторник"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
+        LinkedList<Lexem> lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new Lexem(TimeToken.NEXT_WEEK, "след"), new Lexem(TimeToken.DAY_OF_WEEK, "вторник"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
 
         str = "Тест в след воскресенье";
         timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
         lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(TimeToken.NEXT_WEEK, "след"), new TimeLexem(TimeToken.DAY_OF_WEEK, "воскресенье")), lexems);
+        Assert.assertEquals(expected(new Lexem(TimeToken.NEXT_WEEK, "след"), new Lexem(TimeToken.DAY_OF_WEEK, "воскресенье")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
     }
 
@@ -88,14 +88,14 @@ class FixedTimeLexerTest {
     void dayOfMonth() {
         String str = "Тест 25 сентября в 19:30";
         TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
-        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "сентября"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
+        LinkedList<Lexem> lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new Lexem(DAY, "25"), new Lexem(TimeToken.MONTH_WORD, "сентября"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
 
         str = "Тест 25 января";
         timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
         lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(DAY, "25"), new TimeLexem(TimeToken.MONTH_WORD, "января")), lexems);
+        Assert.assertEquals(expected(new Lexem(DAY, "25"), new Lexem(TimeToken.MONTH_WORD, "января")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
     }
 
@@ -103,14 +103,14 @@ class FixedTimeLexerTest {
     void yearMonthDay() {
         String str = "Тест 2030.01.05 в 19:30";
         TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
-        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(TimeToken.YEAR, "2030"), new TimeLexem(TimeToken.MONTH, "01"), new TimeLexem(DAY, "05"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
+        LinkedList<Lexem> lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new Lexem(TimeToken.YEAR, "2030"), new Lexem(TimeToken.MONTH, "01"), new Lexem(DAY, "05"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
 
         str = "Тест 2030.01.05";
         timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
         lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(TimeToken.YEAR, "2030"), new TimeLexem(TimeToken.MONTH, "01"), new TimeLexem(DAY, "05")), lexems);
+        Assert.assertEquals(expected(new Lexem(TimeToken.YEAR, "2030"), new Lexem(TimeToken.MONTH, "01"), new Lexem(DAY, "05")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
     }
 
@@ -118,32 +118,32 @@ class FixedTimeLexerTest {
     void monthDay() {
         String str = "Тест 01.05 в 19:30";
         TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
-        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(TimeToken.MONTH, "01"), new TimeLexem(DAY, "05"), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
+        LinkedList<Lexem> lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new Lexem(TimeToken.MONTH, "01"), new Lexem(DAY, "05"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
 
         str = "Тест 01.05";
         timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
         lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(TimeToken.MONTH, "01"), new TimeLexem(DAY, "05")), lexems);
+        Assert.assertEquals(expected(new Lexem(TimeToken.MONTH, "01"), new Lexem(DAY, "05")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
     }
 
     private void dayWordTest(String dayWord) {
         String str = "Тест " + dayWord + " в 19:30";
         TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
-        LinkedList<BaseLexem> lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(TimeToken.DAY_WORD, dayWord), new TimeLexem(TimeToken.HOUR, "19"), new TimeLexem(TimeToken.MINUTE, "30")), lexems);
+        LinkedList<Lexem> lexems = timeLexer.tokenize();
+        Assert.assertEquals(expected(new Lexem(TimeToken.DAY_WORD, dayWord), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
 
         str = "Тест " + dayWord;
         timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
         lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new TimeLexem(TimeToken.DAY_WORD, dayWord)), lexems);
+        Assert.assertEquals(expected(new Lexem(TimeToken.DAY_WORD, dayWord)), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
     }
 
-    private LinkedList<BaseLexem> expected(BaseLexem... lexems) {
+    private LinkedList<Lexem> expected(Lexem... lexems) {
         return new LinkedList<>(Arrays.asList(lexems));
     }
 }
