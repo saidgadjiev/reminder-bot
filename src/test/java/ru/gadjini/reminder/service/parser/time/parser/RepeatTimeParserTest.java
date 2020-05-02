@@ -17,6 +17,7 @@ import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.Lexem;
+import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
@@ -27,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import static ru.gadjini.reminder.service.parser.time.lexer.RepeatTimeToken.SERIES_TO_COMPLETE;
 import static ru.gadjini.reminder.service.parser.time.lexer.TimeToken.*;
 
 @ExtendWith(SpringExtension.class)
@@ -205,6 +207,20 @@ class RepeatTimeParserTest {
         Assert.assertTrue(parsed.isRepeatTime());
 
         Assert.assertNull(parsed.getRepeatTimes().get(0).getTime());
+    }
+
+    @Test
+    void matchSeriesToComplete() {
+        TimeParser timeParser = parser();
+        Time parse = timeParser.parse(lexems(new Lexem(REPEAT, ""), new Lexem(DAYS, "1"), new Lexem(SERIES_TO_COMPLETE, "5"), new Lexem(DAY_OF_WEEK, "вторник"), new Lexem(SERIES_TO_COMPLETE, "4")));
+        Assert.assertTrue(parse.isRepeatTime());
+        Assert.assertEquals(2, parse.getRepeatTimes().size());
+
+        Assert.assertEquals(1, parse.getRepeatTimes().get(0).getInterval().getDays());
+        Assert.assertEquals(5, (int) parse.getRepeatTimes().get(0).getSeriesToComplete());
+
+        Assert.assertEquals(DayOfWeek.TUESDAY, parse.getRepeatTimes().get(1).getDayOfWeek());
+        Assert.assertEquals(4, (int) parse.getRepeatTimes().get(1).getSeriesToComplete());
     }
 
     private List<Lexem> lexems(Lexem... lexems) {

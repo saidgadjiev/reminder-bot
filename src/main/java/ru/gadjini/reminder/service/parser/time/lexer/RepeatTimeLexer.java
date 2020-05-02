@@ -35,9 +35,6 @@ public class RepeatTimeLexer {
 
         if (valuesList != null) {
             for (Map<String, String> values : valuesList) {
-                if (values.containsKey(PatternBuilder.SERIES_TO_COMPLETE)) {
-                    lexems.add(new Lexem(RepeatTimeToken.SERIES_TO_COMPLETE, values.get(PatternBuilder.SERIES_TO_COMPLETE)));
-                }
                 if (values.containsKey(PatternBuilder.SUFFIX_YEARS)) {
                     lexems.add(new Lexem(TimeToken.YEARS, values.get(PatternBuilder.SUFFIX_YEARS)));
                 } else if (values.containsKey(PatternBuilder.PREFIX_YEARS)) {
@@ -102,10 +99,12 @@ public class RepeatTimeLexer {
                 if (values.containsKey(PatternBuilder.DAY)) {
                     lexems.add(new Lexem(TimeToken.DAY, values.get(PatternBuilder.DAY)));
                 }
+                if (values.containsKey(PatternBuilder.SERIES_TO_COMPLETE)) {
+                    lexems.add(new Lexem(RepeatTimeToken.SERIES_TO_COMPLETE, values.get(PatternBuilder.SERIES_TO_COMPLETE)));
+                }
                 if (values.containsKey(PatternBuilder.MONTH_WORD)) {
                     lexems.add(new Lexem(TimeToken.MONTH_WORD, values.get(PatternBuilder.MONTH_WORD)));
                 }
-
                 if (values.containsKey(PatternBuilder.HOUR)) {
                     lexems.add(new Lexem(TimeToken.HOUR, values.get(PatternBuilder.HOUR)));
                     lexems.add(new Lexem(TimeToken.MINUTE, values.getOrDefault(PatternBuilder.MINUTE, "00")));
@@ -153,7 +152,6 @@ public class RepeatTimeLexer {
         }
 
         if (matcher != null) {
-            values.addFirst(matcher.values());
             matchEnd += matcher.end();
             return values;
         }

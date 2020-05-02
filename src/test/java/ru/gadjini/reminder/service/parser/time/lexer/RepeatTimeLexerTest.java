@@ -27,7 +27,7 @@ class RepeatTimeLexerTest {
         Mockito.when(TIME_LEXER_CONFIG.getTimePattern(any())).thenReturn(new GroupPattern(Patterns.FIXED_TIME_PATTERN, PatternBuilder.FIXED_TIME_PATTERN_GROUPS));
         Mockito.when(TIME_LEXER_CONFIG.getOffsetTimePattern(any())).thenReturn(new GroupPattern(Patterns.OFFSET_TIME_PATTERN, PatternBuilder.OFFSET_TIME_PATTERN_GROUPS));
         Mockito.when(TIME_LEXER_CONFIG.getRepeatTimePattern(any())).thenReturn(new GroupPattern(Patterns.REPEAT_TIME_PATTERN, PatternBuilder.REPEAT_TIME_PATTERN_GROUPS));
-        Mockito.when(TIME_LEXER_CONFIG.getRepeatWordPattern(any())).thenReturn(new GroupPattern(Patterns.REPEAT_WORD_PATTERN, PatternBuilder.REPEAT_WORD_PATTERN_GROUPS));
+        Mockito.when(TIME_LEXER_CONFIG.getRepeatWordPattern(any())).thenReturn(new GroupPattern(Patterns.REPEAT_WORD_PATTERN, Collections.emptyList()));
     }
 
     @Test
@@ -206,18 +206,17 @@ class RepeatTimeLexerTest {
 
     @Test
     void matchSeriesToComplete() {
-        String str = "Тест повторять 5 раз каждый день";
+        String str = "Тест каждый день 5 раз";
         TimeLexer timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
         LinkedList<Lexem> lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new Lexem(TimeToken.REPEAT, ""), new Lexem(SERIES_TO_COMPLETE, "5"), new Lexem(DAYS, "1")), lexems);
+        Assert.assertEquals(expected(new Lexem(TimeToken.REPEAT, ""), new Lexem(DAYS, "1"), new Lexem(SERIES_TO_COMPLETE, "5")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
 
-        str = "Тест 5 раз каждый день";;
+        str = "Тест каждый день 5 раз вторник 4 раза";
         timeLexer = new TimeLexer(TIME_LEXER_CONFIG, str, LOCALE);
         lexems = timeLexer.tokenize();
-        Assert.assertEquals(expected(new Lexem(TimeToken.REPEAT, ""), new Lexem(SERIES_TO_COMPLETE, "5"), new Lexem(DAYS, "1")), lexems);
+        Assert.assertEquals(expected(new Lexem(TimeToken.REPEAT, ""), new Lexem(DAYS, "1"), new Lexem(SERIES_TO_COMPLETE, "5"), new Lexem(DAY_OF_WEEK, "вторник"), new Lexem(SERIES_TO_COMPLETE, "4")), lexems);
         Assert.assertEquals("Тест", timeLexer.eraseTime());
-
     }
 
     private LinkedList<Lexem> expected(Lexem... lexems) {

@@ -24,6 +24,8 @@ public class RepeatTime {
 
     public static final String MONTH = "rt_month";
 
+    public static final String SERIES_TO_COMPLETE = "rt_series_to_complete";
+
     public static final String DAY = "rt_day";
 
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
@@ -37,6 +39,8 @@ public class RepeatTime {
     private LocalTime time;
 
     private Period interval;
+
+    private Integer seriesToComplete;
 
     private ZoneId zoneId;
 
@@ -86,6 +90,18 @@ public class RepeatTime {
 
     public void setInterval(Period interval) {
         this.interval = interval;
+    }
+
+    public Integer getSeriesToComplete() {
+        return seriesToComplete;
+    }
+
+    public void setSeriesToComplete(Integer seriesToComplete) {
+        this.seriesToComplete = seriesToComplete;
+    }
+
+    public boolean hasSeriesToComplete() {
+        return seriesToComplete != null;
     }
 
     public boolean hasDayOfWeek() {
@@ -158,7 +174,12 @@ public class RepeatTime {
             sql.append(month.name()).append(",");
         }
         if (day != 0) {
-            sql.append(day);
+            sql.append(day).append(",");
+        } else {
+            sql.append(",");
+        }
+        if (seriesToComplete != null) {
+            sql.append(seriesToComplete);
         }
         sql.append(")");
 

@@ -209,8 +209,6 @@ public class MessagesProperties {
 
     public static final String REGEXP_NEXT_WEEK = "regexp.next.week";
 
-    public static final String REGEXP_REPEAT_EVERY = "regexp.repeat.every";
-
     public static final String REGEXP_REPEAT = "regexp.repeat";
 
     public static final String REGEXP_TIMES = "regexp.times";
@@ -582,4 +580,6 @@ public class MessagesProperties {
     public static final String MESSAGE_EXPIRED_REMINDER_ICON = "message.expired.reminder.icon";
 
     public static final String EXPIRED_REMINDERS_COMMAND_DESCRIPTION = "expired.reminders.command.description";
+
+    public static final String MESSAGE_REMINDER_SERIES_TO_COMPLETE = "message.reminder.series.to.complete";
 }

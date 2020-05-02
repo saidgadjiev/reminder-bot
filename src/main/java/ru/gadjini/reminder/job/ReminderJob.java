@@ -165,7 +165,7 @@ public class ReminderJob {
         if (repeatReminderService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
             RepeatReminderService.RemindAtCandidate nextRemindAtCandidate = repeatReminderService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtsInReceiverZone(timeCreator), reminder.getCurrRepeatIndex());
             nextRemindAt = nextRemindAtCandidate.getRemindAt().withZoneSameInstant(ZoneOffset.UTC);
-            repeatReminderService.updateNextRemindAtAndSeries(reminder.getId(), RepeatReminderService.UpdateSeries.INCREMENT, nextRemindAtCandidate.getIndex(), nextRemindAt);
+            repeatReminderService.updateNextRemindAtAndSeries(reminder.getId(), RepeatReminderService.UpdateSeries.INCREMENT, nextRemindAtCandidate.getCurrentSeriesToComplete(), nextRemindAtCandidate.getIndex(), nextRemindAt);
             reminder.setRemindAt(nextRemindAt);
         }
         reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), nextRemindAt);

@@ -6,6 +6,7 @@ import ru.gadjini.reminder.exception.ParseException;
 import ru.gadjini.reminder.service.DayOfWeekService;
 import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
+import ru.gadjini.reminder.service.parser.time.lexer.RepeatTimeToken;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 
 import java.time.DayOfWeek;
@@ -136,6 +137,8 @@ public class RepeatTimeParser {
             consumeMonthWord(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             repeatTime.setTime(consumeTime(lexems));
+        } else if (lexemsConsumer.check(lexems, RepeatTimeToken.SERIES_TO_COMPLETE)) {
+            consumeSeriesToComplete(lexems);
         }
     }
 
@@ -164,6 +167,8 @@ public class RepeatTimeParser {
             consumeMinutes(lexems);
         } else if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             repeatTime.setTime(consumeTime(lexems));
+        } else if (lexemsConsumer.check(lexems, RepeatTimeToken.SERIES_TO_COMPLETE)) {
+            consumeSeriesToComplete(lexems);
         }
     }
 
@@ -188,7 +193,14 @@ public class RepeatTimeParser {
         repeatTime.setDayOfWeek(dayOfWeek);
         if (lexemsConsumer.check(lexems, TimeToken.HOUR)) {
             repeatTime.setTime(consumeTime(lexems));
+        } else if (lexemsConsumer.check(lexems, RepeatTimeToken.SERIES_TO_COMPLETE)) {
+            consumeSeriesToComplete(lexems);
         }
+    }
+
+    private void consumeSeriesToComplete(List<Lexem> lexems) {
+        int seriesToComplete = Integer.parseInt(lexemsConsumer.consume(lexems, RepeatTimeToken.SERIES_TO_COMPLETE).getValue());
+        repeatTime.setSeriesToComplete(seriesToComplete);
     }
 
     private LocalTime consumeTime(List<Lexem> lexems) {

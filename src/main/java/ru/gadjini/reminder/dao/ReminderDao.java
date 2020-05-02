@@ -294,7 +294,7 @@ public class ReminderDao {
                 con -> {
                     PreparedStatement ps = con.prepareStatement("WITH r AS (\n" +
                             "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
-                            "                       note, message_id, read, curr_repeat_index, challenge_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *\n" +
+                            "                       note, message_id, read, curr_repeat_index, challenge_id, curr_series_to_complete) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *\n" +
                             ")\n" +
                             "SELECT r.id,\n" +
                             "       r.created_at,\n" +
@@ -344,6 +344,11 @@ public class ReminderDao {
                     } else {
                         ps.setInt(11, reminder.getChallengeId());
                     }
+                    if (reminder.getCurrSeriesToComplete() != null) {
+                        ps.setInt(12, reminder.getCurrSeriesToComplete());
+                    } else {
+                        ps.setNull(12, Types.INTEGER);
+                    }
 
                     return ps;
                 },
@@ -365,7 +370,7 @@ public class ReminderDao {
                 con -> {
                     PreparedStatement ps = con.prepareStatement("WITH r AS (\n" +
                             "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
-                            "                          note, message_id, read, curr_repeat_index, challenge_id) SELECT ?, ?, user_id, ?, ?, ?, ?, ?, ?, ?, ? FROM tg_user WHERE username = ? RETURNING *\n" +
+                            "                          note, message_id, read, curr_repeat_index, challenge_id, curr_series_to_complete) SELECT ?, ?, user_id, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? FROM tg_user WHERE username = ? RETURNING *\n" +
                             ")\n" +
                             "SELECT r.id,\n" +
                             "       r.receiver_id,\n" +
@@ -399,13 +404,18 @@ public class ReminderDao {
                     ps.setInt(7, reminder.getMessageId());
                     ps.setBoolean(8, reminder.isRead());
                     ps.setInt(9, reminder.getCurrRepeatIndex());
-                    ps.setString(10, reminder.getReceiver().getUsername());
 
                     if (reminder.getChallengeId() == null) {
-                        ps.setNull(11, Types.INTEGER);
+                        ps.setNull(10, Types.INTEGER);
                     } else {
-                        ps.setInt(11, reminder.getChallengeId());
+                        ps.setInt(10, reminder.getChallengeId());
                     }
+                    if (reminder.getCurrSeriesToComplete() != null) {
+                        ps.setInt(11, reminder.getCurrSeriesToComplete());
+                    } else {
+                        ps.setNull(11, Types.INTEGER);
+                    }
+                    ps.setString(12, reminder.getReceiver().getUsername());
 
                     return ps;
                 },

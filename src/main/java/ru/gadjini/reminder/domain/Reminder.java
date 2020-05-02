@@ -59,6 +59,8 @@ public class Reminder {
 
     public static final String CHALLENGE_ID = "challenge_id";
 
+    public static final String CURR_SERIES_TO_COMPLETE = "curr_series_to_complete";
+
     private int id;
 
     private String text;
@@ -109,6 +111,8 @@ public class Reminder {
 
     private Integer challengeId;
 
+    private Integer currSeriesToComplete;
+
     public Reminder() {
     }
 
@@ -138,6 +142,7 @@ public class Reminder {
         this.createdAt = reminder.createdAt;
         this.currRepeatIndex = reminder.currRepeatIndex;
         this.challengeId = reminder.challengeId;
+        this.currSeriesToComplete = reminder.currSeriesToComplete;
     }
 
     public int getId() {
@@ -360,7 +365,6 @@ public class Reminder {
         this.currRepeatIndex = currRepeatIndex;
     }
 
-
     public boolean isSuppressNotifications() {
         return suppressNotifications;
     }
@@ -387,6 +391,14 @@ public class Reminder {
 
     public void setChallengeId(Integer challengeId) {
         this.challengeId = challengeId;
+    }
+
+    public Integer getCurrSeriesToComplete() {
+        return currSeriesToComplete;
+    }
+
+    public void setCurrSeriesToComplete(Integer currSeriesToComplete) {
+        this.currSeriesToComplete = currSeriesToComplete;
     }
 
     public boolean isRepeatableWithoutTime() {

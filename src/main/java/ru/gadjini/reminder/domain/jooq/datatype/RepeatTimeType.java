@@ -19,6 +19,8 @@ public class RepeatTimeType extends UDTImpl<RepeatTimeRecord> {
 
     public static UDTField<RepeatTimeRecord, Integer> RT_DAY;
 
+    public static UDTField<RepeatTimeRecord, Integer> RT_SERIES_TO_COMPLETE;
+
     public RepeatTimeType() {
         super(RepeatTime.TYPE, null);
         createFields();
@@ -35,5 +37,6 @@ public class RepeatTimeType extends UDTImpl<RepeatTimeRecord> {
         RT_INTERVAL = createField(RepeatTime.INTERVAL, SQLDataType.VARCHAR, this);
         RT_MONTH = createField(RepeatTime.MONTH, SQLDataType.VARCHAR, this);
         RT_DAY = createField(RepeatTime.DAY, SQLDataType.INTEGER, this);
+        RT_SERIES_TO_COMPLETE = createField(RepeatTime.SERIES_TO_COMPLETE, SQLDataType.INTEGER, this);
     }
 }

@@ -161,6 +161,7 @@ public class ReminderService {
         reminder.setInitialRemindAt(remindAt);
         reminder.setRepeatRemindAts(null);
         reminder.setCurrRepeatIndex(null);
+        reminder.setCurrSeriesToComplete(null);
         reminder.setSuppressNotifications(reminderNotifications.size() == 0);
 
         return reminder;

@@ -15,6 +15,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderLexem;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderToken;
+import ru.gadjini.reminder.service.parser.time.lexer.RepeatTimeToken;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import ru.gadjini.reminder.util.TimeCreator;
 
@@ -91,6 +92,19 @@ class ReminderRequestParserTest {
 
         Assert.assertEquals(DayOfWeek.WEDNESDAY, request.getTime().getRepeatTimes().get(1).getDayOfWeek());
         Assert.assertEquals(LocalTime.of(19, 30), request.getTime().getRepeatTimes().get(1).getTime());
+
+        parser = new ReminderRequestParser(localisationService, LOCALE, TestConstants.TEST_ZONE, dayOfWeekService, timeCreator);
+        request = parser.parse(lexems(new ReminderLexem(ReminderToken.TEXT, "Тест"), new Lexem(TimeToken.REPEAT, ""), new Lexem(TimeToken.DAYS, "1"), new Lexem(RepeatTimeToken.SERIES_TO_COMPLETE, "5"), new Lexem(TimeToken.DAY_OF_WEEK, "вторник"), new Lexem(RepeatTimeToken.SERIES_TO_COMPLETE, "4")));
+
+        Assert.assertEquals(request.getText(), "Тест");
+        Assert.assertTrue(request.getTime().isRepeatTime());
+
+        Assert.assertEquals(1, request.getTime().getRepeatTimes().get(0).getInterval().getDays());
+        Assert.assertEquals(5, (int) request.getTime().getRepeatTimes().get(0).getSeriesToComplete());
+        Assert.assertEquals(TestConstants.TEST_ZONE, request.getZone());
+
+        Assert.assertEquals(DayOfWeek.TUESDAY, request.getTime().getRepeatTimes().get(1).getDayOfWeek());
+        Assert.assertEquals(4, (int) request.getTime().getRepeatTimes().get(1).getSeriesToComplete());
     }
 
     @Test
