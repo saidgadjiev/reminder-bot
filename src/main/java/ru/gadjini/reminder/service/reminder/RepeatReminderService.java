@@ -242,21 +242,16 @@ public class RepeatReminderService {
         return new RemindAtCandidate(index, nextRemindAt, currentSeriesToComplete);
     }
 
-    private RemindAtCandidate getPrevRemindAt(DateTime remindAt, List<RepeatTime> repeatTimes) {
-        DateTime prevRemindAt = getPrevRemindAt(remindAt, repeatTimes.get(0));
+    private RemindAtCandidate getPrevRemindAt(DateTime remindAt, List<RepeatTime> repeatTimes, int currIndex) {
+        DateTime prevRemindAt = getPrevRemindAt(remindAt, repeatTimes.get(currIndex), repeatTimes.get(0));
         int index = 0;
         Integer currentSeriesToComplete = repeatTimes.get(0).getSeriesToComplete();
 
         if (repeatTimes.size() > 1) {
             for (int i = 1; i < repeatTimes.size(); ++i) {
                 RepeatTime repeatTime = repeatTimes.get(i);
-                DateTime candidate = getPrevRemindAt(remindAt, repeatTime);
-                LocalTime candidateTime = candidate.hasTime() ? candidate.time() : LocalTime.MIDNIGHT;
-                LocalDate candidateDate = candidate.hasTime() ? candidate.date() : candidate.date().plusDays(1);
-
-                LocalTime time = prevRemindAt.hasTime() ? prevRemindAt.time() : LocalTime.MIDNIGHT;
-                LocalDate date = prevRemindAt.hasTime() ? prevRemindAt.date() : prevRemindAt.date().plusDays(1);
-                if (ZonedDateTime.of(candidateDate, candidateTime, repeatTime.getZoneId()).isAfter(ZonedDateTime.of(date, time, prevRemindAt.getZoneId()))) {
+                DateTime candidate = getPrevRemindAt(remindAt, repeatTimes.get(currIndex), repeatTime);
+                if (isMoreAppropriatePrevRemindAtCandidate(candidate, prevRemindAt)) {
                     prevRemindAt = candidate;
                     index = i;
                     currentSeriesToComplete = repeatTime.getSeriesToComplete();
@@ -269,25 +264,50 @@ public class RepeatReminderService {
         return ZonedDateTime.of(date, time, remindAt.getZoneId()).isBefore(timeCreator.zonedDateTimeNow(remindAt.getZoneId())) ? null : new RemindAtCandidate(index, prevRemindAt, currentSeriesToComplete);
     }
 
-    private DateTime getPrevRemindAt(DateTime remindAt, RepeatTime repeatTime) {
-        remindAt = remindAt.copy();
-
+    private DateTime getPrevRemindAt(DateTime remindAt, RepeatTime currentRepeatTime, RepeatTime repeatTime) {
         if (repeatTime.isEveryWeeklyTime()) {
-            DateTime dateTime = remindAt.copy();
-            dateTime.date(dateTime.date().with(TemporalAdjusters.previous(repeatTime.getDayOfWeek())));
-
-            return dateTime;
+            return getEveryWeeklyTimePrevRemindAt(remindAt, repeatTime);
+        } else if (TimeUtils.isBigInterval(repeatTime.getInterval())) {
+            return getBigIntervalPrevRemindAt(remindAt, currentRepeatTime, repeatTime);
         } else {
-            if (remindAt.hasTime()) {
-                ZonedDateTime prevRemindAt = JodaTimeUtils.minus(remindAt.toZonedDateTime(), repeatTime.getInterval());
-
-                return DateTime.of(prevRemindAt);
-            }
-
-            LocalDate prevRemindAt = JodaTimeUtils.minus(remindAt.date(), repeatTime.getInterval());
-
-            return DateTime.of(prevRemindAt, null, remindAt.getZoneId());
+            return getShortIntervalPrevRemindAt(remindAt, repeatTime);
         }
+    }
+
+    private DateTime getShortIntervalPrevRemindAt(DateTime remindAt, RepeatTime repeatTime) {
+        ZonedDateTime nextRemindAt = JodaTimeUtils.minus(remindAt.toZonedDateTime(), repeatTime.getInterval());
+
+        return DateTime.of(nextRemindAt);
+    }
+
+    private DateTime getBigIntervalPrevRemindAt(DateTime remindAt, RepeatTime currentRepeatTime, RepeatTime repeatTime) {
+        if (currentRepeatTime.getInterval().equals(repeatTime.getInterval()) && repeatTime.hasTime()) {
+            if (remindAt.hasTime()) {
+                if (repeatTime.getTime().isBefore(remindAt.time())) {
+                    return remindAt.copy().time(repeatTime.getTime());
+                }
+            } else {
+                return remindAt.copy().time(repeatTime.getTime());
+            }
+        }
+        LocalDate nextRemindAtDate = JodaTimeUtils.minus(remindAt.date(), repeatTime.getInterval());
+
+        return DateTime.of(nextRemindAtDate, repeatTime.getTime(), remindAt.getZoneId());
+    }
+
+    private DateTime getEveryWeeklyTimePrevRemindAt(DateTime remindAt, RepeatTime repeatTime) {
+        if (remindAt.date().getDayOfWeek().equals(repeatTime.getDayOfWeek()) && repeatTime.hasTime()) {
+            if (remindAt.hasTime()) {
+                if (repeatTime.getTime().isBefore(remindAt.time())) {
+                    return remindAt.copy().time(repeatTime.getTime());
+                }
+            } else {
+                return remindAt.copy().time(repeatTime.getTime());
+            }
+        }
+        remindAt.copy().date(remindAt.date().with(TemporalAdjusters.previous(repeatTime.getDayOfWeek())));
+
+        return remindAt;
     }
 
     private ActionResult moveReminderToPrevPeriod(Reminder reminder) {
@@ -299,7 +319,7 @@ public class RepeatReminderService {
             updateSeriesToComplete(reminder.getId(), UpdateSeries.DECREMENT);
             return ActionResult.CURR_SERIES_TO_COMPLETE_CHANGED;
         }
-        RemindAtCandidate prevRemindAt = getPrevRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAts());
+        RemindAtCandidate prevRemindAt = getPrevRemindAt(reminder.getRemindAt(), reminder.getRepeatRemindAts(), reminder.getCurrRepeatIndex());
 
         if (prevRemindAt != null) {
             int id = reminder.getId();
@@ -490,7 +510,6 @@ public class RepeatReminderService {
     }
 
     private DateTime getWeeklyDailyMonthlyYearlyNextRemindAt(DateTime remindAt, RepeatTime currentRepeatTime, RepeatTime repeatTime) {
-        ZonedDateTime now = timeCreator.zonedDateTimeNow(remindAt.getZoneId());
         if (currentRepeatTime.getInterval().equals(repeatTime.getInterval()) && repeatTime.hasTime()) {
             if (remindAt.hasTime()) {
                 if (repeatTime.getTime().isAfter(remindAt.time())) {
@@ -500,6 +519,7 @@ public class RepeatReminderService {
                 return remindAt.copy().time(repeatTime.getTime());
             }
         }
+        ZonedDateTime now = timeCreator.zonedDateTimeNow(remindAt.getZoneId());
         LocalDate nowDate = now.toLocalDate();
         LocalDate nextRemindAtDate = JodaTimeUtils.plus(remindAt.date(), repeatTime.getInterval());
 
@@ -720,6 +740,19 @@ public class RepeatReminderService {
         } else {
             return null;
         }
+    }
+
+    private boolean isMoreAppropriatePrevRemindAtCandidate(DateTime candidate, DateTime prevRemindAt) {
+        LocalTime candidateTime = candidate.hasTime() ? candidate.time() : LocalTime.MIDNIGHT;
+        LocalDate candidateDate = candidate.hasTime() ? candidate.date() : candidate.date().plusDays(1);
+
+        LocalTime time = prevRemindAt.hasTime() ? prevRemindAt.time() : LocalTime.MIDNIGHT;
+        LocalDate date = prevRemindAt.hasTime() ? prevRemindAt.date() : prevRemindAt.date().plusDays(1);
+        if (ZonedDateTime.of(candidateDate, candidateTime, candidate.getZoneId()).isAfter(ZonedDateTime.of(date, time, prevRemindAt.getZoneId()))) {
+            return true;
+        }
+
+        return false;
     }
 
     private boolean isMoreAppropriateNextRemindAtCandidate(DateTime candidate, DateTime currentNextRemindAt) {
