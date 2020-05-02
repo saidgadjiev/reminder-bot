@@ -11,6 +11,7 @@ import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.service.message.LocalisationService;
+import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.time.ReminderTimeBuilder;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
@@ -156,8 +157,9 @@ public class ReminderMessageBuilder {
         return messageBuilder.getReminderCompleted(reminder.getText(), reminder.getReceiver().getLocale());
     }
 
-    public String getMySelfRepeatReminderCompleted(Reminder reminder) {
-        if (reminder.getRepeatRemindAt().hasSeriesToComplete() && reminder.getCurrSeriesToComplete() > 0) {
+    public String getMySelfRepeatReminderCompleted(RepeatReminderService.ReminderActionResult reminderActionResult) {
+        Reminder reminder = reminderActionResult.getReminder();
+        if (reminderActionResult.getActionResult() == RepeatReminderService.ActionResult.CURR_SERIES_TO_COMPLETE_CHANGED) {
             return getReminderMessage(reminder, new ReminderMessageBuilder.ReminderMessageConfig().receiverId(reminder.getReceiverId()));
         }
         StringBuilder message = new StringBuilder();
@@ -533,6 +535,9 @@ public class ReminderMessageBuilder {
     private void appendRepeatReminderCommonValues(StringBuilder message, boolean appendNextRemindAt, Reminder reminder, Locale locale) {
         if (appendNextRemindAt && reminder.isRepeatableWithTime()) {
             message.append(messageBuilder.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getReceiver().getLocale()));
+        }
+        if (reminder.getRepeatRemindAt().hasSeriesToComplete()) {
+            message.append("\n").append(messageBuilder.getSeriesToComplete(reminder.getCurrSeriesToComplete(), reminder.getRepeatRemindAt().getSeriesToComplete(), locale));
         }
 
         if (reminder.isRepeatableWithoutTime()) {

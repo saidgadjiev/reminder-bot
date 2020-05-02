@@ -16,6 +16,7 @@ import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.ReminderService;
+import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 import ru.gadjini.reminder.util.KeyboardCustomizer;
 import ru.gadjini.reminder.util.TextUtils;
 
@@ -175,7 +176,8 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendRepeatReminderCompleted(Reminder reminder) {
+    public void sendRepeatReminderCompleted(RepeatReminderService.ReminderActionResult reminderActionResult) {
+        Reminder reminder = reminderActionResult.getReminder();
         if (reminder.hasReceiverMessage()) {
             messageService.deleteMessage(reminder.getReceiverId(), reminder.getReceiverMessageId());
             reminderService.deleteReceiverMessage(reminder.getId());
@@ -185,7 +187,7 @@ public class ReminderMessageSender {
             messageService.sendMessageAsync(
                     new SendMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(reminder.getReceiverId())
-                            .text(reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminder))
+                            .text(reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminderActionResult))
             );
         } else {
             messageService.sendMessageAsync(
@@ -202,13 +204,14 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendRepeatReminderCompletedFromList(int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, Reminder reminder) {
+    public void sendRepeatReminderCompletedFromList(int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, RepeatReminderService.ReminderActionResult reminderActionResult) {
+        Reminder reminder = reminderActionResult.getReminder();
         if (reminder.isMySelf()) {
             messageService.editMessageAsync(
                     new EditMessageContext(PriorityJob.Priority.HIGH)
                             .chatId(reminder.getReceiverId())
                             .messageId(messageId)
-                            .text(reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminder))
+                            .text(reminderMessageBuilder.getMySelfRepeatReminderCompleted(reminderActionResult))
                             .replyKeyboard(inlineKeyboardMarkup)
             );
         } else {
