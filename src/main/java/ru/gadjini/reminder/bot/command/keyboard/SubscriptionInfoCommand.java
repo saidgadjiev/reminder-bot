@@ -10,7 +10,7 @@ import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
+import ru.gadjini.reminder.service.reminder.time.Time2TextService;
 import ru.gadjini.reminder.service.subscription.PlanService;
 import ru.gadjini.reminder.service.subscription.SubscriptionService;
 import ru.gadjini.reminder.time.DateTimeFormats;
@@ -32,13 +32,13 @@ public class SubscriptionInfoCommand implements KeyboardBotCommand {
 
     private PlanService planService;
 
-    private TimeBuilder timeBuilder;
+    private Time2TextService timeBuilder;
 
     private TgUserService userService;
 
     public SubscriptionInfoCommand(LocalisationService localisationService,
                                    SubscriptionService subscriptionService,
-                                   MessageService messageService, PlanService planService, TimeBuilder timeBuilder, TgUserService userService) {
+                                   MessageService messageService, PlanService planService, Time2TextService timeBuilder, TgUserService userService) {
         this.localisationService = localisationService;
         this.subscriptionService = subscriptionService;
         this.messageService = messageService;

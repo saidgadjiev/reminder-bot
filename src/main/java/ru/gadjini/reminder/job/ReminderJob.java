@@ -18,7 +18,7 @@ import ru.gadjini.reminder.service.reminder.repeat.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.simple.ReminderService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -49,7 +49,7 @@ public class ReminderJob {
 
     private MessageService messageService;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Autowired
     public ReminderJob(ReminderService reminderService,
@@ -57,7 +57,7 @@ public class ReminderJob {
                        ReminderNotificationMessageSender reminderNotificationMessageSender,
                        RepeatReminderService repeatReminderService,
                        RepeatReminderBusinessService repeatReminderBusinessService, RestoreReminderService restoreReminderService,
-                       MessageService messageService, TimeCreator timeCreator) {
+                       MessageService messageService, DateTimeService timeCreator) {
         this.reminderService = reminderService;
         this.reminderNotificationService = reminderNotificationService;
         this.reminderNotificationMessageSender = reminderNotificationMessageSender;

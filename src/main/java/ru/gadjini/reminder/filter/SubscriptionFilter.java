@@ -24,7 +24,7 @@ import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.subscription.PaymentMessageService;
 import ru.gadjini.reminder.service.subscription.PlanService;
 import ru.gadjini.reminder.service.subscription.SubscriptionService;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.ZoneId;
 import java.time.format.TextStyle;
@@ -53,7 +53,7 @@ public class SubscriptionFilter extends BaseBotFilter {
 
     private CommandNavigator commandNavigator;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     private TgUserService userService;
 
@@ -63,7 +63,7 @@ public class SubscriptionFilter extends BaseBotFilter {
                               PlanService planService, CurrReplyKeyboard replyKeyboardService,
                               InlineKeyboardService inlineKeyboardService, PaymentMessageService paymentMessageService,
                               SubscriptionProperties subscriptionProperties, TimeDeclensionProvider timeDeclensionProvider,
-                              CommandNavigator commandNavigator, TimeCreator timeCreator, TgUserService userService) {
+                              CommandNavigator commandNavigator, DateTimeService timeCreator, TgUserService userService) {
         this.messageService = messageService;
         this.localisationService = localisationService;
         this.subscriptionService = subscriptionService;

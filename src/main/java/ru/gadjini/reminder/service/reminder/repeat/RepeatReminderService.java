@@ -19,7 +19,7 @@ import ru.gadjini.reminder.service.ai.ReminderNotificationAI;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.RemindAtCandidate;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.LocalDate;
@@ -40,7 +40,7 @@ public class RepeatReminderService {
 
     private UserReminderNotificationService userReminderNotificationService;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     private RepeatReminderBusinessService repeatReminderBusinessService;
 
@@ -48,7 +48,7 @@ public class RepeatReminderService {
     public RepeatReminderService(ReminderDao reminderDao, ReminderNotificationService reminderNotificationService,
                                  ReminderNotificationAI reminderNotificationAI,
                                  UserReminderNotificationService userReminderNotificationService,
-                                 TimeCreator timeCreator, RepeatReminderBusinessService repeatReminderBusinessService) {
+                                 DateTimeService timeCreator, RepeatReminderBusinessService repeatReminderBusinessService) {
         this.reminderDao = reminderDao;
         this.reminderNotificationService = reminderNotificationService;
         this.reminderNotificationAI = reminderNotificationAI;

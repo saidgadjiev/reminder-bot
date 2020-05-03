@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.time.RepeatTime;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.sql.Array;
 import java.sql.PreparedStatement;
@@ -16,10 +16,10 @@ public class CompletedReminderDao {
 
     private JdbcTemplate jdbcTemplate;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Autowired
-    public CompletedReminderDao(JdbcTemplate jdbcTemplate, TimeCreator timeCreator) {
+    public CompletedReminderDao(JdbcTemplate jdbcTemplate, DateTimeService timeCreator) {
         this.jdbcTemplate = jdbcTemplate;
         this.timeCreator = timeCreator;
     }

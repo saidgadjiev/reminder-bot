@@ -8,7 +8,7 @@ import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.jooq.ReminderNotificationTable;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.*;
@@ -22,10 +22,10 @@ public class ReminderNotificationService {
 
     private ReminderNotificationDao reminderNotificationDao;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Autowired
-    public ReminderNotificationService(ReminderNotificationDao reminderNotificationDao, TimeCreator timeCreator) {
+    public ReminderNotificationService(ReminderNotificationDao reminderNotificationDao, DateTimeService timeCreator) {
         this.reminderNotificationDao = reminderNotificationDao;
         this.timeCreator = timeCreator;
     }

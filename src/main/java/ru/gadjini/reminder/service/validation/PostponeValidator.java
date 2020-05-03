@@ -9,7 +9,7 @@ import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.validation.context.ReminderTimeValidationContext;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.util.Locale;
 
@@ -18,10 +18,10 @@ public class PostponeValidator implements Validator<ReminderTimeValidationContex
 
     private LocalisationService localisationService;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Autowired
-    public PostponeValidator(LocalisationService localisationService, TimeCreator timeCreator) {
+    public PostponeValidator(LocalisationService localisationService, DateTimeService timeCreator) {
         this.localisationService = localisationService;
         this.timeCreator = timeCreator;
     }

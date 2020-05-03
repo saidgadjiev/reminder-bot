@@ -11,9 +11,7 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.friendship.FriendshipMessageBuilder;
 import ru.gadjini.reminder.service.friendship.FriendshipService;
-import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.reminder.message.MessageBuilder;
-import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
+import ru.gadjini.reminder.service.reminder.time.Time2TextService;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.ZoneId;
@@ -26,21 +24,19 @@ public class ChallengeMessageBuilder {
 
     private FriendshipMessageBuilder friendshipMessageBuilder;
 
-    private LocalisationService localisationService;
-
     private FriendshipService friendshipService;
 
-    private MessageBuilder messageBuilder;
+    private ChallengeLocalisationService messageBuilder;
 
-    private TimeBuilder timeBuilder;
+    private Time2TextService timeBuilder;
 
     private TgUserService userService;
 
     @Autowired
-    public ChallengeMessageBuilder(FriendshipMessageBuilder friendshipMessageBuilder, LocalisationService localisationService,
-                                   FriendshipService friendshipService, MessageBuilder messageBuilder, TimeBuilder timeBuilder, TgUserService userService) {
+    public ChallengeMessageBuilder(FriendshipMessageBuilder friendshipMessageBuilder,
+                                   FriendshipService friendshipService, ChallengeLocalisationService messageBuilder,
+                                   Time2TextService timeBuilder, TgUserService userService) {
         this.friendshipMessageBuilder = friendshipMessageBuilder;
-        this.localisationService = localisationService;
         this.friendshipService = friendshipService;
         this.messageBuilder = messageBuilder;
         this.timeBuilder = timeBuilder;
@@ -65,7 +61,7 @@ public class ChallengeMessageBuilder {
 
     public String getUserChallenges(List<Challenge> challenges, Locale locale) {
         if (challenges.isEmpty()) {
-            return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGES_EMPTY, locale);
+            return messageBuilder.getChallengesEmpty(locale);
         }
         StringBuilder message = new StringBuilder();
         int i = 1;
@@ -84,37 +80,28 @@ public class ChallengeMessageBuilder {
     public String getChallengeDetails(int requesterId, Challenge challenge, Locale locale) {
         ZoneId zoneId = userService.getTimeZone(requesterId);
 
-        StringBuilder message = new StringBuilder();
-        message
-                .append(messageBuilder.getChallengeDetails(getChallengeName(challenge.getReminder(), locale), locale)).append("\n")
-                .append(messageBuilder.getChallengeFinishedAt(challenge.getFinishedAt().withZoneSameInstant(zoneId), locale)).append("\n")
-                .append(messageBuilder.getChallengeCreator(challenge.getCreator(), locale)).append("\n")
-                .append(messageBuilder.getChallengeParticipants(locale)).append("\n")
-                .append(getParticipants(requesterId, challenge.getChallengeParticipants(), locale));
-
-        return message.toString();
+        return messageBuilder.getChallengeDetails(getChallengeName(challenge.getReminder(), locale), locale) + "\n" +
+                messageBuilder.getChallengeFinishedAt(challenge.getFinishedAt().withZoneSameInstant(zoneId), locale) + "\n" +
+                messageBuilder.getChallengeCreator(challenge.getCreator(), locale) + "\n" +
+                messageBuilder.getChallengeParticipants(locale) + "\n" +
+                getParticipants(requesterId, challenge.getChallengeParticipants(), locale);
     }
 
     public String getChallengeCreatedDetails(int requesterId, Challenge challenge, Locale locale) {
         ZoneId zoneId = userService.getTimeZone(requesterId);
 
-        StringBuilder message = new StringBuilder();
-        message
-                .append(messageBuilder.getChallengeCreated(getChallengeName(challenge.getReminder(), locale), locale)).append("\n")
-                .append(messageBuilder.getChallengeFinishedAt(challenge.getFinishedAt().withZoneSameInstant(zoneId), locale)).append("\n")
-                .append(messageBuilder.getChallengeCreator(challenge.getCreator(), locale)).append("\n")
-                .append(messageBuilder.getChallengeParticipants(locale)).append("\n")
-                .append(getParticipants(requesterId, challenge.getChallengeParticipants(), locale));
-
-        return message.toString();
+        return messageBuilder.getChallengeCreated(getChallengeName(challenge.getReminder(), locale), locale) + "\n" +
+                messageBuilder.getChallengeFinishedAt(challenge.getFinishedAt().withZoneSameInstant(zoneId), locale) + "\n" +
+                messageBuilder.getChallengeCreator(challenge.getCreator(), locale) + "\n" +
+                messageBuilder.getChallengeParticipants(locale) + "\n" +
+                getParticipants(requesterId, challenge.getChallengeParticipants(), locale);
     }
 
     public String getFriendsListWithChoseParticipantsInfo(List<TgUser> friends, Set<Integer> participants, Locale locale) {
         String friendsList = friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY,
                 MessagesProperties.MESSAGE_CHOOSE_PARTICIPANTS_HEADER, null, locale);
         if (participants.isEmpty()) {
-            return friendsList +
-                    "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_CHOOSE_PARTICIPANTS_FOOTER, locale);
+            return friendsList + "\n\n" + messageBuilder.getChooseParticipantsFooter(locale);
         }
         StringBuilder selectedParticipants = new StringBuilder();
 
@@ -128,16 +115,15 @@ public class ChallengeMessageBuilder {
         }
 
         return friendsList
-                + "\n\n" + localisationService.getMessage(MessagesProperties.MESSAGE_CHOSE_PARTICIPANTS, new Object[]{selectedParticipants.toString()}, locale)
-                + "\n" + localisationService.getMessage(MessagesProperties.MESSAGE_CHOOSE_PARTICIPANTS_FOOTER, locale);
+                + "\n\n" + messageBuilder.getChoseParticipants(selectedParticipants.toString(), locale)
+                + "\n" + messageBuilder.getChooseParticipantsFooter(locale);
     }
 
     public String getChallengeInvitation(Challenge challenge, int participantUserId, Locale locale) {
         String friendName = friendshipService.getFriendName(participantUserId, challenge.getCreatorId());
 
-        return localisationService.getMessage(
-                MessagesProperties.MESSAGE_CHALLENGE_INVITATION,
-                new Object[]{UserUtils.userLink(challenge.getCreatorId(), friendName), getChallengeName(challenge.getReminder(), locale)},
+        return messageBuilder.getChallengeInvitation(
+                UserUtils.userLink(challenge.getCreatorId(), friendName), getChallengeName(challenge.getReminder(), locale),
                 locale
         );
     }
@@ -166,13 +152,13 @@ public class ChallengeMessageBuilder {
         StringBuilder state = new StringBuilder();
         switch (challengeParticipant.getState()) {
             case WAITING:
-                state.append(" (").append(localisationService.getMessage(MessagesProperties.MESSAGE_PARTICIPANT_INVITATION_NOT_ACCEPTED_YET, locale)).append(")");
+                state.append(" (").append(messageBuilder.getInvitationNotAcceptedYet(locale)).append(")");
                 break;
             case ACCEPTED:
-                state.append("\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_TOTAL_SERIES, new Object[]{challengeParticipant.getReminder().getTotalSeries()}, locale));
+                state.append("\n").append(messageBuilder.getChallengeTotalSeries(challengeParticipant.getReminder().getTotalSeries(), locale));
                 break;
             case GAVE_UP:
-                state.append(" (").append(localisationService.getMessage(MessagesProperties.MESSAGE_PARTICIPANT_GAVE_UP, locale)).append(")");
+                state.append(" (").append(messageBuilder.getParticipantGaveUp(locale)).append(")");
                 break;
         }
 

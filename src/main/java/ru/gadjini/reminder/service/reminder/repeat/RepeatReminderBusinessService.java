@@ -16,7 +16,7 @@ import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.*;
@@ -33,13 +33,13 @@ public class RepeatReminderBusinessService {
 
     private CompletedReminderDao completedReminderDao;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     private ReminderNotificationService reminderNotificationService;
 
     @Autowired
     public RepeatReminderBusinessService(ReminderDao reminderDao, CompletedReminderDao completedReminderDao,
-                                         TimeCreator timeCreator, ReminderNotificationService reminderNotificationService) {
+                                         DateTimeService timeCreator, ReminderNotificationService reminderNotificationService) {
         this.reminderDao = reminderDao;
         this.completedReminderDao = completedReminderDao;
         this.timeCreator = timeCreator;

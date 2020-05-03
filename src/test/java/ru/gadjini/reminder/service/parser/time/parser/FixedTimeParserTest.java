@@ -18,7 +18,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
@@ -45,7 +45,7 @@ class FixedTimeParserTest {
     private DayOfWeekService dayOfWeekService;
 
     @MockBean
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @BeforeEach
     void setup() {

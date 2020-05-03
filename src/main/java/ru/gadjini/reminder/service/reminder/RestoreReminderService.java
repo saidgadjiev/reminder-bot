@@ -10,7 +10,7 @@ import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationSer
 import ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -25,12 +25,12 @@ public class RestoreReminderService {
 
     private RepeatReminderBusinessService repeatReminderBusinessService;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Inject
     public RestoreReminderService(ReminderNotificationService reminderNotificationService,
                                   RepeatReminderBusinessService repeatReminderBusinessService,
-                                  TimeCreator timeCreator) {
+                                  DateTimeService timeCreator) {
         this.reminderNotificationService = reminderNotificationService;
         this.repeatReminderBusinessService = repeatReminderBusinessService;
         this.timeCreator = timeCreator;

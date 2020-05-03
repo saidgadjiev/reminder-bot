@@ -7,7 +7,7 @@ import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.service.declension.TimesDeclensionService;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
+import ru.gadjini.reminder.service.reminder.time.Time2TextService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.UserUtils;
 
@@ -16,16 +16,16 @@ import java.util.List;
 import java.util.Locale;
 
 @Service
-public class MessageBuilder {
+public class ReminderLocalisationService {
 
     private LocalisationService localisationService;
 
-    private TimeBuilder timeBuilder;
+    private Time2TextService timeBuilder;
 
     private TimesDeclensionService timesDeclensionService;
 
     @Autowired
-    public MessageBuilder(LocalisationService localisationService, TimeBuilder timeBuilder, TimesDeclensionService timesDeclensionService) {
+    public ReminderLocalisationService(LocalisationService localisationService, Time2TextService timeBuilder, TimesDeclensionService timesDeclensionService) {
         this.localisationService = localisationService;
         this.timeBuilder = timeBuilder;
         this.timesDeclensionService = timesDeclensionService;
@@ -243,39 +243,23 @@ public class MessageBuilder {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REASON, new Object[]{reason}, locale);
     }
 
-    public String getChallengeCreator(TgUser creator, Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_CREATOR, new Object[]{UserUtils.userLink(creator)}, locale);
-    }
-
-    public String getChallengeFinishedAt(DateTime finishedAt, Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_FINISHED_AT, new Object[]{timeBuilder.time(finishedAt, locale)}, locale);
-    }
-
-    public String getChallengeParticipants(Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_PARTICIPANTS, locale);
-    }
-
-    public String getChallengeCreated(String challengeName, Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_CREATED, new Object[] {challengeName}, locale);
-    }
-
-    public String getChallengeDetails(String challengeName, Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE, new Object[] {challengeName}, locale);
-    }
-
-    public String getChallengeFinished(String challengeName, Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_FINISHED, new Object[] {challengeName}, locale);
-    }
-
-    public String getChallengeWinner(TgUser winner, int scores, Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_WINNER, new Object[] {UserUtils.userLink(winner), scores}, locale);
-    }
-
     public String getReminderChallenge(Locale locale) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_CHALLENGE_REMINDER_ICON, locale);
     }
 
     public String getSeriesToComplete(int currSeriesToComplete, int seriesToComplete, Locale locale) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_SERIES_TO_COMPLETE, new Object[] {currSeriesToComplete + " " + timesDeclensionService.getTimes(currSeriesToComplete), seriesToComplete}, locale);
+    }
+
+    public String getRemindersEmpty(Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDERS_EMPTY, locale);
+    }
+
+    public String getExpiredIcon(Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_EXPIRED_REMINDER_ICON, locale);
+    }
+
+    public String getSuppressNotificationsIcon(Locale locale) {
+        return localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_ICON, locale);
     }
 }

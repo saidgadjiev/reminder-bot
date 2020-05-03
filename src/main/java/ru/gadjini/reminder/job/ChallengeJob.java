@@ -12,7 +12,7 @@ import ru.gadjini.reminder.service.challenge.ChallengeBusinessService;
 import ru.gadjini.reminder.service.challenge.ChallengeMessageBuilder;
 import ru.gadjini.reminder.service.challenge.ChallengeService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
 @Profile("!" + BotConfiguration.PROFILE_TEST)
 public class ChallengeJob {
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     private ChallengeBusinessService businessService;
 
@@ -32,7 +32,7 @@ public class ChallengeJob {
     private ChallengeService challengeService;
 
     @Autowired
-    public ChallengeJob(TimeCreator timeCreator, ChallengeBusinessService businessService, MessageService messageService, ChallengeMessageBuilder messageBuilder, ChallengeService challengeService) {
+    public ChallengeJob(DateTimeService timeCreator, ChallengeBusinessService businessService, MessageService messageService, ChallengeMessageBuilder messageBuilder, ChallengeService challengeService) {
         this.timeCreator = timeCreator;
         this.businessService = businessService;
         this.messageService = messageService;

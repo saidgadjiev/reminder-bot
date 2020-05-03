@@ -11,7 +11,7 @@ import ru.gadjini.reminder.service.declension.TimeDeclensionService;
 import ru.gadjini.reminder.service.declension.TimesDeclensionService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.LocalDate;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Service
-public class TimeBuilder {
+public class Time2TextService {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -33,13 +33,13 @@ public class TimeBuilder {
 
     private final TimeDeclensionProvider timeDeclensionProvider;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     private TimesDeclensionService timesDeclensionService;
 
     @Autowired
-    public TimeBuilder(LocalisationService localisationService, TimeDeclensionProvider timeDeclensionProvider,
-                       TimeCreator timeCreator, TimesDeclensionService timesDeclensionService) {
+    public Time2TextService(LocalisationService localisationService, TimeDeclensionProvider timeDeclensionProvider,
+                            DateTimeService timeCreator, TimesDeclensionService timesDeclensionService) {
         this.localisationService = localisationService;
         this.timeDeclensionProvider = timeDeclensionProvider;
         this.timeCreator = timeCreator;

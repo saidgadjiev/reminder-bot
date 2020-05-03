@@ -32,7 +32,7 @@ import ru.gadjini.reminder.service.validation.context.TimeValidationContext;
 import ru.gadjini.reminder.service.validation.context.ZonedDateTimeValidationContext;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -59,7 +59,7 @@ public class ReminderRequestService {
 
     private ReminderRequestExtractor requestExtractor;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     private ReminderBusinessService reminderBusinessService;
 
@@ -68,7 +68,7 @@ public class ReminderRequestService {
     @Autowired
     public ReminderRequestService(TimeRequestService timeRequestService, RepeatReminderService repeatReminderService,
                                   @Qualifier("chain") ReminderRequestExtractor requestExtractor,
-                                  TimeCreator timeCreator, ReminderBusinessService reminderBusinessService,
+                                  DateTimeService timeCreator, ReminderBusinessService reminderBusinessService,
                                   RepeatReminderBusinessService repeatReminderBusinessService) {
         this.timeRequestService = timeRequestService;
         this.repeatReminderService = repeatReminderService;

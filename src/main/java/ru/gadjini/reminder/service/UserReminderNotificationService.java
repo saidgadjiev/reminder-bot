@@ -15,7 +15,7 @@ import ru.gadjini.reminder.service.parser.RequestParser;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
 import ru.gadjini.reminder.service.validation.ValidatorType;
 import ru.gadjini.reminder.service.validation.context.TimeValidationContext;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -36,12 +36,12 @@ public class UserReminderNotificationService {
 
     private ValidatorFactory validatorFactory;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Autowired
     public UserReminderNotificationService(@Qualifier("redis") UserReminderNotificationDao dao,
                                            LocalisationService localisationService,
-                                           RequestParser requestParser, TimeCreator timeCreator) {
+                                           RequestParser requestParser, DateTimeService timeCreator) {
         this.dao = dao;
         this.localisationService = localisationService;
         this.requestParser = requestParser;

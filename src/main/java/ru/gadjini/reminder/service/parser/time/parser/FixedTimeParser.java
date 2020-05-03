@@ -8,7 +8,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.api.LexemsConsumer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.*;
 import java.time.format.TextStyle;
@@ -35,10 +35,10 @@ public class FixedTimeParser {
 
     private final LexemsConsumer lexemsConsumer;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     FixedTimeParser(LocalisationService localisationService, Locale locale, LexemsConsumer lexemsConsumer,
-                    ZoneId zoneId, DayOfWeekService dayOfWeekService, TimeCreator timeCreator) {
+                    ZoneId zoneId, DayOfWeekService dayOfWeekService, DateTimeService timeCreator) {
         this.tomorrow = localisationService.getMessage(MessagesProperties.TOMORROW, locale);
         this.dayAfterTomorrow = localisationService.getMessage(MessagesProperties.DAY_AFTER_TOMORROW, locale);
         this.typeUntil = localisationService.getMessage(MessagesProperties.FIXED_TIME_TYPE_UNTIL, locale);

@@ -5,7 +5,7 @@ import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.jooq.datatype.RepeatTimeRecord;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -253,7 +253,7 @@ public class Reminder {
         return repeatRemindAts.get(currRepeatIndex);
     }
 
-    public List<RepeatTime> getRepeatRemindAtsInReceiverZone(TimeCreator timeCreator) {
+    public List<RepeatTime> getRepeatRemindAtsInReceiverZone(DateTimeService timeCreator) {
         return repeatRemindAts == null ? null : timeCreator.withZone(repeatRemindAts, receiver.getZone());
     }
 
