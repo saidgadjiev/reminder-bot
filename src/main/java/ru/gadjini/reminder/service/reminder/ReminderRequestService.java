@@ -208,7 +208,7 @@ public class ReminderRequestService {
         }
 
         Time newReminderTimeInReceiverZone = timeRequestService.parseTime(timeText, oldReminder.getReceiver().getZone(), oldReminder.getReceiver().getLocale());
-        validatorFactory.getValidator(ValidatorType.REMINDER_TIME_VALIDATOR).validate(new TimeValidationContext().time(newReminderTimeInReceiverZone).locale(oldReminder.getReceiver().getLocale()));
+        validatorFactory.getValidator(ValidatorType.REMINDER_TIME_VALIDATOR).validate(new ReminderTimeValidationContext().time(newReminderTimeInReceiverZone).locale(oldReminder.getReceiver().getLocale()));
 
         Reminder newReminder = new Reminder(oldReminder);
         Reminder changed;
