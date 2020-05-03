@@ -13,11 +13,11 @@ import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.model.CreateChallengeRequest;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
-import ru.gadjini.reminder.service.reminder.ChallengeReminderService;
+import ru.gadjini.reminder.service.reminder.challenge.ChallengeReminderService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class ChallengeService {
 
     private ChallengeParticipantDao challengeParticipantDao;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     private ReminderRequestService reminderRequestService;
 
@@ -40,7 +40,7 @@ public class ChallengeService {
 
     @Autowired
     public ChallengeService(ChallengeDao challengeDao, ChallengeParticipantDao challengeParticipantDao,
-                            TimeCreator timeCreator, ReminderRequestService reminderRequestService,
+                            DateTimeService timeCreator, ReminderRequestService reminderRequestService,
                             ChallengeReminderService challengeReminderService) {
         this.challengeDao = challengeDao;
         this.challengeParticipantDao = challengeParticipantDao;

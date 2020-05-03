@@ -19,7 +19,7 @@ import ru.gadjini.reminder.service.keyboard.reply.ReplyKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.time.DateTimeFormats;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.ZoneId;
 import java.time.format.TextStyle;
@@ -44,7 +44,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
 
     private LocalisationService localisationService;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Autowired
     public ChangeTimezoneCommand(LocalisationService localisationService,
@@ -52,7 +52,7 @@ public class ChangeTimezoneCommand implements KeyboardBotCommand, NavigableBotCo
                                  TgUserService tgUserService,
                                  TimezoneService timezoneService,
                                  CurrReplyKeyboard replyKeyboardService,
-                                 TimeCreator timeCreator) {
+                                 DateTimeService timeCreator) {
         this.localisationService = localisationService;
         this.messageService = messageService;
         this.tgUserService = tgUserService;

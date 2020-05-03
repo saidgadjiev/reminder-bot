@@ -15,8 +15,7 @@ import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.ReminderService;
-import ru.gadjini.reminder.service.reminder.RepeatReminderService;
+import ru.gadjini.reminder.service.reminder.simple.ReminderService;
 import ru.gadjini.reminder.util.KeyboardCustomizer;
 import ru.gadjini.reminder.util.TextUtils;
 
@@ -24,6 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.ReminderActionResult;
 
 @Service
 public class ReminderMessageSender {
@@ -176,7 +177,7 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendRepeatReminderCompleted(RepeatReminderService.ReminderActionResult reminderActionResult) {
+    public void sendRepeatReminderCompleted(ReminderActionResult reminderActionResult) {
         Reminder reminder = reminderActionResult.getReminder();
         if (reminder.hasReceiverMessage()) {
             messageService.deleteMessage(reminder.getReceiverId(), reminder.getReceiverMessageId());
@@ -204,7 +205,7 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendRepeatReminderCompletedFromList(int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, RepeatReminderService.ReminderActionResult reminderActionResult) {
+    public void sendRepeatReminderCompletedFromList(int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, ReminderActionResult reminderActionResult) {
         Reminder reminder = reminderActionResult.getReminder();
         if (reminder.isMySelf()) {
             messageService.editMessageAsync(

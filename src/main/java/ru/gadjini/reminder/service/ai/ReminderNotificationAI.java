@@ -4,7 +4,7 @@ import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.UserReminderNotification;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.*;
 
@@ -13,10 +13,10 @@ public class ReminderNotificationAI {
 
     private static final int MINUTE_DIFF = 20;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Autowired
-    public ReminderNotificationAI(TimeCreator timeCreator) {
+    public ReminderNotificationAI(DateTimeService timeCreator) {
         this.timeCreator = timeCreator;
     }
 

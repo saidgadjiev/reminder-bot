@@ -10,7 +10,7 @@ import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.reminder.time.ReminderNotificationTimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.Locale;
 @Service
 public class ReminderNotificationMessageBuilder {
 
-    private MessageBuilder messageBuilder;
+    private ReminderLocalisationService messageBuilder;
 
     private ReminderNotificationTimeBuilder reminderNotificationTimeBuilder;
 
@@ -27,11 +27,11 @@ public class ReminderNotificationMessageBuilder {
 
     private LocalisationService localisationService;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Autowired
-    public ReminderNotificationMessageBuilder(MessageBuilder messageBuilder, ReminderNotificationTimeBuilder reminderNotificationTimeBuilder,
-                                              ReminderMessageBuilder reminderMessageBuilder, LocalisationService localisationService, TimeCreator timeCreator) {
+    public ReminderNotificationMessageBuilder(ReminderLocalisationService messageBuilder, ReminderNotificationTimeBuilder reminderNotificationTimeBuilder,
+                                              ReminderMessageBuilder reminderMessageBuilder, LocalisationService localisationService, DateTimeService timeCreator) {
         this.messageBuilder = messageBuilder;
         this.reminderNotificationTimeBuilder = reminderNotificationTimeBuilder;
         this.reminderMessageBuilder = reminderMessageBuilder;

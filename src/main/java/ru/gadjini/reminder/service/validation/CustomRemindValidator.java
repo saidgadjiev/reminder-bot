@@ -10,7 +10,7 @@ import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.validation.context.ReminderTimeValidationContext;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.util.List;
 import java.util.Locale;
@@ -20,10 +20,10 @@ public class CustomRemindValidator implements Validator<ReminderTimeValidationCo
 
     private LocalisationService localisationService;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Autowired
-    public CustomRemindValidator(LocalisationService localisationService, TimeCreator timeCreator) {
+    public CustomRemindValidator(LocalisationService localisationService, DateTimeService timeCreator) {
         this.localisationService = localisationService;
         this.timeCreator = timeCreator;
     }

@@ -21,8 +21,9 @@ import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.simple.ReminderBusinessService;
+import ru.gadjini.reminder.service.reminder.simple.ReminderService;
 import ru.gadjini.reminder.util.KeyboardCustomizer;
 
 import java.util.Locale;
@@ -35,6 +36,8 @@ public class CancelReminderCommand implements CallbackBotCommand, NavigableCallb
     private CommandStateService commandStateService;
 
     private ReminderService reminderService;
+
+    private ReminderBusinessService reminderBusinessService;
 
     private ReminderMessageSender reminderMessageSender;
 
@@ -50,9 +53,10 @@ public class CancelReminderCommand implements CallbackBotCommand, NavigableCallb
 
     @Autowired
     public CancelReminderCommand(CommandStateService commandStateService, ReminderService reminderService,
-                                 ReminderMessageSender reminderMessageSender, TgUserService userService,
+                                 ReminderBusinessService reminderBusinessService, ReminderMessageSender reminderMessageSender, TgUserService userService,
                                  MessageService messageService, LocalisationService localisationService, InlineKeyboardService inlineKeyboardService) {
         this.commandStateService = commandStateService;
+        this.reminderBusinessService = reminderBusinessService;
         this.userService = userService;
         this.messageService = messageService;
         this.localisationService = localisationService;
@@ -133,7 +137,7 @@ public class CancelReminderCommand implements CallbackBotCommand, NavigableCallb
         CallbackRequest callbackRequest = stateData.getCallbackRequest();
         Locale locale = new Locale(stateData.getReminder().getReceiver().getLanguageCode());
 
-        Reminder reminder = reminderService.cancel(stateData.getReminder().getId());
+        Reminder reminder = reminderBusinessService.cancel(stateData.getReminder().getId());
         callbackCommandNavigator.silentPop(chatId);
         if (reminder == null) {
             reminderMessageSender.sendReminderNotFound(chatId, callbackRequest.getMessageId(), locale);

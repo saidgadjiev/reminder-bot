@@ -9,20 +9,20 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService;
 import ru.gadjini.reminder.util.KeyboardCustomizer;
 
 @Component
 public class SkipRepeatReminderCommand implements CallbackBotCommand {
 
-    private RepeatReminderService repeatReminderService;
+    private RepeatReminderBusinessService reminderBusinessService;
 
     private ReminderMessageSender reminderMessageSender;
 
     @Autowired
-    public SkipRepeatReminderCommand(RepeatReminderService repeatReminderService, ReminderMessageSender reminderMessageSender) {
-        this.repeatReminderService = repeatReminderService;
+    public SkipRepeatReminderCommand(RepeatReminderBusinessService reminderBusinessService, ReminderMessageSender reminderMessageSender) {
+        this.reminderBusinessService = reminderBusinessService;
         this.reminderMessageSender = reminderMessageSender;
     }
 
@@ -33,7 +33,7 @@ public class SkipRepeatReminderCommand implements CallbackBotCommand {
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        Reminder reminder = repeatReminderService.skip(requestParams.getInt(Arg.REMINDER_ID.getKey()));
+        Reminder reminder = reminderBusinessService.skip(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         boolean isCalledFromReminderDetails = new KeyboardCustomizer(callbackQuery.getMessage().getReplyMarkup()).hasButton(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME);
         if (isCalledFromReminderDetails) {

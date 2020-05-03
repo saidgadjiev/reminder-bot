@@ -3,19 +3,19 @@ package ru.gadjini.reminder.service.reminder.time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.util.Locale;
 
 @Service
 public class ReminderTimeBuilder {
 
-    private TimeBuilder timeBuilder;
+    private Time2TextService timeBuilder;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Autowired
-    public ReminderTimeBuilder(TimeBuilder timeBuilder, TimeCreator timeCreator) {
+    public ReminderTimeBuilder(Time2TextService timeBuilder, DateTimeService timeCreator) {
         this.timeBuilder = timeBuilder;
         this.timeCreator = timeCreator;
     }

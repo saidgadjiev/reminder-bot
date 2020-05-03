@@ -11,7 +11,7 @@ import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
-import ru.gadjini.reminder.service.reminder.ChallengeReminderService;
+import ru.gadjini.reminder.service.reminder.challenge.ChallengeReminderService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 
 import java.time.LocalDateTime;

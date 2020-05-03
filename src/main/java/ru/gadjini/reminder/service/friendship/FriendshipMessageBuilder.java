@@ -6,7 +6,7 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTimeFormats;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 import ru.gadjini.reminder.util.UserUtils;
 
 import java.time.format.TextStyle;
@@ -18,9 +18,9 @@ public class FriendshipMessageBuilder {
 
     private LocalisationService localisationService;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
-    public FriendshipMessageBuilder(LocalisationService localisationService, TimeCreator timeCreator) {
+    public FriendshipMessageBuilder(LocalisationService localisationService, DateTimeService timeCreator) {
         this.localisationService = localisationService;
         this.timeCreator = timeCreator;
     }

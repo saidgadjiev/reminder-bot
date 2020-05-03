@@ -17,7 +17,7 @@ import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderLexem;
 import ru.gadjini.reminder.service.parser.reminder.lexer.ReminderToken;
 import ru.gadjini.reminder.service.parser.time.lexer.RepeatTimeToken;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeToken;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -31,7 +31,7 @@ import java.util.Locale;
 import static ru.gadjini.reminder.service.parser.time.lexer.TimeToken.REPEAT;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class, TimeCreator.class})
+@ContextConfiguration(classes = {LocalisationService.class, DayOfWeekService.class, DateTimeService.class})
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 class ReminderRequestParserTest {
 
@@ -44,7 +44,7 @@ class ReminderRequestParserTest {
     private DayOfWeekService dayOfWeekService;
 
     @Autowired
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Test
     void fixedTime() {

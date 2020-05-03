@@ -14,10 +14,10 @@ import java.util.Locale;
 @Service
 public class ReminderNotificationTimeBuilder {
 
-    private TimeBuilder timeBuilder;
+    private Time2TextService timeBuilder;
 
     @Autowired
-    public ReminderNotificationTimeBuilder(TimeBuilder timeBuilder) {
+    public ReminderNotificationTimeBuilder(Time2TextService timeBuilder) {
         this.timeBuilder = timeBuilder;
     }
 

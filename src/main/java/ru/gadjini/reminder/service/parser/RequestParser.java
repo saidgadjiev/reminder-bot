@@ -13,7 +13,7 @@ import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequestParser;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
 import ru.gadjini.reminder.service.parser.time.parser.TimeParser;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.ZoneId;
 import java.util.List;
@@ -30,13 +30,13 @@ public class RequestParser {
 
     private DayOfWeekService dayOfWeekService;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Autowired
     public RequestParser(LocalisationService localisationService,
                          ReminderRequestLexerConfig reminderRequestLexerConfig,
                          TimeLexerConfig timeLexerConfig,
-                         DayOfWeekService dayOfWeekService, TimeCreator timeCreator) {
+                         DayOfWeekService dayOfWeekService, DateTimeService timeCreator) {
         this.localisationService = localisationService;
         this.reminderRequestLexerConfig = reminderRequestLexerConfig;
         this.timeLexerConfig = timeLexerConfig;

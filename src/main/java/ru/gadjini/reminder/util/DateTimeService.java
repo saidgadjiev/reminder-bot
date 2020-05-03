@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class TimeCreator {
+public class DateTimeService {
 
     public ZonedDateTime zonedDateTimeNow(ZoneId zoneId) {
         return ZonedDateTime.now(zoneId).withSecond(0).withNano(0);
@@ -82,10 +82,10 @@ public class TimeCreator {
 
     public UserReminderNotification withZone(UserReminderNotification notification, ZoneId target) {
         UserReminderNotification userReminderNotification = new UserReminderNotification(target);
+        userReminderNotification.setType(notification.getType());
         userReminderNotification.setMinutes(notification.getMinutes());
         userReminderNotification.setHours(notification.getHours());
         userReminderNotification.setUser(notification.getUser());
-        userReminderNotification.setType(notification.getType());
         userReminderNotification.setDays(notification.getDays());
         if (notification.getTime() != null) {
             LocalTime time = ZonedDateTime.of(localDateNow(notification.getZoneId()), notification.getTime(), notification.getZoneId()).withZoneSameInstant(target).toLocalTime();

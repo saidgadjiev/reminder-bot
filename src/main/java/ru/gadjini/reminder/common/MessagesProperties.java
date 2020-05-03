@@ -463,7 +463,7 @@ public class MessagesProperties {
 
     public static final String MESSAGE_POSTPONE_REASON = "message.postpone.reason";
 
-    public static final String SUPPRESS_NOTIFICATIONS_EMOJI = "suppress.notifications.emoji";
+    public static final String SUPPRESS_NOTIFICATIONS_ICON = "suppress.notifications.icon";
 
     public static final String SUPPRESS_NOTIFICATIONS_COMMAND_DESCRIPTION = "suppress.notifications.command.description";
 

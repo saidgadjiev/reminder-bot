@@ -6,17 +6,17 @@ import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.validation.context.ZonedDateTimeValidationContext;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 @Service
 public class PastTimeValidator implements Validator<ZonedDateTimeValidationContext> {
 
     private LocalisationService localisationService;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Autowired
-    public PastTimeValidator(LocalisationService localisationService, TimeCreator timeCreator) {
+    public PastTimeValidator(LocalisationService localisationService, DateTimeService timeCreator) {
         this.localisationService = localisationService;
         this.timeCreator = timeCreator;
     }

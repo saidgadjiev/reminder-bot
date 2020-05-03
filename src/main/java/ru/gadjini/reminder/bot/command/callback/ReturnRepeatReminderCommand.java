@@ -8,18 +8,21 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService;
+
+import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.ActionResult;
+import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.ReminderActionResult;
 
 @Component
 public class ReturnRepeatReminderCommand implements CallbackBotCommand {
 
-    private RepeatReminderService repeatReminderService;
+    private RepeatReminderBusinessService repeatReminderService;
 
     private ReminderMessageSender messageSender;
 
     @Autowired
-    public ReturnRepeatReminderCommand(RepeatReminderService repeatReminderService, ReminderMessageSender messageSender) {
+    public ReturnRepeatReminderCommand(RepeatReminderBusinessService repeatReminderService, ReminderMessageSender messageSender) {
         this.repeatReminderService = repeatReminderService;
         this.messageSender = messageSender;
     }
@@ -31,9 +34,9 @@ public class ReturnRepeatReminderCommand implements CallbackBotCommand {
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        RepeatReminderService.ReminderActionResult returnReminderResult = repeatReminderService.returnReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
+        ReminderActionResult returnReminderResult = repeatReminderService.returnReminder(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
-        if (returnReminderResult.getActionResult() == RepeatReminderService.ActionResult.NOT_RETURNED) {
+        if (returnReminderResult.getActionResult() == ActionResult.NOT_RETURNED) {
             messageSender.sendRepeatReminderCantBeReturnedFromList(
                     callbackQuery.getMessage().getChatId(),
                     callbackQuery.getMessage().getMessageId(),

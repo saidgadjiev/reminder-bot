@@ -4,43 +4,46 @@ import org.apache.commons.lang3.StringUtils;
 import org.jooq.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.time.ReminderTimeBuilder;
-import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
+import ru.gadjini.reminder.service.reminder.time.Time2TextService;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 
+import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.ActionResult;
+import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.ReminderActionResult;
+
 @Service
 public class ReminderMessageBuilder {
 
-    private MessageBuilder messageBuilder;
+    private ReminderLocalisationService messageBuilder;
 
-    private TimeBuilder timeBuilder;
+    private Time2TextService timeBuilder;
 
     private ReminderTimeBuilder reminderTimeBuilder;
 
+    private DateTimeService timeCreator;
+
     private LocalisationService localisationService;
 
-    private TimeCreator timeCreator;
-
     @Autowired
-    public ReminderMessageBuilder(MessageBuilder messageBuilder, TimeBuilder timeBuilder, ReminderTimeBuilder reminderTimeBuilder, LocalisationService localisationService, TimeCreator timeCreator) {
+    public ReminderMessageBuilder(ReminderLocalisationService messageBuilder, Time2TextService timeBuilder,
+                                  ReminderTimeBuilder reminderTimeBuilder, DateTimeService timeCreator,
+                                  LocalisationService localisationService) {
         this.messageBuilder = messageBuilder;
         this.timeBuilder = timeBuilder;
         this.reminderTimeBuilder = reminderTimeBuilder;
-        this.localisationService = localisationService;
         this.timeCreator = timeCreator;
+        this.localisationService = localisationService;
     }
 
     public String getReminderMessage(Reminder reminder) {
@@ -157,9 +160,9 @@ public class ReminderMessageBuilder {
         return messageBuilder.getReminderCompleted(reminder.getText(), reminder.getReceiver().getLocale());
     }
 
-    public String getMySelfRepeatReminderCompleted(RepeatReminderService.ReminderActionResult reminderActionResult) {
+    public String getMySelfRepeatReminderCompleted(ReminderActionResult reminderActionResult) {
         Reminder reminder = reminderActionResult.getReminder();
-        if (reminderActionResult.getActionResult() == RepeatReminderService.ActionResult.CURR_SERIES_TO_COMPLETE_CHANGED) {
+        if (reminderActionResult.getActionResult() == ActionResult.CURR_SERIES_TO_COMPLETE_CHANGED) {
             return getReminderMessage(reminder, new ReminderMessageBuilder.ReminderMessageConfig().receiverId(reminder.getReceiverId()));
         }
         StringBuilder message = new StringBuilder();
@@ -306,7 +309,7 @@ public class ReminderMessageBuilder {
             text.append(localisationService.getMessage(header, locale)).append("\n\n");
         }
         if (reminders.isEmpty()) {
-            text.append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDERS_EMPTY, locale));
+            text.append(messageBuilder.getRemindersEmpty(locale));
 
             return text.toString();
         }
@@ -557,13 +560,13 @@ public class ReminderMessageBuilder {
         List<String> icons = new ArrayList<>();
 
         if (!reminder.isRepeatable() && isExpired(reminder.getRemindAt())) {
-            icons.add(localisationService.getMessage(MessagesProperties.MESSAGE_EXPIRED_REMINDER_ICON, locale));
+            icons.add(messageBuilder.getExpiredIcon(locale));
         }
         if (reminder.getChallengeId() != null) {
             icons.add(messageBuilder.getReminderChallenge(locale));
         }
         if (reminder.isSuppressNotifications() && requesterId == reminder.getReceiverId()) {
-            icons.add(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_EMOJI, locale));
+            icons.add(messageBuilder.getSuppressNotificationsIcon(locale));
         }
 
         return icons;

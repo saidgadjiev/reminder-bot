@@ -18,8 +18,12 @@ import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
+import ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService;
+import ru.gadjini.reminder.service.reminder.repeat.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestContext;
 import ru.gadjini.reminder.service.reminder.request.ReminderRequestExtractor;
+import ru.gadjini.reminder.service.reminder.simple.ReminderBusinessService;
+import ru.gadjini.reminder.service.reminder.simple.ReminderService;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
 import ru.gadjini.reminder.service.validation.ValidatorType;
 import ru.gadjini.reminder.service.validation.context.ReminderRequestValidationContext;
@@ -28,7 +32,7 @@ import ru.gadjini.reminder.service.validation.context.TimeValidationContext;
 import ru.gadjini.reminder.service.validation.context.ZonedDateTimeValidationContext;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -39,6 +43,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.RemindAtCandidate;
 
 @Service
 public class ReminderRequestService {
@@ -53,16 +59,23 @@ public class ReminderRequestService {
 
     private ReminderRequestExtractor requestExtractor;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
+
+    private ReminderBusinessService reminderBusinessService;
+
+    private RepeatReminderBusinessService repeatReminderBusinessService;
 
     @Autowired
     public ReminderRequestService(TimeRequestService timeRequestService, RepeatReminderService repeatReminderService,
                                   @Qualifier("chain") ReminderRequestExtractor requestExtractor,
-                                  TimeCreator timeCreator) {
+                                  DateTimeService timeCreator, ReminderBusinessService reminderBusinessService,
+                                  RepeatReminderBusinessService repeatReminderBusinessService) {
         this.timeRequestService = timeRequestService;
         this.repeatReminderService = repeatReminderService;
         this.requestExtractor = requestExtractor;
         this.timeCreator = timeCreator;
+        this.reminderBusinessService = reminderBusinessService;
+        this.repeatReminderBusinessService = repeatReminderBusinessService;
     }
 
     @Autowired
@@ -231,7 +244,7 @@ public class ReminderRequestService {
         if (!reminder.getRemindAt().hasTime()) {
             remindAtInReceiverZone.time(null);
         }
-        Reminder newReminder = reminderService.postponeReminder(reminder.getId(), reminder.getReceiverId(), remindAtInReceiverZone);
+        Reminder newReminder = reminderBusinessService.postponeReminder(reminder.getId(), reminder.getReceiverId(), remindAtInReceiverZone);
         newReminder.setReceiver(reminder.getReceiver());
 
         return new UpdateReminderResult(reminder, newReminder);
@@ -256,7 +269,7 @@ public class ReminderRequestService {
             reminder.setInitialRemindAt(remindAt);
         } else {
             reminder.setRepeatRemindAts(timeCreator.withZone(time.getRepeatTimes(), ZoneOffset.UTC));
-            RepeatReminderService.RemindAtCandidate firstRemindAtInReceiverZone = repeatReminderService.getFirstRemindAt(reminder.getRepeatRemindAtsInReceiverZone(timeCreator));
+            RemindAtCandidate firstRemindAtInReceiverZone = repeatReminderBusinessService.getFirstRemindAt(reminder.getRepeatRemindAtsInReceiverZone(timeCreator));
             reminder.setRemindAt(firstRemindAtInReceiverZone.getRemindAt() != null ? firstRemindAtInReceiverZone.getRemindAt().withZoneSameInstant(ZoneOffset.UTC) : null);
             reminder.setCurrRepeatIndex(firstRemindAtInReceiverZone.getIndex());
             reminder.setCurrSeriesToComplete(firstRemindAtInReceiverZone.getCurrentSeriesToComplete());

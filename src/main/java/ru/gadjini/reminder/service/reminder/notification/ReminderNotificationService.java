@@ -8,7 +8,7 @@ import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.domain.jooq.ReminderNotificationTable;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
-import ru.gadjini.reminder.util.TimeCreator;
+import ru.gadjini.reminder.util.DateTimeService;
 import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.*;
@@ -22,10 +22,10 @@ public class ReminderNotificationService {
 
     private ReminderNotificationDao reminderNotificationDao;
 
-    private TimeCreator timeCreator;
+    private DateTimeService timeCreator;
 
     @Autowired
-    public ReminderNotificationService(ReminderNotificationDao reminderNotificationDao, TimeCreator timeCreator) {
+    public ReminderNotificationService(ReminderNotificationDao reminderNotificationDao, DateTimeService timeCreator) {
         this.reminderNotificationDao = reminderNotificationDao;
         this.timeCreator = timeCreator;
     }
@@ -40,10 +40,6 @@ public class ReminderNotificationService {
 
     public void deleteReminderNotifications(int reminderId) {
         reminderNotificationDao.delete(ReminderNotificationTable.TABLE.REMINDER_ID.eq(reminderId));
-    }
-
-    public void deleteReminderNotificationsByReceiver(int receiverId) {
-        reminderNotificationDao.deleteByReceiverId(receiverId);
     }
 
     public void deleteCustomReminderNotifications(int reminderId) {
@@ -81,32 +77,6 @@ public class ReminderNotificationService {
         }
     }
 
-    private ReminderNotification getBigInterval(RepeatTime repeatTime) {
-        ZonedDateTime now = timeCreator.zonedDateTimeNow(repeatTime.getZoneId());
-        ZonedDateTime repeatAt = now.with(repeatTime.getTime());
-
-        if (repeatAt.isBefore(now)) {
-            repeatAt = JodaTimeUtils.plus(repeatAt, repeatTime.getInterval());
-        }
-
-        return intervalReminderTime(repeatAt.toLocalDate(), repeatTime.getInterval(), repeatTime.getTime());
-    }
-
-    private ReminderNotification getEveryWeekly(RepeatTime repeatTime) {
-        ZonedDateTime now = timeCreator.zonedDateTimeNow(repeatTime.getZoneId());
-        ZonedDateTime repeatReminder = now.with(TemporalAdjusters.nextOrSame(repeatTime.getDayOfWeek())).with(repeatTime.getTime());
-
-        return intervalReminderTime(repeatReminder.toLocalDate(), repeatTime.getInterval(), repeatTime.getTime());
-    }
-
-    public ReminderNotification intervalReminderTime(LocalDate repeatAt, Period period, LocalTime localTime) {
-        ReminderNotification reminderNotification = ReminderNotification.repeatTime();
-        reminderNotification.setLastReminderAt(ZonedDateTime.of(JodaTimeUtils.minus(repeatAt, period), localTime, ZoneOffset.UTC));
-        reminderNotification.setDelayTime(period);
-
-        return reminderNotification;
-    }
-
     public ReminderNotification intervalReminderTime(ZonedDateTime remindAt, Period interval) {
         ReminderNotification reminderNotification = ReminderNotification.repeatTime();
         reminderNotification.setLastReminderAt(remindAt);
@@ -136,5 +106,31 @@ public class ReminderNotificationService {
         reminderNotification.setDelayTime(period);
 
         return reminderNotification;
+    }
+
+    private ReminderNotification intervalReminderTime(LocalDate repeatAt, Period period, LocalTime localTime) {
+        ReminderNotification reminderNotification = ReminderNotification.repeatTime();
+        reminderNotification.setLastReminderAt(ZonedDateTime.of(JodaTimeUtils.minus(repeatAt, period), localTime, ZoneOffset.UTC));
+        reminderNotification.setDelayTime(period);
+
+        return reminderNotification;
+    }
+
+    private ReminderNotification getBigInterval(RepeatTime repeatTime) {
+        ZonedDateTime now = timeCreator.zonedDateTimeNow(repeatTime.getZoneId());
+        ZonedDateTime repeatAt = now.with(repeatTime.getTime());
+
+        if (repeatAt.isBefore(now)) {
+            repeatAt = JodaTimeUtils.plus(repeatAt, repeatTime.getInterval());
+        }
+
+        return intervalReminderTime(repeatAt.toLocalDate(), repeatTime.getInterval(), repeatTime.getTime());
+    }
+
+    private ReminderNotification getEveryWeekly(RepeatTime repeatTime) {
+        ZonedDateTime now = timeCreator.zonedDateTimeNow(repeatTime.getZoneId());
+        ZonedDateTime repeatReminder = now.with(TemporalAdjusters.nextOrSame(repeatTime.getDayOfWeek())).with(repeatTime.getTime());
+
+        return intervalReminderTime(repeatReminder.toLocalDate(), repeatTime.getInterval(), repeatTime.getTime());
     }
 }
