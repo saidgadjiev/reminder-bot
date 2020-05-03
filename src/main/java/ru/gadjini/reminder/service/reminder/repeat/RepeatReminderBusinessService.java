@@ -160,11 +160,8 @@ public class RepeatReminderBusinessService {
 
     public RepeatReminderBusinessService.RemindAtCandidate getFirstRemindAt(List<RepeatTime> repeatTimes) {
         DateTime firstRemindAt = getFirstRemindAt(repeatTimes.get(0));
-        Integer index = null;
+        int index = 0;
         Integer currentSeriesToComplete = repeatTimes.get(0).getSeriesToComplete();
-        if (firstRemindAt != null) {
-            index = 0;
-        }
 
         if (firstRemindAt != null && repeatTimes.size() > 1) {
             for (int i = 1; i < repeatTimes.size(); ++i) {
