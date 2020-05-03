@@ -82,9 +82,11 @@ public class ReminderTimeValidator implements Validator<ReminderTimeValidationCo
 
     private void validate(Integer challengeId, List<RepeatTime> repeatTimes, Locale locale) {
         if (challengeId == null) {
-            for (RepeatTime repeatTime : repeatTimes) {
-                if (repeatTime.isEmpty()) {
-                    throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
+            if (repeatTimes.size() > 1) {
+                for (RepeatTime repeatTime : repeatTimes) {
+                    if (repeatTime.isEmpty()) {
+                        throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
+                    }
                 }
             }
         } else {
