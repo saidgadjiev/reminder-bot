@@ -79,9 +79,6 @@ public class RepeatReminderService {
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setCreatorMapping(new Mapping())
         );
-        toComplete.setTotalSeries(toComplete.getTotalSeries() + 1);
-        toComplete.setCurrentSeries(toComplete.getCurrentSeries() + 1);
-        toComplete.setMaxSeries(Math.max(toComplete.getMaxSeries(), toComplete.getCurrentSeries()));
         if (toComplete.isRepeatableWithTime()) {
             completedReminderDao.create(toComplete);
         }
@@ -90,6 +87,10 @@ public class RepeatReminderService {
         if (nextResult == ActionResult.CURR_SERIES_TO_COMPLETE_CHANGED) {
             toComplete.setCurrSeriesToComplete(Math.max(0, toComplete.getCurrSeriesToComplete() - 1));
         } else if (nextResult == ActionResult.COMPLETED) {
+            toComplete.setTotalSeries(toComplete.getTotalSeries() + 1);
+            toComplete.setCurrentSeries(toComplete.getCurrentSeries() + 1);
+            toComplete.setMaxSeries(Math.max(toComplete.getMaxSeries(), toComplete.getCurrentSeries()));
+
             toComplete.setCurrSeriesToComplete(toComplete.getRepeatRemindAt().getSeriesToComplete());
         }
 

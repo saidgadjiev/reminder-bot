@@ -8,6 +8,7 @@ import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.service.declension.TimeDeclensionProvider;
 import ru.gadjini.reminder.service.declension.TimeDeclensionService;
+import ru.gadjini.reminder.service.declension.TimesDeclensionService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.TimeCreator;
@@ -34,11 +35,15 @@ public class TimeBuilder {
 
     private TimeCreator timeCreator;
 
+    private TimesDeclensionService timesDeclensionService;
+
     @Autowired
-    public TimeBuilder(LocalisationService localisationService, TimeDeclensionProvider timeDeclensionProvider, TimeCreator timeCreator) {
+    public TimeBuilder(LocalisationService localisationService, TimeDeclensionProvider timeDeclensionProvider,
+                       TimeCreator timeCreator, TimesDeclensionService timesDeclensionService) {
         this.localisationService = localisationService;
         this.timeDeclensionProvider = timeDeclensionProvider;
         this.timeCreator = timeCreator;
+        this.timesDeclensionService = timesDeclensionService;
     }
 
     public String deactivated(Locale locale) {
@@ -243,6 +248,9 @@ public class TimeBuilder {
                     time.append(" ").append(time(repeatTime.getTime(), locale));
                 }
             }
+        }
+        if (repeatTime.hasSeriesToComplete()) {
+            time.append(" ").append(repeatTime.getSeriesToComplete()).append(" ").append(timesDeclensionService.getTimes(repeatTime.getSeriesToComplete()));
         }
 
         return time.toString().trim();
