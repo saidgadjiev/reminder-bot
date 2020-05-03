@@ -8,19 +8,21 @@ import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
+import ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService;
 import ru.gadjini.reminder.util.KeyboardCustomizer;
+
+import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.ReminderActionResult;
 
 @Component
 public class CompleteRepeatReminderCommand implements CallbackBotCommand {
 
-    private RepeatReminderService repeatReminderService;
+    private RepeatReminderBusinessService repeatReminderService;
 
     private ReminderMessageSender reminderMessageSender;
 
     @Autowired
-    public CompleteRepeatReminderCommand(RepeatReminderService repeatReminderService, ReminderMessageSender reminderMessageSender) {
+    public CompleteRepeatReminderCommand(RepeatReminderBusinessService repeatReminderService, ReminderMessageSender reminderMessageSender) {
         this.repeatReminderService = repeatReminderService;
         this.reminderMessageSender = reminderMessageSender;
     }
@@ -32,7 +34,7 @@ public class CompleteRepeatReminderCommand implements CallbackBotCommand {
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        RepeatReminderService.ReminderActionResult reminderActionResult = repeatReminderService.complete(requestParams.getInt(Arg.REMINDER_ID.getKey()));
+        ReminderActionResult reminderActionResult = repeatReminderService.complete(requestParams.getInt(Arg.REMINDER_ID.getKey()));
 
         boolean isCalledFromReminderDetails = new KeyboardCustomizer(callbackQuery.getMessage().getReplyMarkup()).hasButton(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME);
         if (isCalledFromReminderDetails) {

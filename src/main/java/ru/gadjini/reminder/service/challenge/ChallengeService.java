@@ -13,7 +13,7 @@ import ru.gadjini.reminder.domain.time.OffsetTime;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.model.CreateChallengeRequest;
 import ru.gadjini.reminder.service.parser.reminder.parser.ReminderRequest;
-import ru.gadjini.reminder.service.reminder.ChallengeReminderService;
+import ru.gadjini.reminder.service.reminder.challenge.ChallengeReminderService;
 import ru.gadjini.reminder.service.reminder.ReminderRequestService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
+import ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeCreator;
@@ -14,19 +15,24 @@ import ru.gadjini.reminder.util.TimeCreator;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
+import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.RemindAtCandidate;
+import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.UpdateSeries;
+
 @Service
 public class RestoreReminderService {
 
     private ReminderNotificationService reminderNotificationService;
 
-    private RepeatReminderService repeatReminderService;
+    private RepeatReminderBusinessService repeatReminderBusinessService;
 
     private TimeCreator timeCreator;
 
     @Inject
-    public RestoreReminderService(ReminderNotificationService reminderNotificationService, RepeatReminderService repeatReminderService, TimeCreator timeCreator) {
+    public RestoreReminderService(ReminderNotificationService reminderNotificationService,
+                                  RepeatReminderBusinessService repeatReminderBusinessService,
+                                  TimeCreator timeCreator) {
         this.reminderNotificationService = reminderNotificationService;
-        this.repeatReminderService = repeatReminderService;
+        this.repeatReminderBusinessService = repeatReminderBusinessService;
         this.timeCreator = timeCreator;
     }
 
@@ -52,10 +58,10 @@ public class RestoreReminderService {
             if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
                 reminderNotificationService.deleteReminderNotification(reminderNotification.getId());
             } else {
-                if (repeatReminderService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
-                    RepeatReminderService.RemindAtCandidate nextRemindAtCandidate = repeatReminderService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtsInReceiverZone(timeCreator), reminder.getCurrRepeatIndex());
+                if (repeatReminderBusinessService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
+                    RemindAtCandidate nextRemindAtCandidate = repeatReminderBusinessService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtsInReceiverZone(timeCreator), reminder.getCurrRepeatIndex());
                     DateTime nextRemindAt = nextRemindAtCandidate.getRemindAt().withZoneSameInstant(ZoneOffset.UTC);
-                    repeatReminderService.updateNextRemindAtAndSeries(reminder.getId(), RepeatReminderService.UpdateSeries.NONE, nextRemindAtCandidate.getCurrentSeriesToComplete(), nextRemindAtCandidate.getIndex(), nextRemindAt);
+                    repeatReminderBusinessService.updateNextRemindAtAndSeries(reminder.getId(), UpdateSeries.NONE, nextRemindAtCandidate.getCurrentSeriesToComplete(), nextRemindAtCandidate.getIndex(), nextRemindAt);
                     reminder.setRemindAt(nextRemindAt);
                 }
                 ZonedDateTime restoredLastRemindAt = getNextLastRemindAt(reminderNotification.getLastReminderAt(), reminderNotification.getDelayTime());

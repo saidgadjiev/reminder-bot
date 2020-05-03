@@ -13,7 +13,7 @@ import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.ReminderService;
+import ru.gadjini.reminder.service.reminder.simple.ReminderService;
 import ru.gadjini.reminder.time.DateTime;
 
 import java.util.Locale;

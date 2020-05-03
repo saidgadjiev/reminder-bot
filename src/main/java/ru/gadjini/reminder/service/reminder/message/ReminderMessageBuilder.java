@@ -11,7 +11,6 @@ import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.model.CustomRemindResult;
 import ru.gadjini.reminder.service.message.LocalisationService;
-import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.time.ReminderTimeBuilder;
 import ru.gadjini.reminder.service.reminder.time.TimeBuilder;
 import ru.gadjini.reminder.time.DateTime;
@@ -20,6 +19,9 @@ import ru.gadjini.reminder.util.TimeCreator;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+
+import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.ActionResult;
+import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.ReminderActionResult;
 
 @Service
 public class ReminderMessageBuilder {
@@ -157,9 +159,9 @@ public class ReminderMessageBuilder {
         return messageBuilder.getReminderCompleted(reminder.getText(), reminder.getReceiver().getLocale());
     }
 
-    public String getMySelfRepeatReminderCompleted(RepeatReminderService.ReminderActionResult reminderActionResult) {
+    public String getMySelfRepeatReminderCompleted(ReminderActionResult reminderActionResult) {
         Reminder reminder = reminderActionResult.getReminder();
-        if (reminderActionResult.getActionResult() == RepeatReminderService.ActionResult.CURR_SERIES_TO_COMPLETE_CHANGED) {
+        if (reminderActionResult.getActionResult() == ActionResult.CURR_SERIES_TO_COMPLETE_CHANGED) {
             return getReminderMessage(reminder, new ReminderMessageBuilder.ReminderMessageConfig().receiverId(reminder.getReceiverId()));
         }
         StringBuilder message = new StringBuilder();

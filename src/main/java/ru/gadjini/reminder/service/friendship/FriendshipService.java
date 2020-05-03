@@ -14,7 +14,7 @@ import ru.gadjini.reminder.domain.jooq.FriendshipTable;
 import ru.gadjini.reminder.model.CreateFriendRequestResult;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.service.TgUserService;
-import ru.gadjini.reminder.service.reminder.ReminderService;
+import ru.gadjini.reminder.service.reminder.simple.ReminderService;
 import ru.gadjini.reminder.service.validation.ValidatorFactory;
 import ru.gadjini.reminder.service.validation.ValidatorType;
 import ru.gadjini.reminder.service.validation.context.UserValidationContext;

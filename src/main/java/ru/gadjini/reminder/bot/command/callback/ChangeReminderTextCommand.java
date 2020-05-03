@@ -19,7 +19,7 @@ import ru.gadjini.reminder.service.command.CommandStateService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.ReminderService;
+import ru.gadjini.reminder.service.reminder.simple.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
 
 import java.util.Locale;

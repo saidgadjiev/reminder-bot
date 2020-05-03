@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service.reminder;
+package ru.gadjini.reminder.service.reminder.challenge;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

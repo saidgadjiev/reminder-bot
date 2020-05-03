@@ -10,11 +10,12 @@ import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.service.message.MessageService;
-import ru.gadjini.reminder.service.reminder.ReminderService;
-import ru.gadjini.reminder.service.reminder.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.RestoreReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderNotificationMessageSender;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
+import ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService;
+import ru.gadjini.reminder.service.reminder.repeat.RepeatReminderService;
+import ru.gadjini.reminder.service.reminder.simple.ReminderService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeCreator;
@@ -24,6 +25,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
+
+import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.RemindAtCandidate;
+import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.UpdateSeries;
 
 @Component
 @Profile("!" + BotConfiguration.PROFILE_TEST)
@@ -39,6 +43,8 @@ public class ReminderJob {
 
     private RepeatReminderService repeatReminderService;
 
+    private RepeatReminderBusinessService repeatReminderBusinessService;
+
     private RestoreReminderService restoreReminderService;
 
     private MessageService messageService;
@@ -50,12 +56,13 @@ public class ReminderJob {
                        ReminderNotificationService reminderNotificationService,
                        ReminderNotificationMessageSender reminderNotificationMessageSender,
                        RepeatReminderService repeatReminderService,
-                       RestoreReminderService restoreReminderService,
+                       RepeatReminderBusinessService repeatReminderBusinessService, RestoreReminderService restoreReminderService,
                        MessageService messageService, TimeCreator timeCreator) {
         this.reminderService = reminderService;
         this.reminderNotificationService = reminderNotificationService;
         this.reminderNotificationMessageSender = reminderNotificationMessageSender;
         this.repeatReminderService = repeatReminderService;
+        this.repeatReminderBusinessService = repeatReminderBusinessService;
         this.restoreReminderService = restoreReminderService;
         this.messageService = messageService;
         this.timeCreator = timeCreator;
@@ -83,7 +90,7 @@ public class ReminderJob {
         List<Reminder> overdueReminders = repeatReminderService.getOverdueRepeatReminders();
 
         for (Reminder reminder : overdueReminders) {
-            repeatReminderService.autoSkip(reminder);
+            repeatReminderBusinessService.autoSkip(reminder);
             if (reminder.getReceiverMessageId() != null) {
                 messageService.deleteMessage(reminder.getReceiverId(), reminder.getReceiverMessageId());
             }
@@ -162,10 +169,10 @@ public class ReminderJob {
     private void sendRepeatReminderTimeForRepeatableReminder(Reminder reminder, ReminderNotification reminderNotification) {
         DateTime nextRemindAt = reminder.getRemindAt();
 
-        if (repeatReminderService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
-            RepeatReminderService.RemindAtCandidate nextRemindAtCandidate = repeatReminderService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtsInReceiverZone(timeCreator), reminder.getCurrRepeatIndex());
+        if (repeatReminderBusinessService.isNeedUpdateNextRemindAt(reminder, reminderNotification)) {
+            RemindAtCandidate nextRemindAtCandidate = repeatReminderBusinessService.getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtsInReceiverZone(timeCreator), reminder.getCurrRepeatIndex());
             nextRemindAt = nextRemindAtCandidate.getRemindAt().withZoneSameInstant(ZoneOffset.UTC);
-            repeatReminderService.updateNextRemindAtAndSeries(reminder.getId(), RepeatReminderService.UpdateSeries.INCREMENT, nextRemindAtCandidate.getCurrentSeriesToComplete(), nextRemindAtCandidate.getIndex(), nextRemindAt);
+            repeatReminderBusinessService.updateNextRemindAtAndSeries(reminder.getId(), UpdateSeries.INCREMENT, nextRemindAtCandidate.getCurrentSeriesToComplete(), nextRemindAtCandidate.getIndex(), nextRemindAt);
             reminder.setRemindAt(nextRemindAt);
         }
         reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime(), nextRemindAt);

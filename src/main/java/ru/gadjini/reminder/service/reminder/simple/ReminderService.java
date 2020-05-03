@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.service.reminder;
+package ru.gadjini.reminder.service.reminder.simple;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
@@ -120,13 +120,11 @@ public class ReminderService {
         );
     }
 
-    public List<ReminderNotification> updateReminderNotifications(int reminderId, int receiverId, DateTime remindAt) {
+    public void updateReminderNotifications(int reminderId, int receiverId, DateTime remindAt) {
         reminderNotificationService.deleteReminderNotifications(reminderId);
         List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAt, receiverId);
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
         reminderNotificationService.create(reminderNotifications);
-
-        return reminderNotifications;
     }
 
     public Reminder getReminderByMessageId(int messageId, ReminderMapping reminderMapping) {
@@ -215,20 +213,6 @@ public class ReminderService {
         return reminderDao.getRemindersWithReminderTimes(localDateTime, limit);
     }
 
-    @Transactional
-    public Reminder completeReminder(int id) {
-        Reminder completed = reminderDao.update(
-                Map.of(ReminderTable.TABLE.STATUS, Reminder.Status.COMPLETED.getCode()),
-                ReminderTable.TABLE.STATUS.equal(Reminder.Status.ACTIVE.getCode()).and(ReminderTable.TABLE.ID.equal(id)),
-                new ReminderMapping()
-                        .setCreatorMapping(new Mapping())
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
-        );
-        reminderNotificationService.deleteReminderNotifications(id);
-
-        return completed;
-    }
-
     public void deleteMyCompletedReminders(int userId) {
         reminderDao.deleteCompletedReminders(userId);
     }
@@ -258,34 +242,6 @@ public class ReminderService {
         );
     }
 
-    @Transactional
-    public Reminder postponeReminder(int reminderId, int receiverId, DateTime remindAtInReceiverZone) {
-        DateTime remindAt = remindAtInReceiverZone.withZoneSameInstant(ZoneOffset.UTC);
-        Reminder reminder = reminderDao.update(
-                Map.of(ReminderTable.TABLE.REMIND_AT, remindAt.sqlObject()),
-                ReminderTable.TABLE.ID.equal(reminderId),
-                new ReminderMapping().setCreatorMapping(new Mapping()).setReceiverMapping(new Mapping())
-        );
-
-        List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAt, receiverId);
-        reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
-        reminderNotificationService.deleteReminderNotifications(reminderId);
-        reminderNotificationService.create(reminderNotifications);
-
-        return reminder;
-    }
-
-    public Reminder cancel(int reminderId) {
-        List<Reminder> reminders = reminderDao.delete(
-                ReminderTable.TABLE.ID.equal(reminderId),
-                new ReminderMapping()
-                        .setCreatorMapping(new Mapping())
-                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
-        );
-
-        return reminders.isEmpty() ? null : reminders.iterator().next();
-    }
-
     public ReminderNotification customRemind(int reminderId, ZonedDateTime remindTime) {
         ReminderNotification reminderNotification = new ReminderNotification();
         reminderNotification.setType(ReminderNotification.Type.ONCE);
@@ -312,7 +268,7 @@ public class ReminderService {
         return reminderNotifications;
     }
 
-    private List<ReminderNotification> getReminderNotifications(DateTime dateTime, int receiverId) {
+    List<ReminderNotification> getReminderNotifications(DateTime dateTime, int receiverId) {
         if (!dateTime.hasTime()) {
             return getReminderNotificationsWithoutTime(dateTime.date(), receiverId);
         }
