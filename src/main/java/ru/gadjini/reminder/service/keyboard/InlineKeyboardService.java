@@ -389,7 +389,7 @@ public class InlineKeyboardService {
         }
         InlineKeyboardMarkup inlineKeyboardMarkup = getInitialReceiverReminderDetailsKeyboard(reminder);
 
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME, requestParams, reminder.getReceiver().getLocale())));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(backToActiveRemindersList(requestParams, reminder.getCreator().getLocale())));
 
         return inlineKeyboardMarkup;
     }
@@ -433,7 +433,7 @@ public class InlineKeyboardService {
         if (challengeCreatorId == requester.getUserId()) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteChallenge(requester.getChallengeId(), locale)));
         }
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.GET_CHALLENGES_COMMAND_NAME, locale)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(MessagesProperties.BACK_TO_CHALLENGES_LIST_DESCRIPTION, CommandNames.GET_CHALLENGES_COMMAND_NAME, locale)));
 
         return inlineKeyboardMarkup;
     }
@@ -487,9 +487,13 @@ public class InlineKeyboardService {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
         addControlReminderButtons(keyboardMarkup, requestParams, reminder);
 
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME, requestParams, reminder.getCreator().getLocale())));
+        keyboardMarkup.getKeyboard().add(List.of(backToActiveRemindersList(requestParams, reminder.getCreator().getLocale())));
 
         return keyboardMarkup;
+    }
+
+    private InlineKeyboardButton backToActiveRemindersList(RequestParams requestParams, Locale locale) {
+        return buttonFactory.goBackCallbackButton(MessagesProperties.BACK_TO_REMINDERS_LIST_COMMAND_DESCRIPTION, CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME, requestParams, locale);
     }
 
     private InlineKeyboardMarkup getChallengeReminderDetailsKeyboard(Reminder reminder, RequestParams requestParams) {
@@ -509,7 +513,7 @@ public class InlineKeyboardService {
         }
         keyboardMarkup.getKeyboard().add(List.of(buttonFactory.openChallengeDetailsFromReminder(reminder.getChallengeId(), locale)));
 
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME, requestParams, locale)));
+        keyboardMarkup.getKeyboard().add(List.of(backToActiveRemindersList(requestParams, reminder.getCreator().getLocale())));
 
         return keyboardMarkup;
     }
@@ -519,7 +523,7 @@ public class InlineKeyboardService {
 
         addControlReminderButtons(keyboardMarkup, requestParams, reminder);
 
-        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME, requestParams, reminder.getReceiver().getLocale())));
+        keyboardMarkup.getKeyboard().add(List.of(backToActiveRemindersList(requestParams, reminder.getCreator().getLocale())));
 
         return keyboardMarkup;
     }

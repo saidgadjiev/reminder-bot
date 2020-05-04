@@ -32,19 +32,22 @@ public class ButtonFactory {
     }
 
     public InlineKeyboardButton goBackCallbackButton(String prevHistoryName, Locale locale) {
-        Objects.requireNonNull(prevHistoryName);
-        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_CALLBACK_COMMAND_DESCRIPTION, locale));
-        button.setCallbackData(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
-                new RequestParams().add(Arg.PREV_HISTORY_NAME.getKey(), prevHistoryName).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+        return goBackCallbackButton(MessagesProperties.GO_BACK_CALLBACK_COMMAND_DESCRIPTION, prevHistoryName, RequestParams.EMPTY, locale);
+    }
 
-        return button;
+    public InlineKeyboardButton goBackCallbackButton(String nameCode, String prevHistoryName, Locale locale) {
+        return goBackCallbackButton(nameCode, prevHistoryName, RequestParams.EMPTY, locale);
     }
 
     public InlineKeyboardButton goBackCallbackButton(String prevHistoryName, RequestParams requestParams, Locale locale) {
+        return goBackCallbackButton(MessagesProperties.GO_BACK_CALLBACK_COMMAND_DESCRIPTION, prevHistoryName, requestParams, locale);
+    }
+
+    public InlineKeyboardButton goBackCallbackButton(String nameCode, String prevHistoryName, RequestParams requestParams, Locale locale) {
         Objects.requireNonNull(prevHistoryName);
         requestParams.add(Arg.PREV_HISTORY_NAME.getKey(), prevHistoryName);
 
-        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.GO_BACK_CALLBACK_COMMAND_DESCRIPTION, locale));
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(nameCode, locale));
         button.setCallbackData(CommandNames.GO_BACK_CALLBACK_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR + requestParams.serialize(CommandParser.COMMAND_ARG_SEPARATOR));
         return button;
     }

@@ -582,4 +582,10 @@ public class MessagesProperties {
     public static final String EXPIRED_REMINDERS_COMMAND_DESCRIPTION = "expired.reminders.command.description";
 
     public static final String MESSAGE_REMINDER_SERIES_TO_COMPLETE = "message.reminder.series.to.complete";
+
+    public static final String BACK_TO_REMINDERS_LIST_COMMAND_DESCRIPTION = "back.to.reminders.list.command.description";
+
+    public static final String BACK_TO_CHALLENGES_LIST_DESCRIPTION = "back.to.challenges.list.description";
+
+    public static final String MESSAGE_BAD_TIMES = "message.bad.times";
 }

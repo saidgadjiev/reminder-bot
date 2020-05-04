@@ -95,8 +95,13 @@ public class ReminderTimeValidator implements Validator<ReminderTimeValidationCo
             }
         }
         for (RepeatTime repeatTime : repeatTimes) {
-            if (repeatTime.getSeriesToComplete() != null && repeatTime.hasTime()) {
-                throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
+            if (repeatTime.getSeriesToComplete() != null) {
+                if (repeatTime.hasTime()) {
+                    throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_BAD_TIME_FORMAT, locale));
+                }
+                if (repeatTime.getSeriesToComplete() < 1) {
+                    throw new UserException(localisationService.getMessage(MessagesProperties.MESSAGE_BAD_TIMES, locale));
+                }
             }
         }
     }
