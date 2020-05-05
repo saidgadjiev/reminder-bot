@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.gadjini.reminder.bot.api.ApiContextInitializer;
-import ru.gadjini.reminder.properties.*;
+import ru.gadjini.reminder.property.*;
 
 import java.util.Locale;
 

@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.filter.BotFilter;
 import ru.gadjini.reminder.model.TgMessage;
-import ru.gadjini.reminder.properties.BotProperties;
+import ru.gadjini.reminder.property.BotProperties;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.message.MessageService;
 

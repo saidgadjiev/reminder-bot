@@ -2,7 +2,7 @@ package ru.gadjini.reminder.service.metric;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
-import ru.gadjini.reminder.properties.LoggingProperties;
+import ru.gadjini.reminder.property.LoggingProperties;
 
 import java.util.ArrayList;
 import java.util.Arrays;

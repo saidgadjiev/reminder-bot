@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.gadjini.reminder.common.TemplateConstants;
 import ru.gadjini.reminder.domain.Plan;
-import ru.gadjini.reminder.properties.BotProperties;
-import ru.gadjini.reminder.properties.SubscriptionProperties;
+import ru.gadjini.reminder.property.BotProperties;
+import ru.gadjini.reminder.property.SubscriptionProperties;
 import ru.gadjini.reminder.service.subscription.PlanService;
 
 import javax.ws.rs.GET;

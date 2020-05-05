@@ -32,7 +32,7 @@ public class GoogleVoiceRecognitionService {
     }
 
     public String recognize(User user, Voice voice) {
-        File file = downloadFile(voice.getFileId());
+        File file = telegramService.downloadFileByFileId(voice.getFileId());
 
         try {
             List<SpeechContext> speechContexts = speechContextProviders.stream()
@@ -44,17 +44,6 @@ public class GoogleVoiceRecognitionService {
             throw new RuntimeException(ex);
         } finally {
             FileUtils.deleteQuietly(file);
-        }
-    }
-
-    private File downloadFile(String fileId) {
-        try {
-            GetFile getFile = new GetFile();
-            getFile.setFileId(fileId);
-            org.telegram.telegrambots.meta.api.objects.File file = telegramService.execute(getFile);
-            return telegramService.downloadFile(file);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
         }
     }
 }

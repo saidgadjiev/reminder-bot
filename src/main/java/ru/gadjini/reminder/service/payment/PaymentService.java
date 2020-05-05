@@ -9,7 +9,7 @@ import ru.gadjini.reminder.domain.PaymentType;
 import ru.gadjini.reminder.domain.Plan;
 import ru.gadjini.reminder.exception.UserException;
 import ru.gadjini.reminder.model.WebMoneyPayment;
-import ru.gadjini.reminder.properties.WebMoneyProperties;
+import ru.gadjini.reminder.property.WebMoneyProperties;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.subscription.PaymentMessageService;
 import ru.gadjini.reminder.service.subscription.PlanService;

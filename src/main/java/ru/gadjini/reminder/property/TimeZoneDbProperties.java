@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.properties;
+package ru.gadjini.reminder.property;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

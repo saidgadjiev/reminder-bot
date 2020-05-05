@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.configuration.BotConfiguration;
-import ru.gadjini.reminder.properties.WebHookProperties;
+import ru.gadjini.reminder.property.WebHookProperties;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;

@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.job.PriorityJob;
-import ru.gadjini.reminder.properties.LoggingProperties;
-import ru.gadjini.reminder.properties.WebHookProperties;
+import ru.gadjini.reminder.property.LoggingProperties;
+import ru.gadjini.reminder.property.WebHookProperties;
 
 @Service
 public class LoggingSystem {

@@ -11,7 +11,7 @@ import ru.gadjini.reminder.domain.Subscription;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.TgMessage;
-import ru.gadjini.reminder.properties.SubscriptionProperties;
+import ru.gadjini.reminder.property.SubscriptionProperties;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.command.CommandNavigator;
 import ru.gadjini.reminder.service.declension.TimeDeclensionProvider;

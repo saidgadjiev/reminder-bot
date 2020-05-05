@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.gadjini.reminder.job.TimeZoneDbSenderJob;
 import ru.gadjini.reminder.model.TimeZone;
-import ru.gadjini.reminder.properties.TimeZoneDbProperties;
+import ru.gadjini.reminder.property.TimeZoneDbProperties;
 
 import java.time.ZoneId;
 import java.util.ArrayList;

@@ -13,7 +13,7 @@ import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.domain.PaymentType;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.UserReminderNotification;
-import ru.gadjini.reminder.properties.WebHookProperties;
+import ru.gadjini.reminder.property.WebHookProperties;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
