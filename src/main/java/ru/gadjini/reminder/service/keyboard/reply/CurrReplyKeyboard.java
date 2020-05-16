@@ -65,7 +65,7 @@ public class CurrReplyKeyboard implements ReplyKeyboardService {
         return replyKeyboardDao.get(chatId);
     }
 
-    public ReplyKeyboardMarkup setCurrentKeyboard(long chatId, ReplyKeyboardMarkup replyKeyboardMarkup) {
+    private ReplyKeyboardMarkup setCurrentKeyboard(long chatId, ReplyKeyboardMarkup replyKeyboardMarkup) {
         replyKeyboardDao.store(chatId, replyKeyboardMarkup);
 
         return replyKeyboardMarkup;

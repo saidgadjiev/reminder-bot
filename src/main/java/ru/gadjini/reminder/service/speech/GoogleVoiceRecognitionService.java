@@ -4,10 +4,8 @@ import com.google.cloud.speech.v1p1beta1.SpeechContext;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.Voice;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.gadjini.reminder.service.TelegramService;
 
 import java.io.File;
