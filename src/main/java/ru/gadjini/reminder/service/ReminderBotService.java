@@ -91,9 +91,9 @@ public class ReminderBotService {
                     handleMessage(update.getMessage(), text);
 
                     if (update.getMessage().hasVoice()) {
-                        latencyMeter.stop("Latency on voice request: {}", text);
+                        latencyMeter.stop("Voice request: {}", text);
                     } else {
-                        latencyMeter.stop("Latency on request: {}", text);
+                        latencyMeter.stop("Request: {}", text);
                     }
                 }, new Waiting(update.getMessage()));
             } else if (update.hasCallbackQuery()) {
@@ -102,7 +102,7 @@ public class ReminderBotService {
 
                 commandExecutor.executeCallbackCommand(update.getCallbackQuery());
 
-                latencyMeter.stop("Latency on callback request: {}", update.getCallbackQuery().getData());
+                latencyMeter.stop("Callback request: {}", update.getCallbackQuery().getData());
             } else if (update.hasEditedMessage()) {
                 LatencyMeterLogger latencyMeter = latencyMeterFactory.getLatencyMeterLogger();
                 latencyMeter.start();
@@ -110,7 +110,7 @@ public class ReminderBotService {
                 messageTextExtractor.extract(update.getEditedMessage(), text -> {
                     handleEditedMessage(update.getEditedMessage(), text);
 
-                    latencyMeter.stop("Latency on callback request: {}", update.getCallbackQuery().getData());
+                    latencyMeter.stop("Edit request: {}", text);
                 }, new Waiting(update.getEditedMessage()));
             }
         } catch (UserException ex) {
