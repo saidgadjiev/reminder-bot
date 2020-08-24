@@ -588,4 +588,6 @@ public class MessagesProperties {
     public static final String BACK_TO_CHALLENGES_LIST_DESCRIPTION = "back.to.challenges.list.description";
 
     public static final String MESSAGE_BAD_TIMES = "message.bad.times";
+
+    public static final String DELETE_ALL_REMINDERS_COMMAND_DESCRIPTION = "delete.all.reminders.command.description";
 }

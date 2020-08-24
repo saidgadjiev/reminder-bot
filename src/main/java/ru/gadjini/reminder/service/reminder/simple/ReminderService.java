@@ -234,6 +234,10 @@ public class ReminderService {
         return reminders.isEmpty() ? null : reminders.iterator().next();
     }
 
+    public void deleteAll(ReminderDao.Filter filter) {
+        reminderDao.deleteAll(filter);
+    }
+
     public List<Reminder> deleteFriendReminders(int userId, int friendId) {
         return reminderDao.delete(
                 ReminderTable.TABLE.CREATOR_ID.eq(userId).and(ReminderTable.TABLE.RECEIVER_ID.eq(friendId))

@@ -454,4 +454,12 @@ public class ButtonFactory {
 
         return button;
     }
+
+    InlineKeyboardButton deleteAll(RequestParams requestParams, Locale locale) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.DELETE_ALL_REMINDERS_COMMAND_DESCRIPTION, locale));
+        button.setCallbackData(CommandNames.DELETE_ALL_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                requestParams.serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
 }

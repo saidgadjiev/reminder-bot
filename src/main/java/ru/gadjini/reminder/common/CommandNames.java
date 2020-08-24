@@ -71,4 +71,6 @@ public class CommandNames {
     public static final String DELETE_CHALLENGE_COMMAND_NAME = "bk";
     public static final String GIVE_UP_COMMAND_NAME = "bl";
     public static final String EXIT_COMMAND_NAME = "bm";
+    public static final String DELETE_ALL_COMMAND_NAME = "bn";
+    public static final String COMPLETE_ALL_COMMAND_NAME = "bp";
 }

@@ -267,6 +267,13 @@ public class ReminderDao {
         );
     }
 
+    public void deleteAll(Filter filter) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("DELETE FROM reminder r USING tg_user rc WHERE r.receiver_id = rc.user_id ").append(getFilterClause(filter));
+
+        jdbcTemplate.update(sql.toString());
+    }
+
     public List<Reminder> delete(Condition condition, ReminderMapping reminderMapping) {
         DeleteConditionStep<Record> delete = dslContext.delete(ReminderTable.TABLE)
                 .where(condition);

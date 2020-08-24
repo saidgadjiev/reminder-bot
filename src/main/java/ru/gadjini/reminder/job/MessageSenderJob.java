@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.service.metric.LoggingSystem;
@@ -30,7 +29,7 @@ public class MessageSenderJob {
         LOGGER.debug("Message sender job initialized and working");
     }
 
-    @Scheduled(fixedDelay = 20)
+    //@Scheduled(fixedDelay = 20)
     public void send() {
         try {
             PriorityJob job = jobsQueue.take();
@@ -48,6 +47,6 @@ public class MessageSenderJob {
     }
 
     public void push(PriorityJob priorityJob) {
-        jobsQueue.add(priorityJob);
+        priorityJob.run();
     }
 }
