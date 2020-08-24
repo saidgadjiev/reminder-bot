@@ -94,9 +94,15 @@ public class ResultSetMapper {
         int receiverId = rs.getInt(Reminder.RECEIVER_ID);
         if (!rs.wasNull()) {
             reminder.setReceiverId(receiverId);
+            TgUser rc = new TgUser();
+            rc.setUserId(receiverId);
+            reminder.setReceiver(rc);
         }
 
         reminder.setCreatorId(rs.getInt(Reminder.CREATOR_ID));
+        TgUser cr = new TgUser();
+        cr.setUserId(reminder.getCreatorId());
+        reminder.setCreator(cr);
         reminder.setNote(rs.getString(Reminder.NOTE));
 
         int challengeId = rs.getInt(Reminder.CHALLENGE_ID);
@@ -156,24 +162,17 @@ public class ResultSetMapper {
 
         if (columnNames.contains("rc_zone_id")) {
             String zoneId = rs.getString("rc_zone_id");
-            TgUser rc = new TgUser();
 
-            rc.setZoneId(zoneId);
-            rc.setUserId(reminder.getReceiverId());
+            reminder.getReceiver().setZoneId(zoneId);
+            reminder.getReceiver().setUserId(reminder.getReceiverId());
 
             if (columnNames.contains("rc_name")) {
-                rc.setName(rs.getString("rc_name"));
+                reminder.getReceiver().setName(rs.getString("rc_name"));
             }
-
-            reminder.setReceiver(rc);
         }
         if (columnNames.contains("cr_name")) {
-            TgUser cr = new TgUser();
-
-            cr.setUserId(reminder.getCreatorId());
-            cr.setName(rs.getString("cr_name"));
-
-            reminder.setCreator(cr);
+            reminder.getCreator().setUserId(reminder.getCreatorId());
+            reminder.getCreator().setName(rs.getString("cr_name"));
         }
 
         return reminder;

@@ -15,8 +15,8 @@ import ru.gadjini.reminder.domain.mapping.ReminderMapping;
 import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.DateTimeService;
+import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.TimeUtils;
 
 import java.time.*;
@@ -115,7 +115,9 @@ public class RepeatReminderBusinessService {
         return new ReminderActionResult(toReturn, returned);
     }
 
+    @Transactional
     public void autoSkip(Reminder reminder) {
+        createOverdueReminder(reminder);
         RemindAtCandidate nextRemindAtCandidate = getNextRemindAt(reminder.getRemindAtInReceiverZone(), reminder.getRepeatRemindAtsInReceiverZone(timeCreator), reminder.getCurrRepeatIndex());
         updateNextRemindAtAndSeries(reminder.getId(), reminder.isInactive() ? UpdateSeries.NONE : UpdateSeries.RESET,
                 nextRemindAtCandidate.currentSeriesToComplete, nextRemindAtCandidate.index,
@@ -194,6 +196,15 @@ public class RepeatReminderBusinessService {
         } else {
             return null;
         }
+    }
+
+    private void createOverdueReminder(Reminder reminder) {
+        Reminder toCreate = new Reminder(reminder);
+        toCreate.setRepeatRemindAts(null);
+        toCreate.setCurrRepeatIndex(null);
+        toCreate.setCurrSeriesToComplete(null);
+        toCreate.setSuppressNotifications(true);
+        reminderDao.create(toCreate);
     }
 
     private void updateSeriesToComplete(int reminderId, UpdateSeries updateSeries) {

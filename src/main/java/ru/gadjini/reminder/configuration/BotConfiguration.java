@@ -10,13 +10,10 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.keyboard.UserReminderNotificationScheduleCommand;
 import ru.gadjini.reminder.common.CommandNames;
@@ -26,7 +23,6 @@ import ru.gadjini.reminder.filter.BotFilter;
 import ru.gadjini.reminder.filter.ReminderBotFilter;
 import ru.gadjini.reminder.filter.StartCommandFilter;
 import ru.gadjini.reminder.property.ProxyProperties;
-import ru.gadjini.reminder.property.WebHookProperties;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.command.CommandStateService;
@@ -51,13 +47,6 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
     public static final String PROFILE_DEV = "dev";
 
     public static final String PROFILE_PROD = "prod";
-
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    @Profile("!" + PROFILE_TEST)
-    public TelegramBotsApi telegramBotsApi(WebHookProperties webHookProperties) throws TelegramApiRequestException {
-        return new TelegramBotsApi(webHookProperties.getExternalUrl(), webHookProperties.getInternalUrl());
-    }
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -131,10 +120,8 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DefaultBotOptions botOptions(WebHookProperties webHookProperties, ProxyProperties proxyProperties) {
+    public DefaultBotOptions botOptions(ProxyProperties proxyProperties) {
         DefaultBotOptions defaultBotOptions = ApiContext.getInstance(DefaultBotOptions.class);
-
-        defaultBotOptions.setMaxWebhookConnections(webHookProperties.getMaxConnections());
 
         if (proxyProperties.getType() != DefaultBotOptions.ProxyType.NO_PROXY) {
             defaultBotOptions.setProxyType(proxyProperties.getType());

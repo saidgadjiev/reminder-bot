@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import ru.gadjini.reminder.bot.api.ApiContextInitializer;
+import org.telegram.telegrambots.ApiContextInitializer;
 import ru.gadjini.reminder.property.*;
 
 import java.util.Locale;
@@ -16,10 +16,8 @@ import java.util.Locale;
 @SpringBootApplication
 @EnableConfigurationProperties(value = {
         BotProperties.class,
-        WebHookProperties.class,
         TimeZoneDbProperties.class,
         SubscriptionProperties.class,
-        WebMoneyProperties.class,
         LoggingProperties.class,
         ProxyProperties.class
 })

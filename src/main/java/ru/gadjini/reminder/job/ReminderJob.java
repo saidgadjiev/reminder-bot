@@ -85,7 +85,7 @@ public class ReminderJob {
     }
 
     //every hour
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "* * * * * *")
     public void moveReminders() {
         List<Reminder> overdueReminders = repeatReminderService.getOverdueRepeatReminders();
 

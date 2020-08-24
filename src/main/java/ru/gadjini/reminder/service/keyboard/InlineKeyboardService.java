@@ -13,7 +13,6 @@ import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.domain.PaymentType;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.UserReminderNotification;
-import ru.gadjini.reminder.property.WebHookProperties;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
@@ -32,15 +31,12 @@ public class InlineKeyboardService {
 
     private ButtonFactory buttonFactory;
 
-    private WebHookProperties webHookProperties;
-
     private static final String PAYMENT_API_PATH = "payment/pay";
 
     @Autowired
-    public InlineKeyboardService(LocalisationService localisationService, ButtonFactory buttonFactory, WebHookProperties webHookProperties) {
+    public InlineKeyboardService(LocalisationService localisationService, ButtonFactory buttonFactory) {
         this.localisationService = localisationService;
         this.buttonFactory = buttonFactory;
-        this.webHookProperties = webHookProperties;
     }
 
     public InlineKeyboardMarkup getOpenDetailsKeyboard(int reminderId, Locale locale) {
@@ -647,7 +643,7 @@ public class InlineKeyboardService {
     }
 
     private String buildPayUrl(int userId, int planId, PaymentType paymentType) {
-        return UriComponentsBuilder.fromHttpUrl(webHookProperties.getExternalUrl())
+        return UriComponentsBuilder.fromHttpUrl("")
                 .path(PAYMENT_API_PATH)
                 .queryParam("planId", planId)
                 .queryParam("userId", userId)

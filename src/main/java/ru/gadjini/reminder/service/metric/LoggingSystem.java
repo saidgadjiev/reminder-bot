@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.property.LoggingProperties;
-import ru.gadjini.reminder.property.WebHookProperties;
 
 @Service
 public class LoggingSystem {
@@ -21,10 +20,8 @@ public class LoggingSystem {
     private final LoggingProperties loggingProperties;
 
     @Autowired
-    public LoggingSystem(WebHookProperties webHookProperties, LoggingProperties loggingProperties) {
+    public LoggingSystem(LoggingProperties loggingProperties) {
         this.loggingProperties = loggingProperties;
-        LOGGER.info("Web hook external url: " + webHookProperties.getExternalUrl());
-        LOGGER.info("Web hook max connections: " + webHookProperties.getMaxConnections());
     }
 
     public LatencyMeterLogger getLatencyMeterLogger() {
