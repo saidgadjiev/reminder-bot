@@ -79,7 +79,7 @@ public class ReminderJob {
     //00:00
     @Scheduled(cron = "0 0 0 * * *")
     public void deleteCompletedReminders() {
-        int deleted = reminderService.deleteCompletedReminders(timeCreator.localDateTimeNow());
+        int deleted = reminderService.deleteCompletedReminders(timeCreator.localDateTimeNow().minusDays(7));
 
         LOGGER.debug("Delete {} completed reminders at {}", deleted, LocalDateTime.now());
     }
