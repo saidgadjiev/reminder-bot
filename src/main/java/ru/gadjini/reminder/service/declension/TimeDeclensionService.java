@@ -12,6 +12,8 @@ public interface TimeDeclensionService {
 
     String minute(int minutes);
 
+    String seconds(int seconds);
+
     String hour(int hours);
 
     String getRepeatWord(DayOfWeek dayOfWeek);

@@ -74,4 +74,6 @@ public class CommandNames {
     public static final String DELETE_ALL_COMMAND_NAME = "bn";
     public static final String COMPLETE_ALL_COMMAND_NAME = "bp";
     public static final String TIME_TRACKER_COMMAND_NAME = "bq";
+    public static final String START_WORK_COMMAND_NAME = "br";
+    public static final String STOP_WORK_COMMAND_NAME = "bs";
 }

@@ -55,6 +55,12 @@ public class ReminderTable extends TableImpl<Record> {
 
     public TableField<Record, Boolean> TIME_TRACKER;
 
+    public TableField<Record, Object> LAST_WORK_IN_PROGRESS_AT;
+
+    public TableField<Record, Object> ESTIMATE;
+
+    public TableField<Record, Object> ELAPSED_TIME;
+
     private ReminderTable() {
         this(DSL.name(Reminder.TYPE), null, null);
     }
@@ -91,6 +97,9 @@ public class ReminderTable extends TableImpl<Record> {
         CHALLENGE_ID = createField(Reminder.CHALLENGE_ID, SQLDataType.INTEGER);
         CURR_SERIES_TO_COMPLETE = createField(Reminder.CURR_SERIES_TO_COMPLETE, SQLDataType.INTEGER);
         TIME_TRACKER = createField(Reminder.TIME_TRACKER, SQLDataType.BOOLEAN);
+        LAST_WORK_IN_PROGRESS_AT = createField(Reminder.LAST_WORK_IN_PROGRESS_AT, SQLDataType.OTHER);
+        ESTIMATE = createField(Reminder.ESTIMATE, SQLDataType.OTHER);
+        ELAPSED_TIME = createField(Reminder.ELAPSED_TIME, SQLDataType.OTHER);
     }
 
     @Override

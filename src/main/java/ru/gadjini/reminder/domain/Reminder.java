@@ -68,6 +68,8 @@ public class Reminder {
 
     public static final String ELAPSED_TIME = "elapsed_time";
 
+    public static final String LAST_WORK_IN_PROGRESS_AT = "last_work_in_progress_at";
+
     private int id;
 
     private String text;
@@ -125,6 +127,8 @@ public class Reminder {
     private Period estimate;
 
     private Period elapsedTime;
+
+    private ZonedDateTime lastWorkInProgressAt;
 
     public Reminder() {
     }
@@ -438,6 +442,18 @@ public class Reminder {
         this.elapsedTime = elapsedTime;
     }
 
+    public ZonedDateTime getLastWorkInProgressAt() {
+        return lastWorkInProgressAt;
+    }
+
+    public ZonedDateTime getLastWorkInProgressAtInReceiverZone() {
+        return lastWorkInProgressAt.withZoneSameInstant(receiver.getZone());
+    }
+
+    public void setLastWorkInProgressAt(ZonedDateTime lastWorkInProgressAt) {
+        this.lastWorkInProgressAt = lastWorkInProgressAt;
+    }
+
     public boolean isRepeatableWithoutTime() {
         return repeatRemindAts != null && getRepeatRemindAts().get(0).isEmpty();
     }
@@ -472,7 +488,8 @@ public class Reminder {
 
         ACTIVE(0),
         INACTIVE(2),
-        COMPLETED(1);
+        COMPLETED(1),
+        IN_PROGRESS(3);
 
         private final int code;
 

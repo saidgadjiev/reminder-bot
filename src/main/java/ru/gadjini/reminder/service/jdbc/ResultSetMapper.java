@@ -89,6 +89,16 @@ public class ResultSetMapper {
         if (estimate != null) {
             reminder.setEstimate(JodaTimeUtils.toPeriod(estimate));
         }
+        PGInterval elapsedTime = (PGInterval) rs.getObject(Reminder.ELAPSED_TIME);
+        if (estimate != null) {
+            reminder.setElapsedTime(JodaTimeUtils.toPeriod(elapsedTime));
+        }
+        if (columnNames.contains(Reminder.LAST_WORK_IN_PROGRESS_AT)) {
+            Timestamp lastWorkInProgressAt = rs.getTimestamp(Reminder.LAST_WORK_IN_PROGRESS_AT);
+            if (lastWorkInProgressAt != null) {
+                reminder.setLastWorkInProgressAt(lastWorkInProgressAt.toLocalDateTime().atZone(ZoneOffset.UTC));
+            }
+        }
 
         if (columnNames.contains(Reminder.CURR_SERIES_TO_COMPLETE)) {
             int currentSeriesToComplete = rs.getInt(Reminder.CURR_SERIES_TO_COMPLETE);

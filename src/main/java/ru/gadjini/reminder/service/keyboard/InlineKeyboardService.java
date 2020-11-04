@@ -367,6 +367,7 @@ public class InlineKeyboardService {
 
             inlineKeyboardMarkup.getKeyboard().add(keyboardButtons);
         }
+        addTimeTrackerButtons(inlineKeyboardMarkup, reminder);
         if (!reminder.isSuppressNotifications()) {
             inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.suppressNotifications(reminder.getId(), reminder.getReceiver().getLocale())));
         }
@@ -582,6 +583,7 @@ public class InlineKeyboardService {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.completeReminderButton(reminderId, locale), buttonFactory.cancelReminderButton(reminderId, locale)));
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.customReminderTimeButton(reminderId, CommandNames.REMINDER_DETAILS_COMMAND_NAME, locale), buttonFactory.postponeReminderButton(reminderId, locale)));
         }
+        addTimeTrackerButtons(keyboardMarkup, reminder);
         if (!reminder.isSuppressNotifications()) {
             keyboardMarkup.getKeyboard().add(List.of(buttonFactory.suppressNotifications(reminderId, locale)));
         }
@@ -640,6 +642,16 @@ public class InlineKeyboardService {
         keyboard.add(List.of(buttonFactory.goBackCallbackButton(prevCommand, requestParams, locale)));
 
         return keyboardMarkup;
+    }
+
+    private void addTimeTrackerButtons(InlineKeyboardMarkup keyboardMarkup, Reminder reminder) {
+        if (reminder.isTimeTracker()) {
+            if (reminder.getStatus() == Reminder.Status.IN_PROGRESS) {
+                keyboardMarkup.getKeyboard().add(List.of(buttonFactory.stopReminder(reminder.getId(), reminder.getReceiver().getLocale())));
+            } else {
+                keyboardMarkup.getKeyboard().add(List.of(buttonFactory.startReminder(reminder.getId(), reminder.getReceiver().getLocale())));
+            }
+        }
     }
 
     private String buildPayUrl(int userId, int planId, PaymentType paymentType) {

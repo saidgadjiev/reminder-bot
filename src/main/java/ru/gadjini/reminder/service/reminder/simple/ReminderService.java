@@ -3,6 +3,7 @@ package ru.gadjini.reminder.service.reminder.simple;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 import org.jooq.Field;
+import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.ai.ReminderNotificationAI;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
 import ru.gadjini.reminder.time.DateTime;
+import ru.gadjini.reminder.util.DateTimeService;
 
 import java.time.*;
 import java.util.ArrayList;
@@ -37,15 +39,18 @@ public class ReminderService {
 
     private ReminderNotificationAI reminderNotificationAI;
 
+    private DateTimeService dateTimeService;
+
     @Autowired
     public ReminderService(ReminderDao reminderDao,
                            ReminderNotificationService reminderNotificationService,
                            UserReminderNotificationService userReminderNotificationService,
-                           ReminderNotificationAI reminderNotificationAI) {
+                           ReminderNotificationAI reminderNotificationAI, DateTimeService dateTimeService) {
         this.reminderDao = reminderDao;
         this.reminderNotificationService = reminderNotificationService;
         this.userReminderNotificationService = userReminderNotificationService;
         this.reminderNotificationAI = reminderNotificationAI;
+        this.dateTimeService = dateTimeService;
     }
 
     @Transactional
@@ -146,6 +151,31 @@ public class ReminderService {
             updateValues.put(ReminderTable.TABLE.INITIAL_REMIND_AT, updateValues.get(ReminderTable.TABLE.REMIND_AT));
         }
         reminderDao.update(updateValues, ReminderTable.TABLE.ID.eq(id), null);
+    }
+
+    public Reminder startWork(int id) {
+        return reminderDao.update(
+                Map.of(ReminderTable.TABLE.LAST_WORK_IN_PROGRESS_AT, dateTimeService.localDateTimeWithSeconds(),
+                        ReminderTable.TABLE.STATUS, Reminder.Status.IN_PROGRESS.getCode()),
+                ReminderTable.TABLE.ID.eq(id),
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
+        );
+    }
+
+    public Reminder stopWork(int id) {
+        return reminderDao.update(
+                Map.of(
+                        ReminderTable.TABLE.STATUS, Reminder.Status.ACTIVE.getCode(),
+                        ReminderTable.TABLE.ELAPSED_TIME, DSL.when(ReminderTable.TABLE.ELAPSED_TIME.isNull(), DSL.now().minus(ReminderTable.TABLE.LAST_WORK_IN_PROGRESS_AT))
+                                .otherwise(DSL.now().minus(ReminderTable.TABLE.LAST_WORK_IN_PROGRESS_AT).plus(ReminderTable.TABLE.ELAPSED_TIME))
+                ),
+                ReminderTable.TABLE.ID.eq(id),
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
+        );
     }
 
     @Transactional

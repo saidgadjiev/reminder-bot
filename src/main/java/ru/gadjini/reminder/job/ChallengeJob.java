@@ -48,7 +48,7 @@ public class ChallengeJob {
     //0:30 1:00 1:30 ...
     @Scheduled(cron = "0 */30 * * * *")
     public void finishChallenges() {
-        List<Challenge> finishedChallenges = businessService.getFinishedChallenges(timeCreator.localDateTimeNow());
+        List<Challenge> finishedChallenges = businessService.getFinishedChallenges(timeCreator.localDateTimeNowWithMinutes());
         for (Challenge challenge : finishedChallenges) {
             ChallengeBusinessService.Winner winner = businessService.determineWinner(challenge.getChallengeParticipants());
             sendChallengeFinishedMessages(challenge, winner);

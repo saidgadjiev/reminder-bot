@@ -46,6 +46,18 @@ public class RuTimeDeclensionService implements TimeDeclensionService {
     }
 
     @Override
+    public String seconds(int seconds) {
+        if (seconds == 1) {
+            return "секунду";
+        }
+        if (seconds >= 2 && seconds <= 4) {
+            return seconds + " секунды";
+        }
+
+        return seconds + " секунд";
+    }
+
+    @Override
     public String hour(int hours) {
         if (hours == 1) {
             return "час";

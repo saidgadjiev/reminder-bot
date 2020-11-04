@@ -33,7 +33,7 @@ public class CompletedReminderDao {
                     ps.setString(1, reminder.getText());
                     ps.setInt(2, reminder.getCreatorId());
                     ps.setInt(3, reminder.getReceiverId());
-                    ps.setTimestamp(4, Timestamp.valueOf(timeCreator.localDateTimeNow()));
+                    ps.setTimestamp(4, Timestamp.valueOf(timeCreator.localDateTimeNowWithMinutes()));
                     ps.setString(5, reminder.getNote());
                     ps.setObject(6, reminder.getRemindAt().sqlObject());
                     ps.setObject(7, reminder.getInitialRemindAt().sqlObject());

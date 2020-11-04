@@ -20,6 +20,7 @@ public class JodaTimeUtils {
         interval.append(period.getDays()).append(" days ");
         interval.append(period.getHours()).append(" hours ");
         interval.append(period.getMinutes()).append(" minute");
+        interval.append(period.getSeconds()).append(" second");
 
         return interval.toString();
     }
@@ -34,7 +35,8 @@ public class JodaTimeUtils {
                 period.getMonths(),
                 period.getDays() + period.getWeeks() * 7,
                 period.getHours(),
-                period.getMinutes(), period.getSeconds()
+                period.getMinutes(),
+                period.getSeconds()
         );
     }
 
@@ -50,7 +52,7 @@ public class JodaTimeUtils {
                 days / 7, days % 7,
                 interval.getHours(),
                 interval.getMinutes(),
-                0,
+                (int) interval.getSeconds(),
                 0
         );
     }

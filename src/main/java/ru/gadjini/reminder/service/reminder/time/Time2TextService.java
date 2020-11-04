@@ -147,6 +147,9 @@ public class Time2TextService {
     }
 
     public String getPeriodView(Period period, Locale locale) {
+        if (period == null) {
+            return null;
+        }
         StringBuilder time = new StringBuilder();
 
         TimeDeclensionService declensionService = timeDeclensionProvider.getService(locale.getLanguage());
@@ -167,6 +170,9 @@ public class Time2TextService {
         }
         if (period.getMinutes() != 0) {
             time.append(declensionService.minute(period.getMinutes())).append(" ");
+        }
+        if (period.getSeconds() != 0) {
+            time.append(declensionService.seconds(period.getSeconds())).append(" ");
         }
 
         return time.toString().trim();

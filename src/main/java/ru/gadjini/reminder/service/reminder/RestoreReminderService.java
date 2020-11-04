@@ -75,7 +75,7 @@ public class RestoreReminderService {
             if (reminderNotification.getType().equals(ReminderNotification.Type.ONCE)) {
                 reminderNotificationService.deleteReminderNotification(reminderNotification.getId());
             } else {
-                reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), timeCreator.localDateTimeNow());
+                reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), timeCreator.localDateTimeNowWithMinutes());
             }
         }
     }

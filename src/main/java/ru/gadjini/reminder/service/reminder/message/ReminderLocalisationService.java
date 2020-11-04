@@ -276,4 +276,11 @@ public class ReminderLocalisationService {
         return localisationService.getMessage(MessagesProperties.ELAPSED_TIME,
                 new Object[]{StringUtils.defaultIfBlank(periodView, "undefined")}, locale);
     }
+
+    public String getWorkInProgress(ZonedDateTime workInProgress, Locale locale) {
+        return localisationService.getMessage(MessagesProperties.WORK_IN_PROGRESS,
+                new Object[]{
+                        timeBuilder.fixedDay(workInProgress, locale)
+                }, locale);
+    }
 }

@@ -76,14 +76,6 @@ public class ReminderJob {
         moveReminders();
     }
 
-    //00:00
-    @Scheduled(cron = "0 0 0 * * *")
-    public void deleteCompletedReminders() {
-        int deleted = reminderService.deleteCompletedReminders(timeCreator.localDateTimeNow().minusDays(1));
-
-        LOGGER.debug("Delete {} completed reminders at {}", deleted, LocalDateTime.now());
-    }
-
     //every hour
     @Scheduled(cron = "0 0 * * * *")
     public void moveReminders() {
@@ -163,7 +155,7 @@ public class ReminderJob {
     private void sendRepeatReminderTime(Reminder reminder, ReminderNotification reminderNotification) {
         reminderNotificationMessageSender.sendRemindMessage(reminder, reminderNotification.isItsTime());
 
-        reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), timeCreator.localDateTimeNow());
+        reminderNotificationService.updateLastRemindAt(reminderNotification.getId(), timeCreator.localDateTimeNowWithMinutes());
     }
 
     private void sendRepeatReminderTimeForRepeatableReminder(Reminder reminder, ReminderNotification reminderNotification) {

@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.message;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -237,6 +238,6 @@ public class TelegramMessageService implements MessageService {
                 .append("Stacktrace: ")
                 .append(ExceptionUtils.getStackTrace(ex));
 
-        return message.toString().substring(0, TgConstants.MAX_MESSAGE_SIZE);
+        return StringUtils.substring(message.toString(), 0, TgConstants.MAX_MESSAGE_SIZE);
     }
 }

@@ -79,8 +79,8 @@ public class ReminderDao {
                         "                    GROUP BY reminder_id\n" +
                         "                    HAVING COUNT(reminder_id) > 0) rt\n" +
                         "                   ON rt.reminder_id = r.id\n" +
-                        "WHERE ((r.creator_id = :user_id AND r.status IN (0, 2))\n" +
-                        "   OR (r.receiver_id = :user_id AND r.status = 0))\n" +
+                        "WHERE ((r.creator_id = :user_id AND r.status IN (0, 2, 3))\n" +
+                        "   OR (r.receiver_id = :user_id AND r.status IN (0, 3)))\n" +
                         getFilterClause(filter) + "\n" +
                         "ORDER BY (r.remind_at).dt_date, (r.remind_at).dt_time NULLS LAST, r.id",
                 new MapSqlParameterSource().addValue("user_id", userId),
@@ -93,7 +93,7 @@ public class ReminderDao {
                 "SELECT r.*, (r.remind_at).*, rc.zone_id as rc_zone_id\n" +
                         "FROM reminder r\n" +
                         "         INNER JOIN tg_user rc on r.receiver_id = rc.user_id\n" +
-                        "WHERE r.status = 0\n" +
+                        "WHERE r.status IN (0, 3)\n" +
                         "  AND r.repeat_remind_at IS NOT NULL\n" +
                         "  AND (r.remind_at).dt_date < (now()::timestamp AT TIME ZONE 'UTC' AT TIME ZONE rc.zone_id)::date",
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
@@ -153,8 +153,8 @@ public class ReminderDao {
                         "         LEFT JOIN friendship f ON CASE\n" +
                         "                                       WHEN f.user_one_id = r.creator_id THEN f.user_two_id = r.receiver_id\n" +
                         "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END\n" +
-                        "WHERE rc.blocked = false AND r.status = 0 AND CASE\n" +
-                        "          WHEN rt.time_type = 0 THEN :curr_date >= rt.fixed_time\n" +
+                        "WHERE rc.blocked = false AND r.status IN (0, 3) AND CASE\n" +
+                        "          WHEN rt.time_type IN (0, 3) THEN :curr_date >= rt.fixed_time\n" +
                         "          ELSE date_diff_in_minute(:curr_date, rt.last_reminder_at) >= minute(rt.delay_time)\n" +
                         "          END\n" +
                         "ORDER BY rt.id\n" +
@@ -179,6 +179,7 @@ public class ReminderDao {
 
         return new ArrayList<>(reminders.values());
     }
+
 
     public Reminder update(Map<Field<?>, Object> updateValues, Condition condition, ReminderMapping reminderMapping) {
         UpdateConditionStep<Record> update = dslContext.update(ReminderTable.TABLE)
@@ -302,7 +303,8 @@ public class ReminderDao {
                 con -> {
                     PreparedStatement ps = con.prepareStatement("WITH r AS (\n" +
                             "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
-                            "                       note, message_id, read, curr_repeat_index, challenge_id, curr_series_to_complete) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *\n" +
+                            "                       note, message_id, read, curr_repeat_index, challenge_id, curr_series_to_complete," +
+                            "time_tracker, estimate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *\n" +
                             ")\n" +
                             "SELECT r.id,\n" +
                             "       r.created_at,\n" +
@@ -356,6 +358,12 @@ public class ReminderDao {
                         ps.setInt(12, reminder.getCurrSeriesToComplete());
                     } else {
                         ps.setNull(12, Types.INTEGER);
+                    }
+                    ps.setBoolean(13, reminder.isTimeTracker());
+                    if (reminder.isTimeTracker()) {
+                        ps.setObject(14, JodaTimeUtils.toPgInterval(reminder.getEstimate()));
+                    } else {
+                        ps.setNull(14, Types.OTHER);
                     }
 
                     return ps;

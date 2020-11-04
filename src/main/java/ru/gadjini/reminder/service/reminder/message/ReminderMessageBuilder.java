@@ -131,12 +131,17 @@ public class ReminderMessageBuilder {
         if (reminder.isTimeTracker()) {
             result
                     .append("\n\n")
-                    .append(messageBuilder.getEstimate(reminder.getEstimate(), locale)).append("\n")
-                    .append(messageBuilder.getElapsedTime(reminder.getElapsedTime(), locale));
+                    .append(messageBuilder.getEstimate(reminder.getEstimate(), locale));
+            if (reminder.getElapsedTime() != null) {
+                result.append("\n").append(messageBuilder.getElapsedTime(reminder.getElapsedTime(), locale));
+            }
+            if (reminder.getStatus() == Reminder.Status.IN_PROGRESS) {
+                result.append("\n").append(messageBuilder.getWorkInProgress(reminder.getLastWorkInProgressAtInReceiverZone(), locale));
+            }
         }
 
         if (StringUtils.isNotBlank(note)) {
-            result.append("\n").append(messageBuilder.getNote(reminder.getNote(), locale));
+            result.append("\n\n").append(messageBuilder.getNote(reminder.getNote(), locale));
         }
 
         return result.toString();
@@ -295,6 +300,13 @@ public class ReminderMessageBuilder {
 
             text.append(messageBuilder.getCompletedAt(reminder.getCompletedAtInReceiverZone(), reminder.getReceiver().getLocale())).append("\n");
 
+            if (reminder.isTimeTracker()) {
+                text.append(messageBuilder.getEstimate(reminder.getEstimate(), locale));
+                if (reminder.getElapsedTime() != null) {
+                    text.append("\n").append(messageBuilder.getElapsedTime(reminder.getElapsedTime(), locale));
+                }
+            }
+
             if (reminder.isNotMySelf()) {
                 if (requesterId == reminder.getReceiverId()) {
                     text.append(messageBuilder.getReminderCreator(reminder.getCreator()));
@@ -303,6 +315,10 @@ public class ReminderMessageBuilder {
                 }
                 text.append("\n");
             }
+            if (StringUtils.isNotBlank(reminder.getNote())) {
+                text.append("\n").append(messageBuilder.getNote(reminder.getNote(), locale));
+            }
+            text.append("\n");
         }
 
         return text.toString();

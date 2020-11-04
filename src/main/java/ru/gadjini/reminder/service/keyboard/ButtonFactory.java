@@ -462,4 +462,20 @@ public class ButtonFactory {
 
         return button;
     }
+
+    InlineKeyboardButton startReminder(int reminderId, Locale locale) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.START_WORK_COMMAND_DESCRIPTION, locale));
+        button.setCallbackData(CommandNames.START_WORK_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
+
+    InlineKeyboardButton stopReminder(int reminderId, Locale locale) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.STOP_WORK_COMMAND_DESCRIPTION, locale));
+        button.setCallbackData(CommandNames.STOP_WORK_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
 }

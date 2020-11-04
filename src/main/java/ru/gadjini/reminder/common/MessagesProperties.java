@@ -594,4 +594,10 @@ public class MessagesProperties {
     public static final String TASK_ESTIMATE = "task.estimate";
 
     public static final String ELAPSED_TIME = "elapsed.time";
+
+    public static final String START_WORK_COMMAND_DESCRIPTION = "start.work.command.description";
+
+    public static final String STOP_WORK_COMMAND_DESCRIPTION = "stop.work.command.description";
+
+    public static final String WORK_IN_PROGRESS = "work.in.progress";
 }

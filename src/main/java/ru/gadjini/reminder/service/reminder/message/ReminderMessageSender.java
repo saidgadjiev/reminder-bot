@@ -136,6 +136,28 @@ public class ReminderMessageSender {
         );
     }
 
+    public void sendWorkStarted(Reminder reminder, int messageId, InlineKeyboardMarkup inlineKeyboardMarkup) {
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.HIGH)
+                        .messageId(messageId)
+                        .chatId(reminder.getReceiverId())
+                        .text(reminderMessageBuilder.getReminderMessage(reminder))
+                        .replyKeyboard(new KeyboardCustomizer(inlineKeyboardMarkup).replaceButton(CommandNames.START_WORK_COMMAND_NAME,
+                                CommandNames.STOP_WORK_COMMAND_NAME, localisationService.getMessage(MessagesProperties.STOP_WORK_COMMAND_DESCRIPTION, reminder.getReceiver().getLocale())).getKeyboardMarkup())
+        );
+    }
+
+    public void sendWorkStopped(Reminder reminder, int messageId, InlineKeyboardMarkup inlineKeyboardMarkup) {
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.HIGH)
+                        .messageId(messageId)
+                        .chatId(reminder.getReceiverId())
+                        .text(reminderMessageBuilder.getReminderMessage(reminder))
+                        .replyKeyboard(new KeyboardCustomizer(inlineKeyboardMarkup).replaceButton(CommandNames.STOP_WORK_COMMAND_NAME,
+                                CommandNames.START_WORK_COMMAND_NAME, localisationService.getMessage(MessagesProperties.START_WORK_COMMAND_DESCRIPTION, reminder.getReceiver().getLocale())).getKeyboardMarkup())
+        );
+    }
+
     public void sendReminderFullyUpdate(UpdateReminderResult updateReminderResult) {
         Reminder oldReminder = updateReminderResult.getOldReminder();
         Reminder newReminder = updateReminderResult.getNewReminder();

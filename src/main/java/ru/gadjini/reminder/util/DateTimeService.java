@@ -17,7 +17,11 @@ public class DateTimeService {
         return ZonedDateTime.now(zoneId).withSecond(0).withNano(0);
     }
 
-    public LocalDateTime localDateTimeNow() {
+    public LocalDateTime localDateTimeWithSeconds() {
+        return LocalDateTime.now().withNano(0);
+    }
+
+    public LocalDateTime localDateTimeNowWithMinutes() {
         return LocalDateTime.now().withSecond(0).withNano(0);
     }
 
