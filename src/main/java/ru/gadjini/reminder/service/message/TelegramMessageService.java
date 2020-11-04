@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.service.message;
 
+import com.google.common.base.Splitter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -31,6 +32,8 @@ import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.service.TelegramService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
@@ -88,7 +91,7 @@ public class TelegramMessageService implements MessageService {
         senderJob.push(new PriorityJob(messageContext.priority()) {
             @Override
             public void run() {
-                sendMessage(messageContext, callback);
+                sendMessageWithTgLimits(messageContext, callback);
             }
         });
     }
@@ -228,6 +231,29 @@ public class TelegramMessageService implements MessageService {
             telegramService.execute(editMessageReplyMarkup);
         } catch (TelegramApiException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+
+    private void sendMessageWithTgLimits(SendMessageContext sendMessage, Consumer<Message> callback) {
+        if (sendMessage.text().length() < TgConstants.MAX_MESSAGE_SIZE) {
+            sendMessage(sendMessage, callback);
+        } else {
+            List<String> parts = new ArrayList<>();
+            Splitter.fixedLength(TgConstants.MAX_MESSAGE_SIZE)
+                    .split(sendMessage.text())
+                    .forEach(parts::add);
+            for (int i = 0; i < parts.size() - 1; ++i) {
+                SendMessageContext msg = new SendMessageContext(sendMessage.priority()).chatId(sendMessage.chatId())
+                        .text(parts.get(i))
+                        .html(sendMessage.html());
+                sendMessage(msg, null);
+            }
+
+            SendMessageContext msg = new SendMessageContext(sendMessage.priority())
+                    .chatId(sendMessage.chatId()).text(parts.get(parts.size() - 1))
+                    .html(sendMessage.html())
+                    .replyKeyboard(sendMessage.replyKeyboard());
+            sendMessage(msg, callback);
         }
     }
 
