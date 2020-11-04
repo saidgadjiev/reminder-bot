@@ -161,7 +161,7 @@ public class RepeatTimeLexer {
 
             return null;
         } else {
-            return values;
+            return values.isEmpty() ? null : values;
         }
     }
 }

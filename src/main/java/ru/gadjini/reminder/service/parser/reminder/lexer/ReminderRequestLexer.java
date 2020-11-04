@@ -5,6 +5,7 @@ import ru.gadjini.reminder.service.parser.api.Lexem;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexer;
 import ru.gadjini.reminder.service.parser.time.lexer.TimeLexerConfig;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -45,15 +46,30 @@ public class ReminderRequestLexer {
         lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, StringUtils.capitalize(tokenizeStr.trim())));
 
         if (parts.length > 1 && StringUtils.isNotBlank(parts[1])) {
-            lexems.add(new ReminderLexem(ReminderToken.NOTE, parts[1]));
+            List<Lexem> estimateLexems = tryParseEstimate(parts[1]);
+            if (estimateLexems != null) {
+                lexems.addAll(estimateLexems);
+            } else {
+                lexems.add(new ReminderLexem(ReminderToken.NOTE, parts[1]));
+            }
         }
         if (parts.length > 2 && StringUtils.isNotBlank(parts[2])) {
-            lexems.add(new ReminderLexem(ReminderToken.ESTIMATE, ""));
-            LinkedList<Lexem> estimateLexems = new TimeLexer(timeLexerConfig, parts[2], true, true, locale).tokenize();
+            List<Lexem> estimateLexems = tryParseEstimate(parts[2]);
             lexems.addAll(estimateLexems);
         }
 
         return lexems;
+    }
+
+    private List<Lexem> tryParseEstimate(String request) {
+        List<Lexem> lexems = new ArrayList<>();
+        LinkedList<Lexem> estimateLexems = new TimeLexer(timeLexerConfig, request, true, true, locale).tokenize();
+        if (estimateLexems != null) {
+            lexems.add(new ReminderLexem(ReminderToken.ESTIMATE, ""));
+            lexems.addAll(estimateLexems);
+        }
+
+        return lexems.isEmpty() ? null : lexems;
     }
 
     private String[] breakToTextAndNote(String str) {
