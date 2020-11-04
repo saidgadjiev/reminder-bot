@@ -591,7 +591,7 @@ public class MessagesProperties {
 
     public static final String DELETE_ALL_REMINDERS_COMMAND_DESCRIPTION = "delete.all.reminders.command.description";
 
-    public static final String TASK_ASSESSMENT = "task.assessment";
+    public static final String TASK_ESTIMATE = "task.estimate";
 
     public static final String ELAPSED_TIME = "elapsed.time";
 }

@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.regex.GroupPattern;
 import ru.gadjini.reminder.service.message.LocalisationService;
 import ru.gadjini.reminder.service.parser.api.Lexem;
@@ -56,6 +55,14 @@ class ReminderRequestLexerTest {
         ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str, LOCALE);
         List<Lexem> lexems = lexer.tokenize();
         Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new Lexem(TimeToken.REPEAT, ""), new Lexem(TimeToken.DAY, "25"), new Lexem(TimeToken.MONTH_WORD, "января"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30")), lexems);
+    }
+
+    @Test
+    void estimateTime() {
+        String str = "Тест 19:30;;2ч";
+        ReminderRequestLexer lexer = new ReminderRequestLexer(lexerConfig, TIME_LEXER_CONFIG, str, LOCALE);
+        List<Lexem> lexems = lexer.tokenize();
+        Assert.assertEquals(expected(new ReminderLexem(ReminderToken.TEXT, "Тест"), new Lexem(TimeToken.HOUR, "19"), new Lexem(TimeToken.MINUTE, "30"), new ReminderLexem(ReminderToken.ESTIMATE, ""), new Lexem(TimeToken.REPEAT, ""), new Lexem(TimeToken.HOURS, "2")), lexems);
     }
 
     @Test

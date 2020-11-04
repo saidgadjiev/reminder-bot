@@ -85,9 +85,9 @@ public class ResultSetMapper {
         reminder.setText(rs.getString(Reminder.TEXT));
 
         reminder.setTimeTracker(rs.getBoolean(Reminder.TIME_TRACKER));
-        PGInterval assessment = (PGInterval) rs.getObject(Reminder.ASSESSMENT);
-        if (assessment != null) {
-            reminder.setAssessment(JodaTimeUtils.toPeriod(assessment));
+        PGInterval estimate = (PGInterval) rs.getObject(Reminder.ESTIMATE);
+        if (estimate != null) {
+            reminder.setEstimate(JodaTimeUtils.toPeriod(estimate));
         }
 
         if (columnNames.contains(Reminder.CURR_SERIES_TO_COMPLETE)) {

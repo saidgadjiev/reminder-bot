@@ -64,7 +64,7 @@ public class Reminder {
 
     public static final String TIME_TRACKER = "time_tracker";
 
-    public static final String ASSESSMENT = "assessment";
+    public static final String ESTIMATE = "estimate";
 
     public static final String ELAPSED_TIME = "elapsed_time";
 
@@ -122,7 +122,7 @@ public class Reminder {
 
     private boolean timeTracker;
 
-    private Period assessment;
+    private Period estimate;
 
     private Period elapsedTime;
 
@@ -422,12 +422,12 @@ public class Reminder {
         return timeTracker;
     }
 
-    public Period getAssessment() {
-        return assessment;
+    public Period getEstimate() {
+        return estimate;
     }
 
-    public void setAssessment(Period assessment) {
-        this.assessment = assessment;
+    public void setEstimate(Period estimate) {
+        this.estimate = estimate;
     }
 
     public Period getElapsedTime() {

@@ -265,9 +265,9 @@ public class ReminderLocalisationService {
         return localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_ICON, locale);
     }
 
-    public String getTaskAssessment(Period assessment, Locale locale) {
-        String periodView = timeBuilder.getPeriodView(assessment, locale);
-        return localisationService.getMessage(MessagesProperties.TASK_ASSESSMENT,
+    public String getEstimate(Period estimate, Locale locale) {
+        String periodView = timeBuilder.getPeriodView(estimate, locale);
+        return localisationService.getMessage(MessagesProperties.TASK_ESTIMATE,
                 new Object[]{StringUtils.defaultIfBlank(periodView, "undefined")}, locale);
     }
 

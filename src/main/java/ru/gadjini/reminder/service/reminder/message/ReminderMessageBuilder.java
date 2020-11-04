@@ -131,7 +131,7 @@ public class ReminderMessageBuilder {
         if (reminder.isTimeTracker()) {
             result
                     .append("\n\n")
-                    .append(messageBuilder.getTaskAssessment(reminder.getAssessment(), locale)).append("\n")
+                    .append(messageBuilder.getEstimate(reminder.getEstimate(), locale)).append("\n")
                     .append(messageBuilder.getElapsedTime(reminder.getElapsedTime(), locale));
         }
 

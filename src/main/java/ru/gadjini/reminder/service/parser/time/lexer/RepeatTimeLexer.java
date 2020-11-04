@@ -17,14 +17,17 @@ public class RepeatTimeLexer {
 
     private boolean fullMatch;
 
+    private final boolean withoutRepeatWord;
+
     private final Locale locale;
 
     private int matchEnd;
 
-    public RepeatTimeLexer(TimeLexerConfig lexerConfig, String str, boolean fullMatch, Locale locale) {
+    public RepeatTimeLexer(TimeLexerConfig lexerConfig, String str, boolean fullMatch, boolean withoutRepeatWord, Locale locale) {
         this.lexerConfig = lexerConfig;
         this.str = str;
         this.fullMatch = fullMatch;
+        this.withoutRepeatWord = withoutRepeatWord;
         this.locale = locale;
     }
 
@@ -141,21 +144,24 @@ public class RepeatTimeLexer {
 
             matcher = lexerConfig.getRepeatTimePattern(locale).maxMatcher(tmp);
         }
-        if (fullMatch) {
-            matcher = lexerConfig.getRepeatWordPattern(locale).matcher(tmp);
+        if (!withoutRepeatWord) {
+            if (fullMatch) {
+                matcher = lexerConfig.getRepeatWordPattern(locale).matcher(tmp);
 
-            if (!matcher.matches()) {
-                return null;
+                if (!matcher.matches()) {
+                    return null;
+                }
+            } else {
+                matcher = lexerConfig.getRepeatWordPattern(locale).maxMatcher(tmp);
             }
-        } else {
-            matcher = lexerConfig.getRepeatWordPattern(locale).maxMatcher(tmp);
-        }
+            if (matcher != null) {
+                matchEnd += matcher.end();
+                return values;
+            }
 
-        if (matcher != null) {
-            matchEnd += matcher.end();
+            return null;
+        } else {
             return values;
         }
-
-        return null;
     }
 }

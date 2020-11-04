@@ -6,5 +6,7 @@ public enum ReminderToken implements Token {
 
     TEXT,
 
-    NOTE
+    NOTE,
+
+    ESTIMATE
 }

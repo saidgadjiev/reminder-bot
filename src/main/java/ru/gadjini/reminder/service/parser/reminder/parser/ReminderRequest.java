@@ -1,7 +1,9 @@
 package ru.gadjini.reminder.service.parser.reminder.parser;
 
+import org.joda.time.Period;
 import ru.gadjini.reminder.domain.time.FixedTime;
 import ru.gadjini.reminder.domain.time.OffsetTime;
+import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.time.DateTime;
 
@@ -19,6 +21,8 @@ public class ReminderRequest {
     private String text;
 
     private String note;
+
+    private Period estimate;
 
     private Time time;
 
@@ -130,5 +134,13 @@ public class ReminderRequest {
 
     public void setChallengeId(Integer challengeId) {
         this.challengeId = challengeId;
+    }
+
+    public Period getEstimate() {
+        return estimate;
+    }
+
+    public void setEstimate(Period estimate) {
+        this.estimate = estimate;
     }
 }

@@ -360,6 +360,11 @@ public class ReminderRequestService {
         reminder.setCreator(creator);
         reminder.setCreatorId(creator.getUserId());
 
+        if (reminderRequest.getEstimate() != null) {
+            reminder.setTimeTracker(true);
+            reminder.setEstimate(reminderRequest.getEstimate());
+        }
+
         if (StringUtils.isNotBlank(reminderRequest.getReceiverName())) {
             TgUser receiver = new TgUser();
             receiver.setUsername(reminderRequest.getReceiverName());

@@ -17,6 +17,7 @@ import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.jdbc.JooqPreparedSetter;
 import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.jdbc.ResultSetMapper;
+import ru.gadjini.reminder.util.JodaTimeUtils;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -377,7 +378,8 @@ public class ReminderDao {
                 con -> {
                     PreparedStatement ps = con.prepareStatement("WITH r AS (\n" +
                             "    INSERT INTO reminder (reminder_text, creator_id, receiver_id, remind_at, repeat_remind_at, initial_remind_at,\n" +
-                            "                          note, message_id, read, curr_repeat_index, challenge_id, curr_series_to_complete) SELECT ?, ?, user_id, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? FROM tg_user WHERE username = ? RETURNING *\n" +
+                            "                          note, message_id, read, curr_repeat_index, challenge_id, curr_series_to_complete, " +
+                            "time_tracker, estimate) SELECT ?, ?, user_id, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? FROM tg_user WHERE username = ? RETURNING *\n" +
                             ")\n" +
                             "SELECT r.id,\n" +
                             "       r.receiver_id,\n" +
@@ -422,7 +424,15 @@ public class ReminderDao {
                     } else {
                         ps.setNull(11, Types.INTEGER);
                     }
-                    ps.setString(12, reminder.getReceiver().getUsername());
+
+                    ps.setBoolean(12, reminder.isTimeTracker());
+                    if (reminder.isTimeTracker()) {
+                        ps.setObject(13, JodaTimeUtils.toPgInterval(reminder.getEstimate()));
+                    } else {
+                        ps.setNull(13, Types.OTHER);
+                    }
+
+                    ps.setString(14, reminder.getReceiver().getUsername());
 
                     return ps;
                 },

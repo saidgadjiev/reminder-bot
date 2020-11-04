@@ -24,10 +24,14 @@ public class TimeLexer {
     }
 
     public TimeLexer(TimeLexerConfig timeLexerConfig, String str, boolean fullMatch, Locale locale) {
+        this(timeLexerConfig, str, fullMatch, false, locale);
+    }
+
+    public TimeLexer(TimeLexerConfig timeLexerConfig, String str, boolean fullMatch, boolean withoutRepeatWord, Locale locale) {
         this.str = str;
 
         str = str.toLowerCase();
-        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, str, fullMatch, locale);
+        this.repeatTimeLexer = new RepeatTimeLexer(timeLexerConfig, str, fullMatch, withoutRepeatWord, locale);
         this.fixedTimeLexer = new FixedTimeLexer(timeLexerConfig, str, fullMatch, locale);
         this.offsetTimeLexer = new OffsetTimeLexer(timeLexerConfig, str, fullMatch, locale);
     }

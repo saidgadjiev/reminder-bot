@@ -52,5 +52,9 @@ public class ReminderRequestParser {
         if (lexemsConsumer.check(lexems, ReminderToken.NOTE)) {
             reminderRequest.setNote(lexemsConsumer.consume(lexems, ReminderToken.NOTE).getValue());
         }
+        if (lexemsConsumer.check(lexems, ReminderToken.ESTIMATE)) {
+            lexemsConsumer.consume(lexems, ReminderToken.ESTIMATE);
+            reminderRequest.setEstimate(timeParser.parse(lexems).getRepeatTimes().get(0));
+        }
     }
 }
