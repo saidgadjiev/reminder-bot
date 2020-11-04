@@ -44,17 +44,13 @@ public class ReminderRequestLexer {
     private LinkedList<Lexem> breakRequestToParts(String tokenizeStr, LinkedList<Lexem> lexems) {
         lexems.addFirst(new ReminderLexem(ReminderToken.TEXT, StringUtils.capitalize(tokenizeStr.trim())));
 
-        if (parts.length > 1) {
-            if (StringUtils.isNotBlank(parts[1])) {
-                lexems.add(new ReminderLexem(ReminderToken.NOTE, parts[1]));
-            }
+        if (parts.length > 1 && StringUtils.isNotBlank(parts[1])) {
+            lexems.add(new ReminderLexem(ReminderToken.NOTE, parts[1]));
         }
-        if (parts.length > 2) {
-            if (StringUtils.isNotBlank(parts[2])) {
-                lexems.add(new ReminderLexem(ReminderToken.ESTIMATE, ""));
-                LinkedList<Lexem> estimateLexems = new TimeLexer(timeLexerConfig, parts[2], true, true, locale).tokenize();
-                lexems.addAll(estimateLexems);
-            }
+        if (parts.length > 2 && StringUtils.isNotBlank(parts[2])) {
+            lexems.add(new ReminderLexem(ReminderToken.ESTIMATE, ""));
+            LinkedList<Lexem> estimateLexems = new TimeLexer(timeLexerConfig, parts[2], true, true, locale).tokenize();
+            lexems.addAll(estimateLexems);
         }
 
         return lexems;

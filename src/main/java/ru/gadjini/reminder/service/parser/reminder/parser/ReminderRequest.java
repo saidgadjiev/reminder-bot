@@ -3,7 +3,6 @@ package ru.gadjini.reminder.service.parser.reminder.parser;
 import org.joda.time.Period;
 import ru.gadjini.reminder.domain.time.FixedTime;
 import ru.gadjini.reminder.domain.time.OffsetTime;
-import ru.gadjini.reminder.domain.time.RepeatTime;
 import ru.gadjini.reminder.domain.time.Time;
 import ru.gadjini.reminder.time.DateTime;
 
