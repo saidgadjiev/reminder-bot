@@ -661,6 +661,16 @@ public class ReminderMessageSender {
         }
     }
 
+    public void sendTimeTrackerEnabled(int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, Reminder reminder) {
+        messageService.editMessageAsync(
+                new EditMessageContext(PriorityJob.Priority.HIGH)
+                        .chatId(reminder.getCreatorId())
+                        .messageId(messageId)
+                        .text(reminderMessageBuilder.getReminderMessage(reminder, new ReminderMessageBuilder.ReminderMessageConfig().receiverId(reminder.getCreatorId())))
+                        .replyKeyboard(new KeyboardCustomizer(inlineKeyboardMarkup).remove(CommandNames.TIME_TRACKER_COMMAND_NAME).getKeyboardMarkup())
+        );
+    }
+
     public void sendCountSeriesEnabledOrDisabled(long chatId, int messageId, InlineKeyboardMarkup inlineKeyboardMarkup, Reminder reminder) {
         InlineKeyboardMarkup newKeyboard;
 

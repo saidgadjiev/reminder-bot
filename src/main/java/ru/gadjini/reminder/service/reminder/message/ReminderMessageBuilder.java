@@ -128,6 +128,12 @@ public class ReminderMessageBuilder {
                     .append(messageBuilder.getMaxSeries(reminder.getMaxSeries(), locale)).append("\n")
                     .append(messageBuilder.getTotalSeries(reminder.getTotalSeries(), locale));
         }
+        if (reminder.isTimeTracker()) {
+            result
+                    .append("\n\n")
+                    .append(messageBuilder.getTaskAssessment(reminder.getAssessment(), locale)).append("\n")
+                    .append(messageBuilder.getElapsedTime(reminder.getElapsedTime(), locale));
+        }
 
         if (StringUtils.isNotBlank(note)) {
             result.append("\n").append(messageBuilder.getNote(reminder.getNote(), locale));

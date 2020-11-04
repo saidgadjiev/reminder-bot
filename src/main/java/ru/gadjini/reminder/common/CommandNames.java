@@ -73,4 +73,5 @@ public class CommandNames {
     public static final String EXIT_COMMAND_NAME = "bm";
     public static final String DELETE_ALL_COMMAND_NAME = "bn";
     public static final String COMPLETE_ALL_COMMAND_NAME = "bp";
+    public static final String TIME_TRACKER_COMMAND_NAME = "bq";
 }

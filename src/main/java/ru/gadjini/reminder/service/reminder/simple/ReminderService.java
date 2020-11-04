@@ -120,6 +120,16 @@ public class ReminderService {
         );
     }
 
+    public Reminder enableTimeTracker(int reminderId) {
+        return reminderDao.update(
+                Map.of(ReminderTable.TABLE.TIME_TRACKER, true),
+                ReminderTable.TABLE.ID.eq(reminderId),
+                new ReminderMapping()
+                        .setCreatorMapping(new Mapping())
+                        .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
+        );
+    }
+
     public void updateReminderNotifications(int reminderId, int receiverId, DateTime remindAt) {
         reminderNotificationService.deleteReminderNotifications(reminderId);
         List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAt, receiverId);

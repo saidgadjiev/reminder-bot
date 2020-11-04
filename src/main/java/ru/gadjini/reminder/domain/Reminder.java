@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.domain;
 
+import org.joda.time.Period;
 import org.jooq.Field;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
 import ru.gadjini.reminder.domain.jooq.datatype.RepeatTimeRecord;
@@ -61,6 +62,12 @@ public class Reminder {
 
     public static final String CURR_SERIES_TO_COMPLETE = "curr_series_to_complete";
 
+    public static final String TIME_TRACKER = "time_tracker";
+
+    public static final String ASSESSMENT = "assessment";
+
+    public static final String ELAPSED_TIME = "elapsed_time";
+
     private int id;
 
     private String text;
@@ -112,6 +119,12 @@ public class Reminder {
     private Integer challengeId;
 
     private Integer currSeriesToComplete;
+
+    private boolean timeTracker;
+
+    private Period assessment;
+
+    private Period elapsedTime;
 
     public Reminder() {
     }
@@ -399,6 +412,30 @@ public class Reminder {
 
     public void setCurrSeriesToComplete(Integer currSeriesToComplete) {
         this.currSeriesToComplete = currSeriesToComplete;
+    }
+
+    public void setTimeTracker(boolean aBoolean) {
+        this.timeTracker = aBoolean;
+    }
+
+    public boolean isTimeTracker() {
+        return timeTracker;
+    }
+
+    public Period getAssessment() {
+        return assessment;
+    }
+
+    public void setAssessment(Period assessment) {
+        this.assessment = assessment;
+    }
+
+    public Period getElapsedTime() {
+        return elapsedTime;
+    }
+
+    public void setElapsedTime(Period elapsedTime) {
+        this.elapsedTime = elapsedTime;
     }
 
     public boolean isRepeatableWithoutTime() {

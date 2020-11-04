@@ -146,6 +146,32 @@ public class Time2TextService {
         return fixedDay(remindAt, locale);
     }
 
+    public String getPeriodView(Period period, Locale locale) {
+        StringBuilder time = new StringBuilder();
+
+        TimeDeclensionService declensionService = timeDeclensionProvider.getService(locale.getLanguage());
+        if (period.getYears() != 0) {
+            time.append(declensionService.year(period.getYears())).append(" ");
+        }
+        if (period.getMonths() != 0) {
+            time.append(declensionService.months(period.getMonths())).append(" ");
+        }
+        if (period.getWeeks() != 0) {
+            time.append(declensionService.weeks(period.getWeeks())).append(" ");
+        }
+        if (period.getDays() != 0) {
+            time.append(declensionService.day(period.getDays())).append(" ");
+        }
+        if (period.getHours() != 0) {
+            time.append(declensionService.hour(period.getHours())).append(" ");
+        }
+        if (period.getMinutes() != 0) {
+            time.append(declensionService.minute(period.getMinutes())).append(" ");
+        }
+
+        return time.toString().trim();
+    }
+
     public String time(Period period, Locale locale) {
         return time(period, true, locale);
     }
@@ -261,31 +287,5 @@ public class Time2TextService {
 
         return timeArticle + " " + DATE_TIME_FORMATTER.format(localTime);
 
-    }
-
-    private String getPeriodView(Period period, Locale locale) {
-        StringBuilder time = new StringBuilder();
-
-        TimeDeclensionService declensionService = timeDeclensionProvider.getService(locale.getLanguage());
-        if (period.getYears() != 0) {
-            time.append(declensionService.year(period.getYears())).append(" ");
-        }
-        if (period.getMonths() != 0) {
-            time.append(declensionService.months(period.getMonths())).append(" ");
-        }
-        if (period.getWeeks() != 0) {
-            time.append(declensionService.weeks(period.getWeeks())).append(" ");
-        }
-        if (period.getDays() != 0) {
-            time.append(declensionService.day(period.getDays())).append(" ");
-        }
-        if (period.getHours() != 0) {
-            time.append(declensionService.hour(period.getHours())).append(" ");
-        }
-        if (period.getMinutes() != 0) {
-            time.append(declensionService.minute(period.getMinutes())).append(" ");
-        }
-
-        return time.toString().trim();
     }
 }

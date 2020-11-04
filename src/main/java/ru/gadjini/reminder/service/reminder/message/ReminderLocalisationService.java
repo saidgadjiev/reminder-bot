@@ -1,5 +1,7 @@
 package ru.gadjini.reminder.service.reminder.message;
 
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.gadjini.reminder.common.MessagesProperties;
@@ -248,7 +250,7 @@ public class ReminderLocalisationService {
     }
 
     public String getSeriesToComplete(int currSeriesToComplete, int seriesToComplete, Locale locale) {
-        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_SERIES_TO_COMPLETE, new Object[] {currSeriesToComplete + " " + timesDeclensionService.getTimes(currSeriesToComplete), seriesToComplete}, locale);
+        return localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_SERIES_TO_COMPLETE, new Object[]{currSeriesToComplete + " " + timesDeclensionService.getTimes(currSeriesToComplete), seriesToComplete}, locale);
     }
 
     public String getRemindersEmpty(Locale locale) {
@@ -261,5 +263,17 @@ public class ReminderLocalisationService {
 
     public String getSuppressNotificationsIcon(Locale locale) {
         return localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_ICON, locale);
+    }
+
+    public String getTaskAssessment(Period assessment, Locale locale) {
+        String periodView = timeBuilder.getPeriodView(assessment, locale);
+        return localisationService.getMessage(MessagesProperties.TASK_ASSESSMENT,
+                new Object[]{StringUtils.defaultIfBlank(periodView, "undefined")}, locale);
+    }
+
+    public String getElapsedTime(Period elapsedTime, Locale locale) {
+        String periodView = timeBuilder.getPeriodView(elapsedTime, locale);
+        return localisationService.getMessage(MessagesProperties.ELAPSED_TIME,
+                new Object[]{StringUtils.defaultIfBlank(periodView, "undefined")}, locale);
     }
 }
