@@ -296,12 +296,12 @@ public class ReminderMessageBuilder {
         int i = 1;
         for (Reminder reminder : reminders) {
             String number = i++ + ") ";
-            text.append(number).append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder, locale)).append(")\n");
+            text.append(number).append(reminder.getText()).append("(").append(reminderTimeBuilder.time(reminder, locale)).append(")");
 
-            text.append(messageBuilder.getCompletedAt(reminder.getCompletedAtInReceiverZone(), reminder.getReceiver().getLocale())).append("\n");
+            text.append("\n").append(messageBuilder.getCompletedAt(reminder.getCompletedAtInReceiverZone(), reminder.getReceiver().getLocale()));
 
             if (reminder.isTimeTracker()) {
-                text.append(messageBuilder.getEstimate(reminder.getEstimate(), locale));
+                text.append("\n").append(messageBuilder.getEstimate(reminder.getEstimate(), locale));
                 if (reminder.getElapsedTime() != null) {
                     text.append("\n").append(messageBuilder.getElapsedTime(reminder.getElapsedTime(), locale));
                 }
@@ -309,16 +309,15 @@ public class ReminderMessageBuilder {
 
             if (reminder.isNotMySelf()) {
                 if (requesterId == reminder.getReceiverId()) {
-                    text.append(messageBuilder.getReminderCreator(reminder.getCreator()));
+                    text.append("\n").append(messageBuilder.getReminderCreator(reminder.getCreator()));
                 } else {
-                    text.append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
+                    text.append("\n").append(messageBuilder.getReminderReceiver(reminder.getReceiver()));
                 }
-                text.append("\n");
             }
             if (StringUtils.isNotBlank(reminder.getNote())) {
                 text.append("\n").append(messageBuilder.getNote(reminder.getNote(), locale));
             }
-            text.append("\n");
+            text.append("\n\n");
         }
 
         return text.toString();
