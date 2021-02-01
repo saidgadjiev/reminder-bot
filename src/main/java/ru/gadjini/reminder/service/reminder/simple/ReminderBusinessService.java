@@ -36,6 +36,7 @@ public class ReminderBusinessService {
 
     @Transactional
     public Reminder completeReminder(int id) {
+        reminderService.stopWork(id);
         Reminder completed = reminderDao.update(
                 Map.of(ReminderTable.TABLE.STATUS, Reminder.Status.COMPLETED.getCode()),
                 ReminderTable.TABLE.STATUS.equal(Reminder.Status.ACTIVE.getCode()).and(ReminderTable.TABLE.ID.equal(id)),
