@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.time.RepeatTime;
@@ -259,6 +260,10 @@ public class ReminderLocalisationService {
 
     public String getExpiredIcon(Locale locale) {
         return localisationService.getMessage(MessagesProperties.MESSAGE_EXPIRED_REMINDER_ICON, locale);
+    }
+
+    public String getInProgressIcon(Locale locale) {
+        return localisationService.getMessage(MessagesProperties.MESSAGE_IN_PROGRESS_REMINDER_ICON, locale);
     }
 
     public String getSuppressNotificationsIcon(Locale locale) {

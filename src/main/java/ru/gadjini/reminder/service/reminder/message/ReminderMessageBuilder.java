@@ -580,6 +580,9 @@ public class ReminderMessageBuilder {
     private List<String> getReminderIcons(int requesterId, Reminder reminder, Locale locale) {
         List<String> icons = new ArrayList<>();
 
+        if (Reminder.Status.IN_PROGRESS.equals(reminder.getStatus())) {
+            icons.add(messageBuilder.getInProgressIcon(locale));
+        }
         if (!reminder.isRepeatable() && isExpired(reminder.getRemindAt())) {
             icons.add(messageBuilder.getExpiredIcon(locale));
         }

@@ -600,4 +600,6 @@ public class MessagesProperties {
     public static final String STOP_WORK_COMMAND_DESCRIPTION = "stop.work.command.description";
 
     public static final String WORK_IN_PROGRESS = "work.in.progress";
+
+    public static final String MESSAGE_IN_PROGRESS_REMINDER_ICON = "message.in.progress.reminder.icon";
 }
