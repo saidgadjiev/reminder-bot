@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.time.RepeatTime;
