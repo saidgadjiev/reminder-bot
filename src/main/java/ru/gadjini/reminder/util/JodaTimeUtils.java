@@ -19,7 +19,7 @@ public class JodaTimeUtils {
         interval.append(period.getWeeks()).append(" weeks ");
         interval.append(period.getDays()).append(" days ");
         interval.append(period.getHours()).append(" hours ");
-        interval.append(period.getMinutes()).append(" minute");
+        interval.append(period.getMinutes()).append(" minute ");
         interval.append(period.getSeconds()).append(" second");
 
         return interval.toString();
