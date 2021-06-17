@@ -6,9 +6,9 @@ import ru.gadjini.reminder.domain.Subscription;
 import java.time.LocalDate;
 
 public interface SubscriptionDao {
-    Subscription getSubscription(int userId);
+    Subscription getSubscription(long userId);
 
     void create(Subscription subscription);
 
-    LocalDate update(Period period, int planId, int userId);
+    LocalDate update(Period period, int planId, long userId);
 }

@@ -155,7 +155,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         }
     }
 
-    private void postponeTime(int userId, String text, StateData stateData, Locale locale) {
+    private void postponeTime(long userId, String text, StateData stateData, Locale locale) {
         Reminder reminder = ReminderData.to(stateData.getReminder());
         Time parseTime = timeRequestService.parseTime(text, reminder.getReceiver().getZone(), reminder.getReceiver().getLocale());
 
@@ -177,7 +177,7 @@ public class PostponeReminderCommand implements CallbackBotCommand, NavigableCal
         stateService.setState(userId, stateData);
     }
 
-    private void postpone(int userId, String reason, StateData stateData) {
+    private void postpone(long userId, String reason, StateData stateData) {
         UpdateReminderResult updateReminderResult = reminderRequestService.postponeReminder(ReminderData.to(stateData.getReminder()), TimeData.to(stateData.getPostponeTime()));
         commandNavigator.silentPop(userId);
         reminderMessageSender.sendReminderPostponed(stateData.getCallbackRequest().getMessageId(), stateData.getCallbackRequest().getReplyKeyboard(), updateReminderResult, reason);

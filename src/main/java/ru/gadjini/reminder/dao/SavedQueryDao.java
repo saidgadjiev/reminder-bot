@@ -21,30 +21,30 @@ public class SavedQueryDao {
         this.resultSetMapper = resultSetMapper;
     }
 
-    public List<SavedQuery> getQueries(int userId) {
+    public List<SavedQuery> getQueries(long userId) {
         return jdbcTemplate.query(
                 "SELECT * FROM saved_query WHERE user_id = ? ORDER BY query",
-                ps -> ps.setInt(1, userId),
+                ps -> ps.setLong(1, userId),
                 (rs, rowNum) -> {
                     return resultSetMapper.mapSavedQuery(rs);
                 }
         );
     }
 
-    public List<String> getQueriesOnly(int userId) {
+    public List<String> getQueriesOnly(long userId) {
         return jdbcTemplate.query(
                 "SELECT query FROM saved_query WHERE user_id = ? ORDER BY query",
-                ps -> ps.setInt(1, userId),
+                ps -> ps.setLong(1, userId),
                 (rs, rowNum) -> rs.getString("query")
         );
     }
 
-    public void saveQuery(int userId, String query) {
+    public void saveQuery(long userId, String query) {
         jdbcTemplate.update(
                 "INSERT INTO saved_query(query, user_id) VALUES (?, ?) ON CONFLICT (user_id, query) DO NOTHING",
                 ps -> {
                     ps.setString(1, query);
-                    ps.setInt(2, userId);
+                    ps.setLong(2, userId);
                 }
         );
     }

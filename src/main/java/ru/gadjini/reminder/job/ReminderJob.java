@@ -3,10 +3,8 @@ package ru.gadjini.reminder.job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.ReminderNotification;
 import ru.gadjini.reminder.service.message.MessageService;
@@ -17,8 +15,8 @@ import ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService
 import ru.gadjini.reminder.service.reminder.repeat.RepeatReminderService;
 import ru.gadjini.reminder.service.reminder.simple.ReminderService;
 import ru.gadjini.reminder.time.DateTime;
-import ru.gadjini.reminder.util.JodaTimeUtils;
 import ru.gadjini.reminder.util.DateTimeService;
+import ru.gadjini.reminder.util.JodaTimeUtils;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -30,7 +28,6 @@ import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusiness
 import static ru.gadjini.reminder.service.reminder.repeat.RepeatReminderBusinessService.UpdateSeries;
 
 @Component
-@Profile("!" + BotConfiguration.PROFILE_TEST)
 public class ReminderJob {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReminderJob.class);

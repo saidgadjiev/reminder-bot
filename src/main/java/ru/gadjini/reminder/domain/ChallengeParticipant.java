@@ -12,7 +12,7 @@ public class ChallengeParticipant {
 
     public static final String STATE = "state";
 
-    private int userId;
+    private long userId;
 
     private int challengeId;
 
@@ -24,11 +24,11 @@ public class ChallengeParticipant {
 
     private State state = State.WAITING;
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 

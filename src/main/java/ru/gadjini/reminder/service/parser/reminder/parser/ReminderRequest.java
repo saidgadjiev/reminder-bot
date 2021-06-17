@@ -13,9 +13,9 @@ public class ReminderRequest {
 
     private String receiverName;
 
-    private Integer receiverId;
+    private Long receiverId;
 
-    private Integer creatorId;
+    private Long creatorId;
 
     private String text;
 
@@ -31,11 +31,11 @@ public class ReminderRequest {
 
     private Integer challengeId;
 
-    public Integer getReceiverId() {
+    public Long getReceiverId() {
         return receiverId;
     }
 
-    public void setReceiverId(Integer receiverId) {
+    public void setReceiverId(Long receiverId) {
         this.receiverId = receiverId;
     }
 
@@ -119,11 +119,11 @@ public class ReminderRequest {
         this.locale = locale;
     }
 
-    public Integer getCreatorId() {
+    public Long getCreatorId() {
         return creatorId;
     }
 
-    public void setCreatorId(Integer creatorId) {
+    public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
     }
 

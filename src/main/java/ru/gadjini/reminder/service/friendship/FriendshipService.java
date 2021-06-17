@@ -52,7 +52,7 @@ public class FriendshipService {
     }
 
     @Transactional
-    public DeleteFriendResult deleteFriend(TgMessage tgMessage, int friendId) {
+    public DeleteFriendResult deleteFriend(TgMessage tgMessage, long friendId) {
         Friendship friendship = friendshipDao.deleteFriendship(tgMessage.getUser().getId(), friendId);
         List<Reminder> reminders = reminderService.deleteFriendReminders(tgMessage.getUser().getId(), friendId);
 
@@ -60,7 +60,7 @@ public class FriendshipService {
     }
 
     @Transactional
-    public CreateFriendRequestResult createFriendRequest(TgMessage tgMessage, Integer friendUserId, String friendUsername) {
+    public CreateFriendRequestResult createFriendRequest(TgMessage tgMessage, Long friendUserId, String friendUsername) {
         User user = tgMessage.getUser();
         Friendship friendship;
 
@@ -112,50 +112,50 @@ public class FriendshipService {
         return createFriendRequestResult;
     }
 
-    public Set<String> getAllFriendsNames(int userId) {
+    public Set<String> getAllFriendsNames(long userId) {
         return friendshipDao.getAllFriendsNames(userId);
     }
 
-    public TgUser changeFriendName(int userId, int friendId, String name) {
+    public TgUser changeFriendName(long userId, long friendId, String name) {
         return friendshipDao.updateFriendName(userId, friendId, Friendship.Status.ACCEPTED, name);
     }
 
-    public TgUser getFriend(int userId, int friendId) {
+    public TgUser getFriend(long userId, long friendId) {
         return friendshipDao.getFriend(userId, friendId);
     }
 
-    public String getFriendName(int userId, int friendId) {
+    public String getFriendName(long userId, long friendId) {
         return friendshipDao.getFriendName(userId, friendId);
     }
 
-    public FriendSearchResult searchFriend(int userId, Collection<String> nameCandidates) {
+    public FriendSearchResult searchFriend(long userId, Collection<String> nameCandidates) {
         return friendshipDao.searchFriend(userId, nameCandidates);
     }
 
-    public List<TgUser> getToMeFriendRequests(int userId) {
+    public List<TgUser> getToMeFriendRequests(long userId) {
         return friendshipDao.getFriendRequests(
                 userId,
                 FriendshipTable.TABLE.USER_TWO_ID.eq(userId).and(FriendshipTable.TABLE.STATUS.eq(Friendship.Status.REQUESTED.getCode()))
         );
     }
 
-    public List<TgUser> getFromMeFriendRequests(int userId) {
+    public List<TgUser> getFromMeFriendRequests(long userId) {
         return friendshipDao.getFriendRequests(
                 userId,
                 FriendshipTable.TABLE.USER_ONE_ID.eq(userId).and(FriendshipTable.TABLE.STATUS.eq(Friendship.Status.REQUESTED.getCode()))
         );
     }
 
-    public void cancelFriendRequest(int userId, int friendId) {
+    public void cancelFriendRequest(long userId, long friendId) {
         friendshipDao.cancelFriendshipRequest(userId, friendId);
     }
 
-    public List<TgUser> getFriends(int userId) {
+    public List<TgUser> getFriends(long userId) {
         return friendshipDao.getFriends(userId, Friendship.Status.ACCEPTED);
     }
 
     @Transactional
-    public Friendship acceptFriendRequest(User user, int friendId) {
+    public Friendship acceptFriendRequest(User user, long friendId) {
         Friendship friendship = friendshipDao.updateFriendshipStatus(user.getId(), friendId, Friendship.Status.ACCEPTED);
 
         if (friendship == null) {
@@ -169,7 +169,7 @@ public class FriendshipService {
     }
 
     @Transactional
-    public Friendship rejectFriendRequest(User user, int friendId) {
+    public Friendship rejectFriendRequest(User user, long friendId) {
         Friendship friendship = friendshipDao.updateFriendshipStatus(user.getId(), friendId, Friendship.Status.REJECTED);
 
         friendship.setUserTwo(TgUser.from(user));
@@ -178,27 +178,27 @@ public class FriendshipService {
         return friendship;
     }
 
-    public Friendship getFriendship(int userId, int friendId) {
+    public Friendship getFriendship(long userId, long friendId) {
         return friendshipDao.getFriendship(userId, friendId);
     }
 
-    public Friendship getFriendship(int userId, String friendUsername) {
+    public Friendship getFriendship(long userId, String friendUsername) {
         return friendshipDao.getFriendship(userId, friendUsername);
     }
 
-    public boolean existFriendship(int userId, String friendUsername, Friendship.Status status) {
+    public boolean existFriendship(long userId, String friendUsername, Friendship.Status status) {
         Friendship friendship = getFriendship(userId, friendUsername);
 
         return friendship != null && friendship.getStatus() == status;
     }
 
-    public boolean existFriendship(int userId, int friendId, Friendship.Status status) {
+    public boolean existFriendship(long userId, long friendId, Friendship.Status status) {
         Friendship friendship = getFriendship(userId, friendId);
 
         return friendship != null && friendship.getStatus() == status;
     }
 
-    private void setCreateFriendRequestState(int userId, CreateFriendRequestResult createFriendRequestResult) {
+    private void setCreateFriendRequestState(long userId, CreateFriendRequestResult createFriendRequestResult) {
         if (createFriendRequestResult.isConflict()) {
             if (createFriendRequestResult.getFriendship().getStatus() == Friendship.Status.REQUESTED) {
                 if (createFriendRequestResult.getFriendship().getUserOneId() == userId) {

@@ -49,11 +49,11 @@ public class ChallengeService {
         this.challengeReminderService = challengeReminderService;
     }
 
-    public void deleteChallenge(int performerId, int challengeId) {
+    public void deleteChallenge(long performerId, int challengeId) {
         challengeDao.delete(performerId, challengeId);
     }
 
-    public List<Challenge> getUserChallenges(int userId) {
+    public List<Challenge> getUserChallenges(long userId) {
         return challengeDao.getUserChallenges(userId);
     }
 
@@ -68,7 +68,7 @@ public class ChallengeService {
     public Challenge createChallenge(User creator, CreateChallengeRequest createChallengeRequest) {
         Challenge challenge = saveChallenge(creator.getId(), createChallengeRequest);
 
-        Set<Integer> participants = createChallengeRequest.participants();
+        Set<Long> participants = createChallengeRequest.participants();
         participants.add(creator.getId());
         List<ChallengeParticipant> challengeParticipants = saveParticipants(creator.getId(), challenge.getId(), participants);
         challenge.setChallengeParticipants(challengeParticipants);
@@ -80,7 +80,7 @@ public class ChallengeService {
         return challenge;
     }
 
-    private Challenge saveChallenge(int creatorId, CreateChallengeRequest createChallengeRequest) {
+    private Challenge saveChallenge(long creatorId, CreateChallengeRequest createChallengeRequest) {
         Challenge challenge = new Challenge();
         challenge.setCreatorId(creatorId);
         challenge.setFinishedAt(getFinishedAt(createChallengeRequest.challengeTime()).withZoneSameInstant(ZoneOffset.UTC));
@@ -89,10 +89,10 @@ public class ChallengeService {
         return challenge;
     }
 
-    private List<ChallengeParticipant> saveParticipants(int creatorId, int challengeId, Collection<Integer> participants) {
+    private List<ChallengeParticipant> saveParticipants(long creatorId, int challengeId, Collection<Long> participants) {
         List<ChallengeParticipant> challengeParticipants = new ArrayList<>();
 
-        for (int participant : participants) {
+        for (long participant : participants) {
             ChallengeParticipant challengeParticipant = new ChallengeParticipant();
             challengeParticipant.setChallengeId(challengeId);
             challengeParticipant.setUserId(participant);

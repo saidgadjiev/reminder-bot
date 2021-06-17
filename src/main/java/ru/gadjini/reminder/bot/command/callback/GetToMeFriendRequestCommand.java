@@ -41,7 +41,7 @@ public class GetToMeFriendRequestCommand implements CallbackBotCommand {
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        int friendId = requestParams.getInt(Arg.FRIEND_ID.getKey());
+        long friendId = requestParams.getInt(Arg.FRIEND_ID.getKey());
         TgUser mayBeFriend = friendshipService.getFriend(callbackQuery.getFrom().getId(), friendId);
 
         messageService.editMessageAsync(

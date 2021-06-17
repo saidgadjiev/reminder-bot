@@ -74,11 +74,11 @@ public class Reminder {
 
     private String text;
 
-    private Integer creatorId;
+    private Long creatorId;
 
     private TgUser creator;
 
-    private Integer receiverId;
+    private Long receiverId;
 
     private TgUser receiver;
 
@@ -190,19 +190,19 @@ public class Reminder {
         this.text = text;
     }
 
-    public Integer getCreatorId() {
+    public Long getCreatorId() {
         return creatorId;
     }
 
-    public void setCreatorId(Integer creatorId) {
+    public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
     }
 
-    public Integer getReceiverId() {
+    public Long getReceiverId() {
         return receiverId;
     }
 
-    public void setReceiverId(Integer receiverId) {
+    public void setReceiverId(Long receiverId) {
         this.receiverId = receiverId;
     }
 

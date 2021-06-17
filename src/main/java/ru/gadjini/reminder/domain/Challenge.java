@@ -16,7 +16,7 @@ public class Challenge {
 
     private int id;
 
-    private int creatorId;
+    private long creatorId;
 
     private TgUser creator;
 
@@ -34,11 +34,11 @@ public class Challenge {
         this.id = id;
     }
 
-    public int getCreatorId() {
+    public long getCreatorId() {
         return creatorId;
     }
 
-    public void setCreatorId(int creatorId) {
+    public void setCreatorId(long creatorId) {
         this.creatorId = creatorId;
     }
 

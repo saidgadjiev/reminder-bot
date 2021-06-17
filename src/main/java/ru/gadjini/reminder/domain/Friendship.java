@@ -16,9 +16,9 @@ public class Friendship {
 
     private Status status;
 
-    private int userOneId;
+    private long userOneId;
 
-    private int userTwoId;
+    private long userTwoId;
 
     private String userOneName;
 
@@ -44,19 +44,19 @@ public class Friendship {
         this.userTwoName = userTwoName;
     }
 
-    public int getUserOneId() {
+    public long getUserOneId() {
         return userOneId;
     }
 
-    public void setUserOneId(int userOneId) {
+    public void setUserOneId(long userOneId) {
         this.userOneId = userOneId;
     }
 
-    public int getUserTwoId() {
+    public long getUserTwoId() {
         return userTwoId;
     }
 
-    public void setUserTwoId(int userTwoId) {
+    public void setUserTwoId(long userTwoId) {
         this.userTwoId = userTwoId;
     }
 
@@ -84,7 +84,7 @@ public class Friendship {
         this.status = status;
     }
 
-    public TgUser getFriend(int userId) {
+    public TgUser getFriend(long userId) {
         TgUser friend = new TgUser();
 
         if (getUserOneId() == userId) {
@@ -98,7 +98,7 @@ public class Friendship {
         return friend;
     }
 
-    public TgUser getUser(int userId) {
+    public TgUser getUser(long userId) {
         TgUser friend = new TgUser();
 
         if (getUserOneId() == userId) {

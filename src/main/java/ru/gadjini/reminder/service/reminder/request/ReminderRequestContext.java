@@ -11,7 +11,7 @@ public class ReminderRequestContext {
 
     private String text;
 
-    private Integer receiverId;
+    private Long receiverId;
 
     private ZoneId receiverZoneId;
 
@@ -29,7 +29,7 @@ public class ReminderRequestContext {
         return this.text;
     }
 
-    public Integer receiverId() {
+    public Long receiverId() {
         return this.receiverId;
     }
 
@@ -59,7 +59,7 @@ public class ReminderRequestContext {
         return this;
     }
 
-    public ReminderRequestContext receiverId(final Integer receiverId) {
+    public ReminderRequestContext receiverId(final Long receiverId) {
         this.receiverId = receiverId;
         return this;
     }

@@ -28,7 +28,7 @@ public class TgUserService {
         this.localisationService = localisationService;
     }
 
-    public TgUser getByUserId(int userId) {
+    public TgUser getByUserId(long userId) {
         return tgUserDao.getByUserId(userId);
     }
 
@@ -36,11 +36,11 @@ public class TgUserService {
         return tgUserDao.isExists(username);
     }
 
-    public boolean isExists(int userId) {
+    public boolean isExists(long userId) {
         return tgUserDao.isExists(userId);
     }
 
-    public Locale getLocale(int userId) {
+    public Locale getLocale(long userId) {
         return Locale.getDefault();
     }
 
@@ -63,7 +63,7 @@ public class TgUserService {
         return new CreateOrUpdateResult(tgUser, CreateOrUpdateResult.State.fromDesc(state));
     }
 
-    public ZoneId getTimeZone(int userId) {
+    public ZoneId getTimeZone(long userId) {
         String zone = tgUserDao.getTimeZone(userId);
 
         if (zone == null) {
@@ -83,11 +83,11 @@ public class TgUserService {
         return ZoneId.of(zone);
     }
 
-    public void blockUser(int userId) {
+    public void blockUser(long userId) {
         tgUserDao.blockUser(userId);
     }
 
-    public void saveZoneId(int userId, ZoneId zoneId) {
+    public void saveZoneId(long userId, ZoneId zoneId) {
         tgUserDao.updateTimezone(userId, zoneId.getId());
     }
 }

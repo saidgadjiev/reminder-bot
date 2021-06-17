@@ -107,7 +107,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
         if (message.hasContact()) {
             Contact contact = message.getContact();
 
-            if (contact.getUserID() == null) {
+            if (contact.getUserId() == null) {
                 messageService.sendMessageAsync(
                         new SendMessageContext(PriorityJob.Priority.HIGH)
                                 .chatId(message.getChatId())
@@ -116,7 +116,7 @@ public class SendFriendRequestCommand implements KeyboardBotCommand, NavigableBo
 
                 return;
             }
-            createFriendRequestResult = friendshipService.createFriendRequest(TgMessage.from(message), contact.getUserID(), null);
+            createFriendRequestResult = friendshipService.createFriendRequest(TgMessage.from(message), contact.getUserId(), null);
         } else {
             String receiverName = removeUsernameStart(text);
 

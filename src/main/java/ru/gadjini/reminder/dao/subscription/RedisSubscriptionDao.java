@@ -38,7 +38,7 @@ public class RedisSubscriptionDao implements SubscriptionDao {
     }
 
     @Override
-    public Subscription getSubscription(int userId) {
+    public Subscription getSubscription(long userId) {
         Subscription fromRedis = getFromRedis(userId);
 
         if (fromRedis != null) {
@@ -60,7 +60,7 @@ public class RedisSubscriptionDao implements SubscriptionDao {
     }
 
     @Override
-    public LocalDate update(Period period, int planId, int userId) {
+    public LocalDate update(Period period, int planId, long userId) {
         LocalDate result = subscriptionDao.update(period, planId, userId);
 
         redisTemplate.opsForHash().putAll(getKey(userId), Map.of(Subscription.PLAN_ID, planId, Subscription.END_DATE, result));
@@ -68,7 +68,7 @@ public class RedisSubscriptionDao implements SubscriptionDao {
         return result;
     }
 
-    private Subscription getFromRedis(int userId) {
+    private Subscription getFromRedis(long userId) {
         String key = getKey(userId);
 
         if (redisTemplate.hasKey(key)) {
@@ -103,7 +103,7 @@ public class RedisSubscriptionDao implements SubscriptionDao {
         redisTemplate.expire(key, 1, TimeUnit.DAYS);
     }
 
-    private String getKey(int userId) {
+    private String getKey(long userId) {
         return KEY + ":" + userId;
     }
 }

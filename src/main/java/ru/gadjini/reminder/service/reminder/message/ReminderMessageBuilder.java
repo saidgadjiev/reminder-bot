@@ -286,11 +286,11 @@ public class ReminderMessageBuilder {
         return message.toString();
     }
 
-    public String getNewReminder(Reminder reminder, int messageReceiverId) {
+    public String getNewReminder(Reminder reminder, long messageReceiverId) {
         return messageBuilder.getNewReminder(getReminderMessage(reminder, new ReminderMessageConfig().receiverId(messageReceiverId)), messageReceiverId == reminder.getReceiverId() ? reminder.getReceiver().getLocale() : reminder.getCreator().getLocale());
     }
 
-    public String getCompletedRemindersList(int requesterId, List<Reminder> reminders, Locale locale) {
+    public String getCompletedRemindersList(long requesterId, List<Reminder> reminders, Locale locale) {
         StringBuilder text = new StringBuilder();
 
         int i = 1;
@@ -323,7 +323,7 @@ public class ReminderMessageBuilder {
         return text.toString();
     }
 
-    public String getActiveRemindersList(int requesterId, List<Reminder> reminders, String header, Locale locale) {
+    public String getActiveRemindersList(long requesterId, List<Reminder> reminders, String header, Locale locale) {
         StringBuilder text = new StringBuilder();
 
         if (StringUtils.isNotBlank(header)) {
@@ -577,7 +577,7 @@ public class ReminderMessageBuilder {
         }
     }
 
-    private List<String> getReminderIcons(int requesterId, Reminder reminder, Locale locale) {
+    private List<String> getReminderIcons(long requesterId, Reminder reminder, Locale locale) {
         List<String> icons = new ArrayList<>();
 
         if (Reminder.Status.IN_PROGRESS.equals(reminder.getStatus())) {
@@ -609,7 +609,7 @@ public class ReminderMessageBuilder {
 
         private boolean remindNotification;
 
-        private int receiverId;
+        private long receiverId;
 
         private DateTime nextRemindAt;
 
@@ -622,11 +622,11 @@ public class ReminderMessageBuilder {
             return this;
         }
 
-        public int receiverId() {
+        public long receiverId() {
             return receiverId;
         }
 
-        public ReminderMessageConfig receiverId(final int receiverId) {
+        public ReminderMessageConfig receiverId(final long receiverId) {
             this.receiverId = receiverId;
 
             return this;

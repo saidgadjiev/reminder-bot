@@ -32,7 +32,7 @@ public class ReceiverIdRequestExtractor extends BaseRequestExtractor {
 
     @Override
     public ReminderRequest extract(ReminderRequestContext context) {
-        Integer receiverId = context.receiverId();
+        Long receiverId = context.receiverId();
 
         if (receiverId != null && !Objects.equals(receiverId, context.creator().getId())) {
             ZoneId zoneId = context.receiverZoneId();

@@ -135,7 +135,7 @@ public class ReminderService {
         );
     }
 
-    public void updateReminderNotifications(int reminderId, int receiverId, DateTime remindAt) {
+    public void updateReminderNotifications(int reminderId, long receiverId, DateTime remindAt) {
         reminderNotificationService.deleteReminderNotifications(reminderId);
         List<ReminderNotification> reminderNotifications = getReminderNotifications(remindAt, receiverId);
         reminderNotifications.forEach(reminderNotification -> reminderNotification.setReminderId(reminderId));
@@ -179,7 +179,7 @@ public class ReminderService {
     }
 
     @Transactional
-    public Reminder changeReminderTime(int reminderId, int receiverId, DateTime remindAt) {
+    public Reminder changeReminderTime(int reminderId, long receiverId, DateTime remindAt) {
         Map<Field<?>, Object> updateValues = new HashMap<>();
         updateValues.put(ReminderTable.TABLE.INITIAL_REMIND_AT, remindAt.sqlObject());
         updateValues.put(ReminderTable.TABLE.REMIND_AT, remindAt.sqlObject());
@@ -232,7 +232,7 @@ public class ReminderService {
         return reminderDao.updateReminderText(reminderId, StringUtils.capitalize(newText.toLowerCase()));
     }
 
-    public List<Reminder> getCompletedReminders(int userId) {
+    public List<Reminder> getCompletedReminders(long userId) {
         return reminderDao.getCompletedReminders(userId);
     }
 
@@ -253,7 +253,7 @@ public class ReminderService {
         return reminderDao.getRemindersWithReminderTimes(localDateTime, limit);
     }
 
-    public void deleteMyCompletedReminders(int userId) {
+    public void deleteMyCompletedReminders(long userId) {
         reminderDao.deleteCompletedReminders(userId);
     }
 
@@ -261,7 +261,7 @@ public class ReminderService {
         return reminderDao.deleteCompletedReminders(localDateTime);
     }
 
-    public List<Reminder> getActiveReminders(int userId, ReminderDao.Filter filter) {
+    public List<Reminder> getActiveReminders(long userId, ReminderDao.Filter filter) {
         return reminderDao.getActiveReminders(userId, filter);
     }
 
@@ -278,7 +278,7 @@ public class ReminderService {
         reminderDao.deleteAll(filter);
     }
 
-    public List<Reminder> deleteFriendReminders(int userId, int friendId) {
+    public List<Reminder> deleteFriendReminders(long userId, long friendId) {
         return reminderDao.delete(
                 ReminderTable.TABLE.CREATOR_ID.eq(userId).and(ReminderTable.TABLE.RECEIVER_ID.eq(friendId))
                         .or(ReminderTable.TABLE.CREATOR_ID.eq(friendId).and(ReminderTable.TABLE.RECEIVER_ID.eq(userId))),
@@ -312,7 +312,7 @@ public class ReminderService {
         return reminderNotifications;
     }
 
-    List<ReminderNotification> getReminderNotifications(DateTime dateTime, int receiverId) {
+    List<ReminderNotification> getReminderNotifications(DateTime dateTime, long receiverId) {
         if (!dateTime.hasTime()) {
             return getReminderNotificationsWithoutTime(dateTime.date(), receiverId);
         }
@@ -320,7 +320,7 @@ public class ReminderService {
         return getReminderNotifications(dateTime.toZonedDateTime(), receiverId);
     }
 
-    private List<ReminderNotification> getReminderNotificationsWithoutTime(LocalDate localDate, int receiverId) {
+    private List<ReminderNotification> getReminderNotificationsWithoutTime(LocalDate localDate, long receiverId) {
         List<ReminderNotification> reminderNotifications = new ArrayList<>();
 
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITHOUT_TIME);
@@ -338,7 +338,7 @@ public class ReminderService {
         return reminderNotifications;
     }
 
-    private List<ReminderNotification> getReminderNotifications(ZonedDateTime remindAt, int receiverId) {
+    private List<ReminderNotification> getReminderNotifications(ZonedDateTime remindAt, long receiverId) {
         List<ReminderNotification> reminderNotifications = new ArrayList<>();
 
         List<UserReminderNotification> userReminderNotifications = userReminderNotificationService.getList(receiverId, UserReminderNotification.NotificationType.WITH_TIME);

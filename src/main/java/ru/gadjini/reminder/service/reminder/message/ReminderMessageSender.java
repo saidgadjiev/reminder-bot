@@ -412,7 +412,7 @@ public class ReminderMessageSender {
         messageService.deleteMessage(chatId, messageId);
     }
 
-    public void sendReminderCantBeCompletedFromList(int userId, int messageId) {
+    public void sendReminderCantBeCompletedFromList(long userId, int messageId) {
         Locale locale = userService.getLocale(userId);
 
         messageService.editMessageAsync(
@@ -543,7 +543,7 @@ public class ReminderMessageSender {
         tryDeleteRemindMessage(messageId, reminder);
     }
 
-    public void sendCompletedReminders(long chatId, int userId, int messageId, List<Reminder> reminders) {
+    public void sendCompletedReminders(long chatId, long userId, int messageId, List<Reminder> reminders) {
         Locale locale = userService.getLocale(userId);
         if (reminders.isEmpty()) {
             messageService.editMessageAsync(
@@ -564,7 +564,7 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendActiveReminders(int userId, long chatId, int messageId, String currText, String header, RequestParams requestParams, List<Reminder> reminders) {
+    public void sendActiveReminders(long userId, long chatId, int messageId, String currText, String header, RequestParams requestParams, List<Reminder> reminders) {
         Locale locale = userService.getLocale(userId);
         String text = reminderMessageBuilder.getActiveRemindersList(userId, reminders, header, locale);
         if (!Objects.equals(TextUtils.removeHtmlTags(text), currText)) {
@@ -586,7 +586,7 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendReminderEdit(int userId, Integer messageId, int reminderId, Integer challengeId) {
+    public void sendReminderEdit(long userId, Integer messageId, int reminderId, Integer challengeId) {
         messageService.editReplyKeyboard(
                 userId,
                 messageId,
@@ -594,7 +594,7 @@ public class ReminderMessageSender {
         );
     }
 
-    public void sendReminderDetails(long chatId, int userId, Integer messageId, RequestParams requestParams, Reminder reminder) {
+    public void sendReminderDetails(long chatId, long userId, Integer messageId, RequestParams requestParams, Reminder reminder) {
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(chatId)
@@ -646,7 +646,7 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendReminderDeactivated(int messageId, int userId, RequestParams requestParams, Reminder reminder) {
+    public void sendReminderDeactivated(int messageId, long userId, RequestParams requestParams, Reminder reminder) {
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(reminder.getCreatorId())
@@ -664,7 +664,7 @@ public class ReminderMessageSender {
         tryDeleteRemindMessage(messageId, reminder);
     }
 
-    public void sendReminderActivated(int messageId, int userId, RequestParams requestParams, Reminder reminder) {
+    public void sendReminderActivated(int messageId, long userId, RequestParams requestParams, Reminder reminder) {
         messageService.editMessageAsync(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(reminder.getCreatorId())

@@ -3,8 +3,6 @@ package ru.gadjini.reminder.configuration;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
@@ -12,8 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.telegram.telegrambots.bots.DefaultBotOptions;
-import org.telegram.telegrambots.meta.ApiContext;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.keyboard.UserReminderNotificationScheduleCommand;
 import ru.gadjini.reminder.common.CommandNames;
@@ -22,7 +18,6 @@ import ru.gadjini.reminder.domain.UserReminderNotification;
 import ru.gadjini.reminder.filter.BotFilter;
 import ru.gadjini.reminder.filter.ReminderBotFilter;
 import ru.gadjini.reminder.filter.StartCommandFilter;
-import ru.gadjini.reminder.property.ProxyProperties;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.command.CommandStateService;
@@ -39,14 +34,6 @@ import java.util.Set;
 
 @Configuration
 public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(BotConfiguration.class);
-
-    public static final String PROFILE_TEST = "test";
-
-    public static final String PROFILE_DEV = "dev";
-
-    public static final String PROFILE_PROD = "prod";
 
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
@@ -116,21 +103,5 @@ public class BotConfiguration implements Jackson2ObjectMapperBuilderCustomizer {
         startCommandFilter.setNext(reminderBotFilter);
 
         return startCommandFilter;
-    }
-
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public DefaultBotOptions botOptions(ProxyProperties proxyProperties) {
-        DefaultBotOptions defaultBotOptions = ApiContext.getInstance(DefaultBotOptions.class);
-
-        if (proxyProperties.getType() != DefaultBotOptions.ProxyType.NO_PROXY) {
-            defaultBotOptions.setProxyType(proxyProperties.getType());
-            defaultBotOptions.setProxyHost(proxyProperties.getHost());
-            defaultBotOptions.setProxyPort(proxyProperties.getPort());
-
-            LOGGER.debug("Proxy type: {} host: {} port: {}", proxyProperties.getType(), proxyProperties.getHost(), proxyProperties.getPort());
-        }
-
-        return defaultBotOptions;
     }
 }

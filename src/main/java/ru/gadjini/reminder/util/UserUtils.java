@@ -24,7 +24,7 @@ public class UserUtils {
         return userLink(user.getUserId(), user.getName());
     }
 
-    public static String userLink(int userId, String name) {
+    public static String userLink(long userId, String name) {
         StringBuilder link = new StringBuilder();
 
         link.append("<a href=\"tg://user?id=").append(userId).append("\">").append(name).append("</a>");
@@ -32,15 +32,11 @@ public class UserUtils {
         return link.toString();
     }
 
-    public static String userLink(int id) {
+    public static String userLink(long id) {
         StringBuilder link = new StringBuilder();
 
         link.append("<a href=\"tg://user?id=").append(id).append("\">").append(id).append("</a>");
 
         return link.toString();
-    }
-
-    public static User toUser(TgUser user) {
-        return new User(user.getUserId(), user.getName(), false, null, user.getUsername(), user.getLanguageCode());
     }
 }

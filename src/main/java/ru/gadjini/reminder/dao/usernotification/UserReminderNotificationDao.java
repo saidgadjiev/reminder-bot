@@ -9,7 +9,7 @@ public interface UserReminderNotificationDao {
 
     void create(UserReminderNotification userReminderNotification);
 
-    int count(int userId, UserReminderNotification.NotificationType notificationType);
+    int count(long userId, UserReminderNotification.NotificationType notificationType);
 
-    List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType, boolean useCache);
+    List<UserReminderNotification> getList(long userId, UserReminderNotification.NotificationType notificationType, boolean useCache);
 }

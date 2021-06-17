@@ -51,12 +51,12 @@ public class InMemoryUserReminderNotificationDao implements UserReminderNotifica
     }
 
     @Override
-    public int count(int userId, UserReminderNotification.NotificationType notificationType) {
+    public int count(long userId, UserReminderNotification.NotificationType notificationType) {
         return cache.get(getKey(userId, notificationType)).size();
     }
 
     @Override
-    public List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType, boolean useCache) {
+    public List<UserReminderNotification> getList(long userId, UserReminderNotification.NotificationType notificationType, boolean useCache) {
         if (useCache) {
             return cache.get(getKey(userId, notificationType));
         } else {
@@ -64,7 +64,7 @@ public class InMemoryUserReminderNotificationDao implements UserReminderNotifica
         }
     }
 
-    private String getKey(int userId, UserReminderNotification.NotificationType notificationType) {
+    private String getKey(long userId, UserReminderNotification.NotificationType notificationType) {
         return userId + ":" + notificationType.name();
     }
 

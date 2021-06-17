@@ -64,7 +64,7 @@ public class FriendRequestExtractor extends BaseRequestExtractor {
         return super.extract(context);
     }
 
-    public ExtractReceiverResult extractReceiver(int userId, String text, boolean voice, Locale locale) {
+    public ExtractReceiverResult extractReceiver(long userId, String text, boolean voice, Locale locale) {
         String toMatch = text.toLowerCase();
         String forFriendStart = forFriendStarts.stream().filter(toMatch::startsWith).findFirst().orElseThrow();
         String textWithoutForFriendStart = text.substring(forFriendStart.length()).trim();

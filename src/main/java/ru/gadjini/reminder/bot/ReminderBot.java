@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.gadjini.reminder.filter.BotFilter;
@@ -27,9 +26,8 @@ public class ReminderBot extends TelegramLongPollingBot {
     private TgUserService userService;
 
     @Autowired
-    public ReminderBot(DefaultBotOptions botOptions, BotProperties botProperties, BotFilter botFilter,
+    public ReminderBot(BotProperties botProperties, BotFilter botFilter,
                        MessageService messageService, TgUserService userService) {
-        super(botOptions);
         this.botProperties = botProperties;
         this.botFilter = botFilter;
         this.messageService = messageService;

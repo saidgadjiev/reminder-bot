@@ -79,11 +79,11 @@ public class ChallengeBusinessService {
         return challengeService.getChallenge(challengeId);
     }
 
-    public void rejectChallenge(int participantId, int challengeId) {
+    public void rejectChallenge(long participantId, int challengeId) {
         participantDao.delete(participantId, challengeId);
     }
 
-    private ReminderRequest createReminderRequest(Reminder reminder, int participant) {
+    private ReminderRequest createReminderRequest(Reminder reminder, long participant) {
         ReminderRequest reminderRequest = new ReminderRequest();
         reminderRequest.setCreatorId(participant);
         reminderRequest.setReceiverId(participant);

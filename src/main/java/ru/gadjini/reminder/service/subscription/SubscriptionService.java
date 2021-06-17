@@ -27,11 +27,11 @@ public class SubscriptionService {
         this.timeCreator = timeCreator;
     }
 
-    public Subscription getSubscription(int userId) {
+    public Subscription getSubscription(long userId) {
         return subscriptionDao.getSubscription(userId);
     }
 
-    public void createTrialSubscription(int userId) {
+    public void createTrialSubscription(long userId) {
         Subscription subscription = new Subscription();
         subscription.setUserId(userId);
         subscription.setEndDate(timeCreator.localDateNow().plusDays(subscriptionProperties.getTrialPeriod()));
@@ -39,7 +39,7 @@ public class SubscriptionService {
         subscriptionDao.create(subscription);
     }
 
-    public LocalDate renewSubscription(Plan plan, int userId) {
+    public LocalDate renewSubscription(Plan plan, long userId) {
         return subscriptionDao.update(plan.getPeriod(), plan.getId(), userId);
     }
 }

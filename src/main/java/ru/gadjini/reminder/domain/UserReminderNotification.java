@@ -32,7 +32,7 @@ public class UserReminderNotification {
 
     private int minutes;
 
-    private int userId;
+    private long userId;
 
     private TgUser user;
 
@@ -87,11 +87,11 @@ public class UserReminderNotification {
         this.time = time;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 

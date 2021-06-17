@@ -96,7 +96,7 @@ public class StartCommandFilter extends BaseBotFilter {
         return false;
     }
 
-    private void createUserNotifications(int userId) {
+    private void createUserNotifications(long userId) {
         int countWithTime = userReminderNotificationService.count(userId, UserReminderNotification.NotificationType.WITH_TIME);
         if (countWithTime == 0) {
             userReminderNotificationService.createDefaultNotificationsForWithTime(userId);

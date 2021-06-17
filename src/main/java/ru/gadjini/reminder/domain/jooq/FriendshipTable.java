@@ -10,9 +10,9 @@ public class FriendshipTable extends TableImpl<Record> {
 
     public static final FriendshipTable TABLE = new FriendshipTable();
 
-    public TableField<Record, Integer> USER_ONE_ID;
+    public TableField<Record, Long> USER_ONE_ID;
 
-    public TableField<Record, Integer> USER_TWO_ID;
+    public TableField<Record, Long> USER_TWO_ID;
 
     public TableField<Record, Integer> STATUS;
 
@@ -30,8 +30,8 @@ public class FriendshipTable extends TableImpl<Record> {
     }
 
     private void createFields() {
-        USER_ONE_ID = createField(Friendship.USER_ONE_ID, SQLDataType.INTEGER);
-        USER_TWO_ID = createField(Friendship.USER_TWO_ID, SQLDataType.INTEGER);
+        USER_ONE_ID = createField(Friendship.USER_ONE_ID, SQLDataType.BIGINT);
+        USER_TWO_ID = createField(Friendship.USER_TWO_ID, SQLDataType.BIGINT);
         STATUS = createField(Friendship.STATUS, SQLDataType.INTEGER);
     }
 

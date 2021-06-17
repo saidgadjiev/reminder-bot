@@ -28,7 +28,7 @@ public class ChallengeReminderService {
                 .and(ReminderTable.TABLE.as("r").RECEIVER_ID.isNull()), new ReminderMapping());
     }
 
-    public void deleteReminder(int participantId, int challengeId) {
+    public void deleteReminder(long participantId, int challengeId) {
         reminderDao.delete(
                 ReminderTable.TABLE.CREATOR_ID.eq(participantId).and(ReminderTable.TABLE.RECEIVER_ID.eq(participantId))
                         .and(ReminderTable.TABLE.CHALLENGE_ID.eq(challengeId)), null);

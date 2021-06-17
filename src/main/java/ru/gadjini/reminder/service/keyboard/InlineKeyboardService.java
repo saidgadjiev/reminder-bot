@@ -132,7 +132,7 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getPaymentKeyboard(int userId, int planId, Locale locale) {
+    public InlineKeyboardMarkup getPaymentKeyboard(long userId, int planId, Locale locale) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> keyboard = keyboardMarkup.getKeyboard();
@@ -213,7 +213,7 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getChooseChallengeParticipantKeyboard(List<Integer> friendUserIds, Locale locale) {
+    public InlineKeyboardMarkup getChooseChallengeParticipantKeyboard(List<Long> friendUserIds, Locale locale) {
         InlineKeyboardMarkup friendsListKeyboard = getFriendsListKeyboard(
                 friendUserIds,
                 CommandNames.CALLBACK_DELEGATE_COMMAND_NAME,
@@ -230,15 +230,15 @@ public class InlineKeyboardService {
         return friendsListKeyboard;
     }
 
-    public InlineKeyboardMarkup getFriendsListKeyboard(List<Integer> friendsUserIds, String commandName, RequestParams requestParams) {
+    public InlineKeyboardMarkup getFriendsListKeyboard(List<Long> friendsUserIds, String commandName, RequestParams requestParams) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         int i = 1;
-        List<List<Integer>> lists = Lists.partition(friendsUserIds, 4);
-        for (List<Integer> list : lists) {
+        List<List<Long>> lists = Lists.partition(friendsUserIds, 4);
+        for (List<Long> list : lists) {
             List<InlineKeyboardButton> row = new ArrayList<>();
 
-            for (int friendUserId : list) {
+            for (long friendUserId : list) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(i++));
                 button.setCallbackData(commandName + CommandParser.COMMAND_NAME_SEPARATOR +
@@ -400,7 +400,7 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getFriendKeyboard(int friendUserId, Locale locale) {
+    public InlineKeyboardMarkup getFriendKeyboard(long friendUserId, Locale locale) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(
@@ -415,7 +415,7 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getChallengeDetailsKeyboard(ChallengeParticipant requester, int challengeCreatorId) {
+    public InlineKeyboardMarkup getChallengeDetailsKeyboard(ChallengeParticipant requester, long challengeCreatorId) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
         Locale locale = requester.getUser().getLocale();
         if (requester.getState() == ChallengeParticipant.State.ACCEPTED) {
@@ -435,7 +435,7 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getFriendRequestKeyboard(int friendUserId, Locale locale) {
+    public InlineKeyboardMarkup getFriendRequestKeyboard(long friendUserId, Locale locale) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(
@@ -525,7 +525,7 @@ public class InlineKeyboardService {
         return keyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getReminderDetailsKeyboard(int currUserId, RequestParams requestParams, Reminder reminder) {
+    public InlineKeyboardMarkup getReminderDetailsKeyboard(long currUserId, RequestParams requestParams, Reminder reminder) {
         if (reminder.getChallengeId() != null) {
             return getChallengeReminderDetailsKeyboard(reminder, requestParams);
         } else if (Objects.equals(reminder.getCreatorId(), reminder.getReceiverId())) {
@@ -654,7 +654,7 @@ public class InlineKeyboardService {
         }
     }
 
-    private String buildPayUrl(int userId, int planId, PaymentType paymentType) {
+    private String buildPayUrl(long userId, int planId, PaymentType paymentType) {
         return UriComponentsBuilder.fromHttpUrl("")
                 .path(PAYMENT_API_PATH)
                 .queryParam("planId", planId)

@@ -1,10 +1,8 @@
 package ru.gadjini.reminder.job;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.domain.Challenge;
 import ru.gadjini.reminder.domain.ChallengeParticipant;
 import ru.gadjini.reminder.model.SendMessageContext;
@@ -18,7 +16,6 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Component
-@Profile("!" + BotConfiguration.PROFILE_TEST)
 public class ChallengeJob {
 
     private DateTimeService timeCreator;

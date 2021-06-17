@@ -12,7 +12,7 @@ public class TgUserTable extends TableImpl<Record> {
 
     public TableField<Record, Integer> ID;
 
-    public TableField<Record, Integer> USER_ID;
+    public TableField<Record, Long> USER_ID;
 
     public TableField<Record, Integer> CHAT_ID;
 
@@ -35,7 +35,7 @@ public class TgUserTable extends TableImpl<Record> {
 
     private void createFields() {
         ID = createField(TgUser.ID, SQLDataType.INTEGER);
-        USER_ID = createField(TgUser.USER_ID, SQLDataType.INTEGER);
+        USER_ID = createField(TgUser.USER_ID, SQLDataType.BIGINT);
         CHAT_ID = createField(TgUser.CHAT_ID, SQLDataType.INTEGER);
         NAME = createField(TgUser.NAME, SQLDataType.VARCHAR);
         ZONE_ID = createField(TgUser.ZONE_ID, SQLDataType.VARCHAR);

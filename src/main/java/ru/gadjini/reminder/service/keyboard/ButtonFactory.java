@@ -139,7 +139,7 @@ public class ButtonFactory {
         return button;
     }
 
-    InlineKeyboardButton createFriendReminderButton(int friendUserId, Locale locale) {
+    InlineKeyboardButton createFriendReminderButton(long friendUserId, Locale locale) {
         InlineKeyboardButton createFriendReminderButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CREATE_FRIEND_REMINDER_COMMAND_DESCRIPTION, locale));
         createFriendReminderButton.setCallbackData(CommandNames.CREATE_FRIEND_REMINDER_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
@@ -149,7 +149,7 @@ public class ButtonFactory {
         return createFriendReminderButton;
     }
 
-    InlineKeyboardButton deleteFriendButton(int friendUserId, Locale locale) {
+    InlineKeyboardButton deleteFriendButton(long friendUserId, Locale locale) {
         InlineKeyboardButton deleteFriendButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.DELETE_FRIEND_COMMAND_DESCRIPTION, locale));
         deleteFriendButton.setCallbackData(CommandNames.DELETE_FRIEND_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
@@ -159,7 +159,7 @@ public class ButtonFactory {
         return deleteFriendButton;
     }
 
-    InlineKeyboardButton acceptFriendRequestButton(int friendUserId, Locale locale) {
+    InlineKeyboardButton acceptFriendRequestButton(long friendUserId, Locale locale) {
         InlineKeyboardButton acceptFriendRequestButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.ACCEPT_FRIEND_REQUEST_COMMAND_DESCRIPTION, locale));
         acceptFriendRequestButton.setCallbackData(CommandNames.ACCEPT_FRIEND_REQUEST_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
@@ -169,7 +169,7 @@ public class ButtonFactory {
         return acceptFriendRequestButton;
     }
 
-    InlineKeyboardButton rejectFriendRequestButton(int friendUserId, Locale locale) {
+    InlineKeyboardButton rejectFriendRequestButton(long friendUserId, Locale locale) {
         InlineKeyboardButton rejectFriendRequestButton = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.REJECT_FRIEND_REQUEST_COMMAND_DESCRIPTION, locale));
         rejectFriendRequestButton.setCallbackData(CommandNames.REJECT_FRIEND_REQUEST_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
@@ -294,7 +294,7 @@ public class ButtonFactory {
         return button;
     }
 
-    InlineKeyboardButton changeFriendNameButton(int friendId, Locale locale) {
+    InlineKeyboardButton changeFriendNameButton(long friendId, Locale locale) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.CHANGE_FRIEND_NAME_COMMAND_DESCRIPTION, locale));
         button.setCallbackData(CommandNames.CHANGE_FRIEND_NAME_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()

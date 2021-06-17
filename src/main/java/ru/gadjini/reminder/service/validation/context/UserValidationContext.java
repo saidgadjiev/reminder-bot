@@ -6,7 +6,7 @@ public class UserValidationContext implements ValidationContext {
 
     private String username;
 
-    private Integer userId;
+    private Long userId;
 
     private Locale locale;
 
@@ -14,7 +14,7 @@ public class UserValidationContext implements ValidationContext {
         return this.username;
     }
 
-    public Integer userId() {
+    public Long userId() {
         return this.userId;
     }
 
@@ -23,7 +23,7 @@ public class UserValidationContext implements ValidationContext {
         return this;
     }
 
-    public UserValidationContext userId(final Integer userId) {
+    public UserValidationContext userId(final Long userId) {
         this.userId = userId;
         return this;
     }

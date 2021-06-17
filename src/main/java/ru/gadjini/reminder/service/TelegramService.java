@@ -14,8 +14,8 @@ public class TelegramService extends DefaultAbsSender {
 
     private BotProperties botProperties;
 
-    public TelegramService(BotProperties botProperties, DefaultBotOptions botOptions) {
-        super(botOptions);
+    public TelegramService(BotProperties botProperties) {
+        super(new DefaultBotOptions());
         this.botProperties = botProperties;
     }
 

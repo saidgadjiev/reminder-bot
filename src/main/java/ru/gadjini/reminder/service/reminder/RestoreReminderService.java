@@ -1,7 +1,7 @@
 package ru.gadjini.reminder.service.reminder;
 
-import com.google.inject.Inject;
 import org.joda.time.Period;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.gadjini.reminder.domain.Reminder;
@@ -27,7 +27,7 @@ public class RestoreReminderService {
 
     private DateTimeService timeCreator;
 
-    @Inject
+    @Autowired
     public RestoreReminderService(ReminderNotificationService reminderNotificationService,
                                   RepeatReminderBusinessService repeatReminderBusinessService,
                                   DateTimeService timeCreator) {

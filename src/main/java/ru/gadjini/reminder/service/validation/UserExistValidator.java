@@ -45,7 +45,7 @@ public class UserExistValidator implements Validator<UserValidationContext> {
         }
     }
 
-    private void checkExists(int userId, Locale locale) {
+    private void checkExists(long userId, Locale locale) {
         boolean exists = userService.isExists(userId);
 
         if (!exists) {

@@ -12,7 +12,7 @@ public class SavedQuery {
 
     private String query;
 
-    private int userId;
+    private long userId;
 
     public int getId() {
         return id;
@@ -30,11 +30,11 @@ public class SavedQuery {
         this.query = query;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 }

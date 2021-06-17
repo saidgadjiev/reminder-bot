@@ -61,7 +61,7 @@ public class FriendshipDao {
         return friendship;
     }
 
-    public List<TgUser> getFriendRequests(int userId, Condition condition) {
+    public List<TgUser> getFriendRequests(long userId, Condition condition) {
         SelectConditionStep<Record> select = dslContext.select(FriendshipTable.TABLE.asterisk())
                 .from(FriendshipTable.TABLE)
                 .where(condition);
@@ -77,7 +77,7 @@ public class FriendshipDao {
         );
     }
 
-    public TgUser updateFriendName(int userId, int friendId, Friendship.Status status, String name) {
+    public TgUser updateFriendName(long userId, long friendId, Friendship.Status status, String name) {
         return namedParameterJdbcTemplate.query(
                 "WITH f AS (\n" +
                         "    UPDATE friendship\n" +
@@ -113,7 +113,7 @@ public class FriendshipDao {
         );
     }
 
-    public Friendship updateFriendshipStatus(int userOneId, int userTwoId, Friendship.Status status) {
+    public Friendship updateFriendshipStatus(long userOneId, long userTwoId, Friendship.Status status) {
         ResultSetExtractor<Friendship> resultSetExtractor = rs -> {
             if (rs.next()) {
                 Friendship friendship = new Friendship();
@@ -140,7 +140,7 @@ public class FriendshipDao {
         return null;
     }
 
-    public void cancelFriendshipRequest(int userId, int friendId) {
+    public void cancelFriendshipRequest(long userId, long friendId) {
         namedParameterJdbcTemplate.update(
                 "DELETE FROM friendship " +
                         "WHERE (user_one_id = :user_id AND user_two_id = :friend_id) " +
@@ -151,7 +151,7 @@ public class FriendshipDao {
         );
     }
 
-    public Friendship deleteFriendship(int userId, int friendId) {
+    public Friendship deleteFriendship(long userId, long friendId) {
         return namedParameterJdbcTemplate.query(
                 "WITH f AS (DELETE FROM friendship WHERE (user_one_id = :user_id AND user_two_id = :friend_id) OR\n" +
                         "                                        (user_one_id = :friend_id AND user_two_id = :user_id) RETURNING status, user_one_id, user_two_id, user_one_name, user_two_name)\n" +
@@ -169,7 +169,7 @@ public class FriendshipDao {
         );
     }
 
-    public List<TgUser> getFriends(int userId, Friendship.Status status) {
+    public List<TgUser> getFriends(long userId, Friendship.Status status) {
         return namedParameterJdbcTemplate.query(
                 "SELECT * FROM friendship WHERE status = :state AND (user_one_id = :user_id OR user_two_id = :user_id)",
                 new MapSqlParameterSource().addValue(USER_ID_PARAM, userId).addValue("state", status.getCode()),
@@ -181,7 +181,7 @@ public class FriendshipDao {
         );
     }
 
-    public String getFriendName(int userId, int friendId) {
+    public String getFriendName(long userId, long friendId) {
         return namedParameterJdbcTemplate.query(
                 "SELECT CASE WHEN user_one_id = :user_id THEN user_two_name ELSE user_one_name END AS name\n" +
                         "FROM friendship \n" +
@@ -198,7 +198,7 @@ public class FriendshipDao {
         );
     }
 
-    public FriendSearchResult searchFriend(int userId, Collection<String> nameCandidates) {
+    public FriendSearchResult searchFriend(long userId, Collection<String> nameCandidates) {
         String names = nameCandidates.stream().map(s -> "'" + s + "'").collect(Collectors.joining(","));
 
         return namedParameterJdbcTemplate.query(
@@ -235,7 +235,7 @@ public class FriendshipDao {
         );
     }
 
-    public TgUser getFriend(int userId, int friendId) {
+    public TgUser getFriend(long userId, long friendId) {
         return namedParameterJdbcTemplate.query(
                 "SELECT f.*, tu.zone_id\n" +
                         "FROM friendship f,\n" +
@@ -265,7 +265,7 @@ public class FriendshipDao {
         );
     }
 
-    public Set<String> getAllFriendsNames(int userId) {
+    public Set<String> getAllFriendsNames(long userId) {
         Set<String> result = new LinkedHashSet<>();
 
         namedParameterJdbcTemplate.query(
@@ -283,7 +283,7 @@ public class FriendshipDao {
         return result;
     }
 
-    public Friendship getFriendship(int userOneId, int userTwoId) {
+    public Friendship getFriendship(long userOneId, long userTwoId) {
         return namedParameterJdbcTemplate.query(
                 "SELECT * FROM friendship " +
                         "WHERE (user_one_id = :user_id AND user_two_id = :friend_id) " +
@@ -299,7 +299,7 @@ public class FriendshipDao {
         );
     }
 
-    public Friendship getFriendship(int userOneId, String friendUsername) {
+    public Friendship getFriendship(long userOneId, String friendUsername) {
         return namedParameterJdbcTemplate.query(
                 "SELECT f.*\n" +
                         "FROM friendship f\n" +
@@ -369,7 +369,7 @@ public class FriendshipDao {
         );
     }
 
-    private Friendship rejectFriendRequest(int userId, int friendId, ResultSetExtractor<Friendship> resultSetExtractor) {
+    private Friendship rejectFriendRequest(long userId, long friendId, ResultSetExtractor<Friendship> resultSetExtractor) {
         return jdbcTemplate.query(
                 "WITH f AS (\n" +
                         "    DELETE FROM friendship WHERE user_one_id = ? AND user_two_id = ? RETURNING user_one_id, user_two_id, user_one_name\n" +
@@ -377,14 +377,14 @@ public class FriendshipDao {
                         "SELECT f.user_one_id as uo_user_id, f.user_one_name as uo_name, uo.zone_id as uo_zone_id\n" +
                         "FROM f INNER JOIN tg_user uo ON f.user_one_id = uo.user_id",
                 ps -> {
-                    ps.setInt(1, friendId);
-                    ps.setInt(2, userId);
+                    ps.setLong(1, friendId);
+                    ps.setLong(2, userId);
                 },
                 resultSetExtractor
         );
     }
 
-    private Friendship acceptFriendRequest(int userId, int friendId, ResultSetExtractor<Friendship> resultSetExtractor) {
+    private Friendship acceptFriendRequest(long userId, long friendId, ResultSetExtractor<Friendship> resultSetExtractor) {
         return jdbcTemplate.query(
                 "WITH f AS (\n" +
                         "    UPDATE friendship SET status = ? WHERE user_one_id = ? AND user_two_id = ? RETURNING user_one_id, user_two_id\n" +
@@ -393,8 +393,8 @@ public class FriendshipDao {
                         "FROM f INNER JOIN tg_user uo ON f.user_one_id = uo.user_id",
                 ps -> {
                     ps.setInt(1, Friendship.Status.ACCEPTED.ordinal());
-                    ps.setInt(2, friendId);
-                    ps.setInt(3, userId);
+                    ps.setLong(2, friendId);
+                    ps.setLong(3, userId);
                 },
                 resultSetExtractor
         );

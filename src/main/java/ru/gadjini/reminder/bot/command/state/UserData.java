@@ -9,7 +9,7 @@ public class UserData {
 
     private String name;
 
-    private int userId;
+    private long userId;
 
     private String zoneId;
 
@@ -23,11 +23,11 @@ public class UserData {
         this.name = name;
     }
 
-    public int getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 

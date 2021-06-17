@@ -50,7 +50,7 @@ public class ReminderBusinessService {
     }
 
     @Transactional
-    public Reminder postponeReminder(int reminderId, int receiverId, DateTime remindAtInReceiverZone) {
+    public Reminder postponeReminder(int reminderId, long receiverId, DateTime remindAtInReceiverZone) {
         DateTime remindAt = remindAtInReceiverZone.withZoneSameInstant(ZoneOffset.UTC);
         Reminder reminder = reminderDao.update(
                 Map.of(ReminderTable.TABLE.REMIND_AT, remindAt.sqlObject()),

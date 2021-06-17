@@ -42,12 +42,12 @@ public class RedisUserReminderNotificationDao implements UserReminderNotificatio
     }
 
     @Override
-    public int count(int userId, UserReminderNotification.NotificationType notificationType) {
+    public int count(long userId, UserReminderNotification.NotificationType notificationType) {
         return dbDao.count(userId, notificationType);
     }
 
     @Override
-    public List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType, boolean useCache) {
+    public List<UserReminderNotification> getList(long userId, UserReminderNotification.NotificationType notificationType, boolean useCache) {
         if (useCache) {
             String key = getKey(userId, notificationType);
             List<Object> members = redisTemplate.opsForList().range(key, 0, -1);
@@ -72,7 +72,7 @@ public class RedisUserReminderNotificationDao implements UserReminderNotificatio
         }
     }
 
-    private String getKey(int userId, UserReminderNotification.NotificationType notificationType) {
+    private String getKey(long userId, UserReminderNotification.NotificationType notificationType) {
         return USER_REMINDER_NOTIFICATION_KEY + ":" + userId + "_" + notificationType.getCode();
     }
 }

@@ -89,7 +89,7 @@ public class SubscriptionFilter extends BaseBotFilter {
     }
 
     private boolean checkSubscription(User user) {
-        int userId = user.getId();
+        long userId = user.getId();
         Subscription subscription = subscriptionService.getSubscription(userId);
 
         if (subscription == null) {
@@ -112,7 +112,7 @@ public class SubscriptionFilter extends BaseBotFilter {
         Locale locale = userService.getLocale(user.getId());
         TimeDeclensionService declensionService = timeDeclensionProvider.getService(locale.getLanguage());
 
-        int userId = user.getId();
+        long userId = user.getId();
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)
@@ -126,7 +126,7 @@ public class SubscriptionFilter extends BaseBotFilter {
         );
     }
 
-    private void sendSubscriptionExpired(int userId) {
+    private void sendSubscriptionExpired(long userId) {
         Locale locale = userService.getLocale(userId);
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)

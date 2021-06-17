@@ -32,18 +32,18 @@ public class TgUserDao {
         );
     }
 
-    public Boolean isExists(int userId) {
+    public Boolean isExists(long userId) {
         return jdbcTemplate.query(
                 "SELECT TRUE FROM tg_user WHERE user_id = ? AND blocked = false",
-                ps -> ps.setInt(1, userId),
+                ps -> ps.setLong(1, userId),
                 ResultSet::next
         );
     }
 
-    public TgUser getByUserId(int userId) {
+    public TgUser getByUserId(long userId) {
         return jdbcTemplate.query(
                 "SELECT * FROM tg_user WHERE user_id = ?",
-                preparedStatement -> preparedStatement.setInt(1, userId),
+                preparedStatement -> preparedStatement.setLong(1, userId),
                 resultSet -> {
                     if (resultSet.next()) {
                         return resultSetMapper.mapUser(resultSet);
@@ -61,7 +61,7 @@ public class TgUserDao {
                     PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO tg_user(user_id, username, name, chat_id, blocked) VALUES (?, ?, ?, ?, ?) ON CONFLICT(chat_id) " +
                             "DO UPDATE SET username = excluded.username, name = excluded.name, blocked = excluded.blocked RETURNING CASE WHEN XMAX::text::int > 0 THEN 'updated' ELSE 'inserted' END AS state", Statement.RETURN_GENERATED_KEYS);
 
-                    preparedStatement.setInt(1, tgUser.getUserId());
+                    preparedStatement.setLong(1, tgUser.getUserId());
                     preparedStatement.setString(2, tgUser.getUsername());
                     preparedStatement.setString(3, tgUser.getName());
                     preparedStatement.setLong(4, tgUser.getChatId());
@@ -75,19 +75,19 @@ public class TgUserDao {
         return (String) generatedKeyHolder.getKeys().get("state");
     }
 
-    public void updateTimezone(int userId, String zoneId) {
+    public void updateTimezone(long userId, String zoneId) {
         jdbcTemplate.update(
                 "UPDATE tg_user SET zone_id ='" + zoneId + "' WHERE user_id = " + userId
         );
     }
 
-    public void blockUser(int userId) {
+    public void blockUser(long userId) {
         jdbcTemplate.update(
                 "UPDATE tg_user SET blocked = true WHERE user_id = " + userId
         );
     }
 
-    public String getTimeZone(int userId) {
+    public String getTimeZone(long userId) {
         return jdbcTemplate.query(
                 "SELECT zone_id FROM tg_user WHERE user_id =" + userId,
                 rs -> {

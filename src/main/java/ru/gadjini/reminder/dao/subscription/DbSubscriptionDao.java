@@ -34,10 +34,10 @@ public class DbSubscriptionDao implements SubscriptionDao {
     }
 
     @Override
-    public Subscription getSubscription(int userId) {
+    public Subscription getSubscription(long userId) {
         return jdbcTemplate.query(
                 "SELECT * FROM subscription WHERE user_id = ?",
-                ps -> ps.setInt(1, userId),
+                ps -> ps.setLong(1, userId),
                 rs -> {
                     if (rs.next()) {
                         return resultSetMapper.mapSubscription(rs);
@@ -56,7 +56,7 @@ public class DbSubscriptionDao implements SubscriptionDao {
     }
 
     @Override
-    public LocalDate update(Period period, int planId, int userId) {
+    public LocalDate update(Period period, int planId, long userId) {
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(
@@ -65,7 +65,7 @@ public class DbSubscriptionDao implements SubscriptionDao {
 
                     ps.setObject(1, JodaTimeUtils.toPgInterval(period));
                     ps.setInt(2, planId);
-                    ps.setInt(3, userId);
+                    ps.setLong(3, userId);
 
                     return ps;
                 },

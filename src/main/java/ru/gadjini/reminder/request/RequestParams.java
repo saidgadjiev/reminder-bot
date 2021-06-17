@@ -36,6 +36,12 @@ public class RequestParams {
         return this;
     }
 
+    public RequestParams add(String key, Long value) {
+        params.put(key, String.valueOf(value));
+
+        return this;
+    }
+
     public RequestParams add(String key, Boolean value) {
         params.put(key, String.valueOf(value));
 

@@ -17,15 +17,15 @@ public class SavedQueryService {
         this.savedQueryDao = savedQueryDao;
     }
 
-    public List<SavedQuery> getQueries(int userId) {
+    public List<SavedQuery> getQueries(long userId) {
         return savedQueryDao.getQueries(userId);
     }
 
-    public List<String> getQueriesOnly(int userId) {
+    public List<String> getQueriesOnly(long userId) {
         return savedQueryDao.getQueriesOnly(userId);
     }
 
-    public void saveQuery(int userId, String query) {
+    public void saveQuery(long userId, String query) {
         savedQueryDao.saveQuery(userId, query);
     }
 

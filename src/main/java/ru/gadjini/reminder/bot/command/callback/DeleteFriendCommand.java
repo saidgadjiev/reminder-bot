@@ -70,18 +70,18 @@ public class DeleteFriendCommand implements CallbackBotCommand {
         return MessagesProperties.MESSAGE_FRIEND_DELETED_ANSWER;
     }
 
-    private void sendRemindersDeleted(long chatId, int userId, FriendshipService.DeleteFriendResult deleteFriendResult) {
+    private void sendRemindersDeleted(long chatId, long userId, FriendshipService.DeleteFriendResult deleteFriendResult) {
         sendRemindersDeletedToFormerFriend(userId, deleteFriendResult);
         deleteToMeReminders(chatId, userId, deleteFriendResult);
     }
 
-    private void deleteToMeReminders(long chatId, int userId, FriendshipService.DeleteFriendResult deleteFriendResult) {
+    private void deleteToMeReminders(long chatId, long userId, FriendshipService.DeleteFriendResult deleteFriendResult) {
         deleteFriendResult.getReminders().stream()
                 .filter(reminder -> reminder.getReceiverId() == userId)
                 .forEach(reminder -> messageService.deleteMessage(chatId, reminder.getReceiverMessageId()));
     }
 
-    private void sendRemindersDeletedToFormerFriend(int userId, FriendshipService.DeleteFriendResult deleteFriendResult) {
+    private void sendRemindersDeletedToFormerFriend(long userId, FriendshipService.DeleteFriendResult deleteFriendResult) {
         Friendship friendship = deleteFriendResult.getFriendship();
         TgUser friend = friendship.getFriend(userId);
 

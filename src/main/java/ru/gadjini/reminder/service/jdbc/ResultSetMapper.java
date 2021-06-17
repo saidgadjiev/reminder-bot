@@ -107,7 +107,7 @@ public class ResultSetMapper {
             }
         }
 
-        int receiverId = rs.getInt(Reminder.RECEIVER_ID);
+        long receiverId = rs.getInt(Reminder.RECEIVER_ID);
         if (!rs.wasNull()) {
             reminder.setReceiverId(receiverId);
             TgUser rc = new TgUser();
@@ -115,7 +115,7 @@ public class ResultSetMapper {
             reminder.setReceiver(rc);
         }
 
-        reminder.setCreatorId(rs.getInt(Reminder.CREATOR_ID));
+        reminder.setCreatorId(rs.getLong(Reminder.CREATOR_ID));
         TgUser cr = new TgUser();
         cr.setUserId(reminder.getCreatorId());
         reminder.setCreator(cr);

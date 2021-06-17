@@ -31,8 +31,8 @@ public class CompletedReminderDao {
                             "                               repeat_remind_at, reminder_id, max_series, total_series, current_series) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
                     ps.setString(1, reminder.getText());
-                    ps.setInt(2, reminder.getCreatorId());
-                    ps.setInt(3, reminder.getReceiverId());
+                    ps.setLong(2, reminder.getCreatorId());
+                    ps.setLong(3, reminder.getReceiverId());
                     ps.setTimestamp(4, Timestamp.valueOf(timeCreator.localDateTimeNowWithMinutes()));
                     ps.setString(5, reminder.getNote());
                     ps.setObject(6, reminder.getRemindAt().sqlObject());

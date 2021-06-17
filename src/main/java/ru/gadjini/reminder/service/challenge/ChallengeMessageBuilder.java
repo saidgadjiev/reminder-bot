@@ -43,7 +43,7 @@ public class ChallengeMessageBuilder {
         this.userService = userService;
     }
 
-    public String getChallengeFinished(int requesterId, Challenge challenge, ChallengeBusinessService.Winner winner, Locale locale) {
+    public String getChallengeFinished(long requesterId, Challenge challenge, ChallengeBusinessService.Winner winner, Locale locale) {
         StringBuilder message = new StringBuilder();
         message
                 .append(messageBuilder.getChallengeFinished(getChallengeName(challenge.getReminder(), locale), locale)).append("\n");
@@ -77,7 +77,7 @@ public class ChallengeMessageBuilder {
         return message.toString();
     }
 
-    public String getChallengeDetails(int requesterId, Challenge challenge, Locale locale) {
+    public String getChallengeDetails(long requesterId, Challenge challenge, Locale locale) {
         ZoneId zoneId = userService.getTimeZone(requesterId);
 
         return messageBuilder.getChallengeDetails(getChallengeName(challenge.getReminder(), locale), locale) + "\n" +
@@ -87,7 +87,7 @@ public class ChallengeMessageBuilder {
                 getParticipants(requesterId, challenge.getChallengeParticipants(), locale);
     }
 
-    public String getChallengeCreatedDetails(int requesterId, Challenge challenge, Locale locale) {
+    public String getChallengeCreatedDetails(long requesterId, Challenge challenge, Locale locale) {
         ZoneId zoneId = userService.getTimeZone(requesterId);
 
         return messageBuilder.getChallengeCreated(getChallengeName(challenge.getReminder(), locale), locale) + "\n" +
@@ -97,7 +97,7 @@ public class ChallengeMessageBuilder {
                 getParticipants(requesterId, challenge.getChallengeParticipants(), locale);
     }
 
-    public String getFriendsListWithChoseParticipantsInfo(List<TgUser> friends, Set<Integer> participants, Locale locale) {
+    public String getFriendsListWithChoseParticipantsInfo(List<TgUser> friends, Set<Long> participants, Locale locale) {
         String friendsList = friendshipMessageBuilder.getFriendsList(friends, MessagesProperties.MESSAGE_FRIENDS_EMPTY,
                 MessagesProperties.MESSAGE_CHOOSE_PARTICIPANTS_HEADER, null, locale);
         if (participants.isEmpty()) {
@@ -119,7 +119,7 @@ public class ChallengeMessageBuilder {
                 + "\n" + messageBuilder.getChooseParticipantsFooter(locale);
     }
 
-    public String getChallengeInvitation(Challenge challenge, int participantUserId, Locale locale) {
+    public String getChallengeInvitation(Challenge challenge, long participantUserId, Locale locale) {
         String friendName = friendshipService.getFriendName(participantUserId, challenge.getCreatorId());
 
         return messageBuilder.getChallengeInvitation(
@@ -128,7 +128,7 @@ public class ChallengeMessageBuilder {
         );
     }
 
-    private String getParticipants(int requesterId, List<ChallengeParticipant> challengeParticipants, Locale locale) {
+    private String getParticipants(long requesterId, List<ChallengeParticipant> challengeParticipants, Locale locale) {
         StringBuilder participants = new StringBuilder();
 
         int i = 1;

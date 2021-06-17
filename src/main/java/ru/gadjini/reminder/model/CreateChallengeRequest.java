@@ -13,7 +13,7 @@ public class CreateChallengeRequest {
 
     private Time challengeTime;
 
-    private Set<Integer> participants;
+    private Set<Long> participants;
 
     private ReminderRequest reminderRequest;
 
@@ -25,7 +25,7 @@ public class CreateChallengeRequest {
         return this.challengeTime;
     }
 
-    public Set<Integer> participants() {
+    public Set<Long> participants() {
         return this.participants;
     }
 
@@ -43,7 +43,7 @@ public class CreateChallengeRequest {
         return this;
     }
 
-    public CreateChallengeRequest participants(final Set<Integer> participants) {
+    public CreateChallengeRequest participants(final Set<Long> participants) {
         this.participants = participants;
         return this;
     }

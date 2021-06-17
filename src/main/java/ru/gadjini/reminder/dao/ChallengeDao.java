@@ -38,7 +38,7 @@ public class ChallengeDao {
                         "FROM tg_user usr\n" +
                         "         INNER JOIN challenge ON usr.user_id = challenge.creator_id",
                 ps -> {
-                    ps.setInt(1, challenge.getCreatorId());
+                    ps.setLong(1, challenge.getCreatorId());
                     ps.setObject(2, challenge.getFinishedAt().sqlObject());
                 },
                 rs -> {
@@ -51,7 +51,7 @@ public class ChallengeDao {
         );
     }
 
-    public List<Challenge> getUserChallenges(int userId) {
+    public List<Challenge> getUserChallenges(long userId) {
         return namedParameterJdbcTemplate.query(
                 "SELECT ch.*,\n" +
                         "       (ch.finished_at).*,\n" +
@@ -108,12 +108,12 @@ public class ChallengeDao {
         );
     }
 
-    public void delete(int performerId, int challengeId) {
+    public void delete(long performerId, int challengeId) {
         jdbcTemplate.update(
                 "DELETE FROM challenge WHERE id = ? AND creator_id = ?",
                 ps -> {
                     ps.setInt(1, challengeId);
-                    ps.setInt(2, performerId);
+                    ps.setLong(2, performerId);
                 }
         );
     }

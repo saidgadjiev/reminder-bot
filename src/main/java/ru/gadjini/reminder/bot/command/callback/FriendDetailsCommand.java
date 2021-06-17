@@ -56,7 +56,7 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        int friendUserId = requestParams.getInt(Arg.FRIEND_ID.getKey());
+        long friendUserId = requestParams.getInt(Arg.FRIEND_ID.getKey());
         TgUser friend = friendshipService.getFriend(callbackQuery.getFrom().getId(), friendUserId);
 
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
@@ -70,7 +70,7 @@ public class FriendDetailsCommand implements CallbackBotCommand, NavigableCallba
 
     @Override
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
-        int friendUserId = requestParams.getInt(Arg.FRIEND_ID.getKey());
+        long friendUserId = requestParams.getInt(Arg.FRIEND_ID.getKey());
         TgUser friend = friendshipService.getFriend(tgMessage.getUser().getId(), friendUserId);
 
         Locale locale = userService.getLocale(tgMessage.getUser().getId());

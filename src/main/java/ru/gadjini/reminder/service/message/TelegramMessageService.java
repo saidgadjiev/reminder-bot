@@ -6,7 +6,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ActionType;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
@@ -23,7 +22,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.common.ReminderConstants;
 import ru.gadjini.reminder.common.TgConstants;
-import ru.gadjini.reminder.configuration.BotConfiguration;
 import ru.gadjini.reminder.exception.TelegramMethodException;
 import ru.gadjini.reminder.job.MessageSenderJob;
 import ru.gadjini.reminder.job.PriorityJob;
@@ -38,7 +36,6 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 @Service
-@Profile("!" + BotConfiguration.PROFILE_TEST)
 public class TelegramMessageService implements MessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TelegramMessageService.class);
@@ -61,7 +58,7 @@ public class TelegramMessageService implements MessageService {
         SendChatAction chatAction = new SendChatAction();
 
         chatAction.setAction(action);
-        chatAction.setChatId(chatId);
+        chatAction.setChatId(String.valueOf(chatId));
 
         try {
             telegramService.execute(chatAction);
@@ -74,7 +71,7 @@ public class TelegramMessageService implements MessageService {
     public void deleteMessage(long chatId, int messageId) {
         DeleteMessage deleteMessage = new DeleteMessage();
 
-        deleteMessage.setChatId(chatId);
+        deleteMessage.setChatId(String.valueOf(chatId));
         deleteMessage.setMessageId(messageId);
 
         try {
@@ -105,7 +102,7 @@ public class TelegramMessageService implements MessageService {
     public void sendMessage(SendMessageContext messageContext, Consumer<Message> callback) {
         SendMessage sendMessage = new SendMessage();
 
-        sendMessage.setChatId(messageContext.chatId());
+        sendMessage.setChatId(String.valueOf(messageContext.chatId()));
         sendMessage.enableHtml(messageContext.html());
         sendMessage.setText(messageContext.text());
         sendMessage.disableWebPagePreview();
@@ -159,7 +156,7 @@ public class TelegramMessageService implements MessageService {
 
         editMessageText.setMessageId(messageContext.messageId());
         editMessageText.enableHtml(true);
-        editMessageText.setChatId(messageContext.chatId());
+        editMessageText.setChatId(String.valueOf(messageContext.chatId()));
         editMessageText.setText(messageContext.text());
         if (messageContext.hasKeyboard()) {
             editMessageText.setReplyMarkup(messageContext.replyKeyboard());
@@ -179,7 +176,7 @@ public class TelegramMessageService implements MessageService {
         EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
 
         editMessageReplyMarkup.setMessageId(messageId);
-        editMessageReplyMarkup.setChatId(chatId);
+        editMessageReplyMarkup.setChatId(String.valueOf(chatId));
         editMessageReplyMarkup.setReplyMarkup(replyKeyboard);
 
         try {
@@ -224,7 +221,7 @@ public class TelegramMessageService implements MessageService {
     @Override
     public void removeMessageKeyboard(long chatId, int messageId) {
         EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup();
-        editMessageReplyMarkup.setChatId(chatId);
+        editMessageReplyMarkup.setChatId(String.valueOf(chatId));
         editMessageReplyMarkup.setMessageId(messageId);
 
         try {

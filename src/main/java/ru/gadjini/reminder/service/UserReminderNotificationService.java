@@ -76,11 +76,11 @@ public class UserReminderNotificationService {
         dao.create(userReminderNotification);
     }
 
-    public List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType) {
+    public List<UserReminderNotification> getList(long userId, UserReminderNotification.NotificationType notificationType) {
         return dao.getList(userId, notificationType, true);
     }
 
-    public List<UserReminderNotification> getNonCachedList(int userId, UserReminderNotification.NotificationType notificationType) {
+    public List<UserReminderNotification> getNonCachedList(long userId, UserReminderNotification.NotificationType notificationType) {
         return dao.getList(userId, notificationType, false);
     }
 
@@ -88,11 +88,11 @@ public class UserReminderNotificationService {
         dao.deleteById(id);
     }
 
-    public int count(int userId, UserReminderNotification.NotificationType notificationType) {
+    public int count(long userId, UserReminderNotification.NotificationType notificationType) {
         return dao.count(userId, notificationType);
     }
 
-    public void createDefaultNotificationsForWithTime(int userId) {
+    public void createDefaultNotificationsForWithTime(long userId) {
         UserReminderNotification eveNotification = new UserReminderNotification(ZoneOffset.UTC);
         eveNotification.setType(UserReminderNotification.NotificationType.WITH_TIME);
         eveNotification.setUserId(userId);
@@ -105,7 +105,7 @@ public class UserReminderNotificationService {
         dao.create(buildOffsetNotification(userId, 0, 20));
     }
 
-    public void createDefaultNotificationsForWithoutTime(int userId) {
+    public void createDefaultNotificationsForWithoutTime(long userId) {
         UserReminderNotification noonNotification = new UserReminderNotification(ZoneOffset.UTC);
         noonNotification.setType(UserReminderNotification.NotificationType.WITHOUT_TIME);
         noonNotification.setTime(LocalTime.of(9, 0));
@@ -126,7 +126,7 @@ public class UserReminderNotificationService {
         dao.create(eveNotification);
     }
 
-    private UserReminderNotification buildOffsetNotification(int userId, int hours, int minutes) {
+    private UserReminderNotification buildOffsetNotification(long userId, int hours, int minutes) {
         UserReminderNotification notification = new UserReminderNotification(ZoneOffset.UTC);
         notification.setType(UserReminderNotification.NotificationType.WITH_TIME);
         notification.setUserId(userId);

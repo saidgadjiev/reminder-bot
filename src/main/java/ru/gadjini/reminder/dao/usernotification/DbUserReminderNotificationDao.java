@@ -59,11 +59,11 @@ public class DbUserReminderNotificationDao implements UserReminderNotificationDa
     }
 
     @Override
-    public int count(int userId, UserReminderNotification.NotificationType notificationType) {
+    public int count(long userId, UserReminderNotification.NotificationType notificationType) {
         return jdbcTemplate.query(
                 "SELECT COUNT(*) as cnt FROM user_reminder_notification WHERE user_id = ? AND type = ?",
                 ps -> {
-                    ps.setInt(1, userId);
+                    ps.setLong(1, userId);
                     ps.setInt(2, notificationType.getCode());
                 },
                 rs -> {
@@ -77,12 +77,12 @@ public class DbUserReminderNotificationDao implements UserReminderNotificationDa
     }
 
     @Override
-    public List<UserReminderNotification> getList(int userId, UserReminderNotification.NotificationType notificationType, boolean useCache) {
+    public List<UserReminderNotification> getList(long userId, UserReminderNotification.NotificationType notificationType, boolean useCache) {
         return jdbcTemplate.query(
                 "SELECT urn.*, rc.zone_id AS rc_zone_id FROM user_reminder_notification urn INNER JOIN tg_user rc ON urn.user_id = rc.user_id " +
                         "WHERE urn.user_id = ? AND urn.type = ? ORDER BY days DESC, time DESC, hours DESC, minutes DESC",
                 ps -> {
-                    ps.setInt(1, userId);
+                    ps.setLong(1, userId);
                     ps.setInt(2, notificationType.getCode());
                 },
                 (rs, rowNum) -> resultSetMapper.mapUserReminderNotification(rs)

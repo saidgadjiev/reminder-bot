@@ -142,7 +142,7 @@ public class StartCommand extends BotCommand implements NavigableBotCommand, Key
 
     }
 
-    private void sendMainMenu(int userId, Locale locale) {
+    private void sendMainMenu(long userId, Locale locale) {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.MEDIUM)
                         .chatId(userId)

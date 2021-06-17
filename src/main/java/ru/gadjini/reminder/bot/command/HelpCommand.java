@@ -59,7 +59,7 @@ public class HelpCommand extends BotCommand implements KeyboardBotCommand {
         return false;
     }
 
-    private void sendHelpMessage(int userId, Locale locale) {
+    private void sendHelpMessage(long userId, Locale locale) {
         messageService.sendMessageAsync(
                 new SendMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(userId)

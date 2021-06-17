@@ -8,11 +8,11 @@ public class ReminderData {
 
     private String text;
 
-    private int creatorId;
+    private long creatorId;
 
     private UserData creator;
 
-    private int receiverId;
+    private long receiverId;
 
     private UserData receiver;
 
@@ -40,11 +40,11 @@ public class ReminderData {
         this.text = text;
     }
 
-    public int getCreatorId() {
+    public long getCreatorId() {
         return creatorId;
     }
 
-    public void setCreatorId(int creatorId) {
+    public void setCreatorId(long creatorId) {
         this.creatorId = creatorId;
     }
 
@@ -56,11 +56,11 @@ public class ReminderData {
         this.creator = creator;
     }
 
-    public int getReceiverId() {
+    public long getReceiverId() {
         return receiverId;
     }
 
-    public void setReceiverId(int receiverId) {
+    public void setReceiverId(long receiverId) {
         this.receiverId = receiverId;
     }
 

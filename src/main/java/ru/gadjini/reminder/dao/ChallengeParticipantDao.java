@@ -76,7 +76,7 @@ public class ChallengeParticipantDao {
                         "FROM tg_user usr\n" +
                         "         INNER JOIN participant ON usr.user_id = participant.user_id",
                 ps -> {
-                    ps.setInt(1, challengeParticipant.getUserId());
+                    ps.setLong(1, challengeParticipant.getUserId());
                     ps.setInt(2, challengeParticipant.getChallengeId());
                     ps.setInt(3, challengeParticipant.getState().getCode());
                 },
@@ -89,14 +89,14 @@ public class ChallengeParticipantDao {
         );
     }
 
-    public ChallengeParticipant updateState(int userId, int challengeId, ChallengeParticipant.State state) {
+    public ChallengeParticipant updateState(long userId, int challengeId, ChallengeParticipant.State state) {
         return jdbcTemplate.query(
                 "WITH upd AS (UPDATE challenge_participant SET state = ? WHERE user_id = ? AND challenge_id = ? RETURNING challenge_id)\n" +
                         "SELECT c.creator_id\n" +
                         "FROM upd INNER JOIN challenge c ON c.id = upd.challenge_id",
                 ps -> {
                     ps.setInt(1, state.getCode());
-                    ps.setInt(2, userId);
+                    ps.setLong(2, userId);
                     ps.setInt(3, challengeId);
                 },
                 rs -> {
@@ -115,11 +115,11 @@ public class ChallengeParticipantDao {
         );
     }
 
-    public void delete(int userId, int challengeId) {
+    public void delete(long userId, int challengeId) {
         jdbcTemplate.update(
                 "DELETE FROM challenge_participant WHERE user_id = ? AND challenge_id = ?",
                 ps -> {
-                    ps.setInt(1, userId);
+                    ps.setLong(1, userId);
                     ps.setInt(2, challengeId);
                 }
         );

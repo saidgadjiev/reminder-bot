@@ -129,12 +129,12 @@ public class ReminderNotificationDao {
         jdbcTemplate.update(delete.getSQL(), new JooqPreparedSetter(delete.getParams()));
     }
 
-    public void deleteByReceiverId(int receiverId) {
+    public void deleteByReceiverId(long receiverId) {
         jdbcTemplate.update(
                 "DELETE\n" +
                         "FROM reminder_time\n" +
                         "WHERE reminder_id IN (SELECT id FROM reminder WHERE receiver_id = ?)",
-                ps -> ps.setInt(1, receiverId)
+                ps -> ps.setLong(1, receiverId)
         );
     }
 

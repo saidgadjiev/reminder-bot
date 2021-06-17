@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.telegram.telegrambots.ApiContextInitializer;
 import ru.gadjini.reminder.property.*;
 
 import java.util.Locale;
@@ -28,7 +27,6 @@ public class ReminderApplication {
 
     public static void main(String[] args) {
         startLogs();
-        ApiContextInitializer.init();
         try {
             SpringApplication application = new SpringApplication(ReminderApplication.class);
             application.setApplicationContextClass(AnnotationConfigApplicationContext.class);

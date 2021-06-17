@@ -17,7 +17,7 @@ public class ChallengeState {
 
     private TimeData time;
 
-    private Set<Integer> participants = new LinkedHashSet<>();
+    private Set<Long> participants = new LinkedHashSet<>();
 
     private List<UserData> friends = new ArrayList<>();
 
@@ -53,11 +53,11 @@ public class ChallengeState {
         this.time = time;
     }
 
-    public Set<Integer> getParticipants() {
+    public Set<Long> getParticipants() {
         return participants;
     }
 
-    public void addOrRemoveParticipant(int id) {
+    public void addOrRemoveParticipant(long id) {
         if (!participants.add(id)) {
             participants.remove(id);
         }

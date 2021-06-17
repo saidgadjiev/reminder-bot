@@ -59,7 +59,7 @@ public class ReminderDao {
         }
     }
 
-    public List<Reminder> getActiveReminders(int userId, Filter filter) {
+    public List<Reminder> getActiveReminders(long userId, Filter filter) {
         return namedParameterJdbcTemplate.query(
                 "SELECT r.*,\n" +
                         "       (r.remind_at).*,\n" +
@@ -100,7 +100,7 @@ public class ReminderDao {
         );
     }
 
-    public List<Reminder> getCompletedReminders(int userId) {
+    public List<Reminder> getCompletedReminders(long userId) {
         return namedParameterJdbcTemplate.query(
                 "SELECT r.*," +
                         "       (r.remind_at).*,\n" +
@@ -120,7 +120,7 @@ public class ReminderDao {
         );
     }
 
-    public void deleteCompletedReminders(int creatorId) {
+    public void deleteCompletedReminders(long creatorId) {
         jdbcTemplate.update("DELETE FROM completed_reminder WHERE receiver_id = " + creatorId);
     }
 
@@ -318,14 +318,14 @@ public class ReminderDao {
 
                     ps.setString(1, reminder.getText());
                     if (reminder.getCreatorId() != null) {
-                        ps.setInt(2, reminder.getCreatorId());
+                        ps.setLong(2, reminder.getCreatorId());
                     } else {
-                        ps.setNull(2, Types.INTEGER);
+                        ps.setNull(2, Types.BIGINT);
                     }
                     if (reminder.getReceiverId() != null) {
-                        ps.setInt(3, reminder.getReceiverId());
+                        ps.setLong(3, reminder.getReceiverId());
                     } else {
-                        ps.setNull(3, Types.INTEGER);
+                        ps.setNull(3, Types.BIGINT);
                     }
                     if (reminder.getRemindAt() != null) {
                         ps.setObject(4, reminder.getRemindAt().sqlObject());
@@ -401,7 +401,7 @@ public class ReminderDao {
                             "                                       WHEN f.user_two_id = r.creator_id THEN f.user_one_id = r.receiver_id END");
 
                     ps.setString(1, reminder.getText());
-                    ps.setInt(2, reminder.getCreatorId());
+                    ps.setLong(2, reminder.getCreatorId());
                     if (reminder.getRemindAt() != null) {
                         ps.setObject(3, reminder.getRemindAt().sqlObject());
                     } else {
@@ -446,7 +446,7 @@ public class ReminderDao {
                 },
                 rs -> {
                     reminder.setId(rs.getInt(Reminder.ID));
-                    reminder.setReceiverId(rs.getInt("receiver_id"));
+                    reminder.setReceiverId(rs.getLong("receiver_id"));
                     reminder.getReceiver().setUserId(reminder.getReceiverId());
                     reminder.getReceiver().setName(rs.getString("rc_name"));
                     reminder.getCreator().setName(rs.getString("cr_name"));
