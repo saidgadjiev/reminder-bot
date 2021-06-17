@@ -17,7 +17,8 @@ public enum Arg {
     REASON("m"),
     FILTER("n"),
     CHALLENGE_ID("o"),
-    COMMAND_NAME("p");
+    COMMAND_NAME("p"),
+    GOAL_ID("r");
 
     private final String key;
 

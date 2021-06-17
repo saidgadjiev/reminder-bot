@@ -9,10 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.gadjini.reminder.common.CommandNames;
 import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.dao.ReminderDao;
-import ru.gadjini.reminder.domain.ChallengeParticipant;
-import ru.gadjini.reminder.domain.PaymentType;
-import ru.gadjini.reminder.domain.Reminder;
-import ru.gadjini.reminder.domain.UserReminderNotification;
+import ru.gadjini.reminder.domain.*;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.command.CallbackCommandNavigator;
@@ -123,6 +120,28 @@ public class InlineKeyboardService {
                 button.setText(String.valueOf(i++));
                 button.setCallbackData(CommandNames.DELETE_SAVED_QUERY_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                         new RequestParams().add(Arg.SAVED_QUERY_ID.getKey(), id).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+                row.add(button);
+            }
+
+            inlineKeyboardMarkup.getKeyboard().add(row);
+        }
+
+        return inlineKeyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup goalsKeyboard(List<Goal> goals) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
+
+        int i = 1;
+        List<List<Goal>> lists = Lists.partition(goals, 4);
+        for (List<Goal> list : lists) {
+            List<InlineKeyboardButton> row = new ArrayList<>();
+
+            for (Goal goal : list) {
+                InlineKeyboardButton button = new InlineKeyboardButton();
+                button.setText(String.valueOf(i++));
+                button.setCallbackData(CommandNames.GOAL_DETAILS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                        new RequestParams().add(Arg.GOAL_ID.getKey(), goal.getId()).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
                 row.add(button);
             }
 

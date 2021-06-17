@@ -76,4 +76,6 @@ public class CommandNames {
     public static final String TIME_TRACKER_COMMAND_NAME = "bq";
     public static final String START_WORK_COMMAND_NAME = "br";
     public static final String STOP_WORK_COMMAND_NAME = "bs";
+    public static final String GOAL_DETAILS_COMMAND_NAME = "bt";
+    public static final String CREATE_GOAL_COMMAND_NAME = "bu";
 }

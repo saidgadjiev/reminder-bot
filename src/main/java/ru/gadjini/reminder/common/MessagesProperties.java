@@ -602,4 +602,6 @@ public class MessagesProperties {
     public static final String WORK_IN_PROGRESS = "work.in.progress";
 
     public static final String MESSAGE_IN_PROGRESS_REMINDER_ICON = "message.in.progress.reminder.icon";
+
+    public static final String GOALS_COMMAND_DESCRIPTION = "goals.command.description";
 }
