@@ -13,9 +13,8 @@ import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
-import ru.gadjini.reminder.service.reminder.simple.ReminderService;
 import ru.gadjini.reminder.service.reminder.message.ReminderMessageSender;
-import ru.gadjini.reminder.service.tag.ReminderTagService;
+import ru.gadjini.reminder.service.reminder.simple.ReminderService;
 
 import java.util.List;
 
@@ -54,7 +53,7 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
                 callbackQuery.getMessage().getText(),
                 getFilterMessageCode(filter),
                 new RequestParams().add(Arg.FILTER.getKey(), filter.getCode())
-                .add(Arg.TAG_ID.getKey(), tagId),
+                        .add(Arg.TAG_ID.getKey(), tagId),
                 reminders
         );
 
@@ -64,7 +63,7 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
     @Override
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
         ReminderDao.Filter filter = requestParams.contains(Arg.FILTER.getKey()) ? ReminderDao.Filter.fromCode(requestParams.getInt(Arg.FILTER.getKey())) : ReminderDao.Filter.ALL;
-        int tagId =  requestParams.getInt(Arg.TAG_ID.getKey());
+        int tagId = requestParams.getInt(Arg.TAG_ID.getKey());
 
         List<Reminder> reminders = reminderService.getActiveReminders(tgMessage.getUser().getId(), filter, tagId);
 
@@ -75,7 +74,7 @@ public class GetActiveRemindersCommand implements CallbackBotCommand, NavigableC
                 null,
                 getFilterMessageCode(filter),
                 new RequestParams().add(Arg.FILTER.getKey(), filter.getCode())
-                .add(Arg.TAG_ID.getKey(), tagId),
+                        .add(Arg.TAG_ID.getKey(), tagId),
                 reminders
         );
     }

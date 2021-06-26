@@ -1,8 +1,6 @@
 package ru.gadjini.reminder.service.message;
 
 import com.google.common.base.Splitter;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.gadjini.reminder.common.MessagesProperties;
-import ru.gadjini.reminder.common.ReminderConstants;
 import ru.gadjini.reminder.common.TgConstants;
 import ru.gadjini.reminder.exception.TelegramMethodException;
 import ru.gadjini.reminder.job.MessageSenderJob;
@@ -194,13 +191,6 @@ public class TelegramMessageService implements MessageService {
                         .text(localisationService.getMessage(MessagesProperties.MESSAGE_ERROR, locale))
                         .replyKeyboard(replyKeyboard)
         );
-
-        sendMessageAsync(
-                new SendMessageContext(PriorityJob.Priority.LOW)
-                        .chatId(ReminderConstants.REPORT_CHAT)
-                        .html(false)
-                        .text(buildErrorMessage(chatId, ex))
-        );
     }
 
     @Override
@@ -252,15 +242,5 @@ public class TelegramMessageService implements MessageService {
                     .replyKeyboard(sendMessage.replyKeyboard());
             sendMessage(msg, callback);
         }
-    }
-
-    private String buildErrorMessage(long chatId, Throwable ex) {
-        StringBuilder message = new StringBuilder();
-
-        message.append("Message(").append(chatId).append("): ").append(ex.getMessage()).append("\n\n")
-                .append("Stacktrace: ")
-                .append(ExceptionUtils.getStackTrace(ex));
-
-        return StringUtils.substring(message.toString(), 0, TgConstants.MAX_MESSAGE_SIZE);
     }
 }
