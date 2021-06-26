@@ -19,6 +19,7 @@ import ru.gadjini.reminder.model.UpdateReminderResult;
 import ru.gadjini.reminder.service.UserReminderNotificationService;
 import ru.gadjini.reminder.service.ai.ReminderNotificationAI;
 import ru.gadjini.reminder.service.reminder.notification.ReminderNotificationService;
+import ru.gadjini.reminder.service.tag.ReminderTagService;
 import ru.gadjini.reminder.time.DateTime;
 import ru.gadjini.reminder.util.DateTimeService;
 
@@ -41,16 +42,19 @@ public class ReminderService {
 
     private DateTimeService dateTimeService;
 
+    private ReminderTagService reminderTagService;
+
     @Autowired
     public ReminderService(ReminderDao reminderDao,
                            ReminderNotificationService reminderNotificationService,
                            UserReminderNotificationService userReminderNotificationService,
-                           ReminderNotificationAI reminderNotificationAI, DateTimeService dateTimeService) {
+                           ReminderNotificationAI reminderNotificationAI, DateTimeService dateTimeService, ReminderTagService reminderTagService) {
         this.reminderDao = reminderDao;
         this.reminderNotificationService = reminderNotificationService;
         this.userReminderNotificationService = userReminderNotificationService;
         this.reminderNotificationAI = reminderNotificationAI;
         this.dateTimeService = dateTimeService;
+        this.reminderTagService = reminderTagService;
     }
 
     @Transactional
@@ -241,12 +245,17 @@ public class ReminderService {
     }
 
     public Reminder getReminder(int reminderId) {
-        return reminderDao.getReminder(
+        Reminder reminder = reminderDao.getReminder(
                 ReminderTable.TABLE.as("r").ID.eq(reminderId),
                 new ReminderMapping()
                         .setReceiverMapping(new Mapping().setFields(List.of(ReminderMapping.RC_NAME)))
                         .setCreatorMapping(new Mapping())
         );
+
+        List<String> reminderTags = reminderTagService.getReminderTags(reminderId);
+        reminder.setTags(reminderTags);
+
+        return reminder;
     }
 
     public List<Reminder> getRemindersWithReminderTimes(LocalDateTime localDateTime, int limit) {
@@ -261,8 +270,8 @@ public class ReminderService {
         return reminderDao.deleteCompletedReminders(localDateTime);
     }
 
-    public List<Reminder> getActiveReminders(long userId, ReminderDao.Filter filter) {
-        return reminderDao.getActiveReminders(userId, filter);
+    public List<Reminder> getActiveReminders(long userId, ReminderDao.Filter filter, int tagId) {
+        return reminderDao.getActiveReminders(userId, filter, tagId == ReminderTagService.NO_TAG_ID ? null : tagId);
     }
 
     public Reminder delete(int reminderId) {

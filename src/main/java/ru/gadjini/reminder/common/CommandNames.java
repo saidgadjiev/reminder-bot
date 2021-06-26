@@ -78,4 +78,6 @@ public class CommandNames {
     public static final String STOP_WORK_COMMAND_NAME = "bs";
     public static final String GOAL_DETAILS_COMMAND_NAME = "bt";
     public static final String CREATE_GOAL_COMMAND_NAME = "bu";
+    public static final String TAG_COMMAND_NAME = "bv";
+    public static final String TAGS_COMMAND_NAME = "bw";
 }

@@ -130,6 +130,8 @@ public class Reminder {
 
     private ZonedDateTime lastWorkInProgressAt;
 
+    private List<String> tags;
+
     public Reminder() {
     }
 
@@ -464,6 +466,14 @@ public class Reminder {
 
     public boolean hasRemindAt() {
         return remindAt != null;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     public Map<Field<?>, Object> getDiff(Reminder newReminder) {

@@ -130,11 +130,19 @@ public class ButtonFactory {
         return button;
     }
 
-    InlineKeyboardButton getActiveRemindersButton(String nameCode, ReminderDao.Filter filter, Locale locale) {
+    InlineKeyboardButton getActiveRemindersButton(String nameCode, int tagId, ReminderDao.Filter filter, Locale locale) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(nameCode, locale));
         button.setCallbackData(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams()
-                        .add(Arg.FILTER.getKey(), filter.getCode()).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+                        .add(Arg.FILTER.getKey(), filter.getCode())
+                        .add(Arg.TAG_ID.getKey(), tagId).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
+
+    InlineKeyboardButton geReminderTagsButton(Locale locale) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, locale));
+        button.setCallbackData(CommandNames.TAGS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR);
 
         return button;
     }
@@ -250,6 +258,28 @@ public class ButtonFactory {
                 new RequestParams()
                         .add(Arg.REMINDER_ID.getKey(), reminderId)
                         .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
+
+    InlineKeyboardButton tagButton(int reminderId, int tagId, String name) {
+        InlineKeyboardButton button = new InlineKeyboardButton(name);
+        button.setCallbackData(CommandNames.CALLBACK_DELEGATE_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams()
+                        .add(Arg.CALLBACK_DELEGATE.getKey(), CommandNames.TAG_COMMAND_NAME)
+                        .add(Arg.TAG_ID.getKey(), tagId)
+                        .add(Arg.REMINDER_ID.getKey(), reminderId)
+                        .serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
+
+    InlineKeyboardButton getActiveRemindersButton(String name, int tagId, ReminderDao.Filter filter) {
+        InlineKeyboardButton button = new InlineKeyboardButton(name);
+        button.setCallbackData(CommandNames.GET_ACTIVE_REMINDERS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams()
+                        .add(Arg.TAG_ID.getKey(), tagId)
+                        .add(Arg.FILTER.getKey(), filter.getCode()).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;
     }
@@ -386,6 +416,14 @@ public class ButtonFactory {
     InlineKeyboardButton suppressNotifications(int reminderId, Locale locale) {
         InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.SUPPRESS_NOTIFICATIONS_COMMAND_DESCRIPTION, locale));
         button.setCallbackData(CommandNames.SUPPRESS_NOTIFICATIONS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
+
+    InlineKeyboardButton addTagButton(int reminderId, Locale locale) {
+        InlineKeyboardButton button = new InlineKeyboardButton(localisationService.getMessage(MessagesProperties.ADD_TAG_COMMAND_NAME, locale));
+        button.setCallbackData(CommandNames.TAG_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
                 new RequestParams().add(Arg.REMINDER_ID.getKey(), reminderId).serialize(CommandParser.COMMAND_ARG_SEPARATOR));
 
         return button;

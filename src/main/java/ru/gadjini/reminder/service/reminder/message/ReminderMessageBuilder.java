@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jooq.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import ru.gadjini.reminder.common.MessagesProperties;
 import ru.gadjini.reminder.domain.Reminder;
 import ru.gadjini.reminder.domain.TgUser;
 import ru.gadjini.reminder.domain.jooq.ReminderTable;
@@ -142,6 +144,20 @@ public class ReminderMessageBuilder {
 
         if (StringUtils.isNotBlank(note)) {
             result.append("\n\n").append(messageBuilder.getNote(reminder.getNote(), locale));
+        }
+
+        if (!CollectionUtils.isEmpty(reminder.getTags())) {
+            StringBuilder tags = new StringBuilder();
+            for (String tag : reminder.getTags()) {
+                if (tags.length() > 0) {
+                    tags.append(", ");
+                }
+                tags.append("<i>").append(tag).append("</i>");
+            }
+            result.append("\n\n").append(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDER_TAGS,
+                    new Object[] {
+                            tags.toString()
+                    }, locale));
         }
 
         return result.toString();

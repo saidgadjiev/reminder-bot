@@ -59,7 +59,7 @@ public class ReminderDao {
         }
     }
 
-    public List<Reminder> getActiveReminders(long userId, Filter filter) {
+    public List<Reminder> getActiveReminders(long userId, Filter filter, Integer tagId) {
         return namedParameterJdbcTemplate.query(
                 "SELECT r.*,\n" +
                         "       (r.remind_at).*,\n" +
@@ -82,6 +82,8 @@ public class ReminderDao {
                         "WHERE ((r.creator_id = :user_id AND r.status IN (0, 2, 3))\n" +
                         "   OR (r.receiver_id = :user_id AND r.status IN (0, 3)))\n" +
                         getFilterClause(filter) + "\n" +
+                        (tagId != null ? " AND exists(select 1 from reminder_tag rtg where rtg.reminder_id = r.id and rtg.tag_id = " + tagId + ")\n"
+                                : " AND not exists(select 1 from reminder_tag rtg where rtg.reminder_id = r.id)\n" ) +
                         "ORDER BY (r.remind_at).dt_date, (r.remind_at).dt_time NULLS LAST, r.id",
                 new MapSqlParameterSource().addValue("user_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)

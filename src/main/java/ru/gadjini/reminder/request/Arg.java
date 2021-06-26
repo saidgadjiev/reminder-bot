@@ -18,7 +18,8 @@ public enum Arg {
     FILTER("n"),
     CHALLENGE_ID("o"),
     COMMAND_NAME("p"),
-    GOAL_ID("r");
+    GOAL_ID("r"),
+    TAG_ID("s");
 
     private final String key;
 

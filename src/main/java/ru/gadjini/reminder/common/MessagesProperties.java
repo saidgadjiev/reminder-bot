@@ -604,4 +604,14 @@ public class MessagesProperties {
     public static final String MESSAGE_IN_PROGRESS_REMINDER_ICON = "message.in.progress.reminder.icon";
 
     public static final String GOALS_COMMAND_DESCRIPTION = "goals.command.description";
+
+    public static final String MESSAGE_CHOOSE_TAG = "message.choose.tag";
+
+    public static final String MESSAGE_NO_TAG = "message.no.tag";
+
+    public static final String ADD_TAG_COMMAND_NAME = "add.tag.command.name";
+
+    public static final String MESSAGE_REMINDER_TAGS = "message.reminder.tags";
+
+    public static final String MESSAGE_TAG_ADDED_ANSWER = "message.tag.added.answer";
 }

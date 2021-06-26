@@ -564,7 +564,8 @@ public class ReminderMessageSender {
         }
     }
 
-    public void sendActiveReminders(long userId, long chatId, int messageId, String currText, String header, RequestParams requestParams, List<Reminder> reminders) {
+    public void sendActiveReminders(long userId, long chatId, int messageId, String currText, String header,
+                                    RequestParams requestParams, List<Reminder> reminders) {
         Locale locale = userService.getLocale(userId);
         String text = reminderMessageBuilder.getActiveRemindersList(userId, reminders, header, locale);
         if (!Objects.equals(TextUtils.removeHtmlTags(text), currText)) {
@@ -575,10 +576,10 @@ public class ReminderMessageSender {
                             .text(text)
                             .replyKeyboard(
                                     reminders.isEmpty()
-                                            ? inlineKeyboardService.getEmptyActiveRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME, locale)
+                                            ? inlineKeyboardService.getEmptyActiveRemindersListKeyboard(CommandNames.TAGS_COMMAND_NAME, locale)
                                             : inlineKeyboardService.getActiveRemindersListKeyboard(
                                             reminders.stream().map(Reminder::getId).collect(Collectors.toList()),
-                                            CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME,
+                                            CommandNames.TAGS_COMMAND_NAME,
                                             requestParams,
                                             locale)
                             )
