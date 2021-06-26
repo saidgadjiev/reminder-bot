@@ -10,6 +10,7 @@ import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
 import ru.gadjini.reminder.model.UpdateReminderResult;
+import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
@@ -576,7 +577,8 @@ public class ReminderMessageSender {
                             .text(text)
                             .replyKeyboard(
                                     reminders.isEmpty()
-                                            ? inlineKeyboardService.getEmptyActiveRemindersListKeyboard(CommandNames.TAGS_COMMAND_NAME, locale)
+                                            ? inlineKeyboardService.getEmptyActiveRemindersListKeyboard(CommandNames.TAGS_COMMAND_NAME,
+                                            requestParams.getInt(Arg.TAG_ID.getKey()), locale)
                                             : inlineKeyboardService.getActiveRemindersListKeyboard(
                                             reminders.stream().map(Reminder::getId).collect(Collectors.toList()),
                                             CommandNames.TAGS_COMMAND_NAME,

@@ -396,15 +396,15 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup getEmptyActiveRemindersListKeyboard(String prevHistoryName, Locale locale) {
+    public InlineKeyboardMarkup getEmptyActiveRemindersListKeyboard(String prevHistoryName, int tagId, Locale locale) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.getActiveRemindersButton(
-                MessagesProperties.TODAY_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderTagService.NO_TAG_ID, ReminderDao.Filter.TODAY, locale),
-                buttonFactory.getActiveRemindersButton(MessagesProperties.ALL_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderTagService.NO_TAG_ID,
+                MessagesProperties.TODAY_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, tagId, ReminderDao.Filter.TODAY, locale),
+                buttonFactory.getActiveRemindersButton(MessagesProperties.ALL_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, tagId,
                         ReminderDao.Filter.ALL, locale)));
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.getActiveRemindersButton(
-                MessagesProperties.EXPIRED_REMINDERS_COMMAND_DESCRIPTION, ReminderTagService.NO_TAG_ID,
+                MessagesProperties.EXPIRED_REMINDERS_COMMAND_DESCRIPTION, tagId,
                 ReminderDao.Filter.EXPIRED, locale)));
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.goBackCallbackButton(prevHistoryName, locale)));
 

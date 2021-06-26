@@ -54,7 +54,8 @@ public class DeleteAllRemindersCommand implements CallbackBotCommand {
         messageService.editMessageAsync(new EditMessageContext(PriorityJob.Priority.HIGH).messageId(callbackQuery.getMessage().getMessageId())
                 .chatId(callbackQuery.getMessage().getChatId())
                 .text(localisationService.getMessage(MessagesProperties.MESSAGE_REMINDERS_EMPTY, locale))
-        .replyKeyboard(inlineKeyboardService.getEmptyActiveRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME, locale)));
+        .replyKeyboard(inlineKeyboardService.getEmptyActiveRemindersListKeyboard(CommandNames.GET_REMINDERS_COMMAND_HISTORY_NAME,
+                requestParams.getInt(Arg.TAG_ID.getKey()), locale)));
 
         return null;
     }
