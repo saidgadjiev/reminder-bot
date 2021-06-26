@@ -414,7 +414,7 @@ public class InlineKeyboardService {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.getCompletedRemindersButton(locale)));
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.getActiveRemindersButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderDao.Filter.ALL, locale)));
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.getActiveRemindersButton(MessagesProperties.GET_ACTIVE_REMINDERS_COMMAND_DESCRIPTION, ReminderDao.Filter.TODAY, locale)));
 
         return inlineKeyboardMarkup;
     }
