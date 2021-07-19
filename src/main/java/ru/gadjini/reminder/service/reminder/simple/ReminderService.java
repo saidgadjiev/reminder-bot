@@ -283,8 +283,8 @@ public class ReminderService {
         return reminders.isEmpty() ? null : reminders.iterator().next();
     }
 
-    public void deleteAll(ReminderDao.Filter filter) {
-        reminderDao.deleteAll(filter);
+    public void deleteAll(long userId, Integer tag, ReminderDao.Filter filter) {
+        reminderDao.deleteAll(userId, tag == ReminderTagService.NO_TAG_ID ? null : tag, filter);
     }
 
     public List<Reminder> deleteFriendReminders(long userId, long friendId) {

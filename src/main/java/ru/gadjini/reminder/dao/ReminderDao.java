@@ -83,7 +83,7 @@ public class ReminderDao {
                         "   OR (r.receiver_id = :user_id AND r.status IN (0, 3)))\n" +
                         getFilterClause(filter) + "\n" +
                         (tagId != null ? " AND exists(select 1 from reminder_tag rtg where rtg.reminder_id = r.id and rtg.tag_id = " + tagId + ")\n"
-                                : " AND not exists(select 1 from reminder_tag rtg where rtg.reminder_id = r.id)\n" ) +
+                                : " AND not exists(select 1 from reminder_tag rtg where rtg.reminder_id = r.id)\n") +
                         "ORDER BY (r.remind_at).dt_date, (r.remind_at).dt_time NULLS LAST, r.id",
                 new MapSqlParameterSource().addValue("user_id", userId),
                 (rs, rowNum) -> resultSetMapper.mapReminder(rs)
@@ -271,11 +271,18 @@ public class ReminderDao {
         );
     }
 
-    public void deleteAll(Filter filter) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("DELETE FROM reminder r USING tg_user rc WHERE r.receiver_id = rc.user_id ").append(getFilterClause(filter));
+    public void deleteAll(long userId, Integer tag, Filter filter) {
+        String sql = "delete\n" +
+                "from reminder\n" +
+                "where id in (select id\n" +
+                "             from reminder r\n" +
+                "                      inner join tg_user rc on r.receiver_id = rc.user_id\n" +
+                "             WHERE r.receiver_id = " + userId + "\n" +
+                "               " + getFilterClause(filter) +
+                (tag != null ? " AND exists(select 1 from reminder_tag rtg where rtg.reminder_id = r.id and rtg.tag_id = " + tag + ")\n"
+                        : " AND not exists(select 1 from reminder_tag rtg where rtg.reminder_id = r.id)\n") +")";
 
-        jdbcTemplate.update(sql.toString());
+        jdbcTemplate.update(sql);
     }
 
     public List<Reminder> delete(Condition condition, ReminderMapping reminderMapping) {

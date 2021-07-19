@@ -49,7 +49,8 @@ public class DeleteAllRemindersCommand implements CallbackBotCommand {
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        reminderService.deleteAll(ReminderDao.Filter.fromCode(requestParams.getInt(Arg.FILTER.getKey())));
+        reminderService.deleteAll(callbackQuery.getFrom().getId(), requestParams.getInt(Arg.TAG_ID.getKey()),
+                ReminderDao.Filter.fromCode(requestParams.getInt(Arg.FILTER.getKey())));
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         messageService.editMessageAsync(new EditMessageContext(PriorityJob.Priority.HIGH).messageId(callbackQuery.getMessage().getMessageId())
                 .chatId(callbackQuery.getMessage().getChatId())
