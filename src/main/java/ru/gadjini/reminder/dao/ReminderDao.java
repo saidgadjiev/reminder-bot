@@ -229,7 +229,6 @@ public class ReminderDao {
                         "         " +
                         "LEFT JOIN (SELECT reminder_id, TRUE as exists_notifications\n" +
                         "                    FROM reminder_time\n" +
-                        "                    WHERE custom = TRUE\n" +
                         "                    GROUP BY reminder_id\n" +
                         "                    HAVING COUNT(reminder_id) > 0) rt\n" +
                         "                   ON rt.reminder_id = r.id\n"
@@ -487,7 +486,7 @@ public class ReminderDao {
         SelectSelectStep<Record> select = dslContext.select(r.asterisk(), DSL.field("(r.remind_at).*"), DSL.field("CASE WHEN rt.exists_notifications IS NULL THEN TRUE ELSE FALSE END suppress_notifications"));
 
         SelectJoinStep<Record> from = select.from(r);
-        from.leftJoin("(SELECT reminder_id, TRUE as exists_notifications FROM reminder_time WHERE custom = TRUE GROUP BY reminder_id HAVING COUNT(reminder_id) > 0) rt")
+        from.leftJoin("(SELECT reminder_id, TRUE as exists_notifications FROM reminder_time GROUP BY reminder_id HAVING COUNT(reminder_id) > 0) rt")
                 .on("rt.reminder_id = r.id");
         if (reminderMapping.getReceiverMapping() != null
                 && reminderMapping.getReceiverMapping().fields().contains(ReminderMapping.RC_NAME)
