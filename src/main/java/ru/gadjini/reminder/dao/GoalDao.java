@@ -22,10 +22,34 @@ public class GoalDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public void create(Goal goal) {
+        jdbcTemplate.update(
+                "INSERT INTO goal(title, description, target_date, user_id, goal_id) VALUES (?, ?, ?, ?, ?)",
+                ps -> {
+                    ps.setString(1, goal.getTitle());
+                    ps.setString(2, goal.getDescription());
+                    ps.setTimestamp(3, Timestamp.valueOf(goal.getTargetDate().toLocalDateTime()));
+                    ps.setLong(4, goal.getUserId());
+                    ps.setInt(5, goal.getGoalId());
+                }
+        );
+    }
+
     public List<Goal> getGoals(long userId) {
         return jdbcTemplate.query(
                 "SELECT * FROM goal WHERE user_id = ? ORDER BY target_date",
                 ps -> ps.setLong(1, userId),
+                (rs, rw) -> map(rs)
+        );
+    }
+
+    public List<Goal> getGoals(long userId, int goalId) {
+        return jdbcTemplate.query(
+                "SELECT * FROM goal WHERE user_id = ? and goal_id = ? ORDER BY target_date",
+                ps -> {
+                    ps.setLong(1, userId);
+                    ps.setInt(2, goalId);
+                },
                 (rs, rw) -> map(rs)
         );
     }
@@ -52,4 +76,5 @@ public class GoalDao {
 
         return goal;
     }
+
 }

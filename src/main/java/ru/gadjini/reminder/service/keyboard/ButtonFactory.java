@@ -516,4 +516,33 @@ public class ButtonFactory {
 
         return button;
     }
+
+    InlineKeyboardButton getGoalsButton(int goalId, Locale locale) {
+        InlineKeyboardButton button = new InlineKeyboardButton(
+                localisationService.getMessage(MessagesProperties.GET_GOALS_COMMAND_DESCRIPTION, locale)
+        );
+
+        RequestParams requestParams = new RequestParams()
+                .add(Arg.GOAL_ID.getKey(), goalId);
+        button.setCallbackData(CommandNames.GET_GOALS_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                requestParams.serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+
+        return button;
+    }
+
+    InlineKeyboardButton createGoalButton(Integer goalId, Locale locale) {
+        InlineKeyboardButton button = new InlineKeyboardButton(
+                localisationService.getMessage(MessagesProperties.CREATE_GOAL_COMMAND_DESCRIPTION, locale)
+        );
+        if (goalId != null) {
+            RequestParams requestParams = new RequestParams()
+                    .add(Arg.GOAL_ID.getKey(), goalId);
+            button.setCallbackData(CommandNames.CREATE_GOAL_COMMAND_NAME + CommandParser.COMMAND_NAME_SEPARATOR +
+                    requestParams.serialize(CommandParser.COMMAND_ARG_SEPARATOR));
+        } else {
+            button.setCallbackData(CommandNames.CREATE_GOAL_COMMAND_NAME);
+        }
+
+        return button;
+    }
 }

@@ -1,0 +1,1 @@
+ALTER TABLE goal ADD COLUMN goal_id INT REFERENCES goal(id);

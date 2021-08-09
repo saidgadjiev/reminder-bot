@@ -12,6 +12,7 @@ import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.TgUserService;
 import ru.gadjini.reminder.service.goal.GoalService;
+import ru.gadjini.reminder.service.keyboard.InlineKeyboardService;
 import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.time.Time2TextService;
 
@@ -29,13 +30,17 @@ public class GoalDetailsCommand implements CallbackBotCommand {
 
     private TgUserService userService;
 
+    private InlineKeyboardService inlineKeyboardService;
+
     @Autowired
     public GoalDetailsCommand(MessageService messageService, GoalService goalService,
-                              Time2TextService time2TextService, TgUserService userService) {
+                              Time2TextService time2TextService, TgUserService userService,
+                              InlineKeyboardService inlineKeyboardService) {
         this.messageService = messageService;
         this.goalService = goalService;
         this.time2TextService = time2TextService;
         this.userService = userService;
+        this.inlineKeyboardService = inlineKeyboardService;
     }
 
     @Override
@@ -47,11 +52,13 @@ public class GoalDetailsCommand implements CallbackBotCommand {
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Goal goal = goalService.getGoal(requestParams.getInt(Arg.GOAL_ID.getKey()));
 
+        Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         messageService.editMessage(
                 new EditMessageContext(PriorityJob.Priority.HIGH)
                         .chatId(callbackQuery.getFrom().getId())
                         .messageId(callbackQuery.getMessage().getMessageId())
                         .text(buildMessage(goal))
+                        .replyKeyboard(inlineKeyboardService.goalDetails(goal.getId(), locale))
         );
 
         return null;

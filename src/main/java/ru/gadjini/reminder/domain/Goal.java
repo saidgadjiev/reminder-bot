@@ -16,6 +16,8 @@ public class Goal {
 
     public static final String CREATED_AT = "created_at";
 
+    public static final String GOAL_ID = "goal_id";
+
     private int id;
 
     private String title;
@@ -27,6 +29,8 @@ public class Goal {
     private ZonedDateTime createdAt;
 
     private long userId;
+
+    private int goalId;
 
     public int getId() {
         return id;
@@ -74,5 +78,13 @@ public class Goal {
 
     public void setUserId(long userId) {
         this.userId = userId;
+    }
+
+    public int getGoalId() {
+        return goalId;
+    }
+
+    public void setGoalId(int goalId) {
+        this.goalId = goalId;
     }
 }

@@ -17,8 +17,16 @@ public class GoalService {
         this.goalDao = goalDao;
     }
 
+    public void createGoal(Goal goal) {
+        goalDao.create(goal);
+    }
+
     public List<Goal> getGoals(long userId) {
         return goalDao.getGoals(userId);
+    }
+
+    public List<Goal> getGoals(long userId, int goalId) {
+        return goalDao.getGoals(userId, goalId);
     }
 
     public Goal getGoal(int id) {

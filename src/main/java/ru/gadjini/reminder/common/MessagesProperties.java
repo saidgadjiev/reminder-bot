@@ -614,4 +614,10 @@ public class MessagesProperties {
     public static final String MESSAGE_REMINDER_TAGS = "message.reminder.tags";
 
     public static final String MESSAGE_TAG_ADDED_ANSWER = "message.tag.added.answer";
+
+    public static final String MESSAGE_SEND_GOAL = "message.send.goal";
+
+    public static final String CREATE_GOAL_COMMAND_DESCRIPTION = "create.goal.command.description";
+
+    public static final String GET_GOALS_COMMAND_DESCRIPTION = "get.goals.command.description";
 }

@@ -37,6 +37,15 @@ public class InlineKeyboardService {
         this.buttonFactory = buttonFactory;
     }
 
+    public InlineKeyboardMarkup goalDetails(int goalId, Locale locale) {
+        InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
+
+        inlineKeyboardMarkup().getKeyboard().add(List.of(buttonFactory.createGoalButton(goalId, locale),
+                buttonFactory.getGoalsButton(goalId, locale)));
+
+        return keyboardMarkup;
+    }
+
     public InlineKeyboardMarkup reminderTagsKeyboard(List<Tag> tags, Locale locale) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
@@ -167,7 +176,7 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup goalsKeyboard(List<Goal> goals) {
+    public InlineKeyboardMarkup goalsKeyboard(List<Goal> goals, Locale locale) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         int i = 1;
@@ -185,6 +194,7 @@ public class InlineKeyboardService {
 
             inlineKeyboardMarkup.getKeyboard().add(row);
         }
+        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.createGoalButton(null, locale)));
 
         return inlineKeyboardMarkup;
     }
