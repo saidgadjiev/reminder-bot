@@ -5,9 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.gadjini.reminder.domain.Goal;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -28,16 +26,29 @@ public class GoalDao {
                 ps -> {
                     ps.setString(1, goal.getTitle());
                     ps.setString(2, goal.getDescription());
-                    ps.setTimestamp(3, Timestamp.valueOf(goal.getTargetDate().toLocalDateTime()));
+                    ps.setDate(3, Date.valueOf(goal.getTargetDate()));
                     ps.setLong(4, goal.getUserId());
-                    ps.setInt(5, goal.getGoalId());
+                    if (goal.getGoalId() == null) {
+                        ps.setNull(5, Types.INTEGER);
+                    } else {
+                        ps.setInt(5, goal.getGoalId());
+                    }
+                }
+        );
+    }
+
+    public void complete(int id) {
+        jdbcTemplate.update(
+                "UPDATE goal set completed = true where id = ?",
+                ps -> {
+                    ps.setInt(1, id);
                 }
         );
     }
 
     public List<Goal> getGoals(long userId) {
         return jdbcTemplate.query(
-                "SELECT * FROM goal WHERE user_id = ? ORDER BY target_date",
+                "SELECT * FROM goal WHERE user_id = ? and goal_id is null ORDER BY target_date",
                 ps -> ps.setLong(1, userId),
                 (rs, rw) -> map(rs)
         );
@@ -56,9 +67,16 @@ public class GoalDao {
 
     public Goal getGoal(int id) {
         return jdbcTemplate.query(
-                "SELECT * FROM goal WHERE id = ?",
+                "SELECT * FROM goal WHERE id = ? ORDER BY target_date asc",
                 ps -> ps.setInt(1, id),
                 rs -> rs.next() ? map(rs) : null
+        );
+    }
+
+    public void delete(int id) {
+        jdbcTemplate.update(
+                "DELETE FROM goal WHERE id = ?",
+                ps -> ps.setInt(1, id)
         );
     }
 
@@ -69,12 +87,12 @@ public class GoalDao {
         goal.setDescription(resultSet.getString(Goal.DESCRIPTION));
         goal.setUserId(resultSet.getLong(Goal.USER_ID));
 
-        Timestamp targetDate = resultSet.getTimestamp(Goal.TARGET_DATE);
-        goal.setTargetDate(ZonedDateTime.of(targetDate.toLocalDateTime(), ZoneOffset.UTC));
+        Date targetDate = resultSet.getDate(Goal.TARGET_DATE);
+        goal.setTargetDate(targetDate.toLocalDate());
+        goal.setCompleted(resultSet.getBoolean(Goal.COMPLETED));
         Timestamp createdAt = resultSet.getTimestamp(Goal.CREATED_AT);
         goal.setCreatedAt(ZonedDateTime.of(createdAt.toLocalDateTime(), ZoneOffset.UTC));
 
         return goal;
     }
-
 }

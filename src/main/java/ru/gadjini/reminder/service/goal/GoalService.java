@@ -17,6 +17,10 @@ public class GoalService {
         this.goalDao = goalDao;
     }
 
+    public void deleteGoal(int id) {
+        goalDao.delete(id);
+    }
+
     public void createGoal(Goal goal) {
         goalDao.create(goal);
     }
@@ -25,11 +29,19 @@ public class GoalService {
         return goalDao.getGoals(userId);
     }
 
-    public List<Goal> getGoals(long userId, int goalId) {
+    public List<Goal> getGoals(long userId, Integer goalId) {
+        if (goalId == null) {
+            return getGoals(userId);
+        }
+
         return goalDao.getGoals(userId, goalId);
     }
 
     public Goal getGoal(int id) {
         return goalDao.getGoal(id);
+    }
+
+    public void complete(int id) {
+        goalDao.complete(id);
     }
 }

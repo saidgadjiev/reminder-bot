@@ -1,5 +1,6 @@
 package ru.gadjini.reminder.domain;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 public class Goal {
@@ -18,19 +19,23 @@ public class Goal {
 
     public static final String GOAL_ID = "goal_id";
 
+    public static final String COMPLETED = "completed";
+
     private int id;
 
     private String title;
 
     private String description;
 
-    private ZonedDateTime targetDate;
+    private LocalDate targetDate;
 
     private ZonedDateTime createdAt;
 
     private long userId;
 
-    private int goalId;
+    private Integer goalId;
+
+    private boolean completed;
 
     public int getId() {
         return id;
@@ -56,11 +61,11 @@ public class Goal {
         this.description = description;
     }
 
-    public ZonedDateTime getTargetDate() {
+    public LocalDate getTargetDate() {
         return targetDate;
     }
 
-    public void setTargetDate(ZonedDateTime targetDate) {
+    public void setTargetDate(LocalDate targetDate) {
         this.targetDate = targetDate;
     }
 
@@ -80,11 +85,19 @@ public class Goal {
         this.userId = userId;
     }
 
-    public int getGoalId() {
+    public Integer getGoalId() {
         return goalId;
     }
 
-    public void setGoalId(int goalId) {
+    public void setGoalId(Integer goalId) {
         this.goalId = goalId;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 }

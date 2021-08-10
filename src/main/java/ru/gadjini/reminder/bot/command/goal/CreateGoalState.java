@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.bot.command.callback.goal;
+package ru.gadjini.reminder.bot.command.goal;
 
 public class CreateGoalState {
 

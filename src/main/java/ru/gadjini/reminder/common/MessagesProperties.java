@@ -620,4 +620,14 @@ public class MessagesProperties {
     public static final String CREATE_GOAL_COMMAND_DESCRIPTION = "create.goal.command.description";
 
     public static final String GET_GOALS_COMMAND_DESCRIPTION = "get.goals.command.description";
+
+    public static final String MESSAGE_GOAL_DELETED_ANSWER = "message.goal.deleted.answer";
+
+    public static final String MESSAGE_GOAL_COMPLETED_ANSWER = "message.goal.completed.answer";
+
+    public static final String DELETE_GOAL_COMMAND_DESCRIPTION = "delete.goal.command.description";
+
+    public static final String COMPLETE_GOAL_COMMAND_DESCRIPTION = "complete.goal.command.description";
+
+    public static final String MESSAGE_CHECK_ICON = "message.check.icon";
 }

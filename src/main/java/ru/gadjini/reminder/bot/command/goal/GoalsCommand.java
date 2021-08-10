@@ -1,9 +1,10 @@
-package ru.gadjini.reminder.bot.command.keyboard;
+package ru.gadjini.reminder.bot.command.goal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import ru.gadjini.reminder.bot.command.api.CallbackBotCommand;
 import ru.gadjini.reminder.bot.command.api.KeyboardBotCommand;
 import ru.gadjini.reminder.bot.command.api.NavigableCallbackBotCommand;
@@ -13,6 +14,7 @@ import ru.gadjini.reminder.domain.Goal;
 import ru.gadjini.reminder.job.PriorityJob;
 import ru.gadjini.reminder.model.EditMessageContext;
 import ru.gadjini.reminder.model.SendMessageContext;
+import ru.gadjini.reminder.model.TgMessage;
 import ru.gadjini.reminder.request.Arg;
 import ru.gadjini.reminder.request.RequestParams;
 import ru.gadjini.reminder.service.TgUserService;
@@ -39,6 +41,8 @@ public class GoalsCommand implements KeyboardBotCommand, NavigableCallbackBotCom
 
     private TgUserService userService;
 
+    private LocalisationService localisationService;
+
     @Autowired
     public GoalsCommand(GoalService goalService, MessageService messageService,
                         InlineKeyboardService inlineKeyboardService, LocalisationService localisationService,
@@ -46,6 +50,7 @@ public class GoalsCommand implements KeyboardBotCommand, NavigableCallbackBotCom
         this.goalService = goalService;
         this.messageService = messageService;
         this.inlineKeyboardService = inlineKeyboardService;
+        this.localisationService = localisationService;
         this.userService = userService;
 
         for (Locale supportedLocale : localisationService.getSupportedLocales()) {
@@ -60,17 +65,16 @@ public class GoalsCommand implements KeyboardBotCommand, NavigableCallbackBotCom
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
-        List<Goal> goals = requestParams.contains(Arg.GOAL_ID.getKey())
-                ? goalService.getGoals(callbackQuery.getFrom().getId(), requestParams.getInt(Arg.GOAL_ID.getKey()))
-                : goalService.getGoals(callbackQuery.getFrom().getId());
-        String msg = buildMessage(goals);
+        Integer goalId = requestParams.getInt(Arg.GOAL_ID.getKey());
+        List<Goal> goals = goalService.getGoals(callbackQuery.getFrom().getId(), goalId);
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
+        String msg = buildMessage(goals, locale);
 
         messageService.editMessage(new EditMessageContext(PriorityJob.Priority.HIGH)
                 .text(msg)
                 .chatId(callbackQuery.getFrom().getId())
                 .messageId(callbackQuery.getMessage().getMessageId())
-                .replyKeyboard(inlineKeyboardService.goalsKeyboard(goals, locale)));
+                .replyKeyboard(inlineKeyboardService.goalsKeyboard(goalId, goals, locale)));
 
         return null;
     }
@@ -83,8 +87,8 @@ public class GoalsCommand implements KeyboardBotCommand, NavigableCallbackBotCom
     @Override
     public boolean processMessage(Message message, String text) {
         List<Goal> goals = goalService.getGoals(message.getFrom().getId());
-        String msg = buildMessage(goals);
         Locale locale = userService.getLocale(message.getFrom().getId());
+        String msg = buildMessage(goals, locale);
 
         messageService.sendMessageAsync(new SendMessageContext(PriorityJob.Priority.HIGH)
                 .text(msg)
@@ -95,14 +99,31 @@ public class GoalsCommand implements KeyboardBotCommand, NavigableCallbackBotCom
         return false;
     }
 
-    private String buildMessage(List<Goal> goals) {
+    @Override
+    public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
+        List<Goal> goals = goalService.getGoals(tgMessage.getUser().getId());
+        Locale locale = userService.getLocale(tgMessage.getUser().getId());
+        String msg = buildMessage(goals, locale);
+
+        messageService.editMessageAsync(new EditMessageContext(PriorityJob.Priority.HIGH)
+                .text(msg)
+                .chatId(tgMessage.getChatId())
+                .messageId(tgMessage.getMessageId())
+                .replyKeyboard(inlineKeyboardService.goalsKeyboard(goals, locale)));
+    }
+
+    private String buildMessage(List<Goal> goals, Locale locale) {
         StringBuilder message = new StringBuilder();
         int i = 1;
         for (Goal goal : goals) {
             if (message.length() > 0) {
                 message.append("\n");
             }
-            message.append(i).append(") ").append(goal.getTitle());
+            message.append(i++).append(") ");
+            if (goal.isCompleted()) {
+                message.append(localisationService.getMessage(MessagesProperties.MESSAGE_CHECK_ICON, locale));
+            }
+            message.append(goal.getTitle());
         }
         if (message.length() == 0) {
             return "No goals";

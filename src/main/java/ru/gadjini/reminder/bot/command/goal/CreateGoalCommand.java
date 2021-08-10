@@ -1,4 +1,4 @@
-package ru.gadjini.reminder.bot.command.callback.goal;
+package ru.gadjini.reminder.bot.command.goal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,8 +23,6 @@ import ru.gadjini.reminder.service.message.MessageService;
 import ru.gadjini.reminder.service.reminder.TimeRequestService;
 
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 @Component
@@ -45,9 +43,10 @@ public class CreateGoalCommand implements CallbackBotCommand, NavigableCallbackB
     private CommandStateService commandStateService;
 
     @Autowired
-    public CreateGoalCommand(GoalService goalService, MessageService messageService, TgUserService userService,
+    public CreateGoalCommand(TimeRequestService timeRequestService, GoalService goalService, MessageService messageService, TgUserService userService,
                              InlineKeyboardService inlineKeyboardService, LocalisationService localisationService,
                              CommandStateService commandStateService) {
+        this.timeRequestService = timeRequestService;
         this.goalService = goalService;
         this.messageService = messageService;
         this.userService = userService;
@@ -103,7 +102,7 @@ public class CreateGoalCommand implements CallbackBotCommand, NavigableCallbackB
         ZoneId timeZone = userService.getTimeZone(message.getFrom().getId());
         Time time = timeRequestService.parseTime(split[2], timeZone, userService.getLocale(message.getFrom().getId()));
 
-        goal.setTargetDate(time.getFixedDateTime().toZonedDateTime());
+        goal.setTargetDate(time.getFixedDateTime().date());
 
         goalService.createGoal(goal);
     }

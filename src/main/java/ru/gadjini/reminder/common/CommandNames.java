@@ -81,4 +81,7 @@ public class CommandNames {
     public static final String TAG_COMMAND_NAME = "bv";
     public static final String TAGS_COMMAND_NAME = "bw";
     public static final String GET_GOALS_COMMAND_NAME = "bx";
+    public static final String DELETE_GOAL_COMMAND_NAME = "by";
+
+    public static final String COMPLETE_GOAL_COMMAND_NAME = "bz";
 }

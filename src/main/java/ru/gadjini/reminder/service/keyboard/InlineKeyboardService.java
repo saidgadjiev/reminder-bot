@@ -40,8 +40,11 @@ public class InlineKeyboardService {
     public InlineKeyboardMarkup goalDetails(int goalId, Locale locale) {
         InlineKeyboardMarkup keyboardMarkup = inlineKeyboardMarkup();
 
-        inlineKeyboardMarkup().getKeyboard().add(List.of(buttonFactory.createGoalButton(goalId, locale),
-                buttonFactory.getGoalsButton(goalId, locale)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.createGoalButton(goalId, locale)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.deleteGoalButton(goalId, locale),
+                buttonFactory.completeGoalButton(goalId, locale)));
+        keyboardMarkup.getKeyboard().add(List.of(buttonFactory.getGoalsButton(goalId, locale),
+                buttonFactory.goBackCallbackButton(CommandNames.GET_GOALS_COMMAND_NAME, locale)));
 
         return keyboardMarkup;
     }
@@ -176,7 +179,7 @@ public class InlineKeyboardService {
         return inlineKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup goalsKeyboard(List<Goal> goals, Locale locale) {
+    public InlineKeyboardMarkup goalsKeyboard(Integer goalId, List<Goal> goals, Locale locale) {
         InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardMarkup();
 
         int i = 1;
@@ -194,9 +197,18 @@ public class InlineKeyboardService {
 
             inlineKeyboardMarkup.getKeyboard().add(row);
         }
-        inlineKeyboardMarkup.getKeyboard().add(List.of(buttonFactory.createGoalButton(null, locale)));
+        List<InlineKeyboardButton> buttons = new ArrayList<>();
+        buttons.add(buttonFactory.createGoalButton(null, locale));
+        if (goalId != null) {
+            buttons.add(buttonFactory.goBackCallbackButton(CommandNames.GET_GOALS_COMMAND_NAME, locale));
+        }
+        inlineKeyboardMarkup.getKeyboard().add(buttons);
 
         return inlineKeyboardMarkup;
+    }
+
+    public InlineKeyboardMarkup goalsKeyboard(List<Goal> goals, Locale locale) {
+        return goalsKeyboard(null, goals, locale);
     }
 
     public InlineKeyboardMarkup getPaymentKeyboard(long userId, int planId, Locale locale) {
