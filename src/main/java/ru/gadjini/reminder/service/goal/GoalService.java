@@ -25,13 +25,17 @@ public class GoalService {
         goalDao.create(goal);
     }
 
-    public List<Goal> getGoals(long userId) {
-        return goalDao.getGoals(userId);
+    public List<Goal> getRootGoals(long userId) {
+        return goalDao.getRootGoals(userId);
+    }
+
+    public List<Goal> getAllSubGoals(long userId) {
+        return goalDao.getAllSubGoals(userId);
     }
 
     public List<Goal> getGoals(long userId, Integer goalId) {
         if (goalId == null) {
-            return getGoals(userId);
+            return getRootGoals(userId);
         }
 
         return goalDao.getGoals(userId, goalId);

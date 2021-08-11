@@ -169,6 +169,8 @@ public class MessagesProperties {
 
     public static final String ALL_ACTIVE_REMINDERS_COMMAND_DESCRIPTION = "all.active.reminders.command.description";
 
+    public static final String ALL_GOALS_COMMAND_DESCRIPTION = "all.goals.command.description";
+
     public static final String MESSAGE_LET_SEE_ON_REMINDERS = "message.let.see.on.reminders";
 
     public static final String MESSAGE_REMINDERS_EMPTY = "message.reminders.empty";

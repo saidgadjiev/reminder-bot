@@ -66,7 +66,14 @@ public class GoalsCommand implements KeyboardBotCommand, NavigableCallbackBotCom
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
         Integer goalId = requestParams.getInt(Arg.GOAL_ID.getKey());
-        List<Goal> goals = goalService.getGoals(callbackQuery.getFrom().getId(), goalId);
+
+        List<Goal> goals;
+        if (requestParams.contains(Arg.ALL_SUB_GOALS.getKey())) {
+            goals = goalService.getAllSubGoals(callbackQuery.getFrom().getId());
+        } else {
+            goals = goalService.getGoals(callbackQuery.getFrom().getId(), goalId);
+        }
+
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         String msg = buildMessage(goals, locale);
 
@@ -86,7 +93,7 @@ public class GoalsCommand implements KeyboardBotCommand, NavigableCallbackBotCom
 
     @Override
     public boolean processMessage(Message message, String text) {
-        List<Goal> goals = goalService.getGoals(message.getFrom().getId());
+        List<Goal> goals = goalService.getRootGoals(message.getFrom().getId());
         Locale locale = userService.getLocale(message.getFrom().getId());
         String msg = buildMessage(goals, locale);
 
@@ -101,7 +108,7 @@ public class GoalsCommand implements KeyboardBotCommand, NavigableCallbackBotCom
 
     @Override
     public void restore(TgMessage tgMessage, ReplyKeyboard replyKeyboard, RequestParams requestParams) {
-        List<Goal> goals = goalService.getGoals(tgMessage.getUser().getId());
+        List<Goal> goals = goalService.getRootGoals(tgMessage.getUser().getId());
         Locale locale = userService.getLocale(tgMessage.getUser().getId());
         String msg = buildMessage(goals, locale);
 

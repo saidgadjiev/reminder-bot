@@ -19,7 +19,8 @@ public enum Arg {
     CHALLENGE_ID("o"),
     COMMAND_NAME("p"),
     GOAL_ID("r"),
-    TAG_ID("s");
+    TAG_ID("s"),
+    ALL_SUB_GOALS("t");
 
     private final String key;
 

@@ -201,6 +201,8 @@ public class InlineKeyboardService {
         buttons.add(buttonFactory.createGoalButton(null, locale));
         if (goalId != null) {
             buttons.add(buttonFactory.goBackCallbackButton(CommandNames.GET_GOALS_COMMAND_NAME, locale));
+        } else {
+            buttons.add(buttonFactory.allSubGoalsButton(locale));
         }
         inlineKeyboardMarkup.getKeyboard().add(buttons);
 

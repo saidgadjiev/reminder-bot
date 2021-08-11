@@ -46,9 +46,17 @@ public class GoalDao {
         );
     }
 
-    public List<Goal> getGoals(long userId) {
+    public List<Goal> getRootGoals(long userId) {
         return jdbcTemplate.query(
                 "SELECT * FROM goal WHERE user_id = ? and goal_id is null ORDER BY target_date",
+                ps -> ps.setLong(1, userId),
+                (rs, rw) -> map(rs)
+        );
+    }
+
+    public List<Goal> getAllSubGoals(long userId) {
+        return jdbcTemplate.query(
+                "SELECT * FROM goal WHERE user_id = ? and goal_id is not null ORDER BY target_date",
                 ps -> ps.setLong(1, userId),
                 (rs, rw) -> map(rs)
         );
