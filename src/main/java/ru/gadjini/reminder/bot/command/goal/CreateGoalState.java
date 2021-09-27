@@ -2,13 +2,13 @@ package ru.gadjini.reminder.bot.command.goal;
 
 public class CreateGoalState {
 
-    private int goalId;
+    private Integer goalId;
 
-    public int getGoalId() {
+    public Integer getGoalId() {
         return goalId;
     }
 
-    public void setGoalId(int goalId) {
+    public void setGoalId(Integer goalId) {
         this.goalId = goalId;
     }
 }

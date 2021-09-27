@@ -67,11 +67,12 @@ public class CreateGoalCommand implements CallbackBotCommand, NavigableCallbackB
 
     @Override
     public String processMessage(CallbackQuery callbackQuery, RequestParams requestParams) {
+        CreateGoalState createGoalState = new CreateGoalState();
         if (requestParams.contains(Arg.GOAL_ID.getKey())) {
-            CreateGoalState createGoalState = new CreateGoalState();
             createGoalState.setGoalId(requestParams.getInt(Arg.GOAL_ID.getKey()));
-            commandStateService.setState(callbackQuery.getFrom().getId(), createGoalState);
         }
+        commandStateService.setState(callbackQuery.getFrom().getId(), createGoalState);
+
         Locale locale = userService.getLocale(callbackQuery.getFrom().getId());
         String text = localisationService.getMessage(MessagesProperties.MESSAGE_SEND_GOAL, locale);
         messageService.editMessage(
